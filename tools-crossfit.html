@@ -1,0 +1,1145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!--
+   ______                            __
+  / ____/___  ____ ___  ____  __  __/ /____  _____
+ / /   / __ \/ __ `__ \/ __ \/ / / / __/ _ \/ ___/
+/ /___/ /_/ / / / / / / /_/ / /_/ / /_/  __/ /
+\____/\____/_/ /_/ /_/ .___/\__,_/\__/\___/_/
+                    /_/
+        Created with Perplexity Computer
+        https://www.perplexity.ai/computer
+-->
+
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WOD Machine Converter — Yeager's Gym</title>
+<meta name="description" content="Swap machines in your WOD without guessing. Enter calories or distance on one machine and get the equivalent for every piece of equipment in the box.">
+<meta property="og:title" content="WOD Machine Converter — Yeager's Gym">
+<meta property="og:description" content="Swap machines in your WOD without guessing. Convert calories and distance between rower, SkiErg, bike, and more.">
+<meta property="og:type" content="website">
+<link rel="canonical" href="https://yeagersgym.com/tools-crossfit.html">
+<link rel="stylesheet" href="./base.css">
+<link rel="stylesheet" href="./style.css">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "WOD Machine Converter",
+  "description": "Convert calories and distance between CrossFit machines — Rower, SkiErg, BikeErg, Assault Bike, Echo Bike, and Running.",
+  "url": "https://yeagersgym.com/tools-crossfit.html",
+  "applicationCategory": "HealthApplication",
+  "creator": {
+    "@type": "SoftwareApplication",
+    "name": "Perplexity Computer",
+    "url": "https://www.perplexity.ai/computer"
+  }
+}
+</script>
+
+<style>
+/* ═══════════════════════════════════════════
+   CROSSFIT MACHINE CONVERTER — Widget Styles
+   ═══════════════════════════════════════════ */
+
+.tool-page {
+  padding-top: 100px;
+  padding-bottom: var(--space-16);
+  min-height: 100vh;
+}
+
+.tool-back {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  text-decoration: none;
+  margin-bottom: var(--space-8);
+  transition: color var(--transition-interactive);
+}
+.tool-back:hover { color: var(--color-teal); }
+.tool-back svg { width: 16px; height: 16px; }
+
+.tool-header {
+  text-align: center;
+  margin-bottom: var(--space-12);
+}
+
+.tool-header .section-label {
+  margin-bottom: var(--space-4);
+}
+
+.tool-header h1 {
+  font-family: var(--font-body);
+  font-size: var(--text-2xl);
+  font-weight: 700;
+  color: var(--color-text);
+  margin-bottom: var(--space-4);
+  line-height: 1.15;
+}
+
+.tool-header h1 .highlight-teal { color: var(--color-teal); }
+.tool-header h1 .highlight-pink { color: var(--color-pink); }
+
+.tool-header p {
+  font-size: var(--text-base);
+  color: var(--color-text-muted);
+  max-width: 56ch;
+  margin-inline: auto;
+  line-height: 1.7;
+}
+
+/* ── Calculator Card ── */
+.calc-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  padding: var(--space-8);
+  max-width: 600px;
+  margin-inline: auto;
+  margin-bottom: var(--space-10);
+}
+
+@media (max-width: 640px) {
+  .calc-card { padding: var(--space-6) var(--space-4); }
+}
+
+.calc-card h2 {
+  font-family: var(--font-display);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--color-teal);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: var(--space-6);
+}
+
+/* ── Form Fields ── */
+.field-group {
+  margin-bottom: var(--space-6);
+}
+
+.field-group label {
+  display: block;
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-2);
+}
+
+.field-group select,
+.field-group input[type="number"] {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  color: var(--color-text);
+  font-size: var(--text-base);
+  font-family: var(--font-body);
+  transition: border-color var(--transition-interactive), box-shadow var(--transition-interactive);
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.field-group select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none'%3E%3Cpath d='M1 1.5l5 5 5-5' stroke='%238a8d93' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  padding-right: 2.5rem;
+  cursor: pointer;
+}
+
+.field-group select:focus,
+.field-group input[type="number"]:focus {
+  outline: none;
+  border-color: var(--color-teal);
+  box-shadow: 0 0 0 3px var(--color-teal-glow);
+}
+
+.field-group input[type="number"]::placeholder {
+  color: var(--color-text-faint);
+}
+
+.field-group input[type="number"]::-webkit-outer-spin-button,
+.field-group input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.field-group input[type="number"] { -moz-appearance: textfield; }
+
+/* ── Gender Toggle ── */
+.gender-toggle {
+  display: inline-flex;
+  background: var(--color-surface-2);
+  border-radius: var(--radius-full);
+  padding: 3px;
+  margin-bottom: var(--space-3);
+  border: 1px solid var(--color-border);
+}
+
+.gender-toggle button {
+  padding: 0.375rem 1.25rem;
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  border-radius: var(--radius-full);
+  transition: all var(--transition-interactive);
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.gender-toggle button.active {
+  background: var(--color-pink);
+  color: #fff;
+}
+
+/* ── Input Type Toggle ── */
+.type-toggle {
+  display: inline-flex;
+  background: var(--color-surface-2);
+  border-radius: var(--radius-full);
+  padding: 3px;
+  margin-bottom: var(--space-3);
+  border: 1px solid var(--color-border);
+}
+
+.type-toggle button {
+  padding: 0.375rem 1.25rem;
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  border-radius: var(--radius-full);
+  transition: all var(--transition-interactive);
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.type-toggle button.active {
+  background: var(--color-pink);
+  color: #0a0e17;
+}
+
+/* ── Input with Unit ── */
+.input-with-unit {
+  position: relative;
+}
+
+.input-with-unit input {
+  padding-right: 3.5rem !important;
+}
+
+.input-unit-label {
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--color-text-faint);
+  pointer-events: none;
+}
+
+/* ── Calculate Button ── */
+.btn-calculate {
+  width: 100%;
+  padding: 0.875rem 1.5rem;
+  font-size: var(--text-base);
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-top: var(--space-4);
+  background: var(--color-pink);
+}
+
+.btn-calculate:hover {
+  background: var(--color-pink-hover);
+}
+
+/* ═══════════════════════════════════════════
+   RESULTS
+   ═══════════════════════════════════════════ */
+.results-panel {
+  max-width: 800px;
+  margin-inline: auto;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.5s var(--ease-out), transform 0.5s var(--ease-out);
+  pointer-events: none;
+}
+
+.results-panel.visible {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.results-header {
+  text-align: center;
+  margin-bottom: var(--space-8);
+}
+
+.results-header h2 {
+  font-family: var(--font-display);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-teal);
+  margin-bottom: var(--space-2);
+}
+
+.results-header p {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+}
+
+/* ── Machine Cards Grid ── */
+.machine-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-4);
+  margin-bottom: var(--space-8);
+}
+
+@media (min-width: 520px) {
+  .machine-grid { grid-template-columns: 1fr 1fr; }
+}
+
+@media (min-width: 768px) {
+  .machine-grid { grid-template-columns: 1fr 1fr 1fr; }
+}
+
+.machine-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  padding: var(--space-6);
+  position: relative;
+  overflow: hidden;
+  transition: transform var(--transition-interactive), border-color var(--transition-interactive);
+}
+
+.machine-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(255,255,255,0.2);
+}
+
+.machine-card.source-card {
+  border-color: var(--color-teal);
+  background: linear-gradient(135deg, var(--color-surface), rgba(30, 200, 176, 0.06));
+}
+
+.machine-card.source-card::before {
+  content: 'SOURCE';
+  position: absolute;
+  top: var(--space-3);
+  right: var(--space-3);
+  font-family: var(--font-display);
+  font-size: 0.5625rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #0a0e17;
+  background: var(--color-pink);
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+}
+
+.machine-card.hardest-card {
+  border-color: var(--color-pink);
+  background: linear-gradient(135deg, var(--color-surface), rgba(240, 68, 138, 0.06));
+}
+
+.machine-card.target-card {
+  border-color: var(--color-pink);
+  background: linear-gradient(135deg, var(--color-surface), rgba(240, 68, 138, 0.08));
+}
+
+.machine-card.target-card::before {
+  content: 'TARGET';
+  position: absolute;
+  top: var(--space-3);
+  right: var(--space-3);
+  font-family: var(--font-display);
+  font-size: 0.5625rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #0a0e17;
+  background: var(--color-pink);
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+}
+
+.machine-emoji {
+  font-size: 2rem;
+  margin-bottom: var(--space-3);
+  line-height: 1;
+}
+
+.machine-name {
+  font-family: var(--font-display);
+  font-size: var(--text-sm);
+  font-weight: 700;
+  color: var(--color-text);
+  margin-bottom: var(--space-4);
+  letter-spacing: 0.02em;
+}
+
+.machine-stat {
+  margin-bottom: var(--space-3);
+}
+
+.machine-stat:last-child { margin-bottom: 0; }
+
+.machine-stat-label {
+  font-family: var(--font-display);
+  font-size: 0.625rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-text-faint);
+  margin-bottom: 2px;
+}
+
+.machine-stat-value {
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: 700;
+  color: var(--color-teal);
+  line-height: 1.2;
+}
+
+.machine-stat-value.cal-value { color: var(--color-pink); }
+.machine-stat-value.dist-value { color: var(--color-purple); }
+
+.machine-stat-value small {
+  font-size: 0.6em;
+  font-weight: 500;
+  color: var(--color-text-muted);
+}
+
+/* ── Difficulty Bar ── */
+.difficulty-bar-wrap {
+  margin-top: var(--space-4);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--color-divider);
+}
+
+.difficulty-label {
+  font-family: var(--font-display);
+  font-size: 0.5625rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-text-faint);
+  margin-bottom: 4px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.difficulty-bar {
+  height: 4px;
+  background: var(--color-surface-3);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.difficulty-fill {
+  height: 100%;
+  border-radius: var(--radius-full);
+  transition: width 0.8s var(--ease-out);
+  background: linear-gradient(90deg, var(--color-teal), var(--color-pink));
+}
+
+/* ── Time Estimate ── */
+.time-estimate {
+  text-align: center;
+  padding: var(--space-5) var(--space-4);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  margin-bottom: var(--space-6);
+}
+
+.time-estimate span {
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+  letter-spacing: 0.06em;
+}
+
+.time-estimate strong {
+  color: var(--color-teal);
+}
+
+/* ── Notes ── */
+.conversion-note {
+  text-align: center;
+  font-size: var(--text-xs);
+  color: var(--color-text-faint);
+  max-width: 55ch;
+  margin-inline: auto;
+  line-height: 1.7;
+  margin-top: var(--space-6);
+}
+
+/* ── CTA Section ── */
+.tool-cta {
+  text-align: center;
+  padding: var(--space-16) var(--space-4);
+  max-width: 600px;
+  margin-inline: auto;
+}
+
+.tool-cta h2 {
+  font-family: var(--font-body);
+  font-size: var(--text-xl);
+  font-weight: 700;
+  color: var(--color-text);
+  margin-bottom: var(--space-4);
+}
+
+.tool-cta p {
+  font-size: var(--text-base);
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-6);
+  max-width: 45ch;
+  margin-inline: auto;
+}
+
+/* ── Explainer ── */
+.explainer {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  padding: var(--space-8);
+  margin-top: var(--space-12);
+  max-width: 600px;
+  margin-inline: auto;
+}
+
+@media (max-width: 640px) {
+  .explainer { padding: var(--space-6) var(--space-4); }
+}
+
+.explainer h2 {
+  font-family: var(--font-display);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--color-teal);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: var(--space-4);
+}
+
+.explainer p {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+  line-height: 1.8;
+  margin-bottom: var(--space-4);
+}
+
+.explainer p:last-child { margin-bottom: 0; }
+
+/* ── Also Try Link ── */
+.also-try {
+  text-align: center;
+  margin-top: var(--space-8);
+}
+
+.also-try a {
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  text-decoration: none;
+  transition: color var(--transition-interactive);
+}
+
+.also-try a:hover { color: var(--color-teal); }
+
+/* ── Tool Navigation Pills ── */
+.tool-nav-bar {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-10);
+  flex-wrap: wrap;
+}
+
+.tool-nav-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 0.5rem 1rem;
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--color-text-muted);
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  transition: all var(--transition-interactive);
+}
+
+.tool-nav-pill:hover {
+  border-color: var(--color-teal);
+  color: var(--color-teal);
+}
+
+.tool-nav-pill.active {
+  border-color: var(--color-teal);
+  background: var(--color-teal-glow);
+  color: var(--color-teal);
+}
+
+.tool-nav-pill svg {
+  width: 14px;
+  height: 14px;
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════
+     HEADER
+     ═══════════════════════════════════════════ -->
+<header class="site-header" role="banner">
+  <div class="header-inner">
+    <a href="./index.html" class="logo-link" aria-label="Yeager's Gym Home">
+      <img src="./assets/logo.jpeg" alt="Yeager's Gym Logo" class="logo-mark-img" width="48" height="48">
+    </a>
+
+    <nav class="nav-desktop" role="navigation" aria-label="Main navigation">
+      <a href="./index.html" class="nav-link">Home</a>
+      <a href="./index.html#about" class="nav-link">About</a>
+      <a href="./index.html#services" class="nav-link">Services</a>
+      <a href="./index.html#vbt" class="nav-link">VBT</a>
+      <a href="./tools-crossfit.html" class="nav-link active">Tools</a>
+      <a href="./quiz.html" class="nav-link">Quiz</a>
+      <div class="nav-utility">
+        <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="btn btn-primary">Book a Free Session</a>
+      </div>
+    </nav>
+
+    <button class="hamburger" aria-label="Toggle menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+
+  <div class="mobile-nav" role="navigation" aria-label="Mobile navigation">
+    <a href="./index.html">Home</a>
+    <a href="./index.html#about">About</a>
+    <a href="./index.html#services">Services</a>
+    <a href="./index.html#vbt">VBT</a>
+    <a href="./tools-vbt.html">VBT Calculator</a>
+    <a href="./tools-crossfit.html" style="color: var(--color-teal);">Machine Converter</a>
+    <a href="./tools-macro.html">Macro Calculator</a>
+    <a href="./tools-peptide.html">Peptide Calculator</a>
+    <a href="./peptide-consulting.html">Peptide Consulting</a>
+    <a href="./quiz.html" style="color: var(--color-pink);">Find Your Training Type</a>
+    <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="btn btn-primary" style="margin-top: var(--space-4);">Book a Free Session</a>
+  </div>
+</header>
+
+<!-- ═══════════════════════════════════════════
+     MAIN CONTENT
+     ═══════════════════════════════════════════ -->
+<main class="tool-page">
+  <div class="container">
+
+    <a href="./index.html" class="tool-back">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 12L6 8l4-4"/></svg>
+      Back to Home
+    </a>
+
+    <!-- Tool Nav Tabs -->
+    <div class="tool-nav-bar fade-in">
+      <a href="./tools-vbt.html" class="tool-nav-pill">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+        VBT Calculator
+      </a>
+      <a href="./tools-crossfit.html" class="tool-nav-pill active">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 12h8M12 8v8"/></svg>
+        Machine Converter
+      </a>
+      <a href="./tools-macro.html" class="tool-nav-pill">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z"/><path d="M12 2v10l7 4"/></svg>
+        Macro Calculator
+      </a>
+      <a href="./tools-peptide.html" class="tool-nav-pill">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6v11a6 6 0 0 1-6 0V3z"/><path d="M12 14v7"/><path d="M6 3h12"/></svg>
+        Peptide Calculator
+      </a>
+      <a href="./peptide-consulting.html" class="tool-nav-pill">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        Peptide Consulting
+      </a>
+    </div>
+
+    <!-- Tool Header -->
+    <div class="tool-header fade-in">
+      <p class="section-label" style="color: var(--color-pink);">Free Tool</p>
+      <h1>WOD <span class="highlight-teal">Machine</span> Converter</h1>
+      <p>Scaling a WOD to a different machine? Enter your prescribed work and we'll calculate the equivalent for every piece of equipment in the box.</p>
+    </div>
+
+    <!-- Calculator Card -->
+    <div class="calc-card fade-in">
+      <h2>Your Workout</h2>
+
+      <!-- Source Machine -->
+      <div class="field-group">
+        <label for="source-machine">Source Machine</label>
+        <select id="source-machine">
+          <option value="c2_rower">C2 Rower</option>
+          <option value="c2_skierg">C2 SkiErg</option>
+          <option value="c2_bikeerg">C2 BikeErg</option>
+          <option value="assault_bike">Assault Bike</option>
+          <option value="echo_bike">Rogue Echo Bike</option>
+          <option value="run">Run</option>
+        </select>
+      </div>
+
+      <!-- Target Machine -->
+      <div class="field-group">
+        <label for="target-machine">Convert To <span style="font-weight: 400; text-transform: none; letter-spacing: 0; color: var(--color-text-faint);">(optional)</span></label>
+        <select id="target-machine">
+          <option value="all">All Machines</option>
+          <option value="c2_rower">C2 Rower</option>
+          <option value="c2_skierg">C2 SkiErg</option>
+          <option value="c2_bikeerg">C2 BikeErg</option>
+          <option value="assault_bike">Assault Bike</option>
+          <option value="echo_bike">Rogue Echo Bike</option>
+          <option value="run">Run</option>
+        </select>
+      </div>
+
+      <!-- Input Type Toggle -->
+      <div class="field-group">
+        <label>Input Type</label>
+        <div class="type-toggle">
+          <button class="active" data-type="calories" type="button">Calories</button>
+          <button data-type="distance" type="button">Distance</button>
+        </div>
+      </div>
+
+      <!-- Amount -->
+      <div class="field-group">
+        <label for="amount">Amount</label>
+        <div class="input-with-unit">
+          <input type="number" id="amount" placeholder="20" min="1" max="10000" step="any">
+          <span class="input-unit-label" id="amount-unit-label">cal</span>
+        </div>
+      </div>
+
+      <!-- Gender Toggle -->
+      <div class="field-group">
+        <label>Athlete</label>
+        <div class="gender-toggle">
+          <button class="active" data-gender="male" type="button">Male (Rx)</button>
+          <button data-gender="female" type="button">Female (Rx)</button>
+        </div>
+      </div>
+
+      <button class="btn btn-primary btn-calculate" id="calculate-btn" type="button">
+        Convert
+      </button>
+    </div>
+
+    <!-- Results Panel -->
+    <div class="results-panel" id="results-panel">
+      <div class="results-header">
+        <h2>Equivalent Work</h2>
+        <p id="results-summary">20 calories on C2 Rower equals…</p>
+      </div>
+
+      <div class="time-estimate" id="time-estimate">
+        <span>Estimated effort time: <strong id="time-value">1:00</strong></span>
+      </div>
+
+      <div class="machine-grid" id="machine-grid">
+        <!-- Cards injected by JS -->
+      </div>
+
+      <p class="conversion-note">Conversions are based on moderate-effort averages. Individual results vary based on fitness level, body weight, and efficiency on each machine.</p>
+    </div>
+
+    <!-- Explainer -->
+    <div class="explainer fade-in">
+      <h2>How This Works</h2>
+      <p>Different machines burn calories at different rates. A calorie on the Rogue Echo Bike is brutally harder to earn than a calorie on the rower — so "20 cal" doesn't mean the same thing across machines.</p>
+      <p>This converter uses average calorie and distance output rates at moderate intensity to find equivalent work. We calculate how long the prescribed work takes on your source machine, then figure out what each other machine would produce in that same timeframe.</p>
+      <p>The ratios are based on community data from CrossFit coaches, Concept2 forums, and Mayhem programming. They're solid estimates — but remember that your specific output depends on your engine, body weight, and how comfortable you are on each machine.</p>
+    </div>
+
+    <!-- Also Try -->
+    <div class="also-try fade-in">
+      <a href="./tools-vbt.html">Also try: VBT-to-1RM Calculator →</a>
+    </div>
+
+    <!-- CTA -->
+    <div class="tool-cta fade-in">
+      <h2>Need Help Programming Your WODs?</h2>
+      <p>Get a coach who builds your programming around real data. First session is on us.</p>
+      <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="btn btn-primary" style="padding: 0.875rem 2rem; font-size: var(--text-sm);">Book a Free Session</a>
+    </div>
+
+  </div>
+</main>
+
+<!-- ═══════════════════════════════════════════
+     FOOTER
+     ═══════════════════════════════════════════ -->
+<footer class="site-footer" role="contentinfo">
+  <div class="container" style="padding: var(--space-4) 0 var(--space-3);">
+    <div class="footer-nav-columns" style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); margin-bottom: var(--space-3);">
+      <div class="footer-links">
+        <h4 style="font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-teal); margin-bottom: var(--space-1);">Navigate</h4>
+        <a href="./index.html" style="display: block; font-size: 11px; color: var(--color-text-muted); text-decoration: none; padding: 1px 0; line-height: 1.5;">Home</a>
+        <a href="./index.html#about" style="display: block; font-size: 11px; color: var(--color-text-muted); text-decoration: none; padding: 1px 0; line-height: 1.5;">About Brad</a>
+        <a href="./index.html#services" style="display: block; font-size: 11px; color: var(--color-text-muted); text-decoration: none; padding: 1px 0; line-height: 1.5;">Services & Pricing</a>
+        <a href="./tools-vbt.html" style="display: block; font-size: 11px; color: var(--color-text-muted); text-decoration: none; padding: 1px 0; line-height: 1.5;">VBT Calculator</a>
+        <a href="./tools-crossfit.html" style="display: block; font-size: 11px; color: var(--color-text-muted); text-decoration: none; padding: 1px 0; line-height: 1.5;">Machine Converter</a>
+        <a href="./tools-macro.html" style="display: block; font-size: 11px; color: var(--color-text-muted); text-decoration: none; padding: 1px 0; line-height: 1.5;">Macro Calculator</a>
+      
+        <a href="./tools-peptide.html" style="display: block; font-size: 11px; color: var(--color-text-muted); text-decoration: none; padding: 1px 0; line-height: 1.5;">Peptide Calculator</a>
+        <a href="./peptide-consulting.html" style="display: block; font-size: 11px; color: var(--color-text-muted); text-decoration: none; padding: 1px 0; line-height: 1.5;">Peptide Consulting</a>
+      </div>
+      <div class="footer-links">
+        <h4 style="font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-teal); margin-bottom: var(--space-1);">Connect</h4>
+        <a href="mailto:brad@yeagersgym.com" style="display: block; font-size: 11px; color: var(--color-text-muted); text-decoration: none; padding: 1px 0; line-height: 1.5;">brad@yeagersgym.com</a>
+        <a href="https://www.instagram.com/YeagersGym" target="_blank" rel="noopener noreferrer" style="display: block; font-size: 11px; color: var(--color-text-muted); text-decoration: none; padding: 1px 0; line-height: 1.5;">Instagram @YeagersGym</a>
+        <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" style="display: block; font-size: 11px; color: var(--color-text-muted); text-decoration: none; padding: 1px 0; line-height: 1.5;">Book via Vagaro</a>
+      </div>
+    </div>
+    <div class="footer-bottom" style="padding-top: var(--space-2); border-top: 1px solid rgba(255,255,255,0.06); display: flex; justify-content: space-between; align-items: center; font-size: 10px; color: rgba(255,255,255,0.25);">
+      <span>&copy; 2026 Yeager's Gym &middot; San Diego, CA</span>
+      <div style="display: flex; align-items: center; gap: var(--space-2);">
+        <a href="https://www.perplexity.ai/computer" target="_blank" rel="noopener noreferrer" style="color: rgba(255,255,255,0.25); text-decoration: none;">Created with Perplexity Computer</a>
+        <a href="./index.html" aria-label="Yeager's Gym Home">
+          <img src="./assets/logo.jpeg" alt="Yeager's Gym" style="width: 24px; height: 24px; border-radius: 50%; opacity: 0.6;" width="24" height="24">
+        </a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- ═══════════════════════════════════════════
+     SCRIPTS
+     ═══════════════════════════════════════════ -->
+<script>
+(function() {
+  'use strict';
+
+  // ── Machine Data ──
+  var machines = {
+    c2_rower:    { name: 'C2 Rower',         emoji: '🚣', calPerMin: { male: 20, female: 15 }, distPerMin: { male: 250, female: 200 }, distUnit: 'm', hardness: 0.5 },
+    c2_skierg:   { name: 'C2 SkiErg',        emoji: '🎿', calPerMin: { male: 20, female: 15 }, distPerMin: { male: 250, female: 200 }, distUnit: 'm', hardness: 0.5 },
+    c2_bikeerg:  { name: 'C2 BikeErg',       emoji: '🚴', calPerMin: { male: 20, female: 15 }, distPerMin: { male: 500, female: 400 }, distUnit: 'm', hardness: 0.5 },
+    assault_bike:{ name: 'Assault Bike',      emoji: '💨', calPerMin: { male: 15, female: 12 }, distPerMin: { male: 600, female: 500 }, distUnit: 'm', hardness: 0.7 },
+    echo_bike:   { name: 'Rogue Echo Bike',   emoji: '💀', calPerMin: { male: 12, female: 10 }, distPerMin: { male: 500, female: 400 }, distUnit: 'm', hardness: 1.0 },
+    run:         { name: 'Run',               emoji: '🏃', calPerMin: null,                     distPerMin: { male: 200, female: 200 }, distUnit: 'm', hardness: 0.6 }
+  };
+
+  // ── DOM refs ──
+  var sourceMachineSelect = document.getElementById('source-machine');
+  var targetMachineSelect = document.getElementById('target-machine');
+  var amountInput         = document.getElementById('amount');
+  var amountUnitLabel     = document.getElementById('amount-unit-label');
+  var calculateBtn        = document.getElementById('calculate-btn');
+  var resultsPanel        = document.getElementById('results-panel');
+  var resultsSummary      = document.getElementById('results-summary');
+  var machineGrid         = document.getElementById('machine-grid');
+  var timeValue           = document.getElementById('time-value');
+  var timeEstimate        = document.getElementById('time-estimate');
+  var typeToggleBtns      = document.querySelectorAll('.type-toggle button');
+  var genderToggleBtns    = document.querySelectorAll('.gender-toggle button');
+
+  var currentType   = 'calories';
+  var currentGender = 'male';
+
+  // ── Type toggle ──
+  typeToggleBtns.forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      typeToggleBtns.forEach(function(b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      currentType = btn.getAttribute('data-type');
+      amountUnitLabel.textContent = currentType === 'calories' ? 'cal' : 'm';
+      amountInput.placeholder = currentType === 'calories' ? '20' : '500';
+
+      // Hide/show run for calories
+      var runOption = sourceMachineSelect.querySelector('option[value="run"]');
+      if (currentType === 'calories') {
+        runOption.disabled = true;
+        if (sourceMachineSelect.value === 'run') {
+          sourceMachineSelect.value = 'c2_rower';
+        }
+      } else {
+        runOption.disabled = false;
+      }
+    });
+  });
+
+  // ── Gender toggle ──
+  genderToggleBtns.forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      genderToggleBtns.forEach(function(b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      currentGender = btn.getAttribute('data-gender');
+    });
+  });
+
+  // ── Calculate ──
+  calculateBtn.addEventListener('click', function() {
+    var amount   = parseFloat(amountInput.value);
+    var sourceKey = sourceMachineSelect.value;
+
+    if (!amount || amount <= 0) {
+      shakeButton();
+      return;
+    }
+
+    var source = machines[sourceKey];
+    var timeMinutes;
+
+    // Step 1: Calculate time on source machine
+    if (currentType === 'calories') {
+      if (!source.calPerMin) {
+        // Run doesn't have cal/min — shouldn't happen since we disable it
+        shakeButton();
+        return;
+      }
+      var calRate = source.calPerMin[currentGender];
+      timeMinutes = amount / calRate;
+    } else {
+      // Distance
+      var distRate = source.distPerMin[currentGender];
+      timeMinutes = amount / distRate;
+    }
+
+    // Format time
+    var totalSec = Math.round(timeMinutes * 60);
+    var mins = Math.floor(totalSec / 60);
+    var secs = totalSec % 60;
+    var timeStr = mins + ':' + (secs < 10 ? '0' : '') + secs;
+
+    // Step 2: Calculate equivalents for all machines
+    var results = [];
+    var maxHardness = 0;
+
+    Object.keys(machines).forEach(function(key) {
+      var m = machines[key];
+      var isSource = (key === sourceKey);
+
+      // Calculate calories (null for run)
+      var equivCals = null;
+      if (m.calPerMin) {
+        equivCals = Math.round(m.calPerMin[currentGender] * timeMinutes);
+      }
+
+      // Calculate distance
+      var equivDist = Math.round(m.distPerMin[currentGender] * timeMinutes);
+
+      // Difficulty relative to source (how many cal per minute relative to easiest)
+      var difficultyScore = m.hardness;
+      if (difficultyScore > maxHardness) maxHardness = difficultyScore;
+
+      results.push({
+        key: key,
+        machine: m,
+        isSource: isSource,
+        calories: equivCals,
+        distance: equivDist,
+        difficulty: difficultyScore
+      });
+    });
+
+    // Step 3: Build summary
+    var typeLabel = currentType === 'calories' ? amount + ' calories' : amount + 'm';
+    resultsSummary.textContent = typeLabel + ' on ' + source.name + ' equals…';
+    timeValue.textContent = timeStr;
+
+    // If time is very short, show seconds only
+    if (totalSec < 60) {
+      timeValue.textContent = totalSec + 's';
+    }
+
+    // Step 4: Filter by target machine if selected
+    var targetKey = targetMachineSelect.value;
+    var displayResults = results;
+    if (targetKey !== 'all') {
+      displayResults = results.filter(function(r) {
+        return r.isSource || r.key === targetKey;
+      });
+    }
+
+    // Step 5: Build machine cards
+    machineGrid.innerHTML = '';
+
+    displayResults.forEach(function(r, idx) {
+      var card = document.createElement('div');
+      card.className = 'machine-card';
+      if (r.isSource) card.className += ' source-card';
+      if (!r.isSource && targetKey !== 'all') card.className += ' target-card';
+      if (r.key === 'echo_bike' && targetKey === 'all') card.className += ' hardest-card';
+
+      // Stagger animation
+      card.style.opacity = '0';
+      card.style.transform = 'translateY(16px)';
+      card.style.transition = 'opacity 0.4s ease ' + (idx * 0.06) + 's, transform 0.4s ease ' + (idx * 0.06) + 's';
+
+      var calHTML = '';
+      if (r.calories !== null) {
+        calHTML = '<div class="machine-stat">' +
+          '<p class="machine-stat-label">Calories</p>' +
+          '<p class="machine-stat-value cal-value">' + r.calories + ' <small>cal</small></p>' +
+          '</div>';
+      } else {
+        calHTML = '<div class="machine-stat">' +
+          '<p class="machine-stat-label">Calories</p>' +
+          '<p class="machine-stat-value" style="color: var(--color-text-faint); font-size: var(--text-sm);">N/A</p>' +
+          '</div>';
+      }
+
+      var distLabel = r.distance >= 1000 ? (r.distance / 1000).toFixed(1) + ' <small>km</small>' : r.distance + ' <small>m</small>';
+
+      var diffPct = Math.round((r.difficulty / maxHardness) * 100);
+      var diffLabel = diffPct >= 80 ? 'Hard' : diffPct >= 50 ? 'Moderate' : 'Easy';
+
+      card.innerHTML =
+        '<div class="machine-emoji">' + r.machine.emoji + '</div>' +
+        '<p class="machine-name">' + r.machine.name + '</p>' +
+        calHTML +
+        '<div class="machine-stat">' +
+          '<p class="machine-stat-label">Distance</p>' +
+          '<p class="machine-stat-value dist-value">' + distLabel + '</p>' +
+        '</div>' +
+        '<div class="difficulty-bar-wrap">' +
+          '<div class="difficulty-label"><span>Effort</span><span>' + diffLabel + '</span></div>' +
+          '<div class="difficulty-bar"><div class="difficulty-fill" style="width: 0%;"></div></div>' +
+        '</div>';
+
+      machineGrid.appendChild(card);
+
+      // Trigger animations
+      requestAnimationFrame(function() {
+        requestAnimationFrame(function() {
+          card.style.opacity = '1';
+          card.style.transform = 'translateY(0)';
+          var fill = card.querySelector('.difficulty-fill');
+          if (fill) fill.style.width = diffPct + '%';
+        });
+      });
+    });
+
+    // Show results
+    resultsPanel.classList.add('visible');
+
+    // Show/hide time estimate (always show)
+    timeEstimate.style.display = '';
+
+    resultsPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+
+  function shakeButton() {
+    calculateBtn.style.animation = 'shake 0.4s ease';
+    setTimeout(function() { calculateBtn.style.animation = ''; }, 400);
+  }
+
+  // ── Shake animation ──
+  var style = document.createElement('style');
+  style.textContent = '@keyframes shake { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-6px)} 40%{transform:translateX(6px)} 60%{transform:translateX(-4px)} 80%{transform:translateX(4px)} }';
+  document.head.appendChild(style);
+
+  // ── Scroll reveal ──
+  var fadeEls = document.querySelectorAll('.fade-in');
+  if ('IntersectionObserver' in window) {
+    var observer = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+    fadeEls.forEach(function(el) { observer.observe(el); });
+  } else {
+    fadeEls.forEach(function(el) { el.classList.add('visible'); });
+  }
+
+  // ── Mobile Menu ──
+  var hamburger = document.querySelector('.hamburger');
+  var mobileNav = document.querySelector('.mobile-nav');
+  if (hamburger && mobileNav) {
+    hamburger.addEventListener('click', function() {
+      var isOpen = mobileNav.classList.toggle('open');
+      hamburger.classList.toggle('open');
+      hamburger.setAttribute('aria-expanded', isOpen);
+    });
+  }
+
+  // ── Header scroll ──
+  var header = document.querySelector('.site-header');
+  window.addEventListener('scroll', function() {
+    if (window.scrollY > 60) {
+      header.style.boxShadow = 'var(--shadow-md)';
+    } else {
+      header.style.boxShadow = 'none';
+    }
+  }, { passive: true });
+
+  // ── Enter key triggers calc ──
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' && document.activeElement === amountInput) {
+      calculateBtn.click();
+    }
+  });
+
+})();
+</script>
+
+<!-- Mobile Sticky CTA -->
+<div class="mobile-sticky-cta" id="stickyCta" style="display: none; position: fixed; bottom: 0; left: 0; right: 0; z-index: 999; padding: 12px 16px; background: rgba(10,14,23,0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-top: 1px solid rgba(30,200,176,0.2); text-align: center;">
+  <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" style="display: inline-block; width: 100%; max-width: 320px; padding: 10px 20px; background: var(--color-teal); color: #0a0e17; font-family: var(--font-display); font-size: 0.8rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; text-decoration: none; border-radius: 6px;">Book a Free Session</a>
+</div>
+<script>
+(function(){
+  var cta = document.getElementById('stickyCta');
+  if (!cta || window.innerWidth > 768) return;
+  window.addEventListener('scroll', function() {
+    cta.style.display = window.scrollY > 300 ? 'block' : 'none';
+  }, {passive:true});
+})();
+</script>
+
+</body>
+</html>

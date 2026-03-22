@@ -1,0 +1,1513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!--
+   ______                            __
+  / ____/___  ____ ___  ____  __  __/ /____  _____
+ / /   / __ \/ __ `__ \/ __ \/ / / / __/ _ \/ ___/
+/ /___/ /_/ / / / / / / /_/ / /_/ / /_/  __/ /
+\____/\____/_/ /_/ /_/ .___/\__,_/\__/\___/_/
+                    /_/
+        Created with Perplexity Computer
+        https://www.perplexity.ai/computer
+-->
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Peptide Reconstitution Calculator — Yeager's Gym</title>
+<meta name="description" content="Free peptide reconstitution calculator. Calculate exact draw volume in units for BPC-157, TB-500, semaglutide, tirzepatide, and more. Enter vial size, BAC water volume, and desired dose — get syringe units instantly.">
+<meta property="og:title" content="Peptide Reconstitution Calculator — Yeager's Gym">
+<meta property="og:description" content="Free peptide reconstitution calculator. Calculate exact draw volume in syringe units for BPC-157, TB-500, semaglutide, tirzepatide, and more.">
+<meta property="og:type" content="website">
+<link rel="canonical" href="https://yeagersgym.com/tools-peptide.html">
+<link rel="stylesheet" href="./base.css">
+<link rel="stylesheet" href="./style.css">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Peptide Reconstitution Calculator",
+  "description": "Calculate exact draw volume in syringe units for reconstituted peptides. Enter vial size, bacteriostatic water volume, and desired dose.",
+  "url": "https://yeagersgym.com/tools-peptide.html",
+  "applicationCategory": "HealthApplication",
+  "creator": {
+    "@type": "SoftwareApplication",
+    "name": "Perplexity Computer",
+    "url": "https://www.perplexity.ai/computer"
+  }
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How do I calculate the draw volume for a peptide dose?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "First, calculate your concentration: divide the vial size (in mcg) by the amount of BAC water you added (in mL). Then divide your desired dose (in mcg) by that concentration. The result is your draw volume in mL. Multiply by 100 to get syringe units on a U-100 insulin syringe. For example, a 5 mg vial reconstituted with 2 mL of BAC water gives a concentration of 2,500 mcg/mL. A 250 mcg dose would be 0.10 mL, or 10 units."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How long does a reconstituted peptide vial last?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Most reconstituted peptides remain stable for up to 30 days when stored in the refrigerator at 2–8°C (36–46°F). Some peptides may degrade faster. Always check the manufacturer's guidelines. If the solution becomes cloudy or discolored, discard it. Keep the vial away from light and avoid freezing reconstituted peptides."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Which syringe size should I use for peptide injections?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "For most peptide doses, a 0.5 mL or 1 mL U-100 insulin syringe works well. Use a 0.3 mL syringe for very small doses (under 0.3 mL / 30 units) for better accuracy — the smaller barrel means finer graduation marks. A 1 mL syringe is better for larger draw volumes. Always use a syringe that's the closest size to your draw volume without exceeding the barrel capacity."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How much bacteriostatic water should I add to a peptide vial?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The amount of BAC water depends on the vial size and your preferred concentration. Common choices are 1–2 mL. Less water means a more concentrated solution (smaller injection volume), while more water means a more dilute solution (easier to measure small doses). For a 5 mg vial, 1 mL gives 5,000 mcg/mL; 2 mL gives 2,500 mcg/mL. Choose based on your dose — you want the draw volume to be easy to read on your syringe."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How often should I inject my peptide?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Dosing frequency depends on the specific peptide protocol prescribed by your healthcare provider. Common schedules include twice daily (BPC-157), once daily (most research peptides), every other day, or weekly (semaglutide, tirzepatide). Always follow your provider's instructions. This calculator helps you estimate vial duration based on your chosen frequency so you can plan ahead."
+      }
+    }
+  ],
+  "creator": {
+    "@type": "SoftwareApplication",
+    "name": "Perplexity Computer",
+    "url": "https://www.perplexity.ai/computer"
+  }
+}
+</script>
+
+<style>
+/* ═══════════════════════════════════════════
+   PEPTIDE CALCULATOR — Widget Styles
+   ═══════════════════════════════════════════ */
+
+.tool-page {
+  padding-top: 100px;
+  padding-bottom: var(--space-16);
+  min-height: 100vh;
+}
+
+.tool-back {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  text-decoration: none;
+  margin-bottom: var(--space-8);
+  transition: color var(--transition-interactive);
+}
+.tool-back:hover { color: var(--color-teal); }
+.tool-back svg { width: 16px; height: 16px; }
+
+.tool-header {
+  text-align: center;
+  margin-bottom: var(--space-12);
+}
+
+.tool-header .section-label {
+  margin-bottom: var(--space-4);
+}
+
+.tool-header h1 {
+  font-family: var(--font-body);
+  font-size: var(--text-2xl);
+  font-weight: 700;
+  color: var(--color-text);
+  margin-bottom: var(--space-4);
+  line-height: 1.15;
+}
+
+.tool-header h1 .highlight-teal { color: var(--color-teal); }
+.tool-header h1 .highlight-pink { color: var(--color-pink); }
+
+.tool-header p {
+  font-size: var(--text-base);
+  color: var(--color-text-muted);
+  max-width: 56ch;
+  margin-inline: auto;
+  line-height: 1.7;
+}
+
+/* ── Tool Navigation Pills ── */
+.tool-nav-bar {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-10);
+  flex-wrap: wrap;
+}
+
+.tool-nav-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 0.5rem 1rem;
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--color-text-muted);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  transition: all var(--transition-interactive);
+}
+
+.tool-nav-pill:hover {
+  border-color: var(--color-teal);
+  color: var(--color-teal);
+}
+
+.tool-nav-pill.active {
+  border-color: var(--color-teal);
+  background: var(--color-teal-glow);
+  color: var(--color-teal);
+}
+
+.tool-nav-pill svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* ── Two-Column Calculator Layout ── */
+.calc-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-8);
+  max-width: 1000px;
+  margin-inline: auto;
+  margin-bottom: var(--space-12);
+  align-items: start;
+}
+
+@media (max-width: 768px) {
+  .calc-layout {
+    grid-template-columns: 1fr;
+    gap: var(--space-6);
+  }
+}
+
+/* ── Calculator Card ── */
+.calc-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  padding: var(--space-8);
+}
+
+@media (max-width: 640px) {
+  .calc-card { padding: var(--space-6) var(--space-4); }
+}
+
+.calc-card h2 {
+  font-family: var(--font-display);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--color-teal);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: var(--space-6);
+}
+
+/* ── Form Fields ── */
+.field-group {
+  margin-bottom: var(--space-6);
+}
+
+.field-group label {
+  display: block;
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-2);
+}
+
+.field-group input[type="number"] {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  color: var(--color-text);
+  font-size: var(--text-base);
+  font-family: var(--font-body);
+  transition: border-color var(--transition-interactive), box-shadow var(--transition-interactive);
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.field-group input[type="number"]:focus {
+  outline: none;
+  border-color: var(--color-teal);
+  box-shadow: 0 0 0 3px var(--color-teal-glow);
+}
+
+.field-group input::placeholder {
+  color: var(--color-text-faint);
+}
+
+/* Remove number spinners */
+.field-group input[type="number"]::-webkit-outer-spin-button,
+.field-group input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.field-group input[type="number"] { -moz-appearance: textfield; }
+
+/* ── Water Quick Pills ── */
+.water-pills {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+  margin-top: var(--space-2);
+}
+
+.water-pill {
+  padding: 0.35rem 0.75rem;
+  font-family: var(--font-display);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  background: var(--color-surface-2);
+  color: var(--color-text-muted);
+  transition: all var(--transition-interactive);
+}
+
+.water-pill:hover {
+  border-color: var(--color-teal);
+  color: var(--color-text);
+}
+
+.water-pill.active {
+  border-color: var(--color-teal);
+  background: var(--color-teal-glow);
+  color: var(--color-teal);
+}
+
+/* ── Syringe Size Toggle ── */
+.syringe-toggle {
+  display: inline-flex;
+  background: var(--color-surface-2);
+  border-radius: var(--radius-full);
+  padding: 3px;
+  border: 1px solid var(--color-border);
+}
+
+.syringe-toggle button {
+  padding: 0.375rem 0.75rem;
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  border: none;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  background: transparent;
+  color: var(--color-text-muted);
+  transition: all var(--transition-interactive);
+}
+
+.syringe-toggle button.active {
+  background: var(--color-pink);
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(240, 68, 138, 0.3);
+}
+
+/* ── Frequency Pills ── */
+.freq-pills {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.freq-pill {
+  padding: 0.45rem 0.75rem;
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  background: var(--color-surface-2);
+  color: var(--color-text-muted);
+  transition: all var(--transition-interactive);
+  white-space: nowrap;
+}
+
+.freq-pill:hover {
+  border-color: var(--color-pink);
+  color: var(--color-text);
+}
+
+.freq-pill.active {
+  border-color: var(--color-pink);
+  background: var(--color-pink-glow);
+  color: var(--color-pink);
+  box-shadow: 0 0 12px var(--color-pink-glow);
+}
+
+/* ── Results Panel ── */
+.results-panel {
+  position: sticky;
+  top: 100px;
+}
+
+@media (max-width: 768px) {
+  .results-panel {
+    position: static;
+  }
+}
+
+.results-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  padding: var(--space-6);
+  margin-bottom: var(--space-5);
+}
+
+.results-card h3 {
+  font-family: var(--font-display);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--color-teal);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: var(--space-5);
+}
+
+.result-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--color-divider);
+}
+
+.result-row:last-child { border-bottom: none; }
+
+.result-label {
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+  font-family: var(--font-body);
+}
+
+.result-value {
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: 700;
+  color: var(--color-text);
+  line-height: 1.1;
+}
+
+.result-value .unit {
+  font-size: var(--text-xs);
+  font-weight: 500;
+  color: var(--color-text-muted);
+  margin-left: 2px;
+}
+
+/* ── Vial Duration Card ── */
+.duration-card {
+  background: linear-gradient(135deg, var(--color-surface-2), var(--color-surface-3));
+  border: 1px solid rgba(155, 111, 212, 0.25);
+  border-radius: var(--radius-xl);
+  padding: var(--space-6);
+  margin-bottom: var(--space-5);
+  position: relative;
+  overflow: hidden;
+}
+
+.duration-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at top center, var(--color-purple-glow) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+.duration-card h3 {
+  font-family: var(--font-display);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--color-purple);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: var(--space-4);
+  position: relative;
+}
+
+.duration-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 0.4rem 0;
+  position: relative;
+}
+
+.duration-label {
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+  font-family: var(--font-body);
+}
+
+.duration-value {
+  font-family: var(--font-display);
+  font-size: var(--text-base);
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.shelf-warning {
+  display: none;
+  margin-top: var(--space-3);
+  padding: var(--space-3);
+  background: rgba(240, 68, 138, 0.08);
+  border: 1px solid rgba(240, 68, 138, 0.2);
+  border-radius: var(--radius-md);
+  font-size: var(--text-xs);
+  color: var(--color-pink);
+  font-family: var(--font-body);
+  line-height: 1.5;
+  position: relative;
+}
+
+.shelf-warning.visible { display: block; }
+
+/* ── Syringe Visual ── */
+.syringe-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  padding: var(--space-6);
+  margin-bottom: var(--space-5);
+  text-align: center;
+}
+
+.syringe-card h3 {
+  font-family: var(--font-display);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--color-teal);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: var(--space-4);
+}
+
+.syringe-visual {
+  max-width: 100%;
+  margin-inline: auto;
+}
+
+.syringe-exceeds-warning {
+  display: none;
+  margin-top: var(--space-3);
+  padding: var(--space-3);
+  background: rgba(240, 68, 138, 0.08);
+  border: 1px solid rgba(240, 68, 138, 0.2);
+  border-radius: var(--radius-md);
+  font-size: var(--text-xs);
+  color: var(--color-pink);
+  font-family: var(--font-body);
+  line-height: 1.5;
+}
+
+.syringe-exceeds-warning.visible { display: block; }
+
+/* ── Recon 101 Section ── */
+.recon-section {
+  max-width: 800px;
+  margin-inline: auto;
+  margin-bottom: var(--space-16);
+}
+
+.recon-section h2 {
+  font-family: var(--font-body);
+  font-size: var(--text-xl);
+  font-weight: 700;
+  color: var(--color-text);
+  text-align: center;
+  margin-bottom: var(--space-3);
+}
+
+.recon-section > p {
+  font-size: var(--text-base);
+  color: var(--color-text-muted);
+  text-align: center;
+  margin-bottom: var(--space-10);
+  max-width: 56ch;
+  margin-inline: auto;
+  line-height: 1.7;
+}
+
+.recon-steps {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-5);
+}
+
+@media (max-width: 640px) {
+  .recon-steps { grid-template-columns: 1fr; }
+}
+
+.recon-step {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  position: relative;
+}
+
+.recon-step-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  background: var(--color-teal-glow);
+  border: 1px solid var(--color-teal);
+  border-radius: var(--radius-full);
+  font-family: var(--font-display);
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--color-teal);
+  margin-bottom: var(--space-3);
+}
+
+.recon-step h3 {
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  font-weight: 700;
+  color: var(--color-text);
+  margin-bottom: var(--space-2);
+}
+
+.recon-step p {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+  line-height: 1.6;
+}
+
+/* ── FAQ Section ── */
+.faq-section {
+  max-width: 800px;
+  margin-inline: auto;
+  margin-bottom: var(--space-16);
+}
+
+.faq-section h2 {
+  font-family: var(--font-body);
+  font-size: var(--text-xl);
+  font-weight: 700;
+  color: var(--color-text);
+  text-align: center;
+  margin-bottom: var(--space-8);
+}
+
+.faq-item {
+  border-bottom: 1px solid var(--color-divider);
+}
+
+.faq-item:first-child {
+  border-top: 1px solid var(--color-divider);
+}
+
+.faq-question {
+  width: 100%;
+  padding: var(--space-5) 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-4);
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  font-weight: 600;
+  color: var(--color-text);
+  transition: color var(--transition-interactive);
+}
+
+.faq-question:hover { color: var(--color-teal); }
+
+.faq-question svg {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  color: var(--color-text-muted);
+  transition: transform 0.3s var(--ease-out);
+}
+
+.faq-item.open .faq-question svg {
+  transform: rotate(45deg);
+  color: var(--color-teal);
+}
+
+.faq-answer {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.35s var(--ease-out), padding 0.35s var(--ease-out);
+}
+
+.faq-item.open .faq-answer {
+  max-height: 300px;
+}
+
+.faq-answer p {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+  line-height: 1.7;
+  padding-bottom: var(--space-5);
+}
+
+/* ── Disclaimer ── */
+.disclaimer {
+  max-width: 800px;
+  margin-inline: auto;
+  padding: var(--space-5);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  margin-bottom: var(--space-8);
+}
+
+.disclaimer h4 {
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-pink);
+  margin-bottom: var(--space-2);
+}
+
+.disclaimer p {
+  font-size: var(--text-xs);
+  color: var(--color-text-faint);
+  line-height: 1.6;
+}
+
+/* ── CTA Card ── */
+.peptide-cta {
+  max-width: 800px;
+  margin-inline: auto;
+  background: linear-gradient(135deg, rgba(30, 200, 176, 0.08), rgba(240, 68, 138, 0.05));
+  border: 1px solid rgba(30, 200, 176, 0.2);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+  text-align: center;
+  margin-bottom: var(--space-10);
+}
+
+.peptide-cta h3 {
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  font-weight: 700;
+  color: var(--color-text);
+  margin-bottom: var(--space-1);
+}
+
+.peptide-cta p {
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-4);
+  line-height: 1.5;
+  max-width: 48ch;
+  margin-inline: auto;
+}
+
+.peptide-cta .btn {
+  display: inline-flex;
+  padding: 0.6rem 1.5rem;
+  font-size: var(--text-xs);
+}
+
+/* ── Mobile Sticky CTA ── */
+.mobile-sticky-cta {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  padding: var(--space-3) var(--space-4);
+  background: rgba(15, 20, 32, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-top: 1px solid var(--color-border);
+  text-align: center;
+  transform: translateY(100%);
+  transition: transform 0.4s var(--ease-out);
+}
+
+.mobile-sticky-cta.visible {
+  transform: translateY(0);
+}
+
+@media (max-width: 768px) {
+  .mobile-sticky-cta { display: block; }
+}
+
+.mobile-sticky-cta .btn {
+  width: 100%;
+  max-width: 400px;
+  padding: 0.75rem 1.5rem;
+  font-size: var(--text-xs);
+}
+
+/* ── Fade-in animation ── */
+.fade-in {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeIn 0.5s ease-out forwards;
+}
+
+@keyframes fadeIn {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.fade-in-delay { animation-delay: 0.15s; }
+.fade-in-delay-2 { animation-delay: 0.3s; }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════
+     HEADER
+     ═══════════════════════════════════════════ -->
+<header class="site-header" role="banner">
+  <div class="header-inner">
+    <a href="./index.html" class="logo-link" aria-label="Yeager's Gym Home">
+      <img src="./assets/logo.jpeg" alt="Yeager's Gym Logo" class="logo-mark-img" width="48" height="48">
+    </a>
+
+    <nav class="nav-desktop" role="navigation" aria-label="Main navigation">
+      <a href="./index.html" class="nav-link">Home</a>
+      <a href="./index.html#about" class="nav-link">About</a>
+      <a href="./index.html#services" class="nav-link">Services</a>
+      <a href="./index.html#vbt" class="nav-link">VBT</a>
+      <a href="./tools-vbt.html" class="nav-link active">Tools</a>
+      <a href="./quiz.html" class="nav-link">Quiz</a>
+      <div class="nav-utility">
+        <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="btn btn-primary">Book a Free Session</a>
+      </div>
+    </nav>
+
+    <button class="hamburger" aria-label="Toggle menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+
+  <div class="mobile-nav" role="navigation" aria-label="Mobile navigation">
+    <a href="./index.html">Home</a>
+    <a href="./index.html#about">About</a>
+    <a href="./index.html#services">Services</a>
+    <a href="./index.html#vbt">VBT</a>
+    <a href="./tools-vbt.html">VBT Calculator</a>
+    <a href="./tools-crossfit.html">Machine Converter</a>
+    <a href="./tools-macro.html">Macro Calculator</a>
+    <a href="./tools-peptide.html" style="color: var(--color-teal);">Peptide Calculator</a>
+    <a href="./peptide-consulting.html">Peptide Consulting</a>
+    <a href="./quiz.html" style="color: var(--color-pink);">Find Your Training Type</a>
+    <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="btn btn-primary" style="margin-top: var(--space-4);">Book a Free Session</a>
+  </div>
+</header>
+
+<!-- ═══════════════════════════════════════════
+     MAIN CONTENT
+     ═══════════════════════════════════════════ -->
+<main class="tool-page">
+  <div class="container">
+
+    <a href="./index.html" class="tool-back">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 12L6 8l4-4"/></svg>
+      Back to Home
+    </a>
+
+    <!-- Tool Nav Tabs -->
+    <div class="tool-nav-bar fade-in">
+      <a href="./tools-vbt.html" class="tool-nav-pill">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+        VBT Calculator
+      </a>
+      <a href="./tools-crossfit.html" class="tool-nav-pill">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 12h8M12 8v8"/></svg>
+        Machine Converter
+      </a>
+      <a href="./tools-macro.html" class="tool-nav-pill">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z"/><path d="M12 2v10l7 4"/></svg>
+        Macro Calculator
+      </a>
+      <a href="./tools-peptide.html" class="tool-nav-pill active">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6v11a6 6 0 0 1-6 0V3z"/><path d="M12 14v7"/><path d="M6 3h12"/></svg>
+        Peptide Calculator
+      </a>
+      <a href="./peptide-consulting.html" class="tool-nav-pill">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        Peptide Consulting
+      </a>
+    </div>
+
+    <!-- Tool Header -->
+    <div class="tool-header fade-in">
+      <p class="section-label" style="color: var(--color-pink);">Free Tool</p>
+      <h1><span class="highlight-teal">Peptide</span> Reconstitution <span class="highlight-pink">Calculator</span></h1>
+      <p>Enter your vial size, water volume, and desired dose — get the exact draw volume in syringe units instantly. No guesswork, no wasted peptide.</p>
+    </div>
+
+    <!-- ═══════════════════════════════════════
+         TWO-COLUMN CALCULATOR LAYOUT
+         ═══════════════════════════════════════ -->
+    <div class="calc-layout fade-in fade-in-delay">
+
+      <!-- LEFT: Inputs -->
+      <div class="calc-card" id="calcCard">
+        <h2>Your Numbers</h2>
+
+        <!-- Vial Size -->
+        <div class="field-group">
+          <label for="vialSize">Vial Size (mg)</label>
+          <input type="number" id="vialSize" placeholder="5" min="0.1" max="100" step="any" inputmode="decimal">
+        </div>
+
+        <!-- BAC Water -->
+        <div class="field-group">
+          <label for="waterVol">BAC Water (mL)</label>
+          <input type="number" id="waterVol" placeholder="2" min="0.1" max="10" step="any" inputmode="decimal">
+          <div class="water-pills" id="waterPills">
+            <button class="water-pill" data-ml="0.5">0.5 mL</button>
+            <button class="water-pill" data-ml="1">1 mL</button>
+            <button class="water-pill" data-ml="1.5">1.5 mL</button>
+            <button class="water-pill" data-ml="2">2 mL</button>
+            <button class="water-pill" data-ml="3">3 mL</button>
+          </div>
+        </div>
+
+        <!-- Desired Dose -->
+        <div class="field-group">
+          <label for="desiredDose">Desired Dose (mcg)</label>
+          <input type="number" id="desiredDose" placeholder="250" min="1" max="100000" step="any" inputmode="decimal">
+        </div>
+
+        <!-- Syringe Size -->
+        <div class="field-group">
+          <label>Syringe Size</label>
+          <div class="syringe-toggle" id="syringeToggle">
+            <button data-size="0.3">0.3 mL</button>
+            <button class="active" data-size="0.5">0.5 mL</button>
+            <button data-size="1">1 mL</button>
+          </div>
+        </div>
+
+        <!-- Dosing Frequency -->
+        <div class="field-group">
+          <label>Dosing Frequency</label>
+          <div class="freq-pills" id="freqPills">
+            <button class="freq-pill" data-freq="2">2x/Day</button>
+            <button class="freq-pill active" data-freq="1">Daily</button>
+            <button class="freq-pill" data-freq="0.5">Every Other Day</button>
+            <button class="freq-pill" data-freq="0.142857">Weekly</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT: Results + Syringe -->
+      <div class="results-panel">
+
+        <!-- Results Card -->
+        <div class="results-card">
+          <h3>Dosing Results</h3>
+          <div class="result-row">
+            <span class="result-label">Concentration</span>
+            <span class="result-value" id="resConcentration">0<span class="unit">mcg/mL</span></span>
+          </div>
+          <div class="result-row">
+            <span class="result-label">Draw Volume</span>
+            <span class="result-value" id="resDrawVol">0<span class="unit">mL</span></span>
+          </div>
+          <div class="result-row">
+            <span class="result-label">Syringe Units</span>
+            <span class="result-value" id="resSyringeUnits">0<span class="unit">U-100</span></span>
+          </div>
+          <div class="result-row">
+            <span class="result-label">Total Doses Per Vial</span>
+            <span class="result-value" id="resTotalDoses">0<span class="unit">doses</span></span>
+          </div>
+        </div>
+
+        <!-- Vial Duration Card -->
+        <div class="duration-card">
+          <h3>Vial Duration</h3>
+          <div class="duration-row">
+            <span class="duration-label">Total Doses</span>
+            <span class="duration-value" id="durTotalDoses">0</span>
+          </div>
+          <div class="duration-row">
+            <span class="duration-label">Days Supply</span>
+            <span class="duration-value" id="durDaysSupply">0 days</span>
+          </div>
+          <div class="shelf-warning" id="shelfWarning">
+            ⚠️ This exceeds the typical 30-day reconstitution shelf life. Consider using less BAC water for a higher concentration, or splitting into smaller vials.
+          </div>
+        </div>
+
+        <!-- Syringe Visual -->
+        <div class="syringe-card">
+          <h3>Syringe Preview</h3>
+          <svg id="syringeVis" class="syringe-visual" viewBox="0 0 280 120" xmlns="http://www.w3.org/2000/svg">
+            <!-- Plunger handle -->
+            <rect x="10" y="46" width="30" height="28" rx="3" fill="#2a3345" stroke="#4a4d55" stroke-width="1"/>
+            <rect x="18" y="50" width="14" height="20" rx="2" fill="#1a2235" stroke="#4a4d55" stroke-width="0.5"/>
+            <!-- Plunger rod -->
+            <rect id="plungerRod" x="40" y="54" width="80" height="12" rx="2" fill="#2a3345" stroke="#4a4d55" stroke-width="0.5"/>
+            <!-- Barrel -->
+            <rect x="60" y="42" width="170" height="36" rx="4" fill="#151b2a" stroke="#4a4d55" stroke-width="1"/>
+            <!-- Barrel inner -->
+            <rect x="64" y="46" width="162" height="28" rx="2" fill="#0f1420"/>
+            <!-- Fluid fill -->
+            <rect id="fluidFill" x="64" y="46" width="0" height="28" rx="2" fill="rgba(30, 200, 176, 0.3)"/>
+            <!-- Tick marks group -->
+            <g id="tickMarks"></g>
+            <!-- Needle hub -->
+            <rect x="230" y="50" width="16" height="20" rx="2" fill="#2a3345" stroke="#4a4d55" stroke-width="1"/>
+            <!-- Needle -->
+            <line x1="246" y1="60" x2="275" y2="60" stroke="#8a8d93" stroke-width="1.5" stroke-linecap="round"/>
+            <!-- Draw line indicator -->
+            <line id="drawLine" x1="64" y1="40" x2="64" y2="80" stroke="var(--color-pink)" stroke-width="2" stroke-dasharray="3,2" opacity="0"/>
+            <text id="drawLabel" x="64" y="36" fill="var(--color-pink)" font-size="9" font-family="JetBrains Mono, monospace" font-weight="600" text-anchor="middle" opacity="0"></text>
+          </svg>
+          <div class="syringe-exceeds-warning" id="syringeWarning">
+            ⚠️ Draw volume exceeds syringe capacity. Use a larger syringe or increase BAC water to reduce concentration.
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- ═══════════════════════════════════════
+         RECONSTITUTION 101
+         ═══════════════════════════════════════ -->
+    <section class="recon-section fade-in">
+      <h2>Reconstitution <span style="color: var(--color-teal);">101</span></h2>
+      <p>Peptides come as a freeze-dried (lyophilized) powder. Here's how to prepare them for injection — step by step.</p>
+
+      <div class="recon-steps">
+        <div class="recon-step">
+          <div class="recon-step-num">1</div>
+          <h3>Gather Your Supplies</h3>
+          <p>You'll need your peptide vial, bacteriostatic water (BAC water), an insulin syringe, and alcohol swabs. Work on a clean surface.</p>
+        </div>
+        <div class="recon-step">
+          <div class="recon-step-num">2</div>
+          <h3>Clean the Vial Tops</h3>
+          <p>Wipe the rubber stopper of both the peptide vial and BAC water vial with an alcohol swab. Let them air dry for a few seconds.</p>
+        </div>
+        <div class="recon-step">
+          <div class="recon-step-num">3</div>
+          <h3>Draw the BAC Water</h3>
+          <p>Using a fresh syringe, draw your desired amount of bacteriostatic water. Common amounts are 1–2 mL. Use the calculator above to determine the best volume for your dose.</p>
+        </div>
+        <div class="recon-step">
+          <div class="recon-step-num">4</div>
+          <h3>Add Water to the Peptide</h3>
+          <p>Insert the needle into the peptide vial at an angle. Let the water trickle down the inside wall slowly — never spray directly onto the powder. This protects the peptide structure.</p>
+        </div>
+        <div class="recon-step">
+          <div class="recon-step-num">5</div>
+          <h3>Swirl Gently — Don't Shake</h3>
+          <p>Once the water is added, gently roll or swirl the vial until the powder is fully dissolved. The solution should be clear. Never shake — agitation can denature the peptide.</p>
+        </div>
+        <div class="recon-step">
+          <div class="recon-step-num">6</div>
+          <h3>Store and Use</h3>
+          <p>Store the reconstituted vial in the refrigerator at 2–8°C (36–46°F). Use within 30 days. Draw your calculated dose with a clean insulin syringe each time.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════
+         FAQ SECTION
+         ═══════════════════════════════════════ -->
+    <section class="faq-section fade-in">
+      <h2>Frequently Asked <span style="color: var(--color-teal);">Questions</span></h2>
+
+      <div class="faq-item">
+        <button class="faq-question" aria-expanded="false">
+          How do I calculate the draw volume for a peptide dose?
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+        </button>
+        <div class="faq-answer">
+          <p>First, calculate your concentration: divide the vial size (in mcg) by the amount of BAC water you added (in mL). Then divide your desired dose (in mcg) by that concentration. The result is your draw volume in mL. Multiply by 100 to get syringe units on a U-100 insulin syringe. For example, a 5 mg vial reconstituted with 2 mL of BAC water gives a concentration of 2,500 mcg/mL. A 250 mcg dose would be 0.10 mL, or 10 units.</p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question" aria-expanded="false">
+          How long does a reconstituted peptide vial last?
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+        </button>
+        <div class="faq-answer">
+          <p>Most reconstituted peptides remain stable for up to 30 days when stored in the refrigerator at 2–8°C (36–46°F). Some peptides may degrade faster. Always check the manufacturer's guidelines. If the solution becomes cloudy or discolored, discard it. Keep the vial away from light and avoid freezing reconstituted peptides.</p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question" aria-expanded="false">
+          Which syringe size should I use for peptide injections?
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+        </button>
+        <div class="faq-answer">
+          <p>For most peptide doses, a 0.5 mL or 1 mL U-100 insulin syringe works well. Use a 0.3 mL syringe for very small doses (under 0.3 mL / 30 units) for better accuracy — the smaller barrel means finer graduation marks. A 1 mL syringe is better for larger draw volumes. Always use a syringe that's the closest size to your draw volume without exceeding the barrel capacity.</p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question" aria-expanded="false">
+          How much bacteriostatic water should I add to a peptide vial?
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+        </button>
+        <div class="faq-answer">
+          <p>The amount of BAC water depends on the vial size and your preferred concentration. Common choices are 1–2 mL. Less water means a more concentrated solution (smaller injection volume), while more water means a more dilute solution (easier to measure small doses). For a 5 mg vial, 1 mL gives 5,000 mcg/mL; 2 mL gives 2,500 mcg/mL. Choose based on your dose — you want the draw volume to be easy to read on your syringe.</p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question" aria-expanded="false">
+          How often should I inject my peptide?
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+        </button>
+        <div class="faq-answer">
+          <p>Dosing frequency depends on the specific peptide protocol prescribed by your healthcare provider. Common schedules include twice daily (BPC-157), once daily (most research peptides), every other day, or weekly (semaglutide, tirzepatide). Always follow your provider's instructions. This calculator helps you estimate vial duration based on your chosen frequency so you can plan ahead.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════
+         CTA
+         ═══════════════════════════════════════ -->
+    <div class="peptide-cta fade-in">
+      <h3>Need help dialing in your protocol?</h3>
+      <p>Get 1-on-1 guidance on peptide selection, dosing, timing, and reconstitution from someone who actually uses them.</p>
+      <a href="./peptide-consulting.html" class="btn btn-primary">Book a Consultation</a>
+    </div>
+
+    <!-- ═══════════════════════════════════════
+         MEDICAL DISCLAIMER
+         ═══════════════════════════════════════ -->
+    <div class="disclaimer fade-in">
+      <h4>Medical Disclaimer</h4>
+      <p>This calculator is provided for educational and informational purposes only. It is not a substitute for professional medical advice, diagnosis, or treatment. Always consult with a qualified healthcare provider before starting any peptide protocol. Peptide use carries inherent risks. The information provided does not constitute a recommendation, endorsement, or prescription. Use at your own risk and under the supervision of a licensed medical professional. Yeager's Gym is not responsible for any adverse effects resulting from the use of this tool.</p>
+    </div>
+
+  </div>
+</main>
+
+<!-- ═══════════════════════════════════════════
+     MOBILE STICKY CTA
+     ═══════════════════════════════════════════ -->
+<div class="mobile-sticky-cta" id="mobileCta">
+  <a href="./peptide-consulting.html" class="btn btn-primary">Book a Consultation</a>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     FOOTER
+     ═══════════════════════════════════════════ -->
+<footer class="site-footer" role="contentinfo">
+  <div class="container" style="padding: var(--space-4) 0 var(--space-3);">
+    <div class="footer-nav-columns" style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); margin-bottom: var(--space-3);">
+      <div class="footer-links">
+        <h4 style="font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-teal); margin-bottom: var(--space-1);">Navigate</h4>
+        <a href="./index.html" style="display: block; font-size: 11px; color: var(--color-text-muted); text-decoration: none; padding: 1px 0; line-height: 1.5;">Home</a>
+        <a href="./index.html#about" style="display: block; font-size: 11px; color: var(--color-text-muted); text-decoration: none; padding: 1px 0; line-height: 1.5;">About Brad</a>
+        <a href="./index.html#services" style="display: block; font-size: 11px; color: var(--color-text-muted); text-decoration: none; padding: 1px 0; line-height: 1.5;">Services & Pricing</a>
+        <a href="./tools-vbt.html" style="display: block; font-size: 11px; color: var(--color-text-muted); text-decoration: none; padding: 1px 0; line-height: 1.5;">VBT Calculator</a>
+        <a href="./tools-crossfit.html" style="display: block; font-size: 11px; color: var(--color-text-muted); text-decoration: none; padding: 1px 0; line-height: 1.5;">Machine Converter</a>
+        <a href="./tools-macro.html" style="display: block; font-size: 11px; color: var(--color-text-muted); text-decoration: none; padding: 1px 0; line-height: 1.5;">Macro Calculator</a>
+        <a href="./tools-peptide.html" style="display: block; font-size: 11px; color: var(--color-text-muted); text-decoration: none; padding: 1px 0; line-height: 1.5;">Peptide Calculator</a>
+        <a href="./peptide-consulting.html" style="display: block; font-size: 11px; color: var(--color-text-muted); text-decoration: none; padding: 1px 0; line-height: 1.5;">Peptide Consulting</a>
+      </div>
+      <div class="footer-links">
+        <h4 style="font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-teal); margin-bottom: var(--space-1);">Connect</h4>
+        <a href="mailto:brad@yeagersgym.com" style="display: block; font-size: 11px; color: var(--color-text-muted); text-decoration: none; padding: 1px 0; line-height: 1.5;">brad@yeagersgym.com</a>
+        <a href="https://www.instagram.com/YeagersGym" target="_blank" rel="noopener noreferrer" style="display: block; font-size: 11px; color: var(--color-text-muted); text-decoration: none; padding: 1px 0; line-height: 1.5;">Instagram @YeagersGym</a>
+        <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" style="display: block; font-size: 11px; color: var(--color-text-muted); text-decoration: none; padding: 1px 0; line-height: 1.5;">Book via Vagaro</a>
+      </div>
+    </div>
+    <div class="footer-bottom" style="padding-top: var(--space-2); border-top: 1px solid rgba(255,255,255,0.06); display: flex; justify-content: space-between; align-items: center; font-size: 10px; color: rgba(255,255,255,0.25);">
+      <span>&copy; 2026 Yeager's Gym &middot; San Diego, CA</span>
+      <div style="display: flex; align-items: center; gap: var(--space-2);">
+        <a href="https://www.perplexity.ai/computer" target="_blank" rel="noopener noreferrer" style="color: rgba(255,255,255,0.25); text-decoration: none;">Created with Perplexity Computer</a>
+        <a href="./index.html" aria-label="Yeager's Gym Home">
+          <img src="./assets/logo.jpeg" alt="Yeager's Gym" style="width: 24px; height: 24px; border-radius: 50%; opacity: 0.6;" width="24" height="24">
+        </a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- ═══════════════════════════════════════════
+     SCRIPTS
+     ═══════════════════════════════════════════ -->
+<script>
+(function() {
+  'use strict';
+
+  // ══════════════════════════════════════════════════════════
+  // STATE
+  // ══════════════════════════════════════════════════════════
+  var state = {
+    syringeSize: 0.5,
+    frequency: 1 // doses per day
+  };
+
+  // ══════════════════════════════════════════════════════════
+  // DOM REFS
+  // ══════════════════════════════════════════════════════════
+  var $ = function(id) { return document.getElementById(id); };
+
+  var vialInput = $('vialSize');
+  var waterInput = $('waterVol');
+  var doseInput = $('desiredDose');
+  var syringeToggle = $('syringeToggle');
+  var freqPills = $('freqPills');
+  var waterPills = $('waterPills');
+
+  // Results
+  var resConcentration = $('resConcentration');
+  var resDrawVol = $('resDrawVol');
+  var resSyringeUnits = $('resSyringeUnits');
+  var resTotalDoses = $('resTotalDoses');
+  var durTotalDoses = $('durTotalDoses');
+  var durDaysSupply = $('durDaysSupply');
+  var shelfWarning = $('shelfWarning');
+  var syringeWarning = $('syringeWarning');
+
+  // ══════════════════════════════════════════════════════════
+  // TOGGLE HELPERS
+  // ══════════════════════════════════════════════════════════
+
+  // Syringe size toggle
+  syringeToggle.addEventListener('click', function(e) {
+    var btn = e.target.closest('button');
+    if (!btn) return;
+    syringeToggle.querySelectorAll('button').forEach(function(b) { b.classList.remove('active'); });
+    btn.classList.add('active');
+    state.syringeSize = parseFloat(btn.dataset.size);
+    calculate();
+  });
+
+  // Frequency pills
+  freqPills.addEventListener('click', function(e) {
+    var btn = e.target.closest('.freq-pill');
+    if (!btn) return;
+    freqPills.querySelectorAll('.freq-pill').forEach(function(b) { b.classList.remove('active'); });
+    btn.classList.add('active');
+    state.frequency = parseFloat(btn.dataset.freq);
+    calculate();
+  });
+
+  // Water quick pills
+  waterPills.addEventListener('click', function(e) {
+    var btn = e.target.closest('.water-pill');
+    if (!btn) return;
+    waterPills.querySelectorAll('.water-pill').forEach(function(b) { b.classList.remove('active'); });
+    btn.classList.add('active');
+    waterInput.value = btn.dataset.ml;
+    calculate();
+  });
+
+  // Clear water pill active state when user types in the field
+  waterInput.addEventListener('input', function() {
+    var val = waterInput.value;
+    var pills = waterPills.querySelectorAll('.water-pill');
+    pills.forEach(function(p) {
+      p.classList.toggle('active', p.dataset.ml === val);
+    });
+    calculate();
+  });
+
+  // Live calculate on input
+  vialInput.addEventListener('input', calculate);
+  doseInput.addEventListener('input', calculate);
+
+  // ══════════════════════════════════════════════════════════
+  // CALCULATION ENGINE
+  // ══════════════════════════════════════════════════════════
+  function calculate() {
+    var vialMg = parseFloat(vialInput.value) || 0;
+    var waterMl = parseFloat(waterInput.value) || 0;
+    var doseMcg = parseFloat(doseInput.value) || 0;
+
+    var concentration = 0;
+    var drawMl = 0;
+    var syringeUnits = 0;
+    var dosesPerVial = 0;
+    var daysSupply = 0;
+
+    if (vialMg > 0 && waterMl > 0) {
+      concentration = (vialMg * 1000) / waterMl;
+    }
+
+    if (concentration > 0 && doseMcg > 0) {
+      drawMl = doseMcg / concentration;
+      syringeUnits = drawMl * 100;
+      dosesPerVial = (vialMg * 1000) / doseMcg;
+    }
+
+    if (dosesPerVial > 0 && state.frequency > 0) {
+      daysSupply = dosesPerVial / state.frequency;
+    }
+
+    // Update results
+    resConcentration.innerHTML = formatNumber(concentration) + '<span class="unit">mcg/mL</span>';
+    resDrawVol.innerHTML = (drawMl > 0 ? drawMl.toFixed(3) : '0') + '<span class="unit">mL</span>';
+    resSyringeUnits.innerHTML = (syringeUnits > 0 ? syringeUnits.toFixed(1) : '0') + '<span class="unit">U-100</span>';
+    resTotalDoses.innerHTML = (dosesPerVial > 0 ? Math.floor(dosesPerVial) : '0') + '<span class="unit">doses</span>';
+
+    // Duration card
+    durTotalDoses.textContent = dosesPerVial > 0 ? Math.floor(dosesPerVial) : '0';
+    durDaysSupply.textContent = daysSupply > 0 ? Math.floor(daysSupply) + ' days' : '0 days';
+
+    // Shelf life warning
+    if (daysSupply > 30 && daysSupply > 0) {
+      shelfWarning.classList.add('visible');
+    } else {
+      shelfWarning.classList.remove('visible');
+    }
+
+    // Syringe exceeds warning
+    if (drawMl > state.syringeSize && drawMl > 0) {
+      syringeWarning.classList.add('visible');
+    } else {
+      syringeWarning.classList.remove('visible');
+    }
+
+    // Update syringe visual
+    updateSyringe(drawMl, syringeUnits);
+  }
+
+  function formatNumber(n) {
+    if (n === 0) return '0';
+    if (n >= 1000) return Math.round(n).toLocaleString('en-US');
+    if (n >= 100) return Math.round(n).toString();
+    if (n >= 10) return n.toFixed(1);
+    return n.toFixed(2);
+  }
+
+  // ══════════════════════════════════════════════════════════
+  // SYRINGE VISUAL
+  // ══════════════════════════════════════════════════════════
+  function updateSyringe(drawMl, syringeUnits) {
+    var barrelStart = 64;
+    var barrelWidth = 162;
+    var maxMl = state.syringeSize;
+
+    // Generate tick marks
+    var tickGroup = $('tickMarks');
+    tickGroup.innerHTML = '';
+
+    var totalUnits = maxMl * 100;
+    var majorEvery, minorEvery;
+
+    if (maxMl === 0.3) {
+      majorEvery = 5;  // every 5 units
+      minorEvery = 1;
+    } else if (maxMl === 0.5) {
+      majorEvery = 10;  // every 10 units
+      minorEvery = 5;
+    } else {
+      majorEvery = 10;  // every 10 units
+      minorEvery = 5;
+    }
+
+    for (var u = 0; u <= totalUnits; u += minorEvery) {
+      var xPos = barrelStart + (u / totalUnits) * barrelWidth;
+      var isMajor = (u % majorEvery === 0);
+      var tickH = isMajor ? 10 : 5;
+      var tick = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      tick.setAttribute('x1', xPos);
+      tick.setAttribute('y1', 42);
+      tick.setAttribute('x2', xPos);
+      tick.setAttribute('y2', 42 + tickH);
+      tick.setAttribute('stroke', isMajor ? '#8a8d93' : '#4a4d55');
+      tick.setAttribute('stroke-width', isMajor ? '1' : '0.5');
+      tickGroup.appendChild(tick);
+
+      // Labels for major ticks
+      if (isMajor && u > 0) {
+        var label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        label.setAttribute('x', xPos);
+        label.setAttribute('y', 92);
+        label.setAttribute('fill', '#4a4d55');
+        label.setAttribute('font-size', '7');
+        label.setAttribute('font-family', 'JetBrains Mono, monospace');
+        label.setAttribute('text-anchor', 'middle');
+        label.textContent = u;
+        tickGroup.appendChild(label);
+      }
+    }
+
+    // Fluid fill
+    var fluidFill = $('fluidFill');
+    var drawLine = $('drawLine');
+    var drawLabel = $('drawLabel');
+    var plungerRod = $('plungerRod');
+
+    if (drawMl > 0 && drawMl <= maxMl) {
+      var fillRatio = drawMl / maxMl;
+      var fillWidth = fillRatio * barrelWidth;
+      // Fill from the right (needle end) toward the left
+      var fillX = barrelStart + barrelWidth - fillWidth;
+      fluidFill.setAttribute('x', fillX);
+      fluidFill.setAttribute('width', fillWidth);
+      fluidFill.setAttribute('fill', 'rgba(30, 200, 176, 0.3)');
+
+      // Plunger rod position
+      var plungerEnd = fillX - 4;
+      var rodWidth = plungerEnd - 40;
+      if (rodWidth < 5) rodWidth = 5;
+      plungerRod.setAttribute('width', rodWidth);
+
+      // Draw line
+      drawLine.setAttribute('x1', fillX);
+      drawLine.setAttribute('x2', fillX);
+      drawLine.setAttribute('opacity', '1');
+
+      // Draw label
+      drawLabel.setAttribute('x', fillX);
+      drawLabel.textContent = syringeUnits.toFixed(1) + 'U';
+      drawLabel.setAttribute('opacity', '1');
+
+    } else if (drawMl > maxMl) {
+      // Exceeds — fill entire barrel pink
+      fluidFill.setAttribute('x', barrelStart);
+      fluidFill.setAttribute('width', barrelWidth);
+      fluidFill.setAttribute('fill', 'rgba(240, 68, 138, 0.25)');
+      plungerRod.setAttribute('width', 5);
+      drawLine.setAttribute('opacity', '0');
+      drawLabel.setAttribute('opacity', '0');
+    } else {
+      // Empty
+      fluidFill.setAttribute('width', 0);
+      plungerRod.setAttribute('width', 80);
+      drawLine.setAttribute('opacity', '0');
+      drawLabel.setAttribute('opacity', '0');
+    }
+  }
+
+  // ══════════════════════════════════════════════════════════
+  // FAQ ACCORDION
+  // ══════════════════════════════════════════════════════════
+  document.querySelectorAll('.faq-question').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var item = btn.closest('.faq-item');
+      var isOpen = item.classList.contains('open');
+
+      // Close all
+      document.querySelectorAll('.faq-item').forEach(function(fi) {
+        fi.classList.remove('open');
+        fi.querySelector('.faq-question').setAttribute('aria-expanded', 'false');
+      });
+
+      // Toggle current
+      if (!isOpen) {
+        item.classList.add('open');
+        btn.setAttribute('aria-expanded', 'true');
+      }
+    });
+  });
+
+  // ══════════════════════════════════════════════════════════
+  // MOBILE STICKY CTA
+  // ══════════════════════════════════════════════════════════
+  var mobileCta = $('mobileCta');
+  var scrollThreshold = 300;
+  var ctaVisible = false;
+
+  window.addEventListener('scroll', function() {
+    if (window.scrollY > scrollThreshold && !ctaVisible) {
+      mobileCta.classList.add('visible');
+      ctaVisible = true;
+    } else if (window.scrollY <= scrollThreshold && ctaVisible) {
+      mobileCta.classList.remove('visible');
+      ctaVisible = false;
+    }
+  }, { passive: true });
+
+  // ══════════════════════════════════════════════════════════
+  // HEADER / MOBILE NAV
+  // ══════════════════════════════════════════════════════════
+  var hamburger = document.querySelector('.hamburger');
+  var mobileNav = document.querySelector('.mobile-nav');
+
+  hamburger.addEventListener('click', function() {
+    var isOpen = hamburger.classList.toggle('open');
+    mobileNav.classList.toggle('open', isOpen);
+    hamburger.setAttribute('aria-expanded', isOpen);
+    document.body.style.overflow = isOpen ? 'hidden' : '';
+  });
+
+  mobileNav.querySelectorAll('a').forEach(function(link) {
+    link.addEventListener('click', function() {
+      hamburger.classList.remove('open');
+      mobileNav.classList.remove('open');
+      hamburger.setAttribute('aria-expanded', 'false');
+      document.body.style.overflow = '';
+    });
+  });
+
+  // Scroll shadow on header
+  var header = document.querySelector('.site-header');
+  window.addEventListener('scroll', function() {
+    if (window.scrollY > 10) {
+      header.style.boxShadow = 'var(--shadow-md)';
+    } else {
+      header.style.boxShadow = 'none';
+    }
+  }, { passive: true });
+
+  // ══════════════════════════════════════════════════════════
+  // INITIAL RENDER
+  // ══════════════════════════════════════════════════════════
+  calculate();
+
+})();
+</script>
+
+</body>
+</html>

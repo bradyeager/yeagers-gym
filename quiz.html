@@ -1,0 +1,1214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!--
+   ______                            __
+  / ____/___  ____ ___  ____  __  __/ /____  _____
+ / /   / __ \/ __ `__ \/ __ \/ / / / __/ _ \/ ___/
+/ /___/ /_/ / / / / / / /_/ / /_/ / /_/  __/ /
+\____/\____/_/ /_/ /_/ .___/\__,_/\__/\___/_/
+                    /_/
+        Created with Perplexity Computer
+        https://www.perplexity.ai/computer
+-->
+
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>What's Your Training Type? — Yeager's Gym</title>
+<meta name="description" content="Take the 60-second quiz to discover your training archetype and get a personalized plan from Yeager's Gym in San Diego.">
+<meta property="og:title" content="What's Your Training Type? — Yeager's Gym">
+<meta property="og:description" content="Discover your training archetype in 60 seconds. Get a personalized plan.">
+<meta property="og:type" content="website">
+<link rel="canonical" href="https://yeagersgym.com/quiz.html">
+<link rel="stylesheet" href="./base.css">
+<link rel="stylesheet" href="./style.css">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "What's Your Training Type? Quiz",
+  "description": "Discover your training archetype and get a personalized coaching recommendation.",
+  "applicationCategory": "HealthApplication",
+  "operatingSystem": "Web",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+  "creator": { "@type": "SoftwareApplication", "name": "Perplexity Computer", "url": "https://www.perplexity.ai/computer" }
+}
+</script>
+
+<style>
+/* ══════════════════════════════════════════
+   QUIZ PAGE STYLES
+   ══════════════════════════════════════════ */
+
+/* ── Full-page quiz container ── */
+.quiz-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-bg);
+}
+
+.quiz-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-6) var(--space-4);
+  max-width: 640px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* ── Progress bar ── */
+.quiz-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--color-surface-2);
+  z-index: 100;
+}
+
+.quiz-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--color-teal), var(--color-pink));
+  transition: width 0.5s var(--ease-out);
+  width: 0%;
+  border-radius: 0 2px 2px 0;
+}
+
+/* ── Quiz header (minimal) ── */
+.quiz-header {
+  position: fixed;
+  top: 4px;
+  left: 0;
+  right: 0;
+  padding: var(--space-4) var(--space-6);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 99;
+  background: linear-gradient(180deg, var(--color-bg) 60%, transparent);
+}
+
+.quiz-header .logo-link {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  text-decoration: none;
+}
+
+.quiz-header .logo-mark-img {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-md);
+}
+
+.quiz-step-count {
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--color-text-faint);
+  letter-spacing: 0.06em;
+}
+
+/* ── Screens (intro, questions, email, result) ── */
+.quiz-screen {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  width: 100%;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.4s var(--ease-out), transform 0.4s var(--ease-out);
+}
+
+.quiz-screen.active {
+  display: flex;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.quiz-screen.exit-up {
+  opacity: 0;
+  transform: translateY(-30px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+/* ── Intro screen ── */
+.quiz-intro h1 {
+  font-family: var(--font-body);
+  font-size: clamp(1.75rem, 5vw, 2.5rem);
+  font-weight: 800;
+  color: var(--color-text);
+  line-height: 1.15;
+  margin-bottom: var(--space-4);
+}
+
+.quiz-intro h1 .highlight-teal { color: var(--color-teal); }
+.quiz-intro h1 .highlight-pink { color: var(--color-pink); }
+
+.quiz-intro p {
+  font-size: var(--text-base);
+  color: var(--color-text-muted);
+  max-width: 48ch;
+  margin: 0 auto var(--space-8);
+  line-height: 1.7;
+}
+
+.quiz-intro .quiz-meta {
+  display: flex;
+  gap: var(--space-6);
+  justify-content: center;
+  margin-bottom: var(--space-8);
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  color: var(--color-text-faint);
+  letter-spacing: 0.04em;
+}
+
+.quiz-intro .quiz-meta span {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+/* ── Question screens ── */
+.quiz-question h2 {
+  font-family: var(--font-body);
+  font-size: clamp(1.25rem, 4vw, 1.75rem);
+  font-weight: 700;
+  color: var(--color-text);
+  line-height: 1.3;
+  margin-bottom: var(--space-8);
+  max-width: 500px;
+}
+
+.quiz-options {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  width: 100%;
+}
+
+.quiz-option {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-4) var(--space-5);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  transition: all 0.2s var(--ease-out);
+  text-align: left;
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+  line-height: 1.5;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.quiz-option:hover {
+  border-color: var(--color-text-faint);
+  background: var(--color-surface-2);
+  transform: translateY(-1px);
+}
+
+.quiz-option:active {
+  transform: translateY(0);
+}
+
+.quiz-option.selected {
+  border-color: var(--color-teal);
+  background: rgba(30, 200, 176, 0.06);
+  box-shadow: 0 0 0 1px var(--color-teal);
+  color: var(--color-text);
+}
+
+.quiz-option-icon {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-md);
+  background: var(--color-surface-2);
+  font-size: 1.25rem;
+  transition: background 0.2s ease;
+}
+
+.quiz-option.selected .quiz-option-icon {
+  background: rgba(30, 200, 176, 0.15);
+}
+
+.quiz-option-text {
+  flex: 1;
+  font-family: var(--font-body);
+  font-weight: 500;
+}
+
+/* ── Email capture screen ── */
+.quiz-email h2 {
+  font-family: var(--font-body);
+  font-size: clamp(1.25rem, 4vw, 1.75rem);
+  font-weight: 700;
+  color: var(--color-text);
+  line-height: 1.3;
+  margin-bottom: var(--space-3);
+}
+
+.quiz-email p {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+  max-width: 42ch;
+  margin: 0 auto var(--space-8);
+  line-height: 1.7;
+}
+
+.quiz-email-form {
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.quiz-email-form input {
+  width: 100%;
+  padding: var(--space-4) var(--space-5);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  color: var(--color-text);
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  outline: none;
+}
+
+.quiz-email-form input::placeholder {
+  color: var(--color-text-faint);
+}
+
+.quiz-email-form input:focus {
+  border-color: var(--color-teal);
+  box-shadow: 0 0 0 3px var(--color-teal-glow);
+}
+
+.quiz-email-form .btn {
+  width: 100%;
+  padding: var(--space-4);
+  font-size: var(--text-sm);
+  font-weight: 700;
+}
+
+.quiz-skip {
+  margin-top: var(--space-4);
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  color: var(--color-text-faint);
+  background: none;
+  border: none;
+  cursor: pointer;
+  letter-spacing: 0.04em;
+  transition: color 0.2s ease;
+  padding: var(--space-2) var(--space-4);
+}
+
+.quiz-skip:hover {
+  color: var(--color-text-muted);
+}
+
+.quiz-privacy {
+  margin-top: var(--space-4);
+  font-size: 0.7rem;
+  color: var(--color-text-faint);
+  line-height: 1.5;
+}
+
+/* ── Result screen ── */
+.quiz-result {
+  max-width: 560px;
+}
+
+.result-badge {
+  display: inline-block;
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-teal);
+  background: rgba(30, 200, 176, 0.1);
+  border: 1px solid rgba(30, 200, 176, 0.2);
+  padding: var(--space-2) var(--space-4);
+  border-radius: 100px;
+  margin-bottom: var(--space-6);
+}
+
+.result-archetype {
+  font-family: var(--font-body);
+  font-size: clamp(2rem, 6vw, 3rem);
+  font-weight: 800;
+  color: var(--color-text);
+  line-height: 1.1;
+  margin-bottom: var(--space-3);
+}
+
+.result-tagline {
+  font-family: var(--font-display);
+  font-size: var(--text-base);
+  color: var(--color-pink);
+  font-weight: 600;
+  font-style: italic;
+  margin-bottom: var(--space-6);
+}
+
+.result-description {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+  line-height: 1.8;
+  margin-bottom: var(--space-8);
+  max-width: 50ch;
+  margin-inline: auto;
+}
+
+/* ── Result cards (PDF + Tool + CTA) ── */
+.result-cards {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  width: 100%;
+  margin-bottom: var(--space-8);
+}
+
+.result-card {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-5);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  text-align: left;
+  transition: border-color 0.2s ease, transform 0.2s ease;
+  text-decoration: none;
+  color: inherit;
+}
+
+.result-card:hover {
+  border-color: var(--color-text-faint);
+  transform: translateY(-2px);
+}
+
+.result-card-icon {
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-lg);
+  font-size: 1.5rem;
+}
+
+.result-card-icon.pdf { background: rgba(240, 68, 138, 0.12); }
+.result-card-icon.tool { background: rgba(30, 200, 176, 0.12); }
+.result-card-icon.book { background: rgba(155, 111, 212, 0.12); }
+
+.result-card-content {
+  flex: 1;
+}
+
+.result-card-label {
+  font-family: var(--font-display);
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-faint);
+  margin-bottom: 2px;
+}
+
+.result-card-title {
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  font-weight: 700;
+  color: var(--color-text);
+  line-height: 1.3;
+}
+
+.result-card-desc {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  margin-top: 2px;
+  line-height: 1.4;
+}
+
+.result-card-arrow {
+  flex-shrink: 0;
+  color: var(--color-text-faint);
+}
+
+.result-cta-section {
+  text-align: center;
+  padding: var(--space-6);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  width: 100%;
+}
+
+.result-cta-section p {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-4);
+  line-height: 1.6;
+}
+
+.result-credential {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  margin-top: var(--space-4);
+  font-family: var(--font-display);
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: var(--color-text-faint);
+  letter-spacing: 0.04em;
+}
+
+.result-credential img {
+  width: 20px;
+  height: 20px;
+  opacity: 0.7;
+  filter: brightness(0) invert(1);
+}
+
+.result-retake {
+  margin-top: var(--space-6);
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  color: var(--color-text-faint);
+  background: none;
+  border: none;
+  cursor: pointer;
+  letter-spacing: 0.04em;
+  transition: color 0.2s ease;
+  padding: var(--space-2) var(--space-4);
+}
+
+.result-retake:hover { color: var(--color-text-muted); }
+
+/* ── Animations ── */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.quiz-screen.active {
+  animation: fadeInUp 0.4s var(--ease-out) forwards;
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(30, 200, 176, 0.3); }
+  50%      { box-shadow: 0 0 20px 4px rgba(30, 200, 176, 0.15); }
+}
+
+.result-badge { animation: pulse-glow 2s ease infinite; }
+
+/* ── Mobile tweaks ── */
+@media (max-width: 640px) {
+  .quiz-container {
+    padding: var(--space-4) var(--space-3);
+    padding-top: 72px;
+  }
+
+  .quiz-header {
+    padding: var(--space-3) var(--space-4);
+  }
+
+  .quiz-option {
+    padding: var(--space-3) var(--space-4);
+    gap: var(--space-3);
+  }
+
+  .quiz-option-icon {
+    width: 36px;
+    height: 36px;
+    font-size: 1.1rem;
+  }
+
+  .result-card {
+    padding: var(--space-4);
+    gap: var(--space-3);
+  }
+
+  .result-card-icon {
+    width: 40px;
+    height: 40px;
+    font-size: 1.25rem;
+  }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════
+     PROGRESS BAR
+     ═══════════════════════════════════════════ -->
+<div class="quiz-progress" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+  <div class="quiz-progress-fill" id="progress-fill"></div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     QUIZ HEADER (minimal)
+     ═══════════════════════════════════════════ -->
+<div class="quiz-header">
+  <a href="./index.html" class="logo-link" aria-label="Yeager's Gym Home">
+    <img src="./assets/logo.jpeg" alt="Yeager's Gym" class="logo-mark-img" width="36" height="36">
+  </a>
+  <span class="quiz-step-count" id="step-count"></span>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     QUIZ CONTENT
+     ═══════════════════════════════════════════ -->
+<main class="quiz-page">
+  <div class="quiz-container">
+
+    <!-- ── INTRO SCREEN ── -->
+    <div class="quiz-screen quiz-intro active" data-screen="intro">
+      <h1>What's Your<br><span class="highlight-teal">Training</span> <span class="highlight-pink">Type</span>?</h1>
+      <p>Answer 6 quick questions. Get a personalized training profile, a free resource picked for you, and a clear next step.</p>
+      <div class="quiz-meta">
+        <span>
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6.5"/><path d="M8 4.5V8l2.5 1.5"/></svg>
+          60 seconds
+        </span>
+        <span>
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 8h12M8 2v12"/></svg>
+          6 questions
+        </span>
+        <span>
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 8l3 3 5-6"/></svg>
+          Free results
+        </span>
+      </div>
+      <button class="btn btn-primary" id="start-quiz" type="button" style="padding: 0.875rem 2.5rem; font-size: var(--text-sm);">
+        Let's Go
+      </button>
+    </div>
+
+    <!-- ── QUESTION 1 ── -->
+    <div class="quiz-screen quiz-question" data-screen="q1">
+      <h2>What gets you most fired up about training?</h2>
+      <div class="quiz-options">
+        <button class="quiz-option" data-score="competitor" type="button">
+          <span class="quiz-option-icon">🏋️</span>
+          <span class="quiz-option-text">Hitting a new PR on a barbell lift</span>
+        </button>
+        <button class="quiz-option" data-score="hybrid" type="button">
+          <span class="quiz-option-icon">🔥</span>
+          <span class="quiz-option-text">Finishing a grueling workout faster than last time</span>
+        </button>
+        <button class="quiz-option" data-score="physique" type="button">
+          <span class="quiz-option-icon">💪</span>
+          <span class="quiz-option-text">Seeing my physique change in the mirror</span>
+        </button>
+        <button class="quiz-option" data-score="data" type="button">
+          <span class="quiz-option-icon">📊</span>
+          <span class="quiz-option-text">Analyzing my training data after a session</span>
+        </button>
+        <button class="quiz-option" data-score="wellness" type="button">
+          <span class="quiz-option-icon">🧬</span>
+          <span class="quiz-option-text">Knowing I'm investing in my long-term health</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- ── QUESTION 2 ── -->
+    <div class="quiz-screen quiz-question" data-screen="q2">
+      <h2>Your ideal Saturday morning looks like...</h2>
+      <div class="quiz-options">
+        <button class="quiz-option" data-score="competitor" type="button">
+          <span class="quiz-option-icon">🎯</span>
+          <span class="quiz-option-text">Heavy squat session with calibrated attempts</span>
+        </button>
+        <button class="quiz-option" data-score="hybrid" type="button">
+          <span class="quiz-option-icon">⚡</span>
+          <span class="quiz-option-text">A spicy metcon or a long endurance piece</span>
+        </button>
+        <button class="quiz-option" data-score="physique" type="button">
+          <span class="quiz-option-icon">🔄</span>
+          <span class="quiz-option-text">A focused push/pull/legs split</span>
+        </button>
+        <button class="quiz-option" data-score="data" type="button">
+          <span class="quiz-option-icon">📈</span>
+          <span class="quiz-option-text">Reviewing my velocity charts from the week</span>
+        </button>
+        <button class="quiz-option" data-score="wellness" type="button">
+          <span class="quiz-option-icon">🧘</span>
+          <span class="quiz-option-text">Recovery work — sauna, stretching, meal prep</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- ── QUESTION 3 ── -->
+    <div class="quiz-screen quiz-question" data-screen="q3">
+      <h2>Pick the metric you'd check first:</h2>
+      <div class="quiz-options">
+        <button class="quiz-option" data-score="competitor" type="button">
+          <span class="quiz-option-icon">🏅</span>
+          <span class="quiz-option-text">My squat, bench, and deadlift total</span>
+        </button>
+        <button class="quiz-option" data-score="hybrid" type="button">
+          <span class="quiz-option-icon">⏱️</span>
+          <span class="quiz-option-text">My Fran time or mile pace</span>
+        </button>
+        <button class="quiz-option" data-score="physique" type="button">
+          <span class="quiz-option-icon">📐</span>
+          <span class="quiz-option-text">My body fat percentage</span>
+        </button>
+        <button class="quiz-option" data-score="data" type="button">
+          <span class="quiz-option-icon">🚀</span>
+          <span class="quiz-option-text">My mean propulsive velocity on today's top set</span>
+        </button>
+        <button class="quiz-option" data-score="wellness" type="button">
+          <span class="quiz-option-icon">😴</span>
+          <span class="quiz-option-text">My sleep score and HRV</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- ── QUESTION 4 ── -->
+    <div class="quiz-screen quiz-question" data-screen="q4">
+      <h2>How do you feel about competing?</h2>
+      <div class="quiz-options">
+        <button class="quiz-option" data-score="competitor" type="button">
+          <span class="quiz-option-icon">🥇</span>
+          <span class="quiz-option-text">I already compete or I'm planning to</span>
+        </button>
+        <button class="quiz-option" data-score="hybrid" type="button">
+          <span class="quiz-option-icon">🏁</span>
+          <span class="quiz-option-text">I love competition — races, throwdowns, anything</span>
+        </button>
+        <button class="quiz-option" data-score="physique" type="button">
+          <span class="quiz-option-icon">🪞</span>
+          <span class="quiz-option-text">I compete against the mirror, not other people</span>
+        </button>
+        <button class="quiz-option" data-score="data" type="button">
+          <span class="quiz-option-icon">🧠</span>
+          <span class="quiz-option-text">Competition is interesting but I'm more about the process</span>
+        </button>
+        <button class="quiz-option" data-score="wellness" type="button">
+          <span class="quiz-option-icon">🌿</span>
+          <span class="quiz-option-text">I'm not competitive — I train for quality of life</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- ── QUESTION 5 ── -->
+    <div class="quiz-screen quiz-question" data-screen="q5">
+      <h2>What's your biggest training frustration?</h2>
+      <div class="quiz-options">
+        <button class="quiz-option" data-score="competitor" type="button">
+          <span class="quiz-option-icon">📉</span>
+          <span class="quiz-option-text">Plateaus on my main lifts</span>
+        </button>
+        <button class="quiz-option" data-score="hybrid" type="button">
+          <span class="quiz-option-icon">⚖️</span>
+          <span class="quiz-option-text">Balancing strength and conditioning</span>
+        </button>
+        <button class="quiz-option" data-score="physique" type="button">
+          <span class="quiz-option-icon">😤</span>
+          <span class="quiz-option-text">Not seeing the results I want despite training hard</span>
+        </button>
+        <button class="quiz-option" data-score="data" type="button">
+          <span class="quiz-option-icon">❓</span>
+          <span class="quiz-option-text">Not knowing if my programming is actually optimal</span>
+        </button>
+        <button class="quiz-option" data-score="wellness" type="button">
+          <span class="quiz-option-icon">🩹</span>
+          <span class="quiz-option-text">Nagging injuries or feeling run down</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- ── QUESTION 6 ── -->
+    <div class="quiz-screen quiz-question" data-screen="q6">
+      <h2>Pick the training tool that excites you most:</h2>
+      <div class="quiz-options">
+        <button class="quiz-option" data-score="competitor" type="button">
+          <span class="quiz-option-icon">🔩</span>
+          <span class="quiz-option-text">A calibrated competition barbell and plates</span>
+        </button>
+        <button class="quiz-option" data-score="hybrid" type="button">
+          <span class="quiz-option-icon">🚲</span>
+          <span class="quiz-option-text">An assault bike and a pull-up bar</span>
+        </button>
+        <button class="quiz-option" data-score="physique" type="button">
+          <span class="quiz-option-icon">🪢</span>
+          <span class="quiz-option-text">A cable machine and perfect lighting</span>
+        </button>
+        <button class="quiz-option" data-score="data" type="button">
+          <span class="quiz-option-icon">📡</span>
+          <span class="quiz-option-text">A Vitruve velocity tracker on every set</span>
+        </button>
+        <button class="quiz-option" data-score="wellness" type="button">
+          <span class="quiz-option-icon">💉</span>
+          <span class="quiz-option-text">A recovery protocol backed by science</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- ── EMAIL CAPTURE SCREEN ── -->
+    <div class="quiz-screen quiz-email" data-screen="email">
+      <h2>Your results are ready.</h2>
+      <p>Enter your email to unlock your personalized training profile and get your free resource delivered instantly.</p>
+      <form class="quiz-email-form" id="email-form">
+        <input type="text" name="first_name" placeholder="First name" required autocomplete="given-name">
+        <input type="email" name="email" placeholder="Email address" required autocomplete="email">
+        <input type="hidden" name="quiz_result" id="hidden-result">
+        <button type="submit" class="btn btn-primary">Show My Results</button>
+      </form>
+      <button class="quiz-skip" id="skip-email" type="button">Skip for now</button>
+      <p class="quiz-privacy">No spam. Unsubscribe anytime. We respect your time in the gym and your inbox.</p>
+    </div>
+
+    <!-- ── RESULT SCREEN ── -->
+    <div class="quiz-screen quiz-result" data-screen="result">
+      <div class="result-badge">YOUR TRAINING TYPE</div>
+      <h2 class="result-archetype" id="result-name"></h2>
+      <p class="result-tagline" id="result-tagline"></p>
+      <p class="result-description" id="result-description"></p>
+
+      <div class="result-cards">
+        <!-- PDF Card -->
+        <a class="result-card" id="result-pdf-card" href="#" target="_blank" rel="noopener noreferrer">
+          <div class="result-card-icon pdf">📄</div>
+          <div class="result-card-content">
+            <p class="result-card-label">Your Free Resource</p>
+            <p class="result-card-title" id="result-pdf-title"></p>
+            <p class="result-card-desc" id="result-pdf-desc">Free PDF — download now</p>
+          </div>
+          <svg class="result-card-arrow" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4l4 4-4 4"/></svg>
+        </a>
+
+        <!-- Tool Card -->
+        <a class="result-card" id="result-tool-card" href="#">
+          <div class="result-card-icon tool">🧮</div>
+          <div class="result-card-content">
+            <p class="result-card-label">Try This Tool</p>
+            <p class="result-card-title" id="result-tool-title"></p>
+            <p class="result-card-desc" id="result-tool-desc"></p>
+          </div>
+          <svg class="result-card-arrow" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4l4 4-4 4"/></svg>
+        </a>
+
+        <!-- Book CTA Card -->
+        <a class="result-card" id="result-book-card" href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer">
+          <div class="result-card-icon book">📅</div>
+          <div class="result-card-content">
+            <p class="result-card-label">Your Next Step</p>
+            <p class="result-card-title">Book a Free Session with Brad</p>
+            <p class="result-card-desc" id="result-cta-desc">See how data-driven coaching works firsthand</p>
+          </div>
+          <svg class="result-card-arrow" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4l4 4-4 4"/></svg>
+        </a>
+      </div>
+
+      <div class="result-cta-section">
+        <p id="result-credential-text"></p>
+        <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="btn btn-primary" style="padding: 0.875rem 2rem; font-size: var(--text-sm);">Book a Free Session</a>
+        <div class="result-credential" id="result-cred-badges"></div>
+      </div>
+
+      <button class="result-retake" id="retake-quiz" type="button">← Retake Quiz</button>
+    </div>
+
+  </div>
+</main>
+
+<!-- ═══════════════════════════════════════════
+     FOOTER (minimal)
+     ═══════════════════════════════════════════ -->
+<footer class="site-footer" role="contentinfo" style="padding: var(--space-6) 0;">
+  <div class="container">
+    <div class="footer-bottom" style="border-top: none; padding-top: 0;">
+      <span>&copy; 2026 Yeager's Gym. San Diego, CA.</span>
+      <a href="https://www.perplexity.ai/computer" target="_blank" rel="noopener noreferrer">Created with Perplexity Computer</a>
+    </div>
+  </div>
+</footer>
+
+<!-- ═══════════════════════════════════════════
+     SCRIPTS
+     ═══════════════════════════════════════════ -->
+<script>
+(function() {
+  'use strict';
+
+  // ══════════════════════════════════════════════════════════
+  // RESULT DATA — 5 archetypes
+  // ══════════════════════════════════════════════════════════
+  var results = {
+    competitor: {
+      name: 'The Competitor',
+      tagline: 'You live for the platform.',
+      description: 'You train with purpose — every rep is building toward something. Whether it\'s a powerlifting total, a weightlifting competition, or your next PR attempt, you want a coach who understands peaking, attempt selection, and competition-day strategy.',
+      pdfTitle: 'Your First Powerlifting Meet: The Complete Checklist',
+      pdfDesc: 'Everything from signing up to post-meet recovery',
+      pdfUrl: '#',
+      toolTitle: 'VBT-to-1RM Calculator',
+      toolDesc: 'Estimate your max without maxing out',
+      toolUrl: './tools-vbt.html',
+      ctaDesc: 'Train with a USAPL & USAW certified coach who preps athletes for the platform',
+      credentialText: 'Brad holds USAPL and USAW coaching certifications with 6+ years of competition coaching experience.',
+      credBadges: [
+        { img: './assets/usapl-logo.png', name: 'USAPL' },
+        { img: './assets/usaw-logo.png', name: 'USAW' }
+      ]
+    },
+    hybrid: {
+      name: 'The Hybrid Athlete',
+      tagline: 'You want it all — and you\'re not apologizing for it.',
+      description: 'CrossFit, HYROX, obstacle races, or just being dangerously well-rounded — you refuse to specialize. You need programming that builds strength without killing your engine, and a coach who gets that balance.',
+      pdfTitle: 'Benchmark WOD Strategy Guide',
+      pdfDesc: 'Beat your PR on the 10 most popular workouts',
+      pdfUrl: '#',
+      toolTitle: 'CrossFit Machine Converter',
+      toolDesc: 'Convert calories and distances across all machines',
+      toolUrl: './tools-crossfit.html',
+      ctaDesc: 'Get programming that builds strength without killing your engine',
+      credentialText: 'Brad is a CF-L2 coach who programs for competitive CrossFitters and HYROX athletes.',
+      credBadges: [
+        { img: './assets/crossfit-logo.svg', name: 'CrossFit L2' }
+      ]
+    },
+    physique: {
+      name: 'The Physique Builder',
+      tagline: 'The mirror is your scoreboard.',
+      description: 'You train for aesthetics, muscle development, and stage presence. You want evidence-based hypertrophy programming — not bro-science. The right training volume, the right intensity, and the right recovery to actually grow.',
+      pdfTitle: 'Hypertrophy Programming with VBT',
+      pdfDesc: 'Train smarter, grow faster — velocity-guided hypertrophy',
+      pdfUrl: '#',
+      toolTitle: 'Macro Calculator',
+      toolDesc: 'Personalized macros for your physique goals',
+      toolUrl: './tools-macro.html',
+      ctaDesc: 'Evidence-based programming meets velocity data for optimal muscle growth',
+      credentialText: 'Brad combines Precision Nutrition (PN1) certification with data-driven programming for physique athletes.',
+      credBadges: [
+        { img: './assets/pn-logo.png', name: 'Precision Nutrition' }
+      ]
+    },
+    data: {
+      name: 'The Data-Driven Trainer',
+      tagline: 'If you can\'t measure it, you can\'t improve it.',
+      description: 'You want to know WHY your program works, not just that it does. Velocity data, load-velocity profiles, fatigue management — you geek out on the science of getting stronger. You need a coach who speaks your language.',
+      pdfTitle: 'The Decision Tree Method',
+      pdfDesc: 'How Brad programs VBT for real athletes — the full system',
+      pdfUrl: '#',
+      toolTitle: 'VBT-to-1RM Calculator',
+      toolDesc: 'Load-velocity profiling with 3 athlete profiles',
+      toolUrl: './tools-vbt.html',
+      ctaDesc: 'Experience velocity-based coaching where every rep is measured and every decision is data-driven',
+      credentialText: 'Brad is a certified Vitruve VBT Specialist who measures every rep for every athlete, every session.',
+      credBadges: [
+        { img: './assets/vitruve-logo.png', name: 'Vitruve VBT Specialist' }
+      ]
+    },
+    wellness: {
+      name: 'The Wellness Optimizer',
+      tagline: 'You\'re playing the long game.',
+      description: 'Training is part of your bigger picture — longevity, recovery, and feeling great at any age. You\'re interested in what science can do beyond the gym: peptide therapy, nutrition optimization, and recovery protocols that actually work.',
+      pdfTitle: 'Understanding Peptide Therapy for Athletes',
+      pdfDesc: 'What you need to know about science-backed recovery',
+      pdfUrl: '#',
+      toolTitle: 'Macro Calculator',
+      toolDesc: 'Dial in your nutrition for longevity and performance',
+      toolUrl: './tools-macro.html',
+      ctaDesc: 'Strength coaching, nutrition, and peptide therapy under one roof',
+      credentialText: 'Brad is a Certified Peptide Therapist and Precision Nutrition coach focused on performance and longevity.',
+      credBadges: [
+        { img: './assets/pn-logo.png', name: 'PN1' },
+        { img: './assets/ssrp-logo.png', name: 'Peptide Therapist' }
+      ]
+    }
+  };
+
+  // ══════════════════════════════════════════════════════════
+  // STATE
+  // ══════════════════════════════════════════════════════════
+  var scores = { competitor: 0, hybrid: 0, physique: 0, data: 0, wellness: 0 };
+  var q1Answer = null; // tiebreaker
+  var screenOrder = ['intro', 'q1', 'q2', 'q3', 'q4', 'q5', 'q6', 'email', 'result'];
+  var currentScreenIndex = 0;
+  var totalQuestions = 6;
+
+  // ── DOM refs ──
+  var progressFill = document.getElementById('progress-fill');
+  var stepCount = document.getElementById('step-count');
+  var allScreens = document.querySelectorAll('.quiz-screen');
+
+  // ══════════════════════════════════════════════════════════
+  // NAVIGATION
+  // ══════════════════════════════════════════════════════════
+  function showScreen(index) {
+    var targetName = screenOrder[index];
+    allScreens.forEach(function(s) {
+      if (s.classList.contains('active')) {
+        s.classList.remove('active');
+      }
+    });
+
+    // Small delay for transition
+    setTimeout(function() {
+      var target = document.querySelector('[data-screen="' + targetName + '"]');
+      if (target) {
+        target.classList.add('active');
+      }
+      updateProgress(index);
+    }, 50);
+
+    currentScreenIndex = index;
+  }
+
+  function updateProgress(index) {
+    var pct = 0;
+    if (index === 0) {
+      pct = 0;
+      stepCount.textContent = '';
+    } else if (index <= totalQuestions) {
+      pct = (index / (totalQuestions + 1)) * 100;
+      stepCount.textContent = index + ' / ' + totalQuestions;
+    } else if (index === totalQuestions + 1) {
+      pct = 90;
+      stepCount.textContent = 'Almost there';
+    } else {
+      pct = 100;
+      stepCount.textContent = '';
+    }
+    progressFill.style.width = pct + '%';
+  }
+
+  function nextScreen() {
+    if (currentScreenIndex < screenOrder.length - 1) {
+      showScreen(currentScreenIndex + 1);
+    }
+  }
+
+  // ══════════════════════════════════════════════════════════
+  // START QUIZ
+  // ══════════════════════════════════════════════════════════
+  document.getElementById('start-quiz').addEventListener('click', function() {
+    nextScreen();
+  });
+
+  // ══════════════════════════════════════════════════════════
+  // ANSWER SELECTION
+  // ══════════════════════════════════════════════════════════
+  document.querySelectorAll('.quiz-option').forEach(function(opt) {
+    opt.addEventListener('click', function() {
+      var parent = opt.closest('.quiz-screen');
+      var screenName = parent.getAttribute('data-screen');
+
+      // Highlight selected
+      parent.querySelectorAll('.quiz-option').forEach(function(o) {
+        o.classList.remove('selected');
+      });
+      opt.classList.add('selected');
+
+      // Score
+      var scoreKey = opt.getAttribute('data-score');
+      scores[scoreKey] += 2;
+
+      // Track Q1 for tiebreaker
+      if (screenName === 'q1') {
+        q1Answer = scoreKey;
+      }
+
+      // Auto-advance after short delay
+      setTimeout(function() {
+        nextScreen();
+      }, 350);
+    });
+  });
+
+  // ══════════════════════════════════════════════════════════
+  // EMAIL CAPTURE
+  // ══════════════════════════════════════════════════════════
+  document.getElementById('email-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    var winner = getWinner();
+    var formData = new FormData(this);
+    var firstName = formData.get('first_name');
+    var email = formData.get('email');
+
+    // Set hidden field
+    document.getElementById('hidden-result').value = winner;
+
+    // Send to Kit (ConvertKit) — using their form endpoint
+    // Brad will replace this form ID with his actual Kit form ID
+    submitToKit(firstName, email, winner);
+
+    // Show result
+    showResult(winner);
+  });
+
+  document.getElementById('skip-email').addEventListener('click', function() {
+    var winner = getWinner();
+    showResult(winner);
+  });
+
+  function submitToKit(firstName, email, quizResult) {
+    // Kit (ConvertKit) form submission
+    // Replace FORM_ID with your actual Kit form ID from:
+    // Kit dashboard → Forms → select form → grab the form ID from the URL
+    var KIT_FORM_ID = 'YOUR_KIT_FORM_ID';
+
+    // If form ID hasn't been set yet, just log and skip
+    if (KIT_FORM_ID === 'YOUR_KIT_FORM_ID') {
+      console.log('Kit form not configured yet. Would submit:', {
+        first_name: firstName,
+        email: email,
+        quiz_result: quizResult
+      });
+      return;
+    }
+
+    // Kit API endpoint
+    var url = 'https://api.convertkit.com/v3/forms/' + KIT_FORM_ID + '/subscribe';
+
+    fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        api_key: 'YOUR_KIT_API_KEY', // Replace with your Kit public API key
+        email: email,
+        first_name: firstName,
+        fields: {
+          quiz_result: quizResult
+        },
+        tags: [quizResult] // Tag subscriber with their archetype
+      })
+    }).catch(function(err) {
+      console.log('Kit submission error (non-blocking):', err);
+    });
+  }
+
+  // ══════════════════════════════════════════════════════════
+  // SCORING + RESULT
+  // ══════════════════════════════════════════════════════════
+  function getWinner() {
+    var maxScore = 0;
+    var winner = 'data'; // default fallback
+    var keys = Object.keys(scores);
+
+    for (var i = 0; i < keys.length; i++) {
+      if (scores[keys[i]] > maxScore) {
+        maxScore = scores[keys[i]];
+        winner = keys[i];
+      }
+    }
+
+    // Tiebreaker: if multiple archetypes tied at max, use Q1 answer
+    var tied = keys.filter(function(k) { return scores[k] === maxScore; });
+    if (tied.length > 1 && q1Answer && tied.indexOf(q1Answer) !== -1) {
+      winner = q1Answer;
+    }
+
+    return winner;
+  }
+
+  function showResult(winner) {
+    var r = results[winner];
+
+    document.getElementById('result-name').textContent = r.name;
+    document.getElementById('result-tagline').textContent = r.tagline;
+    document.getElementById('result-description').textContent = r.description;
+
+    // PDF card
+    document.getElementById('result-pdf-title').textContent = r.pdfTitle;
+    document.getElementById('result-pdf-desc').textContent = r.pdfDesc;
+    document.getElementById('result-pdf-card').href = r.pdfUrl;
+    if (r.pdfUrl === '#') {
+      document.getElementById('result-pdf-desc').textContent = r.pdfDesc + ' — coming soon';
+    }
+
+    // Tool card
+    document.getElementById('result-tool-title').textContent = r.toolTitle;
+    document.getElementById('result-tool-desc').textContent = r.toolDesc;
+    document.getElementById('result-tool-card').href = r.toolUrl;
+
+    // CTA
+    document.getElementById('result-cta-desc').textContent = r.ctaDesc;
+    document.getElementById('result-credential-text').textContent = r.credentialText;
+
+    // Credential badges
+    var badgeContainer = document.getElementById('result-cred-badges');
+    badgeContainer.innerHTML = '';
+    r.credBadges.forEach(function(badge) {
+      var img = document.createElement('img');
+      img.src = badge.img;
+      img.alt = badge.name;
+      img.width = 20;
+      img.height = 20;
+      badgeContainer.appendChild(img);
+
+      var span = document.createElement('span');
+      span.textContent = badge.name;
+      badgeContainer.appendChild(span);
+    });
+
+    // Navigate to result screen
+    showScreen(screenOrder.indexOf('result'));
+  }
+
+  // ══════════════════════════════════════════════════════════
+  // RETAKE
+  // ══════════════════════════════════════════════════════════
+  document.getElementById('retake-quiz').addEventListener('click', function() {
+    // Reset scores
+    scores = { competitor: 0, hybrid: 0, physique: 0, data: 0, wellness: 0 };
+    q1Answer = null;
+
+    // Clear selections
+    document.querySelectorAll('.quiz-option').forEach(function(o) {
+      o.classList.remove('selected');
+    });
+
+    // Clear form
+    document.getElementById('email-form').reset();
+
+    // Go back to intro
+    showScreen(0);
+  });
+
+})();
+</script>
+
+<!-- Mobile Sticky CTA -->
+<div class="mobile-sticky-cta" id="stickyCta" style="display: none; position: fixed; bottom: 0; left: 0; right: 0; z-index: 999; padding: 12px 16px; background: rgba(10,14,23,0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-top: 1px solid rgba(30,200,176,0.2); text-align: center;">
+  <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" style="display: inline-block; width: 100%; max-width: 320px; padding: 10px 20px; background: var(--color-teal); color: #0a0e17; font-family: var(--font-display); font-size: 0.8rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; text-decoration: none; border-radius: 6px;">Book a Free Session</a>
+</div>
+<script>
+(function(){
+  var cta = document.getElementById('stickyCta');
+  if (!cta || window.innerWidth > 768) return;
+  window.addEventListener('scroll', function() {
+    cta.style.display = window.scrollY > 300 ? 'block' : 'none';
+  }, {passive:true});
+})();
+</script>
+
+</body>
+</html>
