@@ -2920,58 +2920,70 @@
   }
   .hero-bg img {
     object-fit: cover !important;
-    object-position: right top !important;
+    object-position: center 20% !important;
   }
 }
 
-/* ── Mobile hero: full-bleed image with text overlay ── */
+/* ── Mobile hero: full-bleed image with text overlay (matches Claude build) ── */
 @media (max-width: 768px) {
   .hero {
     min-height: 100vh;
     min-height: 100svh;
     align-items: flex-end;
-    padding-top: 72px;
-    padding-bottom: var(--space-6);
+    padding-top: 0;
+    padding-bottom: var(--space-5);
   }
   .hero-bg img {
-    object-position: center top !important;
+    object-position: 55% 15% !important;
+    opacity: 1 !important;
   }
   .hero-bg::after {
     background: linear-gradient(
       to top,
-      rgba(14,14,18,0.92) 0%,
-      rgba(14,14,18,0.70) 25%,
-      rgba(14,14,18,0.35) 45%,
-      rgba(14,14,18,0.10) 60%,
-      transparent 70%
+      rgba(14,14,18,0.90) 0%,
+      rgba(14,14,18,0.60) 10%,
+      rgba(14,14,18,0.35) 25%,
+      rgba(14,14,18,0.15) 40%,
+      rgba(14,14,18,0.04) 52%,
+      transparent 62%
     ) !important;
   }
   .hero-content {
-    max-width: 100%;
-    padding: 0 var(--space-4);
-    margin: 0;
+    max-width: 100% !important;
+    width: 100% !important;
+    padding: 0 var(--space-4) !important;
+    margin: 0 !important;
   }
   .hero h1 {
-    font-size: clamp(2rem, 9vw, 3rem);
-    line-height: 1.1;
-    text-shadow: 0 2px 12px rgba(0,0,0,0.6);
+    font-size: clamp(2.5rem, 9.5vw, 3.2rem) !important;
+    font-weight: 900 !important;
+    line-height: 1.05 !important;
+    max-width: 100% !important;
+    text-shadow: 0 3px 16px rgba(0,0,0,0.8), 0 1px 4px rgba(0,0,0,0.6);
+  }
+  .hero-tagline {
+    display: none;
   }
   .hero-lines {
     margin-top: var(--space-3);
   }
-  .hero-lines p {
-    font-size: var(--text-base);
-    line-height: 1.5;
-    text-shadow: 0 1px 8px rgba(0,0,0,0.5);
-  }
   .hero-line {
-    margin-bottom: var(--space-3);
+    margin-bottom: var(--space-4);
+  }
+  .hero-lines p {
+    font-size: clamp(1rem, 4.2vw, 1.2rem);
+    line-height: 1.45;
+    text-shadow: 0 1px 10px rgba(0,0,0,0.7), 0 1px 3px rgba(0,0,0,0.5);
+  }
+  .hero-line-icon {
+    filter: drop-shadow(0 1px 4px rgba(0,0,0,0.5));
   }
   .hero-ctas {
-    margin-top: var(--space-4);
+    margin-top: var(--space-5);
   }
   .hero-ctas .btn {
     font-size: var(--text-sm);
+    text-shadow: none;
   }
 }
 
