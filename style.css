@@ -2934,17 +2934,19 @@
     padding-bottom: var(--space-5);
   }
   .hero-bg img {
-    object-position: 55% 15% !important;
+    object-position: center 10% !important;
     opacity: 1 !important;
+    transform: scale(1.08);
+    transform-origin: center 30%;
   }
   .hero-bg::after {
     background: linear-gradient(
       to top,
-      rgba(14,14,18,0.90) 0%,
-      rgba(14,14,18,0.60) 10%,
-      rgba(14,14,18,0.35) 25%,
-      rgba(14,14,18,0.15) 40%,
-      rgba(14,14,18,0.04) 52%,
+      rgba(14,14,18,0.92) 0%,
+      rgba(14,14,18,0.55) 10%,
+      rgba(14,14,18,0.30) 25%,
+      rgba(14,14,18,0.12) 40%,
+      rgba(14,14,18,0.03) 52%,
       transparent 62%
     ) !important;
   }
@@ -2984,6 +2986,10 @@
   .hero-ctas .btn {
     font-size: var(--text-sm);
     text-shadow: none;
+  }
+  .hero-ctas .btn-secondary {
+    width: 100%;
+    max-width: 320px;
   }
 }
 
