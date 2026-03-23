@@ -2924,32 +2924,57 @@
   }
 }
 
-/* ── Mobile hero: tall image with dark top for text, athlete below ── */
+/* ── Mobile hero: split layout — text left, athlete right ── */
 @media (max-width: 768px) {
   .hero {
     min-height: 100vh;
     min-height: 100svh;
-    align-items: flex-start;
+    align-items: center;
   }
   .hero-bg img {
-    object-position: center top !important;
+    object-position: 62% top !important;
   }
   .hero-bg::after {
-    background: none !important;
+    background: linear-gradient(
+      to right,
+      rgba(14,14,18,0.95) 0%,
+      rgba(14,14,18,0.88) 30%,
+      rgba(14,14,18,0.55) 50%,
+      rgba(14,14,18,0.15) 62%,
+      transparent 72%
+    ) !important;
   }
   .hero-content {
-    padding-top: var(--space-2);
-    padding-bottom: var(--space-2);
+    max-width: 58%;
+    padding: var(--space-3) var(--space-3);
+    margin-left: 0;
+    margin-right: auto;
   }
   .hero h1 {
-    font-size: clamp(1.8rem, 8vw, 2.8rem);
+    font-size: clamp(1.6rem, 7vw, 2.4rem);
+    line-height: 1.15;
+  }
+  .hero-lines {
+    margin-top: var(--space-3);
   }
   .hero-lines p {
-    font-size: var(--text-sm);
-    line-height: 1.5;
+    font-size: var(--text-xs);
+    line-height: 1.45;
+  }
+  .hero-line {
+    margin-bottom: var(--space-2);
+  }
+  .hero-line-icon {
+    display: none;
   }
   .hero-ctas {
     margin-top: var(--space-3);
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+  .hero-ctas .btn {
+    font-size: var(--text-xs);
+    padding: 10px 18px;
   }
 }
 
