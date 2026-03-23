@@ -2924,6 +2924,35 @@
   }
 }
 
+/* ── Mobile hero: tall image with dark top for text, athlete below ── */
+@media (max-width: 768px) {
+  .hero {
+    min-height: 100vh;
+    min-height: 100svh;
+    align-items: flex-start;
+  }
+  .hero-bg img {
+    object-position: center top !important;
+  }
+  .hero-bg::after {
+    background: none !important;
+  }
+  .hero-content {
+    padding-top: var(--space-2);
+    padding-bottom: var(--space-2);
+  }
+  .hero h1 {
+    font-size: clamp(1.8rem, 8vw, 2.8rem);
+  }
+  .hero-lines p {
+    font-size: var(--text-sm);
+    line-height: 1.5;
+  }
+  .hero-ctas {
+    margin-top: var(--space-3);
+  }
+}
+
 /* ── Philosophy Cards (About page) ── */
 .philosophy-grid {
   display: grid;
