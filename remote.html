@@ -359,9 +359,9 @@
 
 .rm-price-val {
   font-family: var(--font-body);
-  font-size: var(--text-3xl);
+  font-size: var(--text-xl);
   font-weight: 900;
-  color: var(--color-text);
+  color: var(--color-teal);
   line-height: 1;
 }
 
@@ -517,31 +517,41 @@
 <hr class="glow-line">
 
 <!-- ═══════════════════════════════════════════
+     THE SOLUTION
+     ═══════════════════════════════════════════ -->
+<section class="rm-section rm-section--surface" aria-label="The Solution">
+  <div class="container">
+    <div class="section-header fade-in" style="text-align: center; max-width: 600px; margin-inline: auto;">
+      <p class="section-label" style="color: var(--color-teal);">The Solution</p>
+      <h2 class="section-title">The solution to effective remote coaching.</h2>
+    </div>
+    <div class="rm-problem-box fade-in" style="border-color: rgba(30,200,176,0.3); background: rgba(30,200,176,0.03);">
+      <h3 style="color: var(--color-teal);">Velocity data bridges the gap</h3>
+      <p>What if your coach could see exactly how every set moved — how fast the bar traveled, when fatigue kicked in, and whether today was a push day or a pull-back day? That's what velocity-based remote coaching gives you. Instead of relying on subjective check-ins, your bar speed tells the whole story.</p>
+      <p>Your programming adjusts week to week based on real performance data — the same objective feedback Brad uses with in-person athletes. Distance doesn't dilute the coaching. Data closes the gap.</p>
+    </div>
+  </div>
+</section>
+
+<hr class="glow-line">
+
+<!-- ═══════════════════════════════════════════
      HOW REMOTE WORKS
      ═══════════════════════════════════════════ -->
-<section class="rm-section rm-section--surface" aria-label="How Remote Coaching Works">
+<section class="rm-section" aria-label="How Remote Coaching Works">
   <div class="container">
     <div class="section-header fade-in" style="text-align: center; max-width: 600px; margin-inline: auto;">
       <p class="section-label" style="color: var(--color-pink);">How It Works</p>
       <h2 class="section-title">Data closes the distance.</h2>
     </div>
 
-    <div class="rm-how-grid">
-      <div class="rm-how-text fade-in">
-        <p>If you own a VBT device — Vitruve, GymAware, Metric, or similar — your velocity data feeds directly into your programming. Your bar speed, session by session, tells us:</p>
-        <ul class="rm-benefits-list">
-          <li>Whether the prescribed load was right for you that day</li>
-          <li>How fatigue accumulated across the session</li>
-          <li>Whether you're trending stronger, maintaining, or needing recovery</li>
-          <li>When to push and when to pull back</li>
-        </ul>
-        <p>This isn't a spreadsheet you fill out yourself. It's objective performance data used to adjust your training — the same way Brad would in person.</p>
-      </div>
-
-      <div class="rm-callout fade-in">
-        <h4>Don't have a VBT device yet?</h4>
-        <p>No problem. We start with RPE-based autoregulation and structured feedback. When you're ready to add velocity tracking, we integrate it seamlessly into your programming.</p>
-      </div>
+    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: var(--space-3); margin-top: var(--space-4);">
+      <div class="fade-in" style="background: var(--color-surface-2); border: 1px solid rgba(30,200,176,0.25); border-radius: var(--radius-md); padding: var(--space-4); font-size: var(--text-sm); color: var(--color-text-muted); line-height: 1.6; transition: all 0.2s;" onmouseover="this.style.borderColor='var(--color-teal)';this.style.boxShadow='0 0 16px rgba(30,200,176,0.12)'" onmouseout="this.style.borderColor='rgba(30,200,176,0.25)';this.style.boxShadow='none'"><strong style="color: var(--color-text); display: block; margin-bottom: var(--space-2);">Velocity Data Integration</strong>Your bar speed feeds directly into your programming — session by session.</div>
+      <div class="fade-in" style="background: var(--color-surface-2); border: 1px solid rgba(30,200,176,0.25); border-radius: var(--radius-md); padding: var(--space-4); font-size: var(--text-sm); color: var(--color-text-muted); line-height: 1.6; transition: all 0.2s;" onmouseover="this.style.borderColor='var(--color-teal)';this.style.boxShadow='0 0 16px rgba(30,200,176,0.12)'" onmouseout="this.style.borderColor='rgba(30,200,176,0.25)';this.style.boxShadow='none'"><strong style="color: var(--color-text); display: block; margin-bottom: var(--space-2);">Daily Load Calibration</strong>Whether the prescribed weight was right for you that day, based on real bar speed.</div>
+      <div class="fade-in" style="background: var(--color-surface-2); border: 1px solid rgba(30,200,176,0.25); border-radius: var(--radius-md); padding: var(--space-4); font-size: var(--text-sm); color: var(--color-text-muted); line-height: 1.6; transition: all 0.2s;" onmouseover="this.style.borderColor='var(--color-teal)';this.style.boxShadow='0 0 16px rgba(30,200,176,0.12)'" onmouseout="this.style.borderColor='rgba(30,200,176,0.25)';this.style.boxShadow='none'"><strong style="color: var(--color-text); display: block; margin-bottom: var(--space-2);">Fatigue Monitoring</strong>Track how fatigue accumulates across sessions and within training blocks.</div>
+      <div class="fade-in" style="background: var(--color-surface-2); border: 1px solid rgba(30,200,176,0.25); border-radius: var(--radius-md); padding: var(--space-4); font-size: var(--text-sm); color: var(--color-text-muted); line-height: 1.6; transition: all 0.2s;" onmouseover="this.style.borderColor='var(--color-teal)';this.style.boxShadow='0 0 16px rgba(30,200,176,0.12)'" onmouseout="this.style.borderColor='rgba(30,200,176,0.25)';this.style.boxShadow='none'"><strong style="color: var(--color-text); display: block; margin-bottom: var(--space-2);">Strength Trend Tracking</strong>See whether you're trending stronger, maintaining, or needing recovery.</div>
+      <div class="fade-in" style="background: var(--color-surface-2); border: 1px solid rgba(30,200,176,0.25); border-radius: var(--radius-md); padding: var(--space-4); font-size: var(--text-sm); color: var(--color-text-muted); line-height: 1.6; transition: all 0.2s;" onmouseover="this.style.borderColor='var(--color-teal)';this.style.boxShadow='0 0 16px rgba(30,200,176,0.12)'" onmouseout="this.style.borderColor='rgba(30,200,176,0.25)';this.style.boxShadow='none'"><strong style="color: var(--color-text); display: block; margin-bottom: var(--space-2);">Autoregulated Programming</strong>Know when to push and when to pull back — automatically, based on your data.</div>
+      <div class="fade-in" style="background: var(--color-surface-2); border: 1px solid rgba(30,200,176,0.25); border-radius: var(--radius-md); padding: var(--space-4); font-size: var(--text-sm); color: var(--color-text-muted); line-height: 1.6; transition: all 0.2s;" onmouseover="this.style.borderColor='var(--color-teal)';this.style.boxShadow='0 0 16px rgba(30,200,176,0.12)'" onmouseout="this.style.borderColor='rgba(30,200,176,0.25)';this.style.boxShadow='none'"><strong style="color: var(--color-text); display: block; margin-bottom: var(--space-2);">No VBT? No Problem</strong>We start with RPE-based autoregulation and structured feedback until you're ready for velocity tracking.</div>
     </div>
   </div>
 </section>
@@ -561,37 +571,49 @@
     <div class="rm-who-grid">
 
       <div class="rm-who-card fade-in">
-        <div class="rm-who-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <path d="M6 4v16M18 4v16M6 8h12M6 16h12"/>
-          </svg>
+        <div style="display: flex; align-items: center; gap: var(--space-2); margin-bottom: var(--space-2);">
+          <div class="rm-who-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M6 4v16M18 4v16M6 8h12M6 16h12"/>
+            </svg>
+          </div>
+          <h4 style="font-family: var(--font-display); font-size: var(--text-sm); font-weight: 700;">Serious Lifters</h4>
         </div>
         <p>Intermediate and advanced lifters who want coaching beyond a generic program.</p>
       </div>
 
       <div class="rm-who-card fade-in">
-        <div class="rm-who-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
-          </svg>
+        <div style="display: flex; align-items: center; gap: var(--space-2); margin-bottom: var(--space-2);">
+          <div class="rm-who-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+            </svg>
+          </div>
+          <h4 style="font-family: var(--font-display); font-size: var(--text-sm); font-weight: 700;">VBT Device Owners</h4>
         </div>
         <p>VBT device owners who want a coach who actually uses the data.</p>
       </div>
 
       <div class="rm-who-card fade-in">
-        <div class="rm-who-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
-          </svg>
+        <div style="display: flex; align-items: center; gap: var(--space-2); margin-bottom: var(--space-2);">
+          <div class="rm-who-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+            </svg>
+          </div>
+          <h4 style="font-family: var(--font-display); font-size: var(--text-sm); font-weight: 700;">Remote Athletes</h4>
         </div>
         <p>Athletes outside San Diego who want data-driven coaching regardless of location.</p>
       </div>
 
       <div class="rm-who-card fade-in">
-        <div class="rm-who-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
-          </svg>
+        <div style="display: flex; align-items: center; gap: var(--space-2); margin-bottom: var(--space-2);">
+          <div class="rm-who-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+            </svg>
+          </div>
+          <h4 style="font-family: var(--font-display); font-size: var(--text-sm); font-weight: 700;">Competitors</h4>
         </div>
         <p>Competitors preparing for meets, events, or seasons who need a coach in their corner.</p>
       </div>
@@ -633,6 +655,7 @@
           <li>Block periodization matched to your goals</li>
           <li>Direct messaging with Brad for form checks and questions</li>
           <li>VBT device integration (Vitruve, GymAware, Metric, and more)</li>
+          <li>Monthly progress review and program adjustments</li>
         </ul>
       </div>
     </div>
