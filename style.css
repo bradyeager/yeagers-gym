@@ -1139,10 +1139,10 @@
 }
 
 .about-text-with-photo p {
-  font-size: var(--text-base);
+  font-size: var(--text-sm);
   color: var(--color-text-muted);
-  line-height: 1.8;
-  margin-bottom: var(--space-4);
+  line-height: 1.7;
+  margin-bottom: var(--space-3);
 }
 
 .about-inline-headshot {
@@ -1158,12 +1158,10 @@
 .about-headshot-lg::before {
   content: '';
   position: absolute;
-  inset: -8px;
-  border-radius: calc(var(--radius-lg) + 4px);
-  background: linear-gradient(135deg, var(--color-teal), var(--color-pink), var(--color-purple));
-  opacity: 0.25;
+  inset: -3px;
+  border-radius: calc(var(--radius-lg) + 2px);
+  border: 2px solid var(--color-pink);
   z-index: 0;
-  filter: blur(12px);
 }
 
 .about-inline-headshot img {
