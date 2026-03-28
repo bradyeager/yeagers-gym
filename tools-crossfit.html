@@ -47,7 +47,7 @@
 
 .tool-page {
   padding-top: 100px;
-  padding-bottom: var(--space-16);
+  padding-bottom: var(--space-6);
   min-height: 100vh;
 }
 
@@ -100,7 +100,7 @@
 /* ── Calculator Card ── */
 .calc-card {
   background: var(--color-surface);
-  border: 1px solid var(--color-border);
+  border: 2px solid var(--color-teal);
   border-radius: var(--radius-xl);
   padding: var(--space-8);
   max-width: 600px;
@@ -479,7 +479,7 @@
   text-align: center;
   padding: var(--space-5) var(--space-4);
   background: var(--color-surface);
-  border: 1px solid var(--color-border);
+  border: 2px solid var(--color-teal);
   border-radius: var(--radius-lg);
   margin-bottom: var(--space-6);
 }
@@ -509,7 +509,7 @@
 /* ── CTA Section ── */
 .tool-cta {
   text-align: center;
-  padding: var(--space-16) var(--space-4);
+  padding: var(--space-6) var(--space-4);
   max-width: 600px;
   margin-inline: auto;
 }
@@ -532,8 +532,8 @@
 
 /* ── Explainer ── */
 .explainer {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
+  background: rgba(240,68,138,0.06);
+  border: 1px solid rgba(240,68,138,0.15);
   border-radius: var(--radius-xl);
   padding: var(--space-8);
   margin-top: var(--space-12);
@@ -563,6 +563,55 @@
 }
 
 .explainer p:last-child { margin-bottom: 0; }
+
+/* ── Sources Section ── */
+.sources-section {
+  max-width: 600px;
+  margin-inline: auto;
+  margin-top: var(--space-8);
+  padding: var(--space-8);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+}
+
+@media (max-width: 640px) {
+  .sources-section { padding: var(--space-6) var(--space-4); }
+}
+
+.sources-section h2 {
+  font-family: var(--font-display);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--color-teal);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: var(--space-4);
+}
+
+.sources-list {
+  padding-left: 1.25rem;
+  margin: 0;
+}
+
+.sources-list li {
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+  line-height: 1.7;
+  margin-bottom: var(--space-3);
+}
+
+.sources-list li:last-child { margin-bottom: 0; }
+
+.sources-list a {
+  color: var(--color-teal);
+  text-decoration: none;
+  word-break: break-all;
+  display: block;
+  margin-top: 2px;
+}
+
+.sources-list a:hover { text-decoration: underline; }
 
 /* ── Also Try Link ── */
 .also-try {
@@ -707,7 +756,6 @@
 
     <!-- Tool Header -->
     <div class="tool-header fade-in">
-      <p class="section-label" style="color: var(--color-pink);">Free Tool</p>
       <h1>WOD <span class="highlight-teal">Machine</span> Converter</h1>
       <p>Scaling a WOD to a different machine? Enter your prescribed work and we'll calculate the equivalent for every piece of equipment in the box.</p>
     </div>
@@ -756,8 +804,17 @@
       <div class="field-group">
         <label for="amount">Amount</label>
         <div class="input-with-unit">
-          <input type="number" id="amount" placeholder="20" min="1" max="10000" step="any">
+          <input type="number" id="amount" placeholder="20" value="20" min="1" max="10000" step="any">
           <span class="input-unit-label" id="amount-unit-label">cal</span>
+        </div>
+      </div>
+
+      <!-- Watts (optional) -->
+      <div class="field-group" id="watts-field-group" style="display: none;">
+        <label for="watts-input">Average Watts <span style="font-weight: 400; text-transform: none; letter-spacing: 0; color: var(--color-text-faint);">(optional — overrides amount)</span></label>
+        <div class="input-with-unit">
+          <input type="number" id="watts-input" placeholder="150" min="1" max="3000" step="1">
+          <span class="input-unit-label">W</span>
         </div>
       </div>
 
@@ -804,6 +861,43 @@
     <!-- Also Try -->
     <div class="also-try fade-in">
       <a href="./tools-vbt.html">Also try: VBT-to-1RM Calculator →</a>
+    </div>
+
+    <!-- Sources / References -->
+    <div class="sources-section fade-in">
+      <h2>Sources &amp; References</h2>
+      <ol class="sources-list">
+        <li>
+          <strong>Concept2 Rowing Calculator &amp; Pace/Watt Formulas</strong> —
+          Concept2 Inc. Official documentation on the relationship between power (watts), pace, and calories for the C2 Rower, SkiErg, and BikeErg.
+          <a href="https://www.concept2.com/indoor-rowers/training/calculators" target="_blank" rel="noopener noreferrer">concept2.com/indoor-rowers/training/calculators</a>
+        </li>
+        <li>
+          <strong>ACSM’s Guidelines for Exercise Testing and Prescription</strong> —
+          American College of Sports Medicine. Metabolic equations and caloric expenditure models for aerobic exercise modalities. 11th Edition. Wolters Kluwer.
+          <a href="https://www.acsm.org/education-resources/books/guidelines-exercise-testing-prescription" target="_blank" rel="noopener noreferrer">acsm.org</a>
+        </li>
+        <li>
+          <strong>Energy Expenditure During Stationary Cycling: Watts vs. Calories</strong> —
+          Byrne NM, Hills AP, Hunter GR, Weinsier RL, Schutz Y. (2005). Metabolic equivalent: one step forward, one step back. <em>European Journal of Clinical Nutrition</em>, 59(9), 1092–1101.
+          <a href="https://doi.org/10.1038/sj.ejcn.1602197" target="_blank" rel="noopener noreferrer">doi.org/10.1038/sj.ejcn.1602197</a>
+        </li>
+        <li>
+          <strong>Compendium of Physical Activities</strong> —
+          Ainsworth BE, et al. (2011). 2011 Compendium of Physical Activities: a second update of codes and MET values. <em>Medicine &amp; Science in Sports &amp; Exercise</em>, 43(8), 1575–1581. MET values for rowing, cycling, and running.
+          <a href="https://doi.org/10.1249/MSS.0b013e31821ece12" target="_blank" rel="noopener noreferrer">doi.org/10.1249/MSS.0b013e31821ece12</a>
+        </li>
+        <li>
+          <strong>Concept2 BikeErg Calorie Calculation Technical Note</strong> —
+          Concept2 Inc. Technical explanation of how calories are calculated from power meter data on the BikeErg, using a 25% mechanical efficiency constant.
+          <a href="https://www.concept2.com/service/software/pm5/ergdata/calorie-calculation" target="_blank" rel="noopener noreferrer">concept2.com/service/software/pm5/ergdata/calorie-calculation</a>
+        </li>
+        <li>
+          <strong>CrossFit Level 1 Training Guide — Metabolic Conditioning</strong> —
+          CrossFit Inc. Discussion of energy systems, machine interchangeability, and relative intensity across conditioning modalities.
+          <a href="https://library.crossfit.com/free/pdf/CFJ_English_Level1_TrainingGuide.pdf" target="_blank" rel="noopener noreferrer">library.crossfit.com</a>
+        </li>
+      </ol>
     </div>
 
     <!-- CTA -->
@@ -883,6 +977,8 @@
   var timeEstimate        = document.getElementById('time-estimate');
   var typeToggleBtns      = document.querySelectorAll('.type-toggle button');
   var genderToggleBtns    = document.querySelectorAll('.gender-toggle button');
+  var wattsFieldGroup     = document.getElementById('watts-field-group');
+  var wattsInput          = document.getElementById('watts-input');
 
   var currentType   = 'calories';
   var currentGender = 'male';
@@ -894,7 +990,14 @@
       btn.classList.add('active');
       currentType = btn.getAttribute('data-type');
       amountUnitLabel.textContent = currentType === 'calories' ? 'cal' : 'm';
-      amountInput.placeholder = currentType === 'calories' ? '20' : '500';
+      amountInput.placeholder = currentType === 'calories' ? '20' : '250';
+      if (currentType === 'calories') {
+        amountInput.value = '';
+        wattsFieldGroup.style.display = 'none';
+      } else {
+        amountInput.value = '';
+        wattsFieldGroup.style.display = '';
+      }
 
       // Hide/show run for calories
       var runOption = sourceMachineSelect.querySelector('option[value="run"]');
@@ -918,10 +1021,25 @@
     });
   });
 
+  // ── Watts → time helper (Concept2 formula) ──
+  // Concept2 uses: pace (s/500m) = (2.8 / watts)^(1/3) × 500
+  // time (minutes) = pace_per_500m × (distance_m / 500) / 60
+  function wattsToTimeMinutes(watts, distMeters) {
+    var paceSecPer500 = Math.pow(2.8 / watts, 1 / 3) * 500;
+    return (paceSecPer500 * (distMeters / 500)) / 60;
+  }
+
   // ── Calculate ──
   calculateBtn.addEventListener('click', function() {
     var amount   = parseFloat(amountInput.value);
     var sourceKey = sourceMachineSelect.value;
+    var wattsVal  = parseFloat(wattsInput.value);
+
+    // If watts provided in distance mode, amount can be optional (default to 500m)
+    if (currentType === 'distance' && wattsVal > 0 && (!amount || amount <= 0)) {
+      amount = 500;
+      amountInput.value = '500';
+    }
 
     if (!amount || amount <= 0) {
       shakeButton();
@@ -941,9 +1059,14 @@
       var calRate = source.calPerMin[currentGender];
       timeMinutes = amount / calRate;
     } else {
-      // Distance
-      var distRate = source.distPerMin[currentGender];
-      timeMinutes = amount / distRate;
+      // Distance mode — watts override if provided
+      if (wattsVal > 0) {
+        // Use Concept2 watts→pace formula for accurate time calculation
+        timeMinutes = wattsToTimeMinutes(wattsVal, amount);
+      } else {
+        var distRate = source.distPerMin[currentGender];
+        timeMinutes = amount / distRate;
+      }
     }
 
     // Format time
@@ -985,7 +1108,8 @@
 
     // Step 3: Build summary
     var typeLabel = currentType === 'calories' ? amount + ' calories' : amount + 'm';
-    resultsSummary.textContent = typeLabel + ' on ' + source.name + ' equals…';
+    var wattsNote = (currentType === 'distance' && wattsVal > 0) ? ' at ' + Math.round(wattsVal) + 'W' : '';
+    resultsSummary.textContent = typeLabel + ' on ' + source.name + wattsNote + ' equals…';
     timeValue.textContent = timeStr;
 
     // If time is very short, show seconds only

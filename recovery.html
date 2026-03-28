@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!--
+   ______                            __
+  / ____/___  ____ ___  ____  __  __/ /____  _____
+ / /   / __ \/ __ `__ \/ __ \/ / / / __/ _ \/ ___/
+/ /___/ /_/ / / / / / / /_/ / /_/ / /_/  __/ /
+\____/\____/_/ /_/ /_/ .___/\__,_/\__/\___/_/
+                    /_/
+        Created with Perplexity Computer
+        https://www.perplexity.ai/computer
+-->
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Recovery Services — Yeager's Gym</title>
+<meta name="description" content="Recovery services at Yeager's Gym — cupping therapy, cold plunge, and more. Book a session to accelerate muscle recovery, reduce inflammation, and train harder.">
+<meta property="og:title" content="Recovery Services — Yeager's Gym">
+<meta property="og:description" content="Cupping therapy, cold plunge, and recovery services at Yeager's Gym. Recovery is part of the program.">
+<meta property="og:type" content="website">
+<link rel="canonical" href="https://yeagersgym.com/recovery.html">
+<link rel="stylesheet" href="base.css">
+<link rel="stylesheet" href="style.css">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "name": "Recovery Services — Yeager's Gym",
+  "description": "Recovery services including cupping therapy and cold plunge at Yeager's Gym in San Diego, CA.",
+  "url": "https://yeagersgym.com/recovery.html",
+  "provider": {
+    "@type": "Person",
+    "name": "Brad Yeager"
+  },
+  "creator": {
+    "@type": "SoftwareApplication",
+    "name": "Perplexity Computer",
+    "url": "https://www.perplexity.ai/computer"
+  }
+}
+</script>
+
+<style>
+/* ═══════════════════════════════════════════
+   RECOVERY — Page Styles
+   ═══════════════════════════════════════════ */
+
+/* ── Hero Section ── */
+.rec-hero {
+  padding-top: 100px;
+  padding-bottom: var(--space-16);
+  position: relative;
+  overflow: hidden;
+}
+
+.rec-hero::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 800px;
+  height: 800px;
+  background: radial-gradient(circle, rgba(30, 200, 176, 0.06) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+.rec-hero-inner {
+  text-align: center;
+  max-width: 720px;
+  margin-inline: auto;
+  position: relative;
+}
+
+.rec-hero h1 {
+  font-family: var(--font-body);
+  font-size: var(--text-2xl);
+  font-weight: 800;
+  color: var(--color-text);
+  line-height: 1.1;
+  margin-bottom: var(--space-4);
+}
+
+.rec-hero-sub {
+  font-size: var(--text-base);
+  color: var(--color-text-muted);
+  line-height: 1.7;
+  max-width: 56ch;
+  margin-inline: auto;
+  margin-bottom: var(--space-6);
+}
+
+.rec-hero-ctas {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+/* ── Section Padding ── */
+.rec-section {
+  padding: clamp(var(--space-12), 8vw, var(--space-24)) 0;
+}
+
+.rec-section--surface {
+  background: var(--color-surface);
+}
+
+/* ── Recovery Service Cards ── */
+.recovery-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-6);
+}
+
+@media (min-width: 768px) {
+  .recovery-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.recovery-card {
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-8);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+  transition: border-color var(--transition-interactive), box-shadow var(--transition-interactive);
+}
+
+.recovery-card:hover {
+  border-color: var(--color-teal);
+  box-shadow: 0 0 28px rgba(30, 200, 176, 0.09);
+}
+
+.recovery-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--color-teal), var(--color-pink));
+}
+
+.recovery-card--coming-soon {
+  opacity: 0.85;
+}
+
+.recovery-card--coming-soon:hover {
+  border-color: var(--color-teal);
+  box-shadow: 0 0 28px rgba(30, 200, 176, 0.07);
+}
+
+/* Coming Soon badge */
+.coming-soon-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: 0.25rem 0.75rem;
+  background: var(--color-teal);
+  color: #fff;
+  font-family: var(--font-display);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border-radius: var(--radius-full);
+  margin-bottom: var(--space-4);
+  width: fit-content;
+}
+
+/* Card icon */
+.recovery-card-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: var(--space-4);
+  flex-shrink: 0;
+}
+
+.recovery-card-icon svg {
+  width: 24px;
+  height: 24px;
+}
+
+.recovery-card-icon--teal {
+  background: rgba(30, 200, 176, 0.12);
+  color: var(--color-teal);
+}
+
+.recovery-card-icon--pink {
+  background: rgba(240, 68, 138, 0.12);
+  color: var(--color-pink);
+}
+
+.recovery-card-icon--purple {
+  background: rgba(155, 111, 212, 0.12);
+  color: var(--color-purple);
+}
+
+/* Card title row */
+.recovery-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-bottom: var(--space-3);
+  flex-wrap: wrap;
+}
+
+.recovery-card h3 {
+  font-family: var(--font-display);
+  font-size: var(--text-base);
+  font-weight: 700;
+  color: var(--color-text);
+  line-height: 1.2;
+}
+
+/* Pricing pills */
+.recovery-pricing {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
+}
+
+.recovery-price-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: 0.3rem 0.75rem;
+  background: var(--color-teal-glow, rgba(30, 200, 176, 0.08));
+  border: 1px solid rgba(30, 200, 176, 0.2);
+  border-radius: var(--radius-full);
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  font-weight: 700;
+  color: var(--color-teal);
+}
+
+.recovery-price-pill .price-duration {
+  font-weight: 500;
+  color: var(--color-text-muted);
+}
+
+/* Card description */
+.recovery-card p {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+  line-height: 1.7;
+  flex-grow: 1;
+  margin-bottom: var(--space-6);
+}
+
+/* CTA at bottom of card */
+.recovery-card-cta {
+  margin-top: auto;
+}
+
+/* ── Link Card (Peptide CTA) ── */
+.link-card {
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-8);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+  transition: border-color var(--transition-interactive), box-shadow var(--transition-interactive);
+}
+
+.link-card:hover {
+  border-color: var(--color-pink);
+  box-shadow: 0 0 28px rgba(240, 68, 138, 0.08);
+}
+
+.link-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--color-pink), var(--color-teal));
+}
+
+.link-card h3 {
+  font-family: var(--font-display);
+  font-size: var(--text-base);
+  font-weight: 700;
+  color: var(--color-text);
+  margin-bottom: var(--space-3);
+  line-height: 1.2;
+}
+
+.link-card p {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+  line-height: 1.7;
+  flex-grow: 1;
+  margin-bottom: var(--space-6);
+}
+
+.link-card-ctas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+.link-card-learn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-family: var(--font-display);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--color-teal);
+  text-decoration: none;
+  transition: color var(--transition-interactive);
+}
+
+.link-card-learn:hover {
+  color: var(--color-text);
+}
+
+/* ── Bottom CTA Section ── */
+.rec-bottom-cta {
+  padding: clamp(var(--space-16), 10vw, var(--space-24)) 0;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.rec-bottom-cta::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(30, 200, 176, 0.05) 0%, transparent 65%);
+  pointer-events: none;
+}
+
+.rec-bottom-cta-inner {
+  position: relative;
+  max-width: 640px;
+  margin-inline: auto;
+}
+
+.rec-bottom-cta h2 {
+  font-family: var(--font-body);
+  font-size: var(--text-2xl);
+  font-weight: 800;
+  color: var(--color-text);
+  line-height: 1.15;
+  margin-bottom: var(--space-4);
+}
+
+.rec-bottom-cta p {
+  font-size: var(--text-base);
+  color: var(--color-text-muted);
+  line-height: 1.7;
+  margin-bottom: var(--space-8);
+}
+
+/* ── Tool page back link ── */
+.tool-back {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  text-decoration: none;
+  margin-bottom: var(--space-8);
+  transition: color var(--transition-interactive);
+}
+.tool-back:hover { color: var(--color-teal); }
+.tool-back svg { width: 16px; height: 16px; }
+
+/* ── Mobile Sticky CTA ── */
+.mobile-sticky-cta {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 90;
+  padding: var(--space-3) var(--space-4);
+  background: rgba(10, 14, 23, 0.8);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-top: 1px solid var(--color-divider);
+  transform: translateY(100%);
+  transition: transform 0.3s var(--ease-out);
+}
+
+.mobile-sticky-cta.visible {
+  transform: translateY(0);
+}
+
+.mobile-sticky-cta .btn {
+  width: 100%;
+  justify-content: center;
+  padding: 0.75rem 1.25rem;
+}
+
+@media (max-width: 899px) {
+  .mobile-sticky-cta { display: block; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════
+     HEADER
+     ═══════════════════════════════════════════ -->
+<header class="site-header" role="banner">
+  <div class="header-inner">
+    <a href="./index.html" class="logo-link" aria-label="Yeager's Gym Home">
+      <img src="assets/logo.jpeg" alt="Yeager's Gym Logo" class="logo-mark-img" width="48" height="48">
+    </a>
+
+    <nav class="nav-desktop" role="navigation" aria-label="Main navigation">
+      <a href="./index.html" class="nav-link">Home</a>
+      <a href="./index.html#about" class="nav-link">About</a>
+      <a href="./index.html#services" class="nav-link">Services</a>
+      <a href="./index.html#vbt" class="nav-link">VBT</a>
+      <a href="./tools-vbt.html" class="nav-link">Tools</a>
+      <a href="./quiz.html" class="nav-link">Quiz</a>
+      <div class="nav-utility">
+        <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="btn btn-nav-cta">Book a Session</a>
+      </div>
+    </nav>
+
+    <button class="hamburger" aria-label="Toggle menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+
+  <div class="mobile-nav" role="navigation" aria-label="Mobile navigation">
+    <a href="./index.html">Home</a>
+    <a href="./index.html#about">About</a>
+    <a href="./index.html#services">Services</a>
+    <a href="./index.html#services" style="padding-left: 2rem;">In-Person Coaching</a>
+    <a href="./index.html#services">Remote Coaching</a>
+    <a href="./index.html#services">Nutrition Coaching</a>
+    <a href="./peptide-consulting.html" style="color: var(--color-teal);">Peptide Consulting</a>
+    <a href="./recovery.html" style="padding-left: 2rem; color: var(--color-teal);">Recovery</a>
+    <a href="./index.html#vbt">VBT</a>
+    <a href="./index.html#results">Results</a>
+    <a href="./tools-vbt.html">VBT Calculator</a>
+    <a href="./tools-crossfit.html">Machine Converter</a>
+    <a href="./tools-macro.html">Macro Calculator</a>
+    <a href="./tools-peptide.html" style="color: var(--color-purple);">Peptide Calculator</a>
+    <a href="./quiz.html" style="color: var(--color-pink);">Training Type Quiz</a>
+    <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="btn btn-nav-cta" style="margin-top: var(--space-4);">Book a Session</a>
+  </div>
+</header>
+
+<!-- ═══════════════════════════════════════════
+     HERO
+     ═══════════════════════════════════════════ -->
+<section class="rec-hero" aria-label="Recovery Services Hero">
+  <div class="container">
+
+    <a href="./index.html" class="tool-back fade-in">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 12L6 8l4-4"/></svg>
+      Back to Home
+    </a>
+
+    <div class="rec-hero-inner fade-in">
+      <p class="section-label" style="color: var(--color-pink);">Recovery Services</p>
+      <h1>Recovery Is Part of <span class="highlight-teal">the Program</span></h1>
+      <p class="rec-hero-sub">Training breaks you down. Recovery is how you come back stronger. Yeager's Gym offers targeted recovery services designed to complement your training — reducing soreness, improving circulation, and keeping you consistent.</p>
+
+      <div class="rec-hero-ctas">
+        <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="btn btn-primary">Book a Session</a>
+        <a href="#services" class="btn btn-secondary">See All Services</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="glow-line">
+
+<!-- ═══════════════════════════════════════════
+     RECOVERY SERVICES
+     ═══════════════════════════════════════════ -->
+<section id="services" class="rec-section" aria-label="Recovery Services">
+  <div class="container">
+    <div class="section-header fade-in" style="text-align: center; max-width: 600px; margin-inline: auto; margin-bottom: var(--space-12);">
+      <p class="section-label" style="color: var(--color-pink);">What We Offer</p>
+      <h2 class="section-title">Recovery Services</h2>
+      <p class="section-desc" style="margin-inline: auto;">Each service is available standalone or paired with your training session. Recovery isn't optional — it's the other half of the work.</p>
+    </div>
+
+    <div class="recovery-grid">
+
+      <!-- Cupping Therapy -->
+      <div class="recovery-card fade-in">
+        <div class="recovery-card-icon recovery-card-icon--teal">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/>
+            <path d="M8 12c0-2.209 1.791-4 4-4s4 1.791 4 4-1.791 4-4 4-4-1.791-4-4z"/>
+            <path d="M12 8V6"/>
+            <path d="M12 18v-2"/>
+            <path d="M8 12H6"/>
+            <path d="M18 12h-2"/>
+          </svg>
+        </div>
+        <h3>Cupping Therapy</h3>
+        <div class="recovery-pricing">
+          <span class="recovery-price-pill">$20 <span class="price-duration">/ 15 min</span></span>
+          <span class="recovery-price-pill">$30 <span class="price-duration">/ 30 min</span></span>
+        </div>
+        <p>Myofascial decompression therapy targeting muscle tension, improving blood flow, and accelerating recovery between sessions. Ideal for athletes dealing with tight tissue, restricted movement, or post-training soreness.</p>
+        <div class="recovery-card-cta">
+          <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="btn btn-primary">Book a Session</a>
+        </div>
+      </div>
+
+      <!-- Cold Plunge -->
+      <div class="recovery-card fade-in">
+        <div class="recovery-card-icon recovery-card-icon--pink">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2v6"/>
+            <path d="M12 22v-6"/>
+            <path d="M4.93 4.93l4.24 4.24"/>
+            <path d="M14.83 14.83l4.24 4.24"/>
+            <path d="M2 12h6"/>
+            <path d="M22 12h-6"/>
+            <path d="M4.93 19.07l4.24-4.24"/>
+            <path d="M14.83 9.17l4.24-4.24"/>
+          </svg>
+        </div>
+        <h3>Cold Plunge</h3>
+        <div class="recovery-pricing">
+          <span class="recovery-price-pill">$15 <span class="price-duration">/ session</span></span>
+        </div>
+        <p>Cold water immersion for reducing inflammation, improving circulation, and enhancing mental resilience. Available as a standalone session or post-training add-on. The discomfort is the point — and the results follow.</p>
+        <div class="recovery-card-cta">
+          <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="btn btn-primary">Take the Plunge</a>
+        </div>
+      </div>
+
+      <!-- Barrel Sauna (Coming Soon) -->
+      <div class="recovery-card recovery-card--coming-soon fade-in">
+        <div class="coming-soon-badge">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="10" height="10"><circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 1"/></svg>
+          Coming Soon
+        </div>
+        <div class="recovery-card-icon recovery-card-icon--teal">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/>
+            <path d="M8 12c0 2.21 1.79 4 4 4s4-1.79 4-4"/>
+            <path d="M8 8h.01"/>
+            <path d="M16 8h.01"/>
+          </svg>
+        </div>
+        <h3>Barrel Sauna</h3>
+        <p>Infrared barrel sauna for deep tissue recovery, improved sleep quality, and cardiovascular conditioning. Heat stress triggers powerful adaptations — from increased growth hormone to better stress tolerance. Coming to Yeager's Gym soon.</p>
+        <!-- No CTA button for coming soon -->
+      </div>
+
+      <!-- Peptide Therapy Consulting (Link Card) -->
+      <div class="link-card fade-in">
+        <div class="recovery-card-icon recovery-card-icon--purple">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 3h6v11a6 6 0 0 1-6 0V3z"/>
+            <path d="M12 14v7"/>
+          </svg>
+        </div>
+        <h3>Peptide Therapy Consulting</h3>
+        <div class="recovery-pricing">
+          <span class="recovery-price-pill">$200 <span class="price-duration">/ one-time consultation</span></span>
+        </div>
+        <p>Performance peptide strategy for recovery, body composition, and longevity. A personalized 60-minute protocol design session built around your training, goals, and health metrics.</p>
+        <div class="link-card-ctas">
+          <a href="./peptide-consulting.html" class="link-card-learn">
+            Learn More →
+          </a>
+          <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="btn btn-primary">Book a Consultation</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<hr class="glow-line">
+
+<!-- ═══════════════════════════════════════════
+     BOTTOM CTA
+     ═══════════════════════════════════════════ -->
+<section class="rec-bottom-cta" aria-label="Book a Recovery Session">
+  <div class="container">
+    <div class="rec-bottom-cta-inner fade-in">
+      <p class="section-label" style="color: var(--color-pink);">Get Started</p>
+      <h2>Recover Smarter, <span class="highlight-teal">Train Harder</span></h2>
+      <p>Book a session to see how recovery fits into your program. Whether it's a 15-minute cupping session between sets or a cold plunge after training — your next workout starts with recovery.</p>
+      <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="btn btn-primary">Book a Session</a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     FOOTER
+     ═══════════════════════════════════════════ -->
+<footer class="site-footer" role="contentinfo">
+  <div class="container" style="padding: var(--space-4) 0 var(--space-3);">
+    <div class="footer-nav-columns" style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); margin-bottom: var(--space-3);">
+      <div class="footer-links">
+        <h4 style="font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-teal); margin-bottom: var(--space-1);">Navigate</h4>
+        <a href="./index.html" style="display: block; font-size: 11px; color: var(--color-text-muted); text-decoration: none; padding: 1px 0; line-height: 1.5;">Home</a>
+        <a href="./index.html#about" style="display: block; font-size: 11px; color: var(--color-text-muted); text-decoration: none; padding: 1px 0; line-height: 1.5;">About Brad</a>
+        <a href="./index.html#services" style="display: block; font-size: 11px; color: var(--color-text-muted); text-decoration: none; padding: 1px 0; line-height: 1.5;">Services & Pricing</a>
+        <a href="./tools-vbt.html" style="display: block; font-size: 11px; color: var(--color-text-muted); text-decoration: none; padding: 1px 0; line-height: 1.5;">VBT Calculator</a>
+        <a href="./tools-crossfit.html" style="display: block; font-size: 11px; color: var(--color-text-muted); text-decoration: none; padding: 1px 0; line-height: 1.5;">Machine Converter</a>
+        <a href="./tools-macro.html" style="display: block; font-size: 11px; color: var(--color-text-muted); text-decoration: none; padding: 1px 0; line-height: 1.5;">Macro Calculator</a>
+        <a href="./tools-peptide.html" style="display: block; font-size: 11px; color: var(--color-text-muted); text-decoration: none; padding: 1px 0; line-height: 1.5;">Peptide Calculator</a>
+        <a href="./peptide-consulting.html" style="display: block; font-size: 11px; color: var(--color-text-muted); text-decoration: none; padding: 1px 0; line-height: 1.5;">Peptide Consulting</a>
+        <a href="./recovery.html" style="display: block; font-size: 11px; color: var(--color-text-muted); text-decoration: none; padding: 1px 0; line-height: 1.5;">Recovery Services</a>
+      </div>
+      <div class="footer-links">
+        <h4 style="font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-teal); margin-bottom: var(--space-1);">Connect</h4>
+        <a href="mailto:brad@yeagersgym.com" style="display: block; font-size: 11px; color: var(--color-text-muted); text-decoration: none; padding: 1px 0; line-height: 1.5;">brad@yeagersgym.com</a>
+        <a href="https://www.instagram.com/YeagersGym" target="_blank" rel="noopener noreferrer" style="display: block; font-size: 11px; color: var(--color-text-muted); text-decoration: none; padding: 1px 0; line-height: 1.5;">Instagram @YeagersGym</a>
+        <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" style="display: block; font-size: 11px; color: var(--color-text-muted); text-decoration: none; padding: 1px 0; line-height: 1.5;">Book via Vagaro</a>
+      </div>
+    </div>
+    <div class="footer-bottom" style="padding-top: var(--space-2); border-top: 1px solid rgba(255,255,255,0.06); display: flex; justify-content: space-between; align-items: center; font-size: 10px; color: rgba(255,255,255,0.25);">
+      <span>&copy; 2026 Yeager's Gym &middot; San Diego, CA</span>
+      <div style="display: flex; align-items: center; gap: var(--space-2);">
+        <a href="https://www.perplexity.ai/computer" target="_blank" rel="noopener noreferrer" style="color: rgba(255,255,255,0.25); text-decoration: none;">Created with Perplexity Computer</a>
+        <a href="./index.html" aria-label="Yeager's Gym Home">
+          <img src="assets/logo.jpeg" alt="Yeager's Gym" style="width: 24px; height: 24px; border-radius: 50%; opacity: 0.6;" width="24" height="24">
+        </a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- ═══════════════════════════════════════════
+     MOBILE STICKY CTA
+     ═══════════════════════════════════════════ -->
+<div class="mobile-sticky-cta" id="mobileCta">
+  <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="btn btn-primary">Book a Session</a>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     SCRIPTS
+     ═══════════════════════════════════════════ -->
+<script>
+(function() {
+  'use strict';
+
+  // ── Scroll Animations (IntersectionObserver) ──
+  var fadeEls = document.querySelectorAll('.fade-in');
+  if ('IntersectionObserver' in window) {
+    var observer = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+    fadeEls.forEach(function(el) { observer.observe(el); });
+  } else {
+    fadeEls.forEach(function(el) { el.classList.add('visible'); });
+  }
+
+  // ── Mobile Sticky CTA ──
+  var mobileCta = document.getElementById('mobileCta');
+  window.addEventListener('scroll', function() {
+    if (window.scrollY > 300) {
+      mobileCta.classList.add('visible');
+    } else {
+      mobileCta.classList.remove('visible');
+    }
+  }, { passive: true });
+
+  // ── Header / Mobile Nav ──
+  var hamburger = document.querySelector('.hamburger');
+  var mobileNav = document.querySelector('.mobile-nav');
+
+  hamburger.addEventListener('click', function() {
+    var isOpen = hamburger.classList.toggle('open');
+    mobileNav.classList.toggle('open', isOpen);
+    hamburger.setAttribute('aria-expanded', isOpen);
+    document.body.style.overflow = isOpen ? 'hidden' : '';
+  });
+
+  mobileNav.querySelectorAll('a').forEach(function(link) {
+    link.addEventListener('click', function() {
+      hamburger.classList.remove('open');
+      mobileNav.classList.remove('open');
+      hamburger.setAttribute('aria-expanded', 'false');
+      document.body.style.overflow = '';
+    });
+  });
+
+  // ── Header scroll shadow ──
+  var header = document.querySelector('.site-header');
+  window.addEventListener('scroll', function() {
+    if (window.scrollY > 10) {
+      header.style.boxShadow = 'var(--shadow-md)';
+    } else {
+      header.style.boxShadow = 'none';
+    }
+  }, { passive: true });
+
+})();
+</script>
+
+</body>
+</html>

@@ -76,7 +76,16 @@
     <nav class="nav-desktop" role="navigation" aria-label="Main navigation">
       <a href="#home" class="nav-link active" data-page="home">Home</a>
       <a href="#about" class="nav-link" data-page="about">About</a>
-      <a href="#services" class="nav-link" data-page="services">Services</a>
+      <div class="nav-dropdown">
+        <a href="#services" class="nav-link" data-page="services">Services ▾</a>
+        <div class="nav-dropdown-menu">
+          <a href="./in-person.html">In-Person Coaching</a>
+          <a href="./remote.html">Remote Coaching</a>
+          <a href="./nutrition.html">Nutrition Coaching</a>
+          <a href="./peptide-consulting.html">Peptide Consulting</a>
+          <a href="./recovery.html">Recovery</a>
+        </div>
+      </div>
       <a href="#vbt" class="nav-link" data-page="vbt">Velocity Based Training</a>
       <a href="#results" class="nav-link" data-page="results">Results</a>
       <div class="nav-dropdown">
@@ -86,13 +95,12 @@
           <a href="./tools-crossfit.html">Machine Converter</a>
           <a href="./tools-macro.html">Macro Calculator</a>
           <a href="./tools-peptide.html">Peptide Calculator</a>
-          <a href="./peptide-consulting.html">Peptide Consulting</a>
           <a href="./velocity-trackers.html">Velocity Trackers Guide</a>
         </div>
       </div>
       <a href="./quiz.html" class="nav-link">Quiz</a>
       <div class="nav-utility">
-        <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="btn btn-primary">Book Your FREE Session!</a>
+        <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="btn btn-nav-cta">Book Your FREE Session!</a>
       </div>
     </nav>
 
@@ -105,16 +113,19 @@
     <a href="#home" data-page="home">Home</a>
     <a href="#about" data-page="about">About</a>
     <a href="#services" data-page="services">Services</a>
+    <a href="./in-person.html" style="padding-left: 2rem;">In-Person Coaching</a>
+    <a href="./remote.html" style="padding-left: 2rem;">Remote Coaching</a>
+    <a href="./nutrition.html" style="padding-left: 2rem;">Nutrition Coaching</a>
+    <a href="./peptide-consulting.html" style="padding-left: 2rem; color: var(--color-teal);">Peptide Consulting</a>
+    <a href="./recovery.html" style="padding-left: 2rem;">Recovery</a>
     <a href="#vbt" data-page="vbt">Velocity Based Training</a>
     <a href="#results" data-page="results">Results</a>
     <a href="./tools-vbt.html">VBT Calculator</a>
     <a href="./tools-crossfit.html">Machine Converter</a>
     <a href="./tools-macro.html">Macro Calculator</a>
     <a href="./tools-peptide.html" style="color: var(--color-purple);">Peptide Calculator</a>
-    <a href="./peptide-consulting.html" style="color: var(--color-teal);">Peptide Consulting</a>
-    <a href="./velocity-trackers.html">Velocity Trackers Guide</a>
-    <a href="./quiz.html" style="color: var(--color-pink);">Find Your Training Type</a>
-    <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="btn btn-primary" style="margin-top: var(--space-4);">Book Your FREE Session!</a>
+    <a href="./quiz.html" style="color: var(--color-pink);">Training Type Quiz</a>
+    <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="btn btn-nav-cta" style="margin-top: var(--space-4);">Book Your FREE Session!</a>
   </div>
 </header>
 
@@ -160,9 +171,8 @@
     </div>
 
     <div class="hero-ctas">
-      <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="btn btn-primary">Book Your FREE Session!</a>
-      <p class="hero-cta-subtext">Free 60-min session. No commitment.</p>
-      <a href="./quiz.html" class="btn btn-secondary">Find Your Training Type →</a>
+      <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="btn btn-primary">Free 60-Min Personal Training. No Commitment!</a>
+      <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="btn btn-secondary">Try a Week of Programming Free!</a>
     </div>
 
   </div>
@@ -457,7 +467,7 @@
 <div class="final-cta">
   <h2>Ready to train with data?</h2>
   <p>Whether you're in San Diego or training remotely — it starts with a conversation.</p>
-  <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="btn btn-pink" style="font-size: 0.85rem; padding: 14px 32px;">Book Your FREE Session!</a>
+  <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="btn btn-primary" style="font-size: 0.85rem; padding: 14px 32px;">Book Your FREE Session!</a>
 </div>
 
 
@@ -479,8 +489,8 @@
       <!-- About Me content with inline headshot -->
       <div class="about-content-block">
         <div class="about-text-with-photo">
-          <div class="about-inline-headshot">
-            <img src="assets/brad-headshot.jpeg" alt="Brad Yeager, owner and head coach at Yeager's Gym" loading="lazy" width="280" height="280">
+          <div class="about-inline-headshot about-headshot-lg">
+            <img src="assets/brad-headshot.jpeg" alt="Brad Yeager, owner and head coach at Yeager's Gym" loading="lazy" width="340" height="340">
           </div>
           <h3 style="font-family: var(--font-display); font-size: var(--text-base); font-weight: 600; color: var(--color-pink); margin-bottom: var(--space-4);">My Story</h3>
           <p>I started Yeager's Gym because I wanted to coach the way training science says we should — with measurement, not guesswork.</p>
@@ -534,10 +544,13 @@
       </div>
 
       <!-- About Page CTA -->
-      <div class="about-cta-block" style="text-align: center; margin-top: var(--space-12); padding: var(--space-8) var(--space-6); border: 1px solid rgba(30,200,176,0.2); border-radius: var(--radius-lg); background: rgba(30,200,176,0.03);">
-        <h3 style="font-family: var(--font-display); font-size: var(--text-base); font-weight: 600; color: var(--color-teal); margin-bottom: var(--space-2);">Ready to start?</h3>
-        <p style="font-size: var(--text-sm); color: var(--color-text-muted); margin-bottom: var(--space-6); max-width: 45ch; margin-inline: auto; line-height: 1.7;">Whether you're in San Diego or training remotely — the first step is a conversation about your goals.</p>
-        <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="btn btn-primary">Book Your FREE Session!</a>
+      <div class="about-cta-block" style="text-align: center; margin-top: var(--space-6); padding: var(--space-6) var(--space-6); border: 1px solid rgba(30,200,176,0.2); border-radius: var(--radius-lg); background: rgba(30,200,176,0.03);">
+        <h3 style="font-family: var(--font-display); font-size: var(--text-xl); font-weight: 700; color: var(--color-pink); margin-bottom: var(--space-2);">Ready to Start?</h3>
+        <p style="font-size: var(--text-sm); color: var(--color-text-muted); margin-bottom: var(--space-4); max-width: 45ch; margin-inline: auto; line-height: 1.7;">Whether you're in San Diego or training remotely — the first step is a conversation about your goals.</p>
+        <div style="display: flex; gap: var(--space-3); justify-content: center; flex-wrap: wrap;">
+          <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="btn btn-primary">Book a Free Session</a>
+          <a href="#services" class="btn btn-secondary nav-trigger" data-page="services">Explore Remote Training →</a>
+        </div>
         <p style="font-size: 0.7rem; color: var(--color-text-faint); margin-top: var(--space-3);">Free 60-min session. No commitment.</p>
       </div>
     </div>
@@ -638,56 +651,61 @@
         </div>
       </div>
 
-      <!-- Nutrition & Recovery -->
+      <!-- Nutrition Coaching -->
       <div class="pricing-category">
         <div class="pricing-category-header">
           <div class="pricing-category-icon">🥗</div>
           <div>
-            <h3>Nutrition & Recovery</h3>
+            <h3>Nutrition Coaching</h3>
             <p style="font-size: var(--text-sm); color: var(--color-text-muted);">Standalone or add-on to training</p>
           </div>
         </div>
-
-        <div class="svc-subsection-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-4); margin-top: var(--space-4);">
-          <!-- Nutrition -->
-          <div class="svc-subsection-card" style="background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: var(--space-5);">
-            <h4 style="font-family: var(--font-display); font-size: var(--text-sm); font-weight: 600; color: var(--color-pink); margin-bottom: var(--space-2);">Nutrition Consultation & Plan</h4>
-            <div style="font-size: var(--text-lg); font-weight: 700; color: var(--color-text);">$200</div>
-            <div style="font-size: var(--text-xs); color: var(--color-text-muted); margin-bottom: var(--space-4);">One-time</div>
-            <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="btn btn-primary" style="font-size: var(--text-xs); padding: 8px 16px;">Book a Consultation!</a>
+        <div class="price-card-grid">
+          <div class="price-card">
+            <h4>Nutrition Consultation & Plan</h4>
+            <div class="price-val">$200</div>
+            <div class="price-freq">One-time</div>
+            <p>Comprehensive nutrition assessment, custom macro targets, meal timing strategy, and a full plan tailored to your body composition goals and training demands.</p>
+            <a href="./nutrition.html" class="btn btn-secondary" style="margin-top: var(--space-4); font-size: var(--text-xs);">Learn More About Nutrition →</a>
+            <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="btn btn-primary" style="margin-top: var(--space-3); font-size: var(--text-xs);">Book a Consultation</a>
           </div>
-          <!-- Cupping -->
+        </div>
+      </div>
+
+      <!-- Recovery Services -->
+      <div class="pricing-category">
+        <div class="pricing-category-header">
+          <div class="pricing-category-icon">🦠</div>
+          <div>
+            <h3>Recovery</h3>
+            <p style="font-size: var(--text-sm); color: var(--color-text-muted);">In-gym recovery services</p>
+          </div>
+        </div>
+        <div class="svc-subsection-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-4); margin-top: var(--space-4);">
           <div class="svc-subsection-card" style="background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: var(--space-5);">
             <h4 style="font-family: var(--font-display); font-size: var(--text-sm); font-weight: 600; color: var(--color-pink); margin-bottom: var(--space-2);">Cupping Therapy</h4>
             <div style="font-size: var(--text-sm); color: var(--color-text);"><strong>15 min</strong> — $20 · <strong>30 min</strong> — $30</div>
             <div style="font-size: var(--text-xs); color: var(--color-text-muted); margin-bottom: var(--space-4);">Recovery add-on</div>
-            <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="btn btn-primary" style="font-size: var(--text-xs); padding: 8px 16px;">Book a Session!</a>
+            <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="btn btn-primary" style="font-size: var(--text-xs); padding: 8px 16px;">Book a Session</a>
           </div>
-          <!-- Peptide Consulting -->
-          <div class="svc-subsection-card" style="background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: var(--space-5);">
-            <h4 style="font-family: var(--font-display); font-size: var(--text-sm); font-weight: 600; color: var(--color-pink); margin-bottom: var(--space-2);">Peptide Therapy Consulting</h4>
-            <div style="font-size: var(--text-lg); font-weight: 700; color: var(--color-text);">$200</div>
-            <div style="font-size: var(--text-xs); color: var(--color-text-muted); margin-bottom: var(--space-4);">One-time consultation</div>
-            <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="btn btn-primary" style="font-size: var(--text-xs); padding: 8px 16px;">Book a Consultation!</a>
-            <a href="./peptide-consulting.html" style="display: block; margin-top: var(--space-2); font-size: var(--text-xs); color: var(--color-teal);">Learn more →</a>
-          </div>
-          <!-- Cold Plunge -->
           <div class="svc-subsection-card" style="background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: var(--space-5);">
             <h4 style="font-family: var(--font-display); font-size: var(--text-sm); font-weight: 600; color: var(--color-pink); margin-bottom: var(--space-2);">Cold Plunge</h4>
             <div style="font-size: var(--text-lg); font-weight: 700; color: var(--color-text);">$15</div>
             <div style="font-size: var(--text-xs); color: var(--color-text-muted); margin-bottom: var(--space-4);">Per session</div>
-            <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="btn btn-primary" style="font-size: var(--text-xs); padding: 8px 16px;">Take the Plunge!</a>
+            <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="btn btn-primary" style="font-size: var(--text-xs); padding: 8px 16px;">Take the Plunge</a>
+          </div>
+          <div class="svc-subsection-card" style="background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: var(--space-5);">
+            <h4 style="font-family: var(--font-display); font-size: var(--text-sm); font-weight: 600; color: var(--color-pink); margin-bottom: var(--space-2);">Peptide Therapy Consulting</h4>
+            <div style="font-size: var(--text-lg); font-weight: 700; color: var(--color-text);">$200</div>
+            <div style="font-size: var(--text-xs); color: var(--color-text-muted); margin-bottom: var(--space-4);">One-time consultation</div>
+            <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="btn btn-primary" style="font-size: var(--text-xs); padding: 8px 16px;">Book a Consultation</a>
+            <a href="./peptide-consulting.html" style="display: block; margin-top: var(--space-2); font-size: var(--text-xs); color: var(--color-teal);">Learn more →</a>
+          </div>
+          <div class="svc-subsection-card" style="background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: var(--space-5); display: flex; align-items: center; justify-content: center;">
+            <a href="./recovery.html" style="font-family: var(--font-display); font-size: var(--text-sm); font-weight: 600; color: var(--color-teal); text-decoration: none;">View All Recovery Services →</a>
           </div>
         </div>
 
-        <p style="font-size: var(--text-xs); color: var(--color-text-faint); margin-top: var(--space-4); line-height: 1.6;">* Peptide therapy consulting is for educational and informational purposes only. Brad Yeager is a certified peptide therapist providing guidance on peptide protocols — not a licensed medical provider. Always consult with a qualified healthcare professional before starting any peptide regimen.</p>
-      </div>
-
-      <hr class="glow-line" style="margin: var(--space-12) 0;">
-
-      <div style="text-align: center;">
-        <p style="font-size: var(--text-base); color: var(--color-text-muted); margin-bottom: var(--space-6); max-width: 50ch; margin-inline: auto;">Not sure which service fits? Book a free session and we'll figure it out together.</p>
-        <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="btn btn-primary">Book Your FREE Session!</a>
       </div>
     </div>
   </section>
@@ -815,7 +833,7 @@
       </div>
 
       <!-- Why It Matters -->
-      <div class="vbt-page-section fade-in" style="margin-top: var(--space-12);">
+      <div class="vbt-page-section fade-in" style="margin-top: var(--space-6);">
         <div class="section-header">
           <p class="section-label" style="color: var(--color-pink);">Why It Matters</p>
           <h2 class="section-title">Why bar speed changes everything.</h2>
@@ -833,15 +851,12 @@
             <p>If the bar is moving fast, you're fresh — we can push. If it's moving slow, fatigue is present — we adjust.</p>
           </div>
         </div>
-        <div class="page-hero-img fade-in" style="margin-top: var(--space-8);">
-          <img src="assets/vbt-why-matters.jpeg" alt="Female athlete bench pressing with holographic velocity zone dial and power curve data" loading="lazy" width="1920" height="1080" style="width: 100%; border-radius: 12px; display: block;">
-        </div>
       </div>
 
       <!-- How We Use VBT -->
-      <div style="margin-top: var(--space-12);">
+      <div style="margin-top: var(--space-6);">
         <div class="section-header">
-          <p class="section-label">In Practice</p>
+          <p class="section-label" style="color: var(--color-pink);">In Practice</p>
           <h2 class="section-title">How we use VBT at Yeager's Gym.</h2>
         </div>
         <div class="vbt-use-grid">
@@ -865,14 +880,14 @@
       </div>
 
       <!-- The Science -->
-      <div class="vbt-science-box fade-in" style="margin-top: var(--space-12);">
+      <div class="vbt-science-box vbt-science-hoverable fade-in" style="margin-top: var(--space-6);">
         <h4>The Science (For Those Who Want It)</h4>
         <p>Velocity Based Training is grounded in the load-velocity relationship: as load increases, bar velocity decreases in a predictable, linear pattern. This relationship is individual to each lifter and can be mapped to create a personal load-velocity profile.</p>
         <p>From this profile, we can estimate daily 1RM without maximal testing, prescribe loads using velocity zones that target specific adaptations, monitor fatigue through velocity loss within a session, and track long-term adaptation through shifts in the load-velocity curve.</p>
       </div>
 
       <!-- FAQ -->
-      <div style="margin-top: var(--space-12);">
+      <div style="margin-top: var(--space-6);">
         <div class="section-header">
           <p class="section-label" style="color: var(--color-pink);">FAQ</p>
           <h2 class="section-title">Common questions about VBT.</h2>
@@ -906,8 +921,9 @@
       </div>
 
       <!-- Bottom CTA -->
-      <div style="text-align: center; margin-top: var(--space-12);">
-        <p style="font-size: var(--text-base); color: var(--color-text-muted); margin-bottom: var(--space-6); max-width: 50ch; margin-inline: auto;">Want to see VBT in action? Book a free session and experience data-driven coaching firsthand.</p>
+      <div style="text-align: center; margin-top: var(--space-6);">
+        <h3 style="font-family: var(--font-display); font-size: var(--text-xl); font-weight: 700; color: var(--color-pink); margin-bottom: var(--space-2);">Experience VBT Firsthand</h3>
+        <p style="font-size: var(--text-sm); color: var(--color-text-muted); margin-bottom: var(--space-4); max-width: 50ch; margin-inline: auto;">See what data-driven coaching feels like in person. Your first session is free.</p>
         <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="btn btn-primary">Book Your FREE Session!</a>
       </div>
     </div>
@@ -931,45 +947,9 @@
         <img src="assets/data-dashboard.jpeg" alt="Performance analytics dashboard showing velocity metrics and training data" loading="lazy" width="1920" height="1080">
       </div>
 
-      <div class="result-highlight-grid result-highlight-grid--tight">
-        <div class="result-highlight result-highlight--tight fade-in">
-          <div class="stat-athlete-type">Powerlifting</div>
-          <div class="stat-val">+75 lbs</div>
-          <div class="stat-label">Squat PR · 6 months</div>
-        </div>
-        <div class="result-highlight result-highlight--tight fade-in">
-          <div class="stat-athlete-type">Powerlifting</div>
-          <div class="stat-val">9/9</div>
-          <div class="stat-label">USAPL Attempts Hit</div>
-        </div>
-        <div class="result-highlight result-highlight--tight fade-in">
-          <div class="stat-athlete-type">Body Comp</div>
-          <div class="stat-val">-18 lbs</div>
-          <div class="stat-label">Body Recomp · 12 weeks</div>
-        </div>
-        <div class="result-highlight result-highlight--tight fade-in">
-          <div class="stat-athlete-type">CrossFit</div>
-          <div class="stat-val">-1:42</div>
-          <div class="stat-label">Fran Time · 8 weeks</div>
-        </div>
-        <div class="result-highlight result-highlight--tight fade-in">
-          <div class="stat-athlete-type">HYROX</div>
-          <div class="stat-val">-8:30</div>
-          <div class="stat-label">Total Time · 16 weeks</div>
-        </div>
-        <div class="result-highlight result-highlight--tight fade-in">
-          <div class="stat-athlete-type">All Athletes</div>
-          <div class="stat-val">5★</div>
-          <div class="stat-label">Client Rating</div>
-        </div>
-      </div>
-
-      <!-- Velocity Data Showcase -->
-      <div class="vbt-showcase fade-in">
-        <div class="section-header">
-          <p class="section-label">Velocity Data</p>
-          <h2 class="section-title">See the data behind the progress.</h2>
-        </div>
+      <!-- Velocity Data -->
+      <div class="results-category fade-in">
+        <h3 class="results-category-title">Velocity Data</h3>
         <div class="vbt-showcase-grid">
           <div class="vbt-showcase-card">
             <div class="vbt-showcase-metric">
@@ -978,7 +958,7 @@
               <span class="vbt-showcase-to">0.52 m/s</span>
             </div>
             <div class="vbt-showcase-label">Squat velocity at 315 lbs · 12 weeks</div>
-            <p class="vbt-showcase-desc">A 37% improvement in bar speed at the same load. That means 315 went from a grind to a confident working weight.</p>
+            <p class="vbt-showcase-desc">A 37% improvement in bar speed at the same load. 315 went from a grind to a confident working weight.</p>
           </div>
           <div class="vbt-showcase-card">
             <div class="vbt-showcase-metric">
@@ -992,7 +972,89 @@
         </div>
       </div>
 
-      <div style="text-align: center; margin-top: var(--space-8);">
+      <!-- Powerlifting Data -->
+      <div class="results-category fade-in">
+        <h3 class="results-category-title">Powerlifting Data</h3>
+        <div class="result-highlight-grid result-highlight-grid--tight">
+          <div class="result-highlight result-highlight--tight">
+            <div class="stat-val">+75 lbs</div>
+            <div class="stat-label">Squat PR · 6 months</div>
+          </div>
+          <div class="result-highlight result-highlight--tight">
+            <div class="stat-val">9/9</div>
+            <div class="stat-label">USAPL Meet Attempts</div>
+          </div>
+          <div class="result-highlight result-highlight--tight">
+            <div class="stat-val">+40 lbs</div>
+            <div class="stat-label">Deadlift PR · 4 months</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Weightlifting Data -->
+      <div class="results-category fade-in">
+        <h3 class="results-category-title">Weightlifting Data</h3>
+        <div class="result-highlight-grid result-highlight-grid--tight">
+          <div class="result-highlight result-highlight--tight">
+            <div class="stat-val">+15 kg</div>
+            <div class="stat-label">Clean & Jerk PR · 12 weeks</div>
+          </div>
+          <div class="result-highlight result-highlight--tight">
+            <div class="stat-val">+10 kg</div>
+            <div class="stat-label">Snatch PR · 8 weeks</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bodybuilding Data -->
+      <div class="results-category fade-in">
+        <h3 class="results-category-title">Bodybuilding Data</h3>
+        <div class="result-highlight-grid result-highlight-grid--tight">
+          <div class="result-highlight result-highlight--tight">
+            <div class="stat-val">-18 lbs</div>
+            <div class="stat-label">Body Recomp · 12 weeks</div>
+          </div>
+          <div class="result-highlight result-highlight--tight">
+            <div class="stat-val">-4% BF</div>
+            <div class="stat-label">Body Fat · 8 weeks</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- HYROX Data -->
+      <div class="results-category fade-in">
+        <h3 class="results-category-title">HYROX Data</h3>
+        <div class="result-highlight-grid result-highlight-grid--tight">
+          <div class="result-highlight result-highlight--tight">
+            <div class="stat-val">-8:30</div>
+            <div class="stat-label">Total Time · 16 weeks</div>
+          </div>
+          <div class="result-highlight result-highlight--tight">
+            <div class="stat-val">-2:15</div>
+            <div class="stat-label">Sled Push Split · 8 weeks</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CrossFit Data -->
+      <div class="results-category fade-in">
+        <h3 class="results-category-title">CrossFit Data</h3>
+        <div class="result-highlight-grid result-highlight-grid--tight">
+          <div class="result-highlight result-highlight--tight">
+            <div class="stat-val">-1:42</div>
+            <div class="stat-label">Fran Time · 8 weeks</div>
+          </div>
+          <div class="result-highlight result-highlight--tight">
+            <div class="stat-val">5★</div>
+            <div class="stat-label">Client Rating</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom CTA -->
+      <div style="text-align: center; margin-top: var(--space-8); padding: var(--space-6); border: 1px solid rgba(240,68,138,0.2); border-radius: var(--radius-lg); background: rgba(240,68,138,0.03);">
+        <h3 style="font-family: var(--font-display); font-size: var(--text-xl); font-weight: 700; color: var(--color-pink); margin-bottom: var(--space-2);">Want Results Like These?</h3>
+        <p style="font-size: var(--text-sm); color: var(--color-text-muted); margin-bottom: var(--space-4); max-width: 50ch; margin-inline: auto;">Every number above started with one decision. Book a free session and see what data-driven coaching can do for you.</p>
         <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="btn btn-primary">Book Your FREE Session!</a>
       </div>
     </div>

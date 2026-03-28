@@ -473,7 +473,7 @@
   border: 1px solid var(--color-border);
   border-radius: var(--radius-xl);
   padding: var(--space-8);
-  margin-top: var(--space-12);
+  margin-top: var(--space-6);
   max-width: 600px;
   margin-inline: auto;
 }
@@ -504,7 +504,7 @@
 /* ── CTA Section ── */
 .tool-cta {
   text-align: center;
-  padding: var(--space-16) var(--space-4);
+  padding: var(--space-6) var(--space-4);
   max-width: 600px;
   margin-inline: auto;
 }
@@ -723,6 +723,64 @@
   }
 }
 
+/* ── Horizontal Calc Layout ── */
+@media (min-width: 768px) {
+  .calc-card {
+    max-width: 900px;
+  }
+
+  .calc-inputs-row {
+    display: flex;
+    gap: var(--space-4);
+    align-items: flex-start;
+    margin-bottom: var(--space-6);
+  }
+
+  .calc-inputs-row .field-group {
+    margin-bottom: 0;
+    flex: 1;
+  }
+
+  .calc-inputs-row .field-group:first-child {
+    flex: 1.2;
+  }
+}
+
+.calc-inputs-row .field-group {
+  /* mobile: normal block */
+  margin-bottom: var(--space-6);
+}
+
+/* ── Horizontal Results Layout ── */
+@media (min-width: 768px) {
+  .results-panel {
+    max-width: 900px;
+  }
+
+  .results-row {
+    display: flex;
+    gap: var(--space-4);
+    margin-bottom: var(--space-6);
+    align-items: stretch;
+  }
+
+  .results-row .result-hero {
+    flex: 1;
+    margin-bottom: 0;
+  }
+
+  .results-row .stats-grid {
+    flex: 1;
+    margin-bottom: 0;
+    grid-template-columns: 1fr;
+    align-content: stretch;
+  }
+
+  .results-row .stat-card {
+    flex: 1;
+  }
+}
+
 /* ── Tool Navigation Pills ── */
 .tool-nav-bar {
   display: flex;
@@ -847,7 +905,6 @@
 
     <!-- Tool Header -->
     <div class="tool-header fade-in">
-      <p class="section-label" style="color: var(--color-pink);">Free Tool</p>
       <h1><span class="highlight-pink">VBT</span>-to-<span class="highlight-teal">1RM</span> Calculator</h1>
       <p>Enter your lift weight and bar velocity to get a research-backed estimate of your one-rep max. No maxing out required — just one good set.</p>
     </div>
@@ -856,22 +913,58 @@
     <div class="calc-card fade-in">
       <h2>Your Lift Data</h2>
 
-      <!-- Exercise Select -->
-      <div class="field-group">
-        <label for="exercise">Exercise</label>
-        <select id="exercise">
-          <option value="back_squat">Back Squat</option>
-          <option value="front_squat">Front Squat</option>
-          <option value="bench_press" selected>Bench Press</option>
-          <option value="overhead_press">Overhead Press</option>
-          <option value="deadlift">Deadlift</option>
-          <option value="power_clean">Power Clean</option>
-          <option value="snatch">Snatch</option>
-          <option value="clean_and_jerk">Clean & Jerk</option>
-        </select>
-      </div>
+      <!-- Horizontal row: Exercise | Weight | Velocity -->
+      <div class="calc-inputs-row">
 
-      <!-- Velocity Profile -->
+        <!-- Exercise Select -->
+        <div class="field-group">
+          <label for="exercise">Exercise</label>
+          <select id="exercise">
+            <option value="back_squat">Back Squat</option>
+            <option value="front_squat">Front Squat</option>
+            <option value="bench_press" selected>Bench Press</option>
+            <option value="overhead_press">Overhead Press</option>
+            <option value="deadlift">Deadlift</option>
+            <option value="power_clean">Power Clean</option>
+            <option value="snatch">Snatch</option>
+            <option value="clean_and_jerk">Clean & Jerk</option>
+          </select>
+        </div>
+
+        <!-- Unit Toggle + Weight -->
+        <div class="field-group">
+          <label>Weight Lifted</label>
+          <div class="unit-toggle">
+            <button class="active" data-unit="lbs" type="button">LBS</button>
+            <button data-unit="kg" type="button">KG</button>
+          </div>
+          <div class="stepper-input" id="weight-stepper">
+            <button class="stepper-btn stepper-down" type="button" data-dir="-1" aria-label="Decrease weight">&#8722;</button>
+            <div class="stepper-value-wrap">
+              <input type="number" id="weight" value="225" min="5" max="2000" step="5" inputmode="decimal">
+              <span class="stepper-unit" id="weight-unit-label">lbs</span>
+            </div>
+            <button class="stepper-btn stepper-up" type="button" data-dir="1" aria-label="Increase weight">&#43;</button>
+          </div>
+        </div>
+
+        <!-- Mean Velocity -->
+        <div class="field-group">
+          <label for="velocity">Mean Velocity</label>
+          <div class="stepper-input" id="velocity-stepper">
+            <button class="stepper-btn stepper-down" type="button" data-dir="-1" aria-label="Decrease velocity">&#8722;</button>
+            <div class="stepper-value-wrap">
+              <input type="number" id="velocity" value="0.55" min="0.05" max="3.0" step="0.01" inputmode="decimal">
+              <span class="stepper-unit">m/s</span>
+            </div>
+            <button class="stepper-btn stepper-up" type="button" data-dir="1" aria-label="Increase velocity">&#43;</button>
+          </div>
+        </div>
+
+      </div>
+      <!-- End horizontal row -->
+
+      <!-- Velocity Profile (full width below) -->
       <div class="field-group">
         <label>Velocity Profile</label>
         <div class="profile-toggle">
@@ -890,36 +983,6 @@
         </div>
       </div>
 
-      <!-- Unit Toggle + Weight -->
-      <div class="field-group">
-        <label>Weight Lifted</label>
-        <div class="unit-toggle">
-          <button class="active" data-unit="lbs" type="button">LBS</button>
-          <button data-unit="kg" type="button">KG</button>
-        </div>
-        <div class="stepper-input" id="weight-stepper">
-          <button class="stepper-btn stepper-down" type="button" data-dir="-1" aria-label="Decrease weight">&#8722;</button>
-          <div class="stepper-value-wrap">
-            <input type="number" id="weight" value="225" min="5" max="2000" step="5" inputmode="decimal">
-            <span class="stepper-unit" id="weight-unit-label">lbs</span>
-          </div>
-          <button class="stepper-btn stepper-up" type="button" data-dir="1" aria-label="Increase weight">&#43;</button>
-        </div>
-      </div>
-
-      <!-- Mean Velocity -->
-      <div class="field-group">
-        <label for="velocity">Mean Velocity</label>
-        <div class="stepper-input" id="velocity-stepper">
-          <button class="stepper-btn stepper-down" type="button" data-dir="-1" aria-label="Decrease velocity">&#8722;</button>
-          <div class="stepper-value-wrap">
-            <input type="number" id="velocity" value="0.55" min="0.05" max="3.0" step="0.01" inputmode="decimal">
-            <span class="stepper-unit">m/s</span>
-          </div>
-          <button class="stepper-btn stepper-up" type="button" data-dir="1" aria-label="Increase velocity">&#43;</button>
-        </div>
-      </div>
-
       <button class="btn btn-primary btn-calculate" id="calculate-btn" type="button">
         Calculate e1RM
       </button>
@@ -928,22 +991,23 @@
     <!-- Results Panel (hidden until calculated) -->
     <div class="results-panel" id="results-panel">
 
-      <!-- Primary Result -->
-      <div class="result-hero">
-        <p class="result-label">Estimated 1-Rep Max</p>
-        <p class="result-value" id="result-1rm">315 <span class="result-unit" id="result-unit">lbs</span></p>
-        <p class="result-subtext" id="result-subtext">That lift was ~71% of your estimated 1RM</p>
-      </div>
-
-      <!-- Secondary Stats -->
-      <div class="stats-grid">
-        <div class="stat-card">
-          <p class="stat-label">% of 1RM</p>
-          <p class="stat-value pink" id="result-percent">71.4%</p>
+      <!-- Primary Result + Secondary Stats: horizontal row on desktop -->
+      <div class="results-row">
+        <div class="result-hero">
+          <p class="result-label">Estimated 1-Rep Max</p>
+          <p class="result-value" id="result-1rm">315 <span class="result-unit" id="result-unit">lbs</span></p>
+          <p class="result-subtext" id="result-subtext">That lift was ~71% of your estimated 1RM</p>
         </div>
-        <div class="stat-card">
-          <p class="stat-label">Training Zone</p>
-          <p class="stat-value purple" id="result-zone">Strength-Speed</p>
+
+        <div class="stats-grid">
+          <div class="stat-card">
+            <p class="stat-label">% of 1RM</p>
+            <p class="stat-value pink" id="result-percent">71.4%</p>
+          </div>
+          <div class="stat-card">
+            <p class="stat-label">Training Zone</p>
+            <p class="stat-value purple" id="result-zone">Strength-Speed</p>
+          </div>
         </div>
       </div>
 
@@ -1001,9 +1065,9 @@
 
     <!-- CTA -->
     <div class="tool-cta fade-in">
-      <h2>Want Real-Time Velocity Data?</h2>
+      <h2>Want coaching built on this data?</h2>
       <p>Train with a coach who measures every rep. Book a free session and see VBT in action.</p>
-      <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="btn btn-primary" style="padding: 0.875rem 2rem; font-size: var(--text-sm);">Book a Free Session</a>
+      <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="btn btn-primary" style="padding: 0.875rem 2rem; font-size: var(--text-sm);">Book Your FREE Session!</a>
     </div>
 
   </div>

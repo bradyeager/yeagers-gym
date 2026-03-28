@@ -548,9 +548,45 @@
 
 /* ── Recon 101 Section ── */
 .recon-section {
-  max-width: 800px;
+  max-width: 1000px;
   margin-inline: auto;
   margin-bottom: var(--space-16);
+}
+
+/* ── Recon + Syringe Side-by-Side Layout ── */
+.recon-with-syringe {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: var(--space-8);
+  margin-bottom: var(--space-16);
+  max-width: 1000px;
+  margin-inline: auto;
+}
+
+.recon-with-syringe .recon-section {
+  flex: 1 1 0;
+  margin-bottom: 0;
+  max-width: none;
+}
+
+.recon-syringe-aside {
+  flex: 0 0 280px;
+  max-width: 320px;
+  position: sticky;
+  top: 100px;
+}
+
+@media (max-width: 768px) {
+  .recon-with-syringe {
+    flex-direction: column;
+  }
+  .recon-syringe-aside {
+    flex: none;
+    max-width: 100%;
+    width: 100%;
+    position: static;
+  }
 }
 
 .recon-section h2 {
@@ -584,7 +620,7 @@
 
 .recon-step {
   background: var(--color-surface);
-  border: 1px solid var(--color-border);
+  border: 2px solid var(--color-teal);
   border-radius: var(--radius-lg);
   padding: var(--space-5);
   position: relative;
@@ -622,9 +658,8 @@
 
 /* ── FAQ Section ── */
 .faq-section {
-  max-width: 800px;
-  margin-inline: auto;
-  margin-bottom: var(--space-16);
+  max-width: 720px;
+  margin: 0 auto var(--space-16);
 }
 
 .faq-section h2 {
@@ -637,16 +672,20 @@
 }
 
 .faq-item {
-  border-bottom: 1px solid var(--color-divider);
+  background: rgba(240, 68, 138, 0.06);
+  border: 1px solid rgba(240, 68, 138, 0.15);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--space-2);
+  overflow: hidden;
 }
 
 .faq-item:first-child {
-  border-top: 1px solid var(--color-divider);
+  /* No special top treatment needed since items are card-style */
 }
 
 .faq-question {
   width: 100%;
-  padding: var(--space-5) 0;
+  padding: var(--space-4) var(--space-5);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -691,7 +730,7 @@
   font-size: var(--text-sm);
   color: var(--color-text-muted);
   line-height: 1.7;
-  padding-bottom: var(--space-5);
+  padding: 0 var(--space-5) var(--space-4);
 }
 
 /* ── Disclaimer ── */
@@ -703,6 +742,7 @@
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
   margin-bottom: var(--space-8);
+  text-align: center;
 }
 
 .disclaimer h4 {
@@ -719,6 +759,8 @@
   font-size: var(--text-xs);
   color: var(--color-text-faint);
   line-height: 1.6;
+  max-width: 600px;
+  margin: 0 auto;
 }
 
 /* ── CTA Card ── */
@@ -735,7 +777,7 @@
 
 .peptide-cta h3 {
   font-family: var(--font-body);
-  font-size: var(--text-base);
+  font-size: var(--text-xl);
   font-weight: 700;
   color: var(--color-text);
   margin-bottom: var(--space-1);
@@ -1020,45 +1062,80 @@
     </div>
 
     <!-- ═══════════════════════════════════════
-         RECONSTITUTION 101
+         RECONSTITUTION 101 + SYRINGE PREVIEW
          ═══════════════════════════════════════ -->
-    <section class="recon-section fade-in">
-      <h2>Reconstitution <span style="color: var(--color-teal);">101</span></h2>
-      <p>Peptides come as a freeze-dried (lyophilized) powder. Here's how to prepare them for injection — step by step.</p>
+    <div class="recon-with-syringe">
 
-      <div class="recon-steps">
-        <div class="recon-step">
-          <div class="recon-step-num">1</div>
-          <h3>Gather Your Supplies</h3>
-          <p>You'll need your peptide vial, bacteriostatic water (BAC water), an insulin syringe, and alcohol swabs. Work on a clean surface.</p>
+      <!-- LEFT: Recon Steps -->
+      <section class="recon-section fade-in">
+        <h2>Reconstitution <span style="color: var(--color-teal);">101</span></h2>
+        <p>Peptides come as a freeze-dried (lyophilized) powder. Here's how to prepare them for injection — step by step.</p>
+
+        <div class="recon-steps">
+          <div class="recon-step">
+            <div class="recon-step-num">1</div>
+            <h3>Gather Your Supplies</h3>
+            <p>You'll need your peptide vial, bacteriostatic water (BAC water), an insulin syringe, and alcohol swabs. Work on a clean surface.</p>
+          </div>
+          <div class="recon-step">
+            <div class="recon-step-num">2</div>
+            <h3>Clean the Vial Tops</h3>
+            <p>Wipe the rubber stopper of both the peptide vial and BAC water vial with an alcohol swab. Let them air dry for a few seconds.</p>
+          </div>
+          <div class="recon-step">
+            <div class="recon-step-num">3</div>
+            <h3>Draw the BAC Water</h3>
+            <p>Using a fresh syringe, draw your desired amount of bacteriostatic water. Common amounts are 1–2 mL. Use the calculator above to determine the best volume for your dose.</p>
+          </div>
+          <div class="recon-step">
+            <div class="recon-step-num">4</div>
+            <h3>Add Water to the Peptide</h3>
+            <p>Insert the needle into the peptide vial at an angle. Let the water trickle down the inside wall slowly — never spray directly onto the powder. This protects the peptide structure.</p>
+          </div>
+          <div class="recon-step">
+            <div class="recon-step-num">5</div>
+            <h3>Swirl Gently — Don't Shake</h3>
+            <p>Once the water is added, gently roll or swirl the vial until the powder is fully dissolved. The solution should be clear. Never shake — agitation can denature the peptide.</p>
+          </div>
+          <div class="recon-step">
+            <div class="recon-step-num">6</div>
+            <h3>Store and Use</h3>
+            <p>Store the reconstituted vial in the refrigerator at 2–8°C (36–46°F). Use within 30 days. Draw your calculated dose with a clean insulin syringe each time.</p>
+          </div>
         </div>
-        <div class="recon-step">
-          <div class="recon-step-num">2</div>
-          <h3>Clean the Vial Tops</h3>
-          <p>Wipe the rubber stopper of both the peptide vial and BAC water vial with an alcohol swab. Let them air dry for a few seconds.</p>
+      </section>
+
+      <!-- RIGHT: Syringe Preview -->
+      <aside class="recon-syringe-aside fade-in fade-in-delay">
+        <div class="syringe-card">
+          <h3>Syringe Preview</h3>
+          <svg id="syringeVis2" class="syringe-visual" viewBox="0 0 280 120" xmlns="http://www.w3.org/2000/svg">
+            <!-- Plunger handle -->
+            <rect x="10" y="46" width="30" height="28" rx="3" fill="#2a3345" stroke="#4a4d55" stroke-width="1"/>
+            <rect x="18" y="50" width="14" height="20" rx="2" fill="#1a2235" stroke="#4a4d55" stroke-width="0.5"/>
+            <!-- Plunger rod -->
+            <rect id="plungerRod2" x="40" y="54" width="80" height="12" rx="2" fill="#2a3345" stroke="#4a4d55" stroke-width="0.5"/>
+            <!-- Barrel -->
+            <rect x="60" y="42" width="170" height="36" rx="4" fill="#151b2a" stroke="#4a4d55" stroke-width="1"/>
+            <!-- Barrel inner -->
+            <rect x="64" y="46" width="162" height="28" rx="2" fill="#0f1420"/>
+            <!-- Fluid fill -->
+            <rect id="fluidFill2" x="64" y="46" width="0" height="28" rx="2" fill="rgba(30, 200, 176, 0.3)"/>
+            <!-- Tick marks group -->
+            <g id="tickMarks2"></g>
+            <!-- Needle hub -->
+            <rect x="230" y="50" width="16" height="20" rx="2" fill="#2a3345" stroke="#4a4d55" stroke-width="1"/>
+            <!-- Needle -->
+            <line x1="246" y1="60" x2="275" y2="60" stroke="#8a8d93" stroke-width="1.5" stroke-linecap="round"/>
+            <!-- Draw line indicator -->
+            <line id="drawLine2" x1="64" y1="40" x2="64" y2="80" stroke="var(--color-pink)" stroke-width="2" stroke-dasharray="3,2" opacity="0"/>
+            <text id="drawLabel2" x="64" y="36" fill="var(--color-pink)" font-size="9" font-family="JetBrains Mono, monospace" font-weight="600" text-anchor="middle" opacity="0"></text>
+          </svg>
+          <p style="font-size: var(--text-xs); color: var(--color-text-muted); margin-top: var(--space-3); line-height: 1.5;">Enter your values in the calculator above to see exactly where to fill your syringe.</p>
         </div>
-        <div class="recon-step">
-          <div class="recon-step-num">3</div>
-          <h3>Draw the BAC Water</h3>
-          <p>Using a fresh syringe, draw your desired amount of bacteriostatic water. Common amounts are 1–2 mL. Use the calculator above to determine the best volume for your dose.</p>
-        </div>
-        <div class="recon-step">
-          <div class="recon-step-num">4</div>
-          <h3>Add Water to the Peptide</h3>
-          <p>Insert the needle into the peptide vial at an angle. Let the water trickle down the inside wall slowly — never spray directly onto the powder. This protects the peptide structure.</p>
-        </div>
-        <div class="recon-step">
-          <div class="recon-step-num">5</div>
-          <h3>Swirl Gently — Don't Shake</h3>
-          <p>Once the water is added, gently roll or swirl the vial until the powder is fully dissolved. The solution should be clear. Never shake — agitation can denature the peptide.</p>
-        </div>
-        <div class="recon-step">
-          <div class="recon-step-num">6</div>
-          <h3>Store and Use</h3>
-          <p>Store the reconstituted vial in the refrigerator at 2–8°C (36–46°F). Use within 30 days. Draw your calculated dose with a clean insulin syringe each time.</p>
-        </div>
-      </div>
-    </section>
+      </aside>
+
+    </div>
 
     <!-- ═══════════════════════════════════════
          FAQ SECTION
@@ -1066,6 +1143,18 @@
     <section class="faq-section fade-in">
       <h2>Frequently Asked <span style="color: var(--color-teal);">Questions</span></h2>
 
+      <!-- Q1: Most practical — how to read dose on syringe -->
+      <div class="faq-item">
+        <button class="faq-question" aria-expanded="false">
+          How do I measure the correct dose on an insulin syringe?
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+        </button>
+        <div class="faq-answer">
+          <p>Insulin syringes are marked in units, where 100 units = 1 mL (U-100). To find your mark: take your draw volume in mL and multiply by 100. For example, 0.10 mL = 10 units on the syringe barrel. Hold the syringe horizontally at eye level to read the meniscus accurately. Pull the plunger to the correct unit line, then check again before injecting. The calculator above shows your exact unit count so there's no guesswork.</p>
+        </div>
+      </div>
+
+      <!-- Q2: The draw volume calculation -->
       <div class="faq-item">
         <button class="faq-question" aria-expanded="false">
           How do I calculate the draw volume for a peptide dose?
@@ -1076,45 +1165,105 @@
         </div>
       </div>
 
+      <!-- Q3: Too much BAC water -->
       <div class="faq-item">
         <button class="faq-question" aria-expanded="false">
-          How long does a reconstituted peptide vial last?
+          What happens if I use too much bacteriostatic water?
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
         </button>
         <div class="faq-answer">
-          <p>Most reconstituted peptides remain stable for up to 30 days when stored in the refrigerator at 2–8°C (36–46°F). Some peptides may degrade faster. Always check the manufacturer's guidelines. If the solution becomes cloudy or discolored, discard it. Keep the vial away from light and avoid freezing reconstituted peptides.</p>
+          <p>Using too much BAC water lowers the concentration of your solution. This means you'll need to draw a larger volume to get the same dose — which can make small doses hard to measure accurately on a standard syringe. It also increases injection volume, which can cause more site discomfort. Too little water has the opposite problem: very high concentration means tiny draw volumes that are easy to over- or under-pull. The calculator helps you find a middle ground where the draw volume falls in a readable range (10–50 units is ideal for most doses).</p>
         </div>
       </div>
 
+      <!-- Q4: BAC water vs sterile water -->
       <div class="faq-item">
         <button class="faq-question" aria-expanded="false">
-          Which syringe size should I use for peptide injections?
+          What's the difference between BAC water and sterile water for reconstitution?
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
         </button>
         <div class="faq-answer">
-          <p>For most peptide doses, a 0.5 mL or 1 mL U-100 insulin syringe works well. Use a 0.3 mL syringe for very small doses (under 0.3 mL / 30 units) for better accuracy — the smaller barrel means finer graduation marks. A 1 mL syringe is better for larger draw volumes. Always use a syringe that's the closest size to your draw volume without exceeding the barrel capacity.</p>
+          <p>Bacteriostatic water (BAC water) contains 0.9% benzyl alcohol, which inhibits bacterial growth. This preservative makes reconstituted peptides stable for up to 30 days in the refrigerator — and it's why multiple-use vials are safe. Sterile water for injection (SWFI) contains no preservative, so a reconstituted vial should be used within 24 hours and discarded. For most peptide protocols that involve daily or twice-daily dosing over weeks, BAC water is the correct choice.</p>
         </div>
       </div>
 
+      <!-- Q5: How much BAC water to add -->
       <div class="faq-item">
         <button class="faq-question" aria-expanded="false">
           How much bacteriostatic water should I add to a peptide vial?
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
         </button>
         <div class="faq-answer">
-          <p>The amount of BAC water depends on the vial size and your preferred concentration. Common choices are 1–2 mL. Less water means a more concentrated solution (smaller injection volume), while more water means a more dilute solution (easier to measure small doses). For a 5 mg vial, 1 mL gives 5,000 mcg/mL; 2 mL gives 2,500 mcg/mL. Choose based on your dose — you want the draw volume to be easy to read on your syringe.</p>
+          <p>The amount of BAC water depends on the vial size and your preferred concentration. Common choices are 1–2 mL. Less water means a more concentrated solution (smaller injection volume), while more water means a more dilute solution (easier to measure small doses). For a 5 mg vial, 1 mL gives 5,000 mcg/mL; 2 mL gives 2,500 mcg/mL. Choose based on your dose — you want the draw volume to fall in an easy-to-read range on your syringe (typically 10–50 units).</p>
         </div>
       </div>
 
+      <!-- Q6: How long does a vial last -->
+      <div class="faq-item">
+        <button class="faq-question" aria-expanded="false">
+          How long does a reconstituted peptide vial last?
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+        </button>
+        <div class="faq-answer">
+          <p>Most reconstituted peptides remain stable for up to 30 days when stored in the refrigerator at 2–8°C (36–46°F). Some peptides may degrade faster. Always check the manufacturer's guidelines. If the solution becomes cloudy or discolored, discard it. Keep the vial away from light and avoid freezing reconstituted peptides. The vial duration calculator above estimates how many days a vial will last at your chosen dose and frequency.</p>
+        </div>
+      </div>
+
+      <!-- Q7: Which syringe size -->
+      <div class="faq-item">
+        <button class="faq-question" aria-expanded="false">
+          Which syringe size should I use for peptide injections?
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+        </button>
+        <div class="faq-answer">
+          <p>For most peptide doses, a 0.5 mL or 1 mL U-100 insulin syringe works well. Use a 0.3 mL syringe for very small doses (under 30 units) for better accuracy — the smaller barrel means finer graduation marks. A 1 mL syringe is better for larger draw volumes. Always pick the smallest syringe that can hold your full draw volume without exceeding capacity. The syringe toggle in the calculator lets you check which size fits your dose before you draw.</p>
+        </div>
+      </div>
+
+      <!-- Q8: Dosing frequency -->
       <div class="faq-item">
         <button class="faq-question" aria-expanded="false">
           How often should I inject my peptide?
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
         </button>
         <div class="faq-answer">
-          <p>Dosing frequency depends on the specific peptide protocol prescribed by your healthcare provider. Common schedules include twice daily (BPC-157), once daily (most research peptides), every other day, or weekly (semaglutide, tirzepatide). Always follow your provider's instructions. This calculator helps you estimate vial duration based on your chosen frequency so you can plan ahead.</p>
+          <p>Dosing frequency depends on the specific peptide and the protocol prescribed by your healthcare provider. Common schedules include twice daily (BPC-157), once daily (most research peptides), every other day, or weekly (semaglutide, tirzepatide). Always follow your provider's instructions. This calculator helps you estimate vial duration based on your chosen frequency so you can plan ahead and order refills on time.</p>
         </div>
       </div>
+
+      <!-- Q9: What is IU -->
+      <div class="faq-item">
+        <button class="faq-question" aria-expanded="false">
+          What does "IU" mean for peptide dosing, and how does it relate to mcg?
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+        </button>
+        <div class="faq-answer">
+          <p>IU stands for International Unit — a measure of biological activity rather than weight. It's most commonly used for growth hormone (GH), where 1 IU ≈ 333 mcg. For most other peptides (BPC-157, TB-500, semaglutide, tirzepatide), doses are expressed in micrograms (mcg) or milligrams (mg). This calculator uses mcg for dose input because it's the most precise unit for peptide calculations. If your protocol lists a dose in IU (e.g., GH), check with your provider for the equivalent in mcg before using this calculator.</p>
+        </div>
+      </div>
+
+      <!-- Q10: Why different recon volumes -->
+      <div class="faq-item">
+        <button class="faq-question" aria-expanded="false">
+          Why do different peptides require different reconstitution volumes?
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+        </button>
+        <div class="faq-answer">
+          <p>Reconstitution volume is chosen to match the dose size — not the peptide itself. A low-dose peptide like BPC-157 (250 mcg/dose) reconstituted in 1 mL gives a very small draw volume; adding 2 mL makes it easier to measure. A higher-dose peptide like tirzepatide (2.5 mg dose) reconstituted in 2 mL gives a much larger draw volume. The goal is always to land your draw volume in a range that's easy to read accurately on your syringe — ideally between 10 and 50 units on a U-100 syringe. The calculator lets you adjust water volume and see the effect on draw volume instantly.</p>
+        </div>
+      </div>
+
+      <!-- Q11: Can I mix peptides -->
+      <div class="faq-item">
+        <button class="faq-question" aria-expanded="false">
+          Can I mix different peptides in the same syringe?
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+        </button>
+        <div class="faq-answer">
+          <p>Mixing peptides in the same syringe is sometimes done in practice, but it's not generally recommended without guidance from a healthcare provider. Some peptides can interact and degrade each other when combined; others are commonly stacked (e.g., BPC-157 + TB-500). If you do combine, draw each peptide separately into the same syringe rather than mixing in the vial, and use immediately — never pre-mix and store. Always consult with a knowledgeable provider before combining peptides.</p>
+        </div>
+      </div>
+
     </section>
 
     <!-- ═══════════════════════════════════════
@@ -1382,52 +1531,90 @@
       }
     }
 
-    // Fluid fill
-    var fluidFill = $('fluidFill');
-    var drawLine = $('drawLine');
-    var drawLabel = $('drawLabel');
-    var plungerRod = $('plungerRod');
+    // Helper to update one syringe instance
+    function applySyringeState(ids, drawMl, syringeUnits) {
+      var fluidFill = $(ids.fluidFill);
+      var drawLine = $(ids.drawLine);
+      var drawLabel = $(ids.drawLabel);
+      var plungerRod = $(ids.plungerRod);
 
-    if (drawMl > 0 && drawMl <= maxMl) {
-      var fillRatio = drawMl / maxMl;
-      var fillWidth = fillRatio * barrelWidth;
-      // Fill from the right (needle end) toward the left
-      var fillX = barrelStart + barrelWidth - fillWidth;
-      fluidFill.setAttribute('x', fillX);
-      fluidFill.setAttribute('width', fillWidth);
-      fluidFill.setAttribute('fill', 'rgba(30, 200, 176, 0.3)');
+      if (!fluidFill) return; // element not in DOM
 
-      // Plunger rod position
-      var plungerEnd = fillX - 4;
-      var rodWidth = plungerEnd - 40;
-      if (rodWidth < 5) rodWidth = 5;
-      plungerRod.setAttribute('width', rodWidth);
+      if (drawMl > 0 && drawMl <= maxMl) {
+        var fillRatio = drawMl / maxMl;
+        var fillWidth = fillRatio * barrelWidth;
+        var fillX = barrelStart + barrelWidth - fillWidth;
+        fluidFill.setAttribute('x', fillX);
+        fluidFill.setAttribute('width', fillWidth);
+        fluidFill.setAttribute('fill', 'rgba(30, 200, 176, 0.3)');
 
-      // Draw line
-      drawLine.setAttribute('x1', fillX);
-      drawLine.setAttribute('x2', fillX);
-      drawLine.setAttribute('opacity', '1');
+        var plungerEnd = fillX - 4;
+        var rodWidth = plungerEnd - 40;
+        if (rodWidth < 5) rodWidth = 5;
+        plungerRod.setAttribute('width', rodWidth);
 
-      // Draw label
-      drawLabel.setAttribute('x', fillX);
-      drawLabel.textContent = syringeUnits.toFixed(1) + 'U';
-      drawLabel.setAttribute('opacity', '1');
+        drawLine.setAttribute('x1', fillX);
+        drawLine.setAttribute('x2', fillX);
+        drawLine.setAttribute('opacity', '1');
 
-    } else if (drawMl > maxMl) {
-      // Exceeds — fill entire barrel pink
-      fluidFill.setAttribute('x', barrelStart);
-      fluidFill.setAttribute('width', barrelWidth);
-      fluidFill.setAttribute('fill', 'rgba(240, 68, 138, 0.25)');
-      plungerRod.setAttribute('width', 5);
-      drawLine.setAttribute('opacity', '0');
-      drawLabel.setAttribute('opacity', '0');
-    } else {
-      // Empty
-      fluidFill.setAttribute('width', 0);
-      plungerRod.setAttribute('width', 80);
-      drawLine.setAttribute('opacity', '0');
-      drawLabel.setAttribute('opacity', '0');
+        drawLabel.setAttribute('x', fillX);
+        drawLabel.textContent = syringeUnits.toFixed(1) + 'U';
+        drawLabel.setAttribute('opacity', '1');
+
+      } else if (drawMl > maxMl) {
+        fluidFill.setAttribute('x', barrelStart);
+        fluidFill.setAttribute('width', barrelWidth);
+        fluidFill.setAttribute('fill', 'rgba(240, 68, 138, 0.25)');
+        plungerRod.setAttribute('width', 5);
+        drawLine.setAttribute('opacity', '0');
+        drawLabel.setAttribute('opacity', '0');
+      } else {
+        fluidFill.setAttribute('width', 0);
+        plungerRod.setAttribute('width', 80);
+        drawLine.setAttribute('opacity', '0');
+        drawLabel.setAttribute('opacity', '0');
+      }
     }
+
+    // Update tick marks for both syringes
+    function applyTicks(tickGroupId) {
+      var tickGroup = $(tickGroupId);
+      if (!tickGroup) return;
+      // Already populated above for 'tickMarks'; reuse same logic
+      tickGroup.innerHTML = '';
+      for (var u = 0; u <= totalUnits; u += minorEvery) {
+        var xPos = barrelStart + (u / totalUnits) * barrelWidth;
+        var isMajor = (u % majorEvery === 0);
+        var tickH = isMajor ? 10 : 5;
+        var tick = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        tick.setAttribute('x1', xPos); tick.setAttribute('y1', 42);
+        tick.setAttribute('x2', xPos); tick.setAttribute('y2', 42 + tickH);
+        tick.setAttribute('stroke', isMajor ? '#8a8d93' : '#4a4d55');
+        tick.setAttribute('stroke-width', isMajor ? '1' : '0.5');
+        tickGroup.appendChild(tick);
+        if (isMajor && u > 0) {
+          var lbl = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+          lbl.setAttribute('x', xPos); lbl.setAttribute('y', 92);
+          lbl.setAttribute('fill', '#4a4d55'); lbl.setAttribute('font-size', '7');
+          lbl.setAttribute('font-family', 'JetBrains Mono, monospace');
+          lbl.setAttribute('text-anchor', 'middle');
+          lbl.textContent = u;
+          tickGroup.appendChild(lbl);
+        }
+      }
+    }
+
+    applyTicks('tickMarks2');
+
+    // Apply fluid state to both syringes
+    applySyringeState(
+      { fluidFill: 'fluidFill', drawLine: 'drawLine', drawLabel: 'drawLabel', plungerRod: 'plungerRod' },
+      drawMl, syringeUnits
+    );
+    applySyringeState(
+      { fluidFill: 'fluidFill2', drawLine: 'drawLine2', drawLabel: 'drawLabel2', plungerRod: 'plungerRod2' },
+      drawMl, syringeUnits
+    );
   }
 
   // ══════════════════════════════════════════════════════════
