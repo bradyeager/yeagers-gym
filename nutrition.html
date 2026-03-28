@@ -15,7 +15,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Nutrition Coaching — Yeager's Gym</title>
-<meta name="description" content="Evidence-based nutrition consultation and custom meal plans by Brad Yeager, PN-1 Certified Nutrition Coach. Tailored macro targets, meal timing, and supplement guidance for athletes and serious trainees. $200 one-time plan.">
+<meta name="description" content="Evidence-based nutrition consultation and custom meal plans by Brad Yeager, PN-1 Certified Nutrition Coach. Tailored macro targets, meal timing, and supplement guidance for athletes and serious trainees. $199 one-time plan.">
 <meta property="og:title" content="Nutrition Coaching — Yeager's Gym">
 <meta property="og:description" content="Evidence-based nutrition consultation and custom meal plans tailored to your body composition goals and training demands.">
 <meta property="og:type" content="website">
@@ -93,7 +93,7 @@
 /* ── Hero Section ── */
 .pep-hero {
   padding-top: 100px;
-  padding-bottom: var(--space-16);
+  padding-bottom: var(--space-6);
   position: relative;
   overflow: hidden;
 }
@@ -166,7 +166,7 @@
 
 /* ── Section Padding ── */
 .pep-section {
-  padding: clamp(var(--space-12), 8vw, var(--space-24)) 0;
+  padding: clamp(var(--space-6), 4vw, var(--space-10)) 0;
 }
 
 .pep-section--surface {
@@ -257,8 +257,14 @@
   gap: var(--space-3);
   padding: var(--space-3) var(--space-4);
   background: var(--color-surface-2);
-  border: 1px solid var(--color-border);
+  border: 2px solid var(--color-teal);
   border-radius: var(--radius-md);
+  transition: background var(--transition-interactive), box-shadow var(--transition-interactive);
+}
+
+.pep-check-item:hover {
+  background: rgba(30, 200, 176, 0.06);
+  box-shadow: 0 0 16px rgba(30, 200, 176, 0.12);
 }
 
 .pep-check-icon {
@@ -493,7 +499,7 @@
       <a href="./tools-vbt.html" class="nav-link">Tools</a>
       <a href="./quiz.html" class="nav-link">Quiz</a>
       <div class="nav-utility">
-        <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="btn btn-nav-cta">Book a Consultation</a>
+        <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="btn btn-nav-cta">Book Your FREE Session</a>
       </div>
     </nav>
 
@@ -518,7 +524,7 @@
     <a href="./tools-macro.html">Macro Calculator</a>
     <a href="./tools-peptide.html" style="color: var(--color-purple);">Peptide Calculator</a>
     <a href="./quiz.html" style="color: var(--color-pink);">Training Type Quiz</a>
-    <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="btn btn-nav-cta" style="margin-top: var(--space-4);">Book a Consultation</a>
+    <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="btn btn-nav-cta" style="margin-top: var(--space-4);">Book Your FREE Session</a>
   </div>
 </header>
 
@@ -533,25 +539,14 @@
       Back to Services
     </a>
 
-    <!-- Tool Nav Pills -->
-    <div class="tool-nav-bar fade-in">
-      <a href="./peptide-consulting.html" class="tool-nav-pill">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6v11a6 6 0 0 1-6 0V3z"/><path d="M12 14v7"/></svg>
-        Peptide Consulting
-      </a>
-      <a href="./nutrition.html" class="tool-nav-pill active">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z"/><path d="M12 6v6l4 2"/></svg>
-        Nutrition Coaching
-      </a>
-    </div>
+
 
     <div class="pep-hero-inner fade-in">
-      <p class="section-label" style="color: var(--color-pink);">Nutrition Coaching</p>
       <h1>Nutrition That <span class="highlight-teal">Fuels Performance</span></h1>
       <p class="pep-hero-sub">Evidence-based nutrition planning tailored to your training goals. From cutting weight to building muscle to peak athletic output — a plan built around your body, your training, and your life.</p>
 
       <div class="pep-price-badge">
-        $200 <span>/ one-time plan</span>
+        $199 <span>/ one-time plan</span>
       </div>
 
       <div class="pep-hero-ctas">
@@ -569,7 +564,7 @@
      ═══════════════════════════════════════════ -->
 <section class="pep-section" aria-label="Pricing">
   <div class="container">
-    <div class="section-header fade-in" style="text-align: center; max-width: 600px; margin-inline: auto; margin-bottom: var(--space-10);">
+    <div class="section-header fade-in" style="text-align: center; max-width: 600px; margin-inline: auto; margin-bottom: var(--space-6);">
       <p class="section-label" style="color: var(--color-pink);">Pricing</p>
       <h2 class="section-title">Simple, One-Time Investment</h2>
       <p class="section-desc" style="margin-inline: auto;">No subscriptions, no upsells. One comprehensive session that gives you everything you need.</p>
@@ -578,7 +573,7 @@
     <div class="pricing-centered fade-in">
       <div class="pep-price-card">
         <h4>Nutrition Consultation &amp; Plan</h4>
-        <div class="pep-price-val">$200</div>
+        <div class="pep-price-val">$199</div>
         <div class="pep-price-dur">one-time</div>
         <p class="pep-price-desc">Comprehensive nutrition assessment, custom macro targets, meal timing strategy, and a full plan tailored to your body composition goals and training demands. Walk away with a clear, written roadmap you can follow independently.</p>
         <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="btn btn-primary" style="width: 100%; justify-content: center;">Book a Consultation</a>
@@ -594,7 +589,7 @@
      ═══════════════════════════════════════════ -->
 <section id="what-you-get" class="pep-section pep-section--surface" aria-label="What You Get">
   <div class="container">
-    <div class="section-header fade-in" style="text-align: center; max-width: 600px; margin-inline: auto; margin-bottom: var(--space-10);">
+    <div class="section-header fade-in" style="text-align: center; max-width: 600px; margin-inline: auto; margin-bottom: var(--space-6);">
       <p class="section-label" style="color: var(--color-pink);">What You Get</p>
       <h2 class="section-title">Everything Included in Your Plan</h2>
     </div>
@@ -647,7 +642,7 @@
      ═══════════════════════════════════════════ -->
 <section class="pep-section" aria-label="Who This Is For">
   <div class="container">
-    <div class="section-header fade-in" style="text-align: center; max-width: 600px; margin-inline: auto; margin-bottom: var(--space-10);">
+    <div class="section-header fade-in" style="text-align: center; max-width: 600px; margin-inline: auto; margin-bottom: var(--space-6);">
       <p class="section-label" style="color: var(--color-teal);">Who This Is For</p>
       <h2 class="section-title">Built for Athletes &amp; Anyone Serious About Their Body</h2>
     </div>
@@ -685,7 +680,7 @@
      ═══════════════════════════════════════════ -->
 <section class="pep-section pep-section--surface" aria-label="Brad's Credentials">
   <div class="container">
-    <div class="section-header fade-in" style="text-align: center; max-width: 600px; margin-inline: auto; margin-bottom: var(--space-10);">
+    <div class="section-header fade-in" style="text-align: center; max-width: 600px; margin-inline: auto; margin-bottom: var(--space-6);">
       <p class="section-label" style="color: var(--color-pink);">Credentials</p>
       <h2 class="section-title">Advice You Can Trust</h2>
     </div>
@@ -714,10 +709,9 @@
   <div class="container">
     <div class="cta-block fade-in">
       <p class="section-label" style="color: var(--color-teal);">Ready to Start?</p>
-      <h2>Get a Plan Built Around <span class="highlight-teal">Your Goals</span></h2>
+      <h2><span style="color: var(--color-pink);">Get a Plan</span> Built Around <span class="highlight-teal">Your Goals</span></h2>
       <p>One session. One clear plan. Everything you need to align your nutrition with the work you're putting in.</p>
       <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="btn btn-primary">Book a Consultation</a>
-      <p class="cta-note">$200 one-time &middot; Includes written plan &amp; one follow-up check-in</p>
     </div>
   </div>
 </section>
@@ -727,41 +721,46 @@
      ═══════════════════════════════════════════ -->
 <footer class="site-footer" role="contentinfo">
   <div class="container">
-    <div class="footer-inner">
-      <div class="footer-brand">
-        <a href="./index.html" class="logo-link" aria-label="Yeager's Gym Home">
-          <img src="assets/logo.jpeg" alt="Yeager's Gym Logo" class="logo-mark-img" width="36" height="36">
-        </a>
-        <p class="footer-tagline">Train smarter. Recover faster. Perform better.</p>
+    <div class="footer-nav-columns">
+      <div class="footer-links">
+        <h4>Navigate</h4>
+        <a href="./index.html">Home</a>
+        <a href="./index.html#about">About Brad</a>
+        <a href="./index.html#services">Services &amp; Pricing</a>
+        <a href="./index.html#vbt">VBT Explained</a>
+        <a href="./index.html#results">Results</a>
+        <a href="./index.html#contact">Contact</a>
       </div>
-
-      <nav class="footer-nav" aria-label="Footer navigation">
-        <div class="footer-nav-col">
-          <p class="footer-nav-label">Services</p>
-          <a href="./index.html#services" class="footer-nav-link">In-Person Coaching</a>
-          <a href="./remote-coaching.html" class="footer-nav-link">Remote Coaching</a>
-          <a href="./nutrition.html" class="footer-nav-link">Nutrition Coaching</a>
-          <a href="./peptide-consulting.html" class="footer-nav-link">Peptide Consulting</a>
-        </div>
-        <div class="footer-nav-col">
-          <p class="footer-nav-label">Tools</p>
-          <a href="./tools-vbt.html" class="footer-nav-link">VBT Calculator</a>
-          <a href="./tools-crossfit.html" class="footer-nav-link">Machine Converter</a>
-          <a href="./tools-macro.html" class="footer-nav-link">Macro Calculator</a>
-          <a href="./tools-peptide.html" class="footer-nav-link">Peptide Calculator</a>
-        </div>
-        <div class="footer-nav-col">
-          <p class="footer-nav-label">Explore</p>
-          <a href="./index.html#about" class="footer-nav-link">About Brad</a>
-          <a href="./index.html#vbt" class="footer-nav-link">VBT Method</a>
-          <a href="./quiz.html" class="footer-nav-link">Training Quiz</a>
-          <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="footer-nav-link">Book Now</a>
-        </div>
-      </nav>
+      <div class="footer-links">
+        <h4>Resources &amp; Free Tools</h4>
+        <a href="./tools-vbt.html">VBT Calculator</a>
+        <a href="./tools-crossfit.html">Machine Converter</a>
+        <a href="./tools-macro.html">Macro Calculator</a>
+        <a href="./tools-peptide.html">Peptide Calculator</a>
+        <a href="./velocity-trackers.html">Velocity Trackers Guide</a>
+        <a href="./quiz.html">Training Type Quiz</a>
+      </div>
+      <div class="footer-links">
+        <h4>Connect</h4>
+        <a href="mailto:brad@yeagersgym.com" class="footer-contact-link">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+          brad@yeagersgym.com
+        </a>
+        <a href="https://www.instagram.com/YeagersGym" target="_blank" rel="noopener noreferrer" class="footer-contact-link">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
+          @YeagersGym
+        </a>
+        <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="footer-vagaro-link">Book via Vagaro →</a>
+      </div>
     </div>
-
     <div class="footer-bottom">
-      <p class="footer-legal">&copy; 2025 Yeager's Gym. All rights reserved.</p>
+      <span>&copy; 2026 Yeager's Gym &middot; San Diego, CA</span>
+      <div class="footer-bottom-right">
+        <a href="https://www.perplexity.ai/computer" target="_blank" rel="noopener noreferrer">Created with Perplexity Computer</a>
+        <a href="./index.html" aria-label="Yeager's Gym Home">
+          <img src="assets/logo.jpeg" alt="Yeager's Gym" class="logo-mark-img" width="24" height="24">
+        </a>
+      </div>
     </div>
   </div>
 </footer>

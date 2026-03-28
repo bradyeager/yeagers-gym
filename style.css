@@ -1407,6 +1407,28 @@
   margin-bottom: 0;
 }
 
+/* Alternating result category colors */
+.results-category--teal .results-category-title {
+  color: var(--color-teal);
+}
+.results-category--teal .stat-val {
+  color: var(--color-pink);
+}
+.results-category--teal {
+  border-left-color: var(--color-teal);
+  background: rgba(30, 200, 176, 0.02);
+}
+.results-category--pink .results-category-title {
+  color: var(--color-pink);
+}
+.results-category--pink .stat-val {
+  color: var(--color-teal);
+}
+.results-category--pink {
+  border-left-color: var(--color-pink);
+  background: rgba(240, 68, 138, 0.02);
+}
+
 /* ═══════════════════════════════════════════
    CONTACT PAGE
    ═══════════════════════════════════════════ */
@@ -1704,10 +1726,10 @@
   color: var(--color-text-muted) !important;
 }
 
-/* Nav CTA button: teal background, pink text */
+/* Nav CTA button: teal background, black text */
 .btn-nav-cta {
   background: var(--color-teal);
-  color: var(--color-pink) !important;
+  color: #000 !important;
   font-family: var(--font-display);
   font-size: 0.7rem;
   font-weight: 800;
@@ -2906,7 +2928,7 @@
 
 /* ── Section utilities ── */
 .section-v2 {
-  padding: clamp(32px, 5vw, 64px) 0;
+  padding: clamp(20px, 3vw, 40px) 0;
   background: var(--color-bg);
 }
 .section-v2.alt {

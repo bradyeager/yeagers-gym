@@ -15,7 +15,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Peptide Consulting — Yeager's Gym</title>
-<meta name="description" content="Performance peptide strategy consulting by Brad Yeager. Personalized protocols for recovery, body composition, athletic performance, and longevity. $200/60-min consultation.">
+<meta name="description" content="Performance peptide strategy consulting by Brad Yeager. Personalized protocols for recovery, body composition, athletic performance, and longevity. $199/60-min consultation.">
 <meta property="og:title" content="Peptide Consulting — Yeager's Gym">
 <meta property="og:description" content="Performance peptide strategy consulting. Personalized protocols for recovery, body composition, and athletic performance.">
 <meta property="og:type" content="website">
@@ -52,7 +52,7 @@
   display: flex;
   justify-content: center;
   gap: var(--space-3);
-  margin-bottom: var(--space-10);
+  margin-bottom: var(--space-6);
   flex-wrap: wrap;
 }
 
@@ -93,7 +93,7 @@
 /* ── Hero Section ── */
 .pep-hero {
   padding-top: 100px;
-  padding-bottom: var(--space-16);
+  padding-bottom: var(--space-6);
   position: relative;
   overflow: hidden;
 }
@@ -174,7 +174,7 @@
 
 /* ── Section Padding ── */
 .pep-section {
-  padding: clamp(var(--space-12), 8vw, var(--space-24)) 0;
+  padding: var(--space-6) 0;
 }
 
 .pep-section--surface {
@@ -509,8 +509,8 @@
 
 /* ── FAQ ── */
 .faq-list {
-  max-width: 700px;
-  margin-inline: auto;
+  max-width: 680px;
+  margin: 0 auto;
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
@@ -693,37 +693,14 @@
       Back to Home
     </a>
 
-    <!-- Tool Nav Pills -->
-    <div class="tool-nav-bar fade-in">
-      <a href="./tools-vbt.html" class="tool-nav-pill">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-        VBT Calculator
-      </a>
-      <a href="./tools-crossfit.html" class="tool-nav-pill">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 12h8M12 8v8"/></svg>
-        Machine Converter
-      </a>
-      <a href="./tools-macro.html" class="tool-nav-pill">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z"/><path d="M12 2v10l7 4"/></svg>
-        Macro Calculator
-      </a>
-      <a href="./tools-peptide.html" class="tool-nav-pill">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6v11a6 6 0 0 1-6 0V3z"/><path d="M12 14v7"/></svg>
-        Peptide Calculator
-      </a>
-      <a href="./peptide-consulting.html" class="tool-nav-pill active">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-        Peptide Consulting
-      </a>
-    </div>
+
 
     <div class="pep-hero-inner fade-in">
-      <p class="section-label" style="color: var(--color-pink);">Peptide Consulting</p>
-      <h1>Performance <span class="highlight-teal">Peptide</span> Strategy</h1>
+      <h1><span style="color: var(--color-pink);">Performance</span> <span class="highlight-teal">Peptide</span> Strategy</h1>
       <p class="pep-hero-sub">Individualized peptide protocol design from a working strength coach. Recovery, body composition, athletic performance, and longevity — built around your training, your goals, and your life.</p>
 
       <div class="pep-price-badge">
-        $200 <span>/ 60-min consultation</span>
+        $199 <span>/ 60-min consultation</span>
       </div>
 
       <div class="pep-hero-ctas">
@@ -745,7 +722,7 @@
   <div class="container">
     <div class="section-header fade-in" style="text-align: center; max-width: 600px; margin-inline: auto;">
       <p class="section-label" style="color: var(--color-teal);">Service Areas</p>
-      <h2 class="section-title">Five Pillars of Peptide Strategy</h2>
+      <h2 class="section-title">Six Pillars of Peptide Strategy</h2>
       <p class="section-desc" style="margin-inline: auto;">Every protocol starts with your goals. We cover the major domains where peptides can make a measurable difference.</p>
     </div>
 
@@ -815,6 +792,32 @@
         <div class="service-tags">
           <span class="service-tag">PT-141</span>
           <span class="service-tag">Oxytocin Support</span>
+        </div>
+      </div>
+
+      <div class="service-card fade-in">
+        <div class="service-card-icon service-card-icon--purple">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22V12"/><path d="m5 12 7-10 7 10"/><path d="M5 19h14"/></svg>
+        </div>
+        <h3>Hormonal Balance</h3>
+        <p>Protocols targeting testosterone, growth hormone, and metabolic optimization for peak function. Evidence-informed strategies to support your endocrine system alongside training.</p>
+        <div class="service-tags">
+          <span class="service-tag">Testosterone Support</span>
+          <span class="service-tag">GH Optimization</span>
+          <span class="service-tag">Metabolic Health</span>
+        </div>
+      </div>
+
+      <div class="service-card fade-in">
+        <div class="service-card-icon service-card-icon--teal">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z"/><path d="M12 6v6l4 2"/></svg>
+        </div>
+        <h3>Longevity &amp; Prevention</h3>
+        <p>Forward-looking peptide strategies for cellular health, neuroprotection, and aging well. Protocols designed for people playing the long game with their health and performance.</p>
+        <div class="service-tags">
+          <span class="service-tag">Cellular Health</span>
+          <span class="service-tag">Neuroprotection</span>
+          <span class="service-tag">Anti-Aging</span>
         </div>
       </div>
 
@@ -979,7 +982,7 @@
     <div class="pricing-grid">
       <div class="pep-price-card fade-in">
         <h4>Initial Consultation</h4>
-        <div class="pep-price-val">$200</div>
+        <div class="pep-price-val">$199</div>
         <div class="pep-price-dur">60 minutes</div>
         <ul class="pep-price-features">
           <li>
@@ -1007,8 +1010,8 @@
       </div>
       <div class="pep-price-card fade-in">
         <h4>Follow-Up Consultation</h4>
-        <div class="pep-price-val">$200</div>
-        <div class="pep-price-dur">60 minutes</div>
+        <div class="pep-price-val">$99</div>
+        <div class="pep-price-dur">45 minutes · returning clients</div>
         <ul class="pep-price-features">
           <li>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
@@ -1101,6 +1104,46 @@
         </div>
       </div>
 
+      <div class="faq-item fade-in">
+        <button class="faq-question" aria-expanded="false">
+          What happens during a peptide consultation?
+          <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="faq-answer">
+          <div class="faq-answer-inner">We start with a deep intake conversation — your training history, current program, body composition goals, injury history, bloodwork if you have it, and any compounds you're currently using. From there I design your protocol in real time, walking you through compound selection, dosing, timing, stacking, and cycle structure. You receive a written summary after the call so you have everything documented and actionable.</div>
+        </div>
+      </div>
+
+      <div class="faq-item fade-in">
+        <button class="faq-question" aria-expanded="false">
+          Do you prescribe peptides?
+          <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="faq-answer">
+          <div class="faq-answer-inner">No. Brad is not a licensed medical provider and does not prescribe, sell, or distribute peptides or any pharmaceutical products. This service is purely education and strategy. Clients obtain compounds independently through licensed pharmacies or providers of their choosing. If you need a prescribing physician, I can point you in the right direction.</div>
+        </div>
+      </div>
+
+      <div class="faq-item fade-in">
+        <button class="faq-question" aria-expanded="false">
+          How soon will I see results from a peptide protocol?
+          <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="faq-answer">
+          <div class="faq-answer-inner">It depends heavily on the compounds and your goals. Recovery peptides like BPC-157 and TB-500 can show noticeable improvement in tissue healing within 2–4 weeks. Body composition peptides typically show meaningful changes over 8–12 weeks when paired with consistent training and nutrition. Sleep and recovery improvements are often felt within the first week. We'll discuss realistic timelines during your consultation based on your specific protocol.</div>
+        </div>
+      </div>
+
+      <div class="faq-item fade-in">
+        <button class="faq-question" aria-expanded="false">
+          Can I combine peptide therapy with my current training program?
+          <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="faq-answer">
+          <div class="faq-answer-inner">Absolutely — and this is where peptides shine. Your protocol is designed to work around your training schedule, not against it. Peptides are timing-sensitive, so we'll build a dosing plan that syncs with your training days, recovery windows, and sleep schedule. Whether you're in a strength block, a competition prep, or an active recovery phase, the protocol adapts to support what you're doing in the gym.</div>
+        </div>
+      </div>
+
     </div>
   </div>
 </section>
@@ -1126,32 +1169,45 @@
      FOOTER
      ═══════════════════════════════════════════ -->
 <footer class="site-footer" role="contentinfo">
-  <div class="container" style="padding: var(--space-4) 0 var(--space-3);">
-    <div class="footer-nav-columns" style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); margin-bottom: var(--space-3);">
+  <div class="container">
+    <div class="footer-nav-columns">
       <div class="footer-links">
-        <h4 style="font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-teal); margin-bottom: var(--space-1);">Navigate</h4>
-        <a href="./index.html" style="display: block; font-size: 11px; color: var(--color-text-muted); text-decoration: none; padding: 1px 0; line-height: 1.5;">Home</a>
-        <a href="./index.html#about" style="display: block; font-size: 11px; color: var(--color-text-muted); text-decoration: none; padding: 1px 0; line-height: 1.5;">About Brad</a>
-        <a href="./index.html#services" style="display: block; font-size: 11px; color: var(--color-text-muted); text-decoration: none; padding: 1px 0; line-height: 1.5;">Services & Pricing</a>
-        <a href="./tools-vbt.html" style="display: block; font-size: 11px; color: var(--color-text-muted); text-decoration: none; padding: 1px 0; line-height: 1.5;">VBT Calculator</a>
-        <a href="./tools-crossfit.html" style="display: block; font-size: 11px; color: var(--color-text-muted); text-decoration: none; padding: 1px 0; line-height: 1.5;">Machine Converter</a>
-        <a href="./tools-macro.html" style="display: block; font-size: 11px; color: var(--color-text-muted); text-decoration: none; padding: 1px 0; line-height: 1.5;">Macro Calculator</a>
-        <a href="./tools-peptide.html" style="display: block; font-size: 11px; color: var(--color-text-muted); text-decoration: none; padding: 1px 0; line-height: 1.5;">Peptide Calculator</a>
-        <a href="./peptide-consulting.html" style="display: block; font-size: 11px; color: var(--color-text-muted); text-decoration: none; padding: 1px 0; line-height: 1.5;">Peptide Consulting</a>
+        <h4>Navigate</h4>
+        <a href="./index.html">Home</a>
+        <a href="./index.html#about">About Brad</a>
+        <a href="./index.html#services">Services &amp; Pricing</a>
+        <a href="./index.html#vbt">VBT Explained</a>
+        <a href="./index.html#results">Results</a>
+        <a href="./index.html#contact">Contact</a>
       </div>
       <div class="footer-links">
-        <h4 style="font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-teal); margin-bottom: var(--space-1);">Connect</h4>
-        <a href="mailto:brad@yeagersgym.com" style="display: block; font-size: 11px; color: var(--color-text-muted); text-decoration: none; padding: 1px 0; line-height: 1.5;">brad@yeagersgym.com</a>
-        <a href="https://www.instagram.com/YeagersGym" target="_blank" rel="noopener noreferrer" style="display: block; font-size: 11px; color: var(--color-text-muted); text-decoration: none; padding: 1px 0; line-height: 1.5;">Instagram @YeagersGym</a>
-        <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" style="display: block; font-size: 11px; color: var(--color-text-muted); text-decoration: none; padding: 1px 0; line-height: 1.5;">Book via Vagaro</a>
+        <h4>Resources &amp; Free Tools</h4>
+        <a href="./tools-vbt.html">VBT Calculator</a>
+        <a href="./tools-crossfit.html">Machine Converter</a>
+        <a href="./tools-macro.html">Macro Calculator</a>
+        <a href="./tools-peptide.html">Peptide Calculator</a>
+        <a href="./velocity-trackers.html">Velocity Trackers Guide</a>
+        <a href="./quiz.html">Training Type Quiz</a>
+      </div>
+      <div class="footer-links">
+        <h4>Connect</h4>
+        <a href="mailto:brad@yeagersgym.com" class="footer-contact-link">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+          brad@yeagersgym.com
+        </a>
+        <a href="https://www.instagram.com/YeagersGym" target="_blank" rel="noopener noreferrer" class="footer-contact-link">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
+          @YeagersGym
+        </a>
+        <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="footer-vagaro-link">Book via Vagaro &rarr;</a>
       </div>
     </div>
-    <div class="footer-bottom" style="padding-top: var(--space-2); border-top: 1px solid rgba(255,255,255,0.06); display: flex; justify-content: space-between; align-items: center; font-size: 10px; color: rgba(255,255,255,0.25);">
+    <div class="footer-bottom">
       <span>&copy; 2026 Yeager's Gym &middot; San Diego, CA</span>
-      <div style="display: flex; align-items: center; gap: var(--space-2);">
-        <a href="https://www.perplexity.ai/computer" target="_blank" rel="noopener noreferrer" style="color: rgba(255,255,255,0.25); text-decoration: none;">Created with Perplexity Computer</a>
+      <div class="footer-bottom-right">
+        <a href="https://www.perplexity.ai/computer" target="_blank" rel="noopener noreferrer">Created with Perplexity Computer</a>
         <a href="./index.html" aria-label="Yeager's Gym Home">
-          <img src="assets/logo.jpeg" alt="Yeager's Gym" style="width: 24px; height: 24px; border-radius: 50%; opacity: 0.6;" width="24" height="24">
+          <img src="assets/logo.jpeg" alt="Yeager's Gym" class="logo-mark-img" width="24" height="24">
         </a>
       </div>
     </div>
