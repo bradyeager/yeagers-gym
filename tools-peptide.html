@@ -610,8 +610,12 @@
 
 .recon-steps {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--space-5);
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: var(--space-4);
+}
+
+@media (max-width: 900px) {
+  .recon-steps { grid-template-columns: 1fr 1fr; }
 }
 
 @media (max-width: 640px) {
@@ -622,8 +626,14 @@
   background: var(--color-surface);
   border: 2px solid var(--color-teal);
   border-radius: var(--radius-lg);
-  padding: var(--space-5);
+  padding: var(--space-4);
   position: relative;
+  transition: border-color var(--transition-interactive), box-shadow var(--transition-interactive);
+}
+
+.recon-step:hover {
+  border-color: var(--color-teal);
+  box-shadow: 0 0 24px rgba(30, 200, 176, 0.12);
 }
 
 .recon-step-num {
@@ -685,17 +695,17 @@
 
 .faq-question {
   width: 100%;
-  padding: var(--space-4) var(--space-5);
+  padding: var(--space-3) var(--space-4);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: var(--space-4);
+  gap: var(--space-3);
   background: none;
   border: none;
   cursor: pointer;
   text-align: left;
   font-family: var(--font-body);
-  font-size: var(--text-base);
+  font-size: var(--text-sm);
   font-weight: 600;
   color: var(--color-text);
   transition: color var(--transition-interactive);
@@ -727,7 +737,7 @@
 }
 
 .faq-answer p {
-  font-size: var(--text-sm);
+  font-size: var(--text-xs);
   color: var(--color-text-muted);
   line-height: 1.7;
   padding: 0 var(--space-5) var(--space-4);
@@ -860,12 +870,31 @@
     <nav class="nav-desktop" role="navigation" aria-label="Main navigation">
       <a href="./index.html" class="nav-link">Home</a>
       <a href="./index.html#about" class="nav-link">About</a>
-      <a href="./index.html#services" class="nav-link">Services</a>
-      <a href="./index.html#vbt" class="nav-link">VBT</a>
-      <a href="./tools-vbt.html" class="nav-link active">Tools</a>
+      <div class="nav-dropdown">
+        <a href="./index.html#services" class="nav-link">Services ▾</a>
+        <div class="nav-dropdown-menu">
+          <a href="./in-person.html">In-Person Coaching</a>
+          <a href="./remote.html">Remote Coaching</a>
+          <a href="./nutrition.html">Nutrition Coaching</a>
+          <a href="./peptide-consulting.html">Peptide Consulting</a>
+          <a href="./recovery.html">Recovery</a>
+        </div>
+      </div>
+      <a href="./index.html#vbt" class="nav-link">Velocity Based Training</a>
+      <a href="./index.html#results" class="nav-link">Results</a>
+      <div class="nav-dropdown">
+        <a href="./tools-vbt.html" class="nav-link">Tools ▾</a>
+        <div class="nav-dropdown-menu">
+          <a href="./tools-vbt.html">VBT Calculator</a>
+          <a href="./tools-crossfit.html">Machine Converter</a>
+          <a href="./tools-macro.html">Macro Calculator</a>
+          <a href="./tools-peptide.html">Peptide Calculator</a>
+          <a href="./velocity-trackers.html">Velocity Trackers Guide</a>
+        </div>
+      </div>
       <a href="./quiz.html" class="nav-link">Quiz</a>
       <div class="nav-utility">
-        <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="btn btn-pink">Book Your FREE Session</a>
+        <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="btn btn-pink">Book Your FREE Session!</a>
       </div>
     </nav>
 
@@ -878,13 +907,19 @@
     <a href="./index.html">Home</a>
     <a href="./index.html#about">About</a>
     <a href="./index.html#services">Services</a>
-    <a href="./index.html#vbt">VBT</a>
+    <a href="./in-person.html" style="padding-left: 2rem;">In-Person Coaching</a>
+    <a href="./remote.html" style="padding-left: 2rem;">Remote Coaching</a>
+    <a href="./nutrition.html" style="padding-left: 2rem;">Nutrition Coaching</a>
+    <a href="./peptide-consulting.html" style="padding-left: 2rem; color: var(--color-teal);">Peptide Consulting</a>
+    <a href="./recovery.html" style="padding-left: 2rem;">Recovery</a>
+    <a href="./index.html#vbt">Velocity Based Training</a>
+    <a href="./index.html#results">Results</a>
     <a href="./tools-vbt.html">VBT Calculator</a>
     <a href="./tools-crossfit.html">Machine Converter</a>
     <a href="./tools-macro.html">Macro Calculator</a>
-    <a href="./tools-peptide.html" style="color: var(--color-teal);">Peptide Calculator</a>
-    <a href="./quiz.html" style="color: var(--color-pink);">Find Your Training Type</a>
-    <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="btn btn-pink" style="margin-top: var(--space-4);">Book Your FREE Session</a>
+    <a href="./tools-peptide.html" style="color: var(--color-purple);">Peptide Calculator</a>
+    <a href="./quiz.html" style="color: var(--color-pink);">Training Type Quiz</a>
+    <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="btn btn-pink" style="margin-top: var(--space-4);">Book Your FREE Session!</a>
   </div>
 </header>
 
@@ -981,10 +1016,10 @@
         </div>
       </div>
 
-      <!-- RIGHT: Results + Syringe -->
+      <!-- RIGHT: Results + Syringe + Vial Duration -->
       <div class="results-panel">
 
-        <!-- Results Card -->
+        <!-- Dosing Results -->
         <div class="results-card">
           <h3>Dosing Results</h3>
           <div class="result-row">
@@ -1002,22 +1037,6 @@
           <div class="result-row">
             <span class="result-label">Total Doses Per Vial</span>
             <span class="result-value" id="resTotalDoses">0<span class="unit">doses</span></span>
-          </div>
-        </div>
-
-        <!-- Vial Duration Card -->
-        <div class="duration-card">
-          <h3>Vial Duration</h3>
-          <div class="duration-row">
-            <span class="duration-label">Total Doses</span>
-            <span class="duration-value" id="durTotalDoses">0</span>
-          </div>
-          <div class="duration-row">
-            <span class="duration-label">Days Supply</span>
-            <span class="duration-value" id="durDaysSupply">0 days</span>
-          </div>
-          <div class="shelf-warning" id="shelfWarning">
-            ⚠️ This exceeds the typical 30-day reconstitution shelf life. Consider using less BAC water for a higher concentration, or splitting into smaller vials.
           </div>
         </div>
 
@@ -1051,6 +1070,22 @@
           </div>
         </div>
 
+        <!-- Vial Duration Card -->
+        <div class="duration-card">
+          <h3>Vial Duration</h3>
+          <div class="duration-row">
+            <span class="duration-label">Total Doses</span>
+            <span class="duration-value" id="durTotalDoses">0</span>
+          </div>
+          <div class="duration-row">
+            <span class="duration-label">Days Supply</span>
+            <span class="duration-value" id="durDaysSupply">0 days</span>
+          </div>
+          <div class="shelf-warning" id="shelfWarning">
+            ⚠️ This exceeds the typical 30-day reconstitution shelf life. Consider using less BAC water for a higher concentration, or splitting into smaller vials.
+          </div>
+        </div>
+
       </div>
 
     </div>
@@ -1062,72 +1097,38 @@
 
       <!-- LEFT: Recon Steps -->
       <section class="recon-section fade-in">
-        <h2>Reconstitution <span style="color: var(--color-teal);">101</span></h2>
+        <h2><span style="color: var(--color-pink);">Reconstitution</span> <span style="color: var(--color-teal);">101</span></h2>
         <p>Peptides come as a freeze-dried (lyophilized) powder. Here's how to prepare them for injection — step by step.</p>
 
         <div class="recon-steps">
           <div class="recon-step">
-            <div class="recon-step-num">1</div>
-            <h3>Gather Your Supplies</h3>
+            <h3>1️⃣ Gather Your Supplies</h3>
             <p>You'll need your peptide vial, bacteriostatic water (BAC water), an insulin syringe, and alcohol swabs. Work on a clean surface.</p>
           </div>
           <div class="recon-step">
-            <div class="recon-step-num">2</div>
-            <h3>Clean the Vial Tops</h3>
+            <h3>2️⃣ Clean the Vial Tops</h3>
             <p>Wipe the rubber stopper of both the peptide vial and BAC water vial with an alcohol swab. Let them air dry for a few seconds.</p>
           </div>
           <div class="recon-step">
-            <div class="recon-step-num">3</div>
-            <h3>Draw the BAC Water</h3>
+            <h3>3️⃣ Draw the BAC Water</h3>
             <p>Using a fresh syringe, draw your desired amount of bacteriostatic water. Common amounts are 1–2 mL. Use the calculator above to determine the best volume for your dose.</p>
           </div>
           <div class="recon-step">
-            <div class="recon-step-num">4</div>
-            <h3>Add Water to the Peptide</h3>
+            <h3>4️⃣ Add Water to the Peptide</h3>
             <p>Insert the needle into the peptide vial at an angle. Let the water trickle down the inside wall slowly — never spray directly onto the powder. This protects the peptide structure.</p>
           </div>
           <div class="recon-step">
-            <div class="recon-step-num">5</div>
-            <h3>Swirl Gently — Don't Shake</h3>
+            <h3>5️⃣ Swirl Gently — Don't Shake</h3>
             <p>Once the water is added, gently roll or swirl the vial until the powder is fully dissolved. The solution should be clear. Never shake — agitation can denature the peptide.</p>
           </div>
           <div class="recon-step">
-            <div class="recon-step-num">6</div>
-            <h3>Store and Use</h3>
+            <h3>6️⃣ Store and Use</h3>
             <p>Store the reconstituted vial in the refrigerator at 2–8°C (36–46°F). Use within 30 days. Draw your calculated dose with a clean insulin syringe each time.</p>
           </div>
         </div>
       </section>
 
-      <!-- RIGHT: Syringe Preview -->
-      <aside class="recon-syringe-aside fade-in fade-in-delay">
-        <div class="syringe-card">
-          <h3>Syringe Preview</h3>
-          <svg id="syringeVis2" class="syringe-visual" viewBox="0 0 280 120" xmlns="http://www.w3.org/2000/svg">
-            <!-- Plunger handle -->
-            <rect x="10" y="46" width="30" height="28" rx="3" fill="#2a3345" stroke="#4a4d55" stroke-width="1"/>
-            <rect x="18" y="50" width="14" height="20" rx="2" fill="#1a2235" stroke="#4a4d55" stroke-width="0.5"/>
-            <!-- Plunger rod -->
-            <rect id="plungerRod2" x="40" y="54" width="80" height="12" rx="2" fill="#2a3345" stroke="#4a4d55" stroke-width="0.5"/>
-            <!-- Barrel -->
-            <rect x="60" y="42" width="170" height="36" rx="4" fill="#151b2a" stroke="#4a4d55" stroke-width="1"/>
-            <!-- Barrel inner -->
-            <rect x="64" y="46" width="162" height="28" rx="2" fill="#0f1420"/>
-            <!-- Fluid fill -->
-            <rect id="fluidFill2" x="64" y="46" width="0" height="28" rx="2" fill="rgba(30, 200, 176, 0.3)"/>
-            <!-- Tick marks group -->
-            <g id="tickMarks2"></g>
-            <!-- Needle hub -->
-            <rect x="230" y="50" width="16" height="20" rx="2" fill="#2a3345" stroke="#4a4d55" stroke-width="1"/>
-            <!-- Needle -->
-            <line x1="246" y1="60" x2="275" y2="60" stroke="#8a8d93" stroke-width="1.5" stroke-linecap="round"/>
-            <!-- Draw line indicator -->
-            <line id="drawLine2" x1="64" y1="40" x2="64" y2="80" stroke="var(--color-pink)" stroke-width="2" stroke-dasharray="3,2" opacity="0"/>
-            <text id="drawLabel2" x="64" y="36" fill="var(--color-pink)" font-size="9" font-family="JetBrains Mono, monospace" font-weight="600" text-anchor="middle" opacity="0"></text>
-          </svg>
-          <p style="font-size: var(--text-xs); color: var(--color-text-muted); margin-top: var(--space-3); line-height: 1.5;">Enter your values in the calculator above to see exactly where to fill your syringe.</p>
-        </div>
-      </aside>
+
 
     </div>
 

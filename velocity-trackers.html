@@ -44,13 +44,20 @@
       <img src="assets/logo.jpeg" alt="Yeager's Gym Logo" class="logo-mark-img" width="48" height="48">
     </a>
     <nav class="nav-desktop" role="navigation" aria-label="Main navigation">
-      <a href="./index.html#home" class="nav-link">Home</a>
+      <a href="./index.html" class="nav-link">Home</a>
       <a href="./index.html#about" class="nav-link">About</a>
-      <a href="./index.html#services" class="nav-link">Services</a>
-      <a href="./index.html#remote" class="nav-link">Remote</a>
-      <a href="./index.html#vbt" class="nav-link">VBT</a>
+      <div class="nav-dropdown">
+        <a href="./index.html#services" class="nav-link">Services ▾</a>
+        <div class="nav-dropdown-menu">
+          <a href="./in-person.html">In-Person Coaching</a>
+          <a href="./remote.html">Remote Coaching</a>
+          <a href="./nutrition.html">Nutrition Coaching</a>
+          <a href="./peptide-consulting.html">Peptide Consulting</a>
+          <a href="./recovery.html">Recovery</a>
+        </div>
+      </div>
+      <a href="./index.html#vbt" class="nav-link">Velocity Based Training</a>
       <a href="./index.html#results" class="nav-link">Results</a>
-      <a href="./index.html#contact" class="nav-link">Contact</a>
       <div class="nav-dropdown">
         <a href="./tools-vbt.html" class="nav-link">Tools ▾</a>
         <div class="nav-dropdown-menu">
@@ -58,12 +65,12 @@
           <a href="./tools-crossfit.html">Machine Converter</a>
           <a href="./tools-macro.html">Macro Calculator</a>
           <a href="./tools-peptide.html">Peptide Calculator</a>
-          <a href="./peptide-consulting.html">Peptide Consulting</a>
+          <a href="./velocity-trackers.html">Velocity Trackers Guide</a>
         </div>
       </div>
       <a href="./quiz.html" class="nav-link">Quiz</a>
       <div class="nav-utility">
-        <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="btn btn-primary">Book a Free Session</a>
+        <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="btn btn-nav-cta">Book Your FREE Session!</a>
       </div>
     </nav>
     <button class="hamburger" aria-label="Toggle menu" aria-expanded="false">
@@ -71,20 +78,22 @@
     </button>
   </div>
   <div class="mobile-nav" role="navigation" aria-label="Mobile navigation">
-    <a href="./index.html#home">Home</a>
+    <a href="./index.html">Home</a>
     <a href="./index.html#about">About</a>
     <a href="./index.html#services">Services</a>
-    <a href="./index.html#remote">Remote</a>
-    <a href="./index.html#vbt">VBT</a>
+    <a href="./in-person.html" style="padding-left: 2rem;">In-Person Coaching</a>
+    <a href="./remote.html" style="padding-left: 2rem;">Remote Coaching</a>
+    <a href="./nutrition.html" style="padding-left: 2rem;">Nutrition Coaching</a>
+    <a href="./peptide-consulting.html" style="padding-left: 2rem; color: var(--color-teal);">Peptide Consulting</a>
+    <a href="./recovery.html" style="padding-left: 2rem;">Recovery</a>
+    <a href="./index.html#vbt">Velocity Based Training</a>
     <a href="./index.html#results">Results</a>
-    <a href="./index.html#contact">Contact</a>
     <a href="./tools-vbt.html">VBT Calculator</a>
     <a href="./tools-crossfit.html">Machine Converter</a>
     <a href="./tools-macro.html">Macro Calculator</a>
     <a href="./tools-peptide.html" style="color: var(--color-purple);">Peptide Calculator</a>
-    <a href="./peptide-consulting.html" style="color: var(--color-teal);">Peptide Consulting</a>
-    <a href="./quiz.html" style="color: var(--color-pink);">Find Your Training Type</a>
-    <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="btn btn-primary" style="margin-top: var(--space-4);">Book a Free Session</a>
+    <a href="./quiz.html" style="color: var(--color-pink);">Training Type Quiz</a>
+    <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="btn btn-nav-cta" style="margin-top: var(--space-4);">Book Your FREE Session!</a>
   </div>
 </header>
 
