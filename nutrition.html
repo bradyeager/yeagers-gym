@@ -197,7 +197,7 @@
   left: 0;
   right: 0;
   height: 3px;
-  background: linear-gradient(90deg, var(--color-teal), var(--color-pink));
+  background: var(--color-teal);
 }
 
 .pep-price-card:hover {
@@ -248,7 +248,7 @@
 }
 
 @media (min-width: 640px) {
-  .pep-checklist { grid-template-columns: 1fr 1fr; }
+  .pep-checklist { grid-template-columns: 1fr 1fr 1fr; }
 }
 
 .pep-check-item {
@@ -257,14 +257,14 @@
   gap: var(--space-3);
   padding: var(--space-3) var(--space-4);
   background: var(--color-surface-2);
-  border: 2px solid var(--color-teal);
+  border: 1px solid rgba(30, 200, 176, 0.3);
   border-radius: var(--radius-md);
   transition: background var(--transition-interactive), box-shadow var(--transition-interactive);
 }
 
 .pep-check-item:hover {
-  background: rgba(30, 200, 176, 0.06);
-  box-shadow: 0 0 16px rgba(30, 200, 176, 0.12);
+  background: rgba(30, 200, 176, 0.04);
+  box-shadow: 0 0 16px rgba(30, 200, 176, 0.15);
 }
 
 .pep-check-icon {
@@ -320,13 +320,21 @@
 }
 
 .who-card-icon {
-  width: 36px;
-  height: 36px;
+  width: 28px;
+  height: 28px;
   border-radius: var(--radius-md);
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: var(--space-3);
+  margin-right: var(--space-2);
+  vertical-align: middle;
+  flex-shrink: 0;
+}
+
+.who-card-top {
+  display: flex;
+  align-items: center;
+  margin-bottom: var(--space-2);
 }
 
 .who-card-icon svg {
@@ -610,7 +618,7 @@
   <div class="container">
     <div class="section-header fade-in" style="text-align: center; max-width: 600px; margin-inline: auto; margin-bottom: var(--space-6);">
       <p class="section-label" style="color: var(--color-teal);">What You Get</p>
-      <h2 class="section-title"><span style="color: var(--color-pink);">Everything</span> Included in Your Plan</h2>
+      <h2 class="section-title"><span style="color: var(--color-teal);">Everything</span> Included in Your <span style="color: var(--color-teal);">Plan</span></h2>
     </div>
 
     <div class="pep-checklist">
@@ -686,24 +694,30 @@
 
     <div class="who-grid">
       <div class="who-card fade-in">
-        <div class="who-card-icon" style="background: rgba(30, 200, 176, 0.12); color: var(--color-teal);">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+        <div class="who-card-top">
+          <div class="who-card-icon" style="background: rgba(30, 200, 176, 0.12); color: var(--color-teal);">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+          </div>
+          <h4>Athletes Cutting Weight</h4>
         </div>
-        <h4>Athletes Cutting Weight</h4>
         <p>Powerlifters, combat athletes, and competitors who need to hit a weight class without sacrificing strength or performance on the platform or the mat.</p>
       </div>
       <div class="who-card fade-in">
-        <div class="who-card-icon" style="background: rgba(240, 68, 138, 0.12); color: var(--color-pink);">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg>
+        <div class="who-card-top">
+          <div class="who-card-icon" style="background: rgba(240, 68, 138, 0.12); color: var(--color-pink);">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg>
+          </div>
+          <h4>Bodybuilders Prepping</h4>
         </div>
-        <h4>Bodybuilders Prepping</h4>
         <p>Physique athletes working toward a show or photo shoot who need precise macro targets, peak week strategy, and a structured approach to body composition.</p>
       </div>
       <div class="who-card fade-in">
-        <div class="who-card-icon" style="background: rgba(155, 111, 212, 0.12); color: var(--color-purple);">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+        <div class="who-card-top">
+          <div class="who-card-icon" style="background: rgba(155, 111, 212, 0.12); color: var(--color-purple);">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+          </div>
+          <h4>Optimizing Nutrition Alongside Training</h4>
         </div>
-        <h4>Optimizing Nutrition Alongside Training</h4>
         <p>Anyone training consistently who wants their nutrition to match the effort they put in — fueling workouts, recovering faster, and seeing real results from the work.</p>
       </div>
     </div>
