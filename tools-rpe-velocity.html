@@ -1,0 +1,1501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!--
+   ______                            __
+  / ____/___  ____ ___  ____  __  __/ /____  _____
+ / /   / __ \/ __ `__ \/ __ \/ / / / __/ _ \/ ___/
+/ /___/ /_/ / / / / / / /_/ / /_/ / /_/  __/ /
+\____/\____/_/ /_/ /_/ .___/\__,_/\__/\___/_/
+                    /_/
+        Created with Perplexity Computer
+        https://www.perplexity.ai/computer
+-->
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RPE-Velocity Converter — Yeager's Gym</title>
+<meta name="description" content="Map your personal RPE to last-rep velocity. Enter 2-3 data points and get a complete conversion chart for any exercise.">
+<meta property="og:title" content="RPE-Velocity Converter — Yeager's Gym">
+<meta property="og:description" content="Map your personal RPE to last-rep velocity. Enter 2-3 data points and get a complete conversion chart for any exercise.">
+<meta property="og:type" content="website">
+<link rel="canonical" href="https://yeagersgym.com/tools-rpe-velocity.html">
+<link rel="stylesheet" href="./base.css">
+<link rel="stylesheet" href="./style.css">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "RPE-Velocity Converter",
+  "description": "Map your personal RPE to last-rep velocity. Enter 2-3 data points and get a complete conversion chart for any exercise.",
+  "url": "https://yeagersgym.com/tools-rpe-velocity.html",
+  "applicationCategory": "HealthApplication",
+  "creator": {
+    "@type": "SoftwareApplication",
+    "name": "Perplexity Computer",
+    "url": "https://www.perplexity.ai/computer"
+  }
+}
+</script>
+
+<style>
+/* ═══════════════════════════════════════════
+   RPE-VELOCITY CONVERTER — Widget Styles
+   ═══════════════════════════════════════════ */
+
+.tool-page {
+  padding-top: 100px;
+  padding-bottom: 0;
+  min-height: 100vh;
+}
+
+.tool-back {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  text-decoration: none;
+  margin-bottom: var(--space-8);
+  transition: color var(--transition-interactive);
+}
+.tool-back:hover { color: var(--color-teal); }
+.tool-back svg { width: 16px; height: 16px; }
+
+.tool-header {
+  text-align: center;
+  margin-bottom: var(--space-6);
+}
+
+.tool-header .section-label {
+  margin-bottom: var(--space-4);
+}
+
+.tool-header h1 {
+  font-family: var(--font-body);
+  font-size: var(--text-2xl);
+  font-weight: 700;
+  color: var(--color-text);
+  margin-bottom: var(--space-4);
+  line-height: 1.15;
+}
+
+.tool-header h1 .highlight-teal { color: var(--color-teal); }
+.tool-header h1 .highlight-pink { color: var(--color-pink); }
+
+.tool-header p {
+  font-size: var(--text-base);
+  color: var(--color-text-muted);
+  max-width: 56ch;
+  margin-inline: auto;
+  line-height: 1.7;
+}
+
+/* ── Calculator Card ── */
+.calc-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  padding: var(--space-8);
+  max-width: 600px;
+  margin-inline: auto;
+  margin-bottom: var(--space-10);
+}
+
+@media (max-width: 640px) {
+  .calc-card { padding: var(--space-6) var(--space-4); }
+}
+
+.calc-card h2 {
+  font-family: var(--font-display);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--color-teal);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: var(--space-6);
+}
+
+/* ── Form Fields ── */
+.field-group {
+  margin-bottom: var(--space-5);
+}
+
+.field-group label {
+  display: block;
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-2);
+}
+
+.field-group select,
+.field-group input[type="number"] {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  color: var(--color-text);
+  font-size: var(--text-base);
+  font-family: var(--font-body);
+  transition: border-color var(--transition-interactive), box-shadow var(--transition-interactive);
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.field-group select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none'%3E%3Cpath d='M1 1.5l5 5 5-5' stroke='%238a8d93' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  padding-right: 2.5rem;
+  cursor: pointer;
+}
+
+.field-group select:focus,
+.field-group input[type="number"]:focus {
+  outline: none;
+  border-color: var(--color-teal);
+  box-shadow: 0 0 0 3px var(--color-teal-glow);
+}
+
+.field-group input[type="number"]::placeholder {
+  color: var(--color-text-faint);
+}
+
+/* Remove number spinners */
+.field-group input[type="number"]::-webkit-outer-spin-button,
+.field-group input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.field-group input[type="number"] { -moz-appearance: textfield; }
+
+/* ── Data Point Row ── */
+.data-point-row {
+  margin-bottom: var(--space-5);
+}
+
+.data-point-row-label {
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-3);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.data-point-row-label .dp-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-teal);
+  flex-shrink: 0;
+}
+
+.data-point-fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3);
+}
+
+.data-point-fields .field-group {
+  margin-bottom: 0;
+}
+
+/* ── Stepper Input ── */
+.stepper-input {
+  display: flex;
+  align-items: stretch;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: var(--color-surface-2);
+  transition: border-color var(--transition-interactive), box-shadow var(--transition-interactive);
+}
+
+.stepper-input:focus-within {
+  border-color: var(--color-teal);
+  box-shadow: 0 0 0 3px var(--color-teal-glow);
+}
+
+.stepper-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  min-height: 44px;
+  background: var(--color-surface-3);
+  border: none;
+  color: var(--color-text-muted);
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+.stepper-btn:hover {
+  background: rgba(30, 200, 176, 0.15);
+  color: var(--color-teal);
+}
+
+.stepper-btn:active {
+  background: rgba(30, 200, 176, 0.25);
+  color: var(--color-teal);
+}
+
+.stepper-value-wrap {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  padding: 0 var(--space-1);
+}
+
+.stepper-value-wrap input {
+  width: 100%;
+  text-align: center;
+  background: transparent;
+  border: none;
+  color: var(--color-text);
+  font-size: var(--text-base);
+  font-family: var(--font-display);
+  font-weight: 700;
+  padding: 0.5rem 0;
+  outline: none;
+  -moz-appearance: textfield;
+}
+
+.stepper-value-wrap input::-webkit-outer-spin-button,
+.stepper-value-wrap input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.stepper-unit {
+  font-family: var(--font-display);
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: var(--color-text-faint);
+  margin-left: 2px;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+/* ── Add 3rd point toggle ── */
+.add-point-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-teal);
+  text-decoration: none;
+  cursor: pointer;
+  border: none;
+  background: none;
+  padding: 0;
+  margin-bottom: var(--space-5);
+  transition: opacity var(--transition-interactive);
+}
+
+.add-point-link:hover { opacity: 0.75; }
+
+.add-point-link svg {
+  width: 14px;
+  height: 14px;
+}
+
+.data-point-row-3 {
+  display: none;
+}
+.data-point-row-3.visible {
+  display: block;
+}
+
+/* ── Optional badge ── */
+.optional-badge {
+  font-family: var(--font-display);
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text-faint);
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  padding: 2px 6px;
+}
+
+/* ── Calculate Button ── */
+.btn-calculate {
+  width: 100%;
+  padding: 0.875rem 1.5rem;
+  font-size: var(--text-base);
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-top: var(--space-4);
+}
+
+/* ── Validation warning ── */
+.validation-warning {
+  display: none;
+  padding: var(--space-3) var(--space-4);
+  background: rgba(240, 68, 138, 0.08);
+  border: 1px solid rgba(240, 68, 138, 0.25);
+  border-radius: var(--radius-md);
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  color: var(--color-pink);
+  letter-spacing: 0.02em;
+  margin-top: var(--space-4);
+}
+
+.validation-warning.visible {
+  display: block;
+}
+
+.velocity-warning {
+  display: none;
+  padding: var(--space-3) var(--space-4);
+  background: rgba(155, 111, 212, 0.08);
+  border: 1px solid rgba(155, 111, 212, 0.25);
+  border-radius: var(--radius-md);
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  color: var(--color-purple);
+  letter-spacing: 0.02em;
+  margin-top: var(--space-4);
+}
+
+.velocity-warning.visible {
+  display: block;
+}
+
+/* ═══════════════════════════════════════════
+   RESULTS
+   ═══════════════════════════════════════════ */
+.results-panel {
+  max-width: 600px;
+  margin-inline: auto;
+  display: none;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.5s var(--ease-out), transform 0.5s var(--ease-out);
+  pointer-events: none;
+  margin-bottom: var(--space-6);
+}
+
+.results-panel.visible {
+  display: block;
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+/* ── Results Header ── */
+.results-exercise-header {
+  font-family: var(--font-display);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  text-align: center;
+  margin-bottom: var(--space-5);
+}
+
+.results-exercise-name {
+  color: var(--color-teal);
+}
+
+/* ── Conversion Reference Card ── */
+.ref-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  padding: var(--space-6);
+  max-width: 400px;
+  margin-inline: auto;
+  margin-bottom: var(--space-4);
+  position: relative;
+  overflow: hidden;
+}
+
+.ref-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--color-teal), var(--color-pink));
+}
+
+.ref-card-exercise {
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-teal);
+  text-align: center;
+  margin-bottom: var(--space-5);
+}
+
+.ref-chart-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-3) 0;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  position: relative;
+  gap: var(--space-3);
+}
+
+.ref-chart-row:last-of-type {
+  border-bottom: none;
+}
+
+.ref-rpe {
+  font-family: var(--font-display);
+  font-size: var(--text-sm);
+  font-weight: 700;
+  color: var(--color-teal);
+  min-width: 64px;
+  letter-spacing: 0.02em;
+}
+
+.ref-arrow {
+  color: var(--color-pink);
+  font-size: var(--text-base);
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.ref-velocity {
+  font-family: var(--font-display);
+  font-size: var(--text-sm);
+  font-weight: 700;
+  color: var(--color-text);
+  text-align: right;
+  flex: 1;
+  letter-spacing: 0.02em;
+}
+
+.ref-input-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--color-teal);
+  flex-shrink: 0;
+  box-shadow: 0 0 6px rgba(30, 200, 176, 0.6);
+}
+
+.ref-input-dot.hidden {
+  visibility: hidden;
+}
+
+.ref-card-hint {
+  text-align: center;
+  font-size: var(--text-xs);
+  font-style: italic;
+  color: var(--color-text-faint);
+  margin-top: var(--space-4);
+  letter-spacing: 0.02em;
+}
+
+/* ── RIR Pills ── */
+.rir-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  justify-content: center;
+  margin-bottom: var(--space-5);
+  padding: 0 var(--space-2);
+}
+
+.rir-pill {
+  font-family: var(--font-display);
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--color-text-faint);
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  padding: 4px 10px;
+  white-space: nowrap;
+}
+
+.rir-pill strong {
+  color: var(--color-text-muted);
+}
+
+/* ── Copy Chart Button ── */
+.btn-copy {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-inline: auto;
+  padding: 0.6rem 1.5rem;
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition: all var(--transition-interactive);
+  margin-bottom: var(--space-6);
+}
+
+.btn-copy:hover {
+  border-color: var(--color-teal);
+  color: var(--color-teal);
+}
+
+.btn-copy svg {
+  width: 14px;
+  height: 14px;
+}
+
+.btn-copy.copied {
+  border-color: var(--color-teal);
+  color: var(--color-teal);
+  background: rgba(30, 200, 176, 0.08);
+}
+
+/* ── Explainer ── */
+.explainer {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  padding: var(--space-6);
+  margin-top: var(--space-4);
+  max-width: 600px;
+  margin-inline: auto;
+  margin-bottom: 0;
+}
+
+@media (max-width: 640px) {
+  .explainer { padding: var(--space-6) var(--space-4); }
+}
+
+.explainer h2 {
+  font-family: var(--font-display);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--color-teal);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: var(--space-4);
+}
+
+.explainer p {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+  line-height: 1.8;
+  margin-bottom: var(--space-4);
+}
+
+.explainer p:last-child { margin-bottom: 0; }
+
+/* ── Tool Navigation Pills ── */
+.tool-nav-bar {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-10);
+  flex-wrap: wrap;
+}
+
+.tool-nav-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 0.5rem 1rem;
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--color-text-muted);
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  transition: all var(--transition-interactive);
+}
+
+.tool-nav-pill:hover {
+  border-color: var(--color-teal);
+  color: var(--color-teal);
+}
+
+.tool-nav-pill.active {
+  border-color: var(--color-teal);
+  background: var(--color-teal-glow);
+  color: var(--color-teal);
+}
+
+.tool-nav-pill svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* ── CTA Section ── */
+.tool-cta {
+  text-align: center;
+  padding: var(--space-8) var(--space-4) var(--space-6);
+  position: relative;
+}
+
+.tool-cta h2 {
+  font-family: var(--font-body);
+  font-size: var(--text-xl);
+  font-weight: 700;
+  color: var(--color-text);
+  margin-bottom: var(--space-4);
+}
+
+.tool-cta p {
+  font-size: var(--text-base);
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-6);
+  max-width: 45ch;
+  margin-inline: auto;
+}
+
+/* ── Mobile compact ── */
+@media (max-width: 640px) {
+  .data-point-fields {
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-2);
+  }
+  .ref-card {
+    padding: var(--space-4);
+  }
+  .ref-rpe {
+    font-size: var(--text-xs);
+    min-width: 52px;
+  }
+  .ref-velocity {
+    font-size: var(--text-xs);
+  }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════
+     HEADER
+     ═══════════════════════════════════════════ -->
+<header class="site-header" role="banner">
+  <div class="header-inner">
+    <a href="./index.html" class="logo-link" aria-label="Yeager's Gym Home">
+      <img src="./assets/logo.jpeg" alt="Yeager's Gym Logo" class="logo-mark-img" width="48" height="48">
+    </a>
+
+    <nav class="nav-desktop" role="navigation" aria-label="Main navigation">
+      <a href="./index.html" class="nav-link">Home</a>
+      <a href="./index.html#about" class="nav-link">About</a>
+      <div class="nav-dropdown">
+        <a href="./index.html#services" class="nav-link">Services ▾</a>
+        <div class="nav-dropdown-menu">
+          <a href="./in-person.html">In-Person Coaching</a>
+          <a href="./remote.html">Remote Coaching</a>
+          <a href="./nutrition.html">Nutrition Coaching</a>
+          <a href="./peptide-consulting.html">Peptide Consulting</a>
+          <a href="./recovery.html">Recovery</a>
+        </div>
+      </div>
+      <a href="./index.html#vbt" class="nav-link">Velocity Based Training</a>
+      <a href="./index.html#results" class="nav-link">Results</a>
+      <div class="nav-dropdown">
+        <a href="./tools-vbt.html" class="nav-link">Tools ▾</a>
+        <div class="nav-dropdown-menu">
+          <a href="./tools-vbt.html">VBT Calculator</a>
+          <a href="./tools-1rm.html">1RM Calculator</a>
+          <a href="./tools-warmup.html">Warmup Calculator</a>
+          <a href="./tools-lv-profile.html">LV Profile</a>
+          <a href="./tools-rpe.html">RPE Chart</a>
+          <a href="./tools-rpe-velocity.html">RPE-Velocity Converter</a>
+          <a href="./tools-crossfit.html">Machine Converter</a>
+          <a href="./tools-macro.html">Macro Calculator</a>
+          <a href="./tools-peptide.html">Peptide Calculator</a>
+          <a href="./velocity-trackers.html">Velocity Trackers Guide</a>
+        </div>
+      </div>
+      <a href="./quiz.html" class="nav-link">Quiz</a>
+      <div class="nav-utility">
+        <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="btn btn-nav-cta">Book Your FREE Session!</a>
+      </div>
+    </nav>
+
+    <button class="hamburger" aria-label="Toggle menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+
+  <div class="mobile-nav" role="navigation" aria-label="Mobile navigation">
+    <a href="./index.html">Home</a>
+    <a href="./index.html#about">About</a>
+    <a href="./index.html#services">Services</a>
+    <a href="./in-person.html" style="padding-left: 2rem;">In-Person Coaching</a>
+    <a href="./remote.html" style="padding-left: 2rem;">Remote Coaching</a>
+    <a href="./nutrition.html" style="padding-left: 2rem;">Nutrition Coaching</a>
+    <a href="./peptide-consulting.html" style="padding-left: 2rem; color: var(--color-teal);">Peptide Consulting</a>
+    <a href="./recovery.html" style="padding-left: 2rem;">Recovery</a>
+    <a href="./index.html#vbt">Velocity Based Training</a>
+    <a href="./index.html#results">Results</a>
+    <a href="./tools-vbt.html">VBT Calculator</a>
+    <a href="./tools-1rm.html">1RM Calculator</a>
+    <a href="./tools-warmup.html">Warmup Calculator</a>
+    <a href="./tools-lv-profile.html">LV Profile</a>
+    <a href="./tools-rpe.html">RPE Chart</a>
+    <a href="./tools-rpe-velocity.html" style="color: var(--color-teal);">RPE-Velocity Converter</a>
+    <a href="./tools-crossfit.html">Machine Converter</a>
+    <a href="./tools-macro.html">Macro Calculator</a>
+    <a href="./tools-peptide.html" style="color: var(--color-purple);">Peptide Calculator</a>
+    <a href="./quiz.html" style="color: var(--color-pink);">Training Type Quiz</a>
+    <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="btn btn-nav-cta" style="margin-top: var(--space-4);">Book Your FREE Session!</a>
+  </div>
+</header>
+
+<!-- ═══════════════════════════════════════════
+     MAIN CONTENT
+     ═══════════════════════════════════════════ -->
+<main class="tool-page">
+  <div class="container">
+
+    <a href="./index.html" class="tool-back">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 12L6 8l4-4"/></svg>
+      Back to Home
+    </a>
+
+    <!-- Tool Nav Tabs -->
+    <div class="tool-nav-bar fade-in">
+      <a href="./tools-vbt.html" class="tool-nav-pill">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+        VBT
+      </a>
+      <a href="./tools-1rm.html" class="tool-nav-pill">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 18L18 6M8 6h10v10"/></svg>
+        1RM
+      </a>
+      <a href="./tools-warmup.html" class="tool-nav-pill">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83"/></svg>
+        Warmup
+      </a>
+      <a href="./tools-lv-profile.html" class="tool-nav-pill">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        LV Profile
+      </a>
+      <a href="./tools-rpe.html" class="tool-nav-pill">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 3v18"/></svg>
+        RPE Chart
+      </a>
+      <a href="./tools-rpe-velocity.html" class="tool-nav-pill active">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="M12 6v6l4 2"/></svg>
+        RPE-Velocity
+      </a>
+      <a href="./tools-crossfit.html" class="tool-nav-pill">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 12h8M12 8v8"/></svg>
+        Machine
+      </a>
+      <a href="./tools-macro.html" class="tool-nav-pill">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z"/><path d="M12 2v10l7 4"/></svg>
+        Macro
+      </a>
+      <a href="./tools-peptide.html" class="tool-nav-pill">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6v11a6 6 0 0 1-6 0V3z"/><path d="M12 14v7"/><path d="M6 3h12"/></svg>
+        Peptide
+      </a>
+    </div>
+
+    <!-- Tool Header -->
+    <div class="tool-header fade-in">
+      <h1><span class="highlight-pink">RPE</span>-<span class="highlight-teal">Velocity</span> Converter</h1>
+      <p>Map your personal RPE to last-rep velocity. Enter 2–3 data points and get a complete conversion chart for any exercise.</p>
+    </div>
+
+    <!-- Calculator Card -->
+    <div class="calc-card fade-in">
+      <h2>Your Data Points</h2>
+
+      <!-- Exercise Select -->
+      <div class="field-group">
+        <label for="exercise">Exercise</label>
+        <select id="exercise">
+          <option value="Back Squat">Back Squat</option>
+          <option value="Front Squat">Front Squat</option>
+          <option value="Bench Press" selected>Bench Press</option>
+          <option value="Deadlift">Deadlift</option>
+          <option value="Sumo Deadlift">Sumo Deadlift</option>
+          <option value="Trap Bar Deadlift">Trap Bar Deadlift</option>
+          <option value="Barbell Row">Barbell Row</option>
+          <option value="Overhead Press">Overhead Press</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+
+      <!-- Data Point 1 (required) -->
+      <div class="data-point-row" id="dp-row-1">
+        <div class="data-point-row-label">
+          <span class="dp-dot"></span>
+          Data Point 1
+        </div>
+        <div class="data-point-fields">
+          <div class="field-group">
+            <label for="rpe-1">RPE</label>
+            <div class="stepper-input" id="rpe-stepper-1">
+              <button class="stepper-btn stepper-down" type="button" data-dir="-1" aria-label="Decrease RPE">&#8722;</button>
+              <div class="stepper-value-wrap">
+                <input type="number" id="rpe-1" value="8.0" min="6.5" max="10" step="0.5" inputmode="decimal">
+              </div>
+              <button class="stepper-btn stepper-up" type="button" data-dir="1" aria-label="Increase RPE">&#43;</button>
+            </div>
+          </div>
+          <div class="field-group">
+            <label for="vel-1">Velocity</label>
+            <div class="stepper-input" id="vel-stepper-1">
+              <button class="stepper-btn stepper-down" type="button" data-dir="-1" aria-label="Decrease velocity">&#8722;</button>
+              <div class="stepper-value-wrap">
+                <input type="number" id="vel-1" value="0.34" min="0.01" max="2.0" step="0.01" inputmode="decimal">
+                <span class="stepper-unit">m/s</span>
+              </div>
+              <button class="stepper-btn stepper-up" type="button" data-dir="1" aria-label="Increase velocity">&#43;</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Data Point 2 (required) -->
+      <div class="data-point-row" id="dp-row-2">
+        <div class="data-point-row-label">
+          <span class="dp-dot"></span>
+          Data Point 2
+        </div>
+        <div class="data-point-fields">
+          <div class="field-group">
+            <label for="rpe-2">RPE</label>
+            <div class="stepper-input" id="rpe-stepper-2">
+              <button class="stepper-btn stepper-down" type="button" data-dir="-1" aria-label="Decrease RPE">&#8722;</button>
+              <div class="stepper-value-wrap">
+                <input type="number" id="rpe-2" value="9.0" min="6.5" max="10" step="0.5" inputmode="decimal">
+              </div>
+              <button class="stepper-btn stepper-up" type="button" data-dir="1" aria-label="Increase RPE">&#43;</button>
+            </div>
+          </div>
+          <div class="field-group">
+            <label for="vel-2">Velocity</label>
+            <div class="stepper-input" id="vel-stepper-2">
+              <button class="stepper-btn stepper-down" type="button" data-dir="-1" aria-label="Decrease velocity">&#8722;</button>
+              <div class="stepper-value-wrap">
+                <input type="number" id="vel-2" value="0.26" min="0.01" max="2.0" step="0.01" inputmode="decimal">
+                <span class="stepper-unit">m/s</span>
+              </div>
+              <button class="stepper-btn stepper-up" type="button" data-dir="1" aria-label="Increase velocity">&#43;</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Add 3rd Data Point Toggle -->
+      <button class="add-point-link" id="add-point-btn" type="button" aria-expanded="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>
+        Add 3rd data point
+      </button>
+
+      <!-- Data Point 3 (optional) -->
+      <div class="data-point-row data-point-row-3" id="dp-row-3">
+        <div class="data-point-row-label">
+          <span class="dp-dot"></span>
+          Data Point 3
+          <span class="optional-badge">Optional</span>
+        </div>
+        <div class="data-point-fields">
+          <div class="field-group">
+            <label for="rpe-3">RPE</label>
+            <div class="stepper-input" id="rpe-stepper-3">
+              <button class="stepper-btn stepper-down" type="button" data-dir="-1" aria-label="Decrease RPE">&#8722;</button>
+              <div class="stepper-value-wrap">
+                <input type="number" id="rpe-3" value="7.0" min="6.5" max="10" step="0.5" inputmode="decimal">
+              </div>
+              <button class="stepper-btn stepper-up" type="button" data-dir="1" aria-label="Increase RPE">&#43;</button>
+            </div>
+          </div>
+          <div class="field-group">
+            <label for="vel-3">Velocity</label>
+            <div class="stepper-input" id="vel-stepper-3">
+              <button class="stepper-btn stepper-down" type="button" data-dir="-1" aria-label="Decrease velocity">&#8722;</button>
+              <div class="stepper-value-wrap">
+                <input type="number" id="vel-3" value="0.42" min="0.01" max="2.0" step="0.01" inputmode="decimal">
+                <span class="stepper-unit">m/s</span>
+              </div>
+              <button class="stepper-btn stepper-up" type="button" data-dir="1" aria-label="Increase velocity">&#43;</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Validation messages -->
+      <div class="validation-warning" id="validation-warning">
+        Please enter valid RPE and velocity values for at least 2 different RPE levels.
+      </div>
+      <div class="velocity-warning" id="velocity-warning">
+        Note: Higher RPE usually corresponds to lower velocity. Your data suggests the opposite — double-check your values, but the chart will still be generated.
+      </div>
+
+      <button class="btn btn-primary btn-calculate" id="calculate-btn" type="button">
+        Generate Conversion Chart
+      </button>
+    </div>
+
+    <!-- Results Panel -->
+    <div class="results-panel" id="results-panel">
+
+      <!-- Header -->
+      <p class="results-exercise-header">
+        <span class="results-exercise-name" id="result-exercise-name">Bench Press</span> — RPE to Velocity Chart
+      </p>
+
+      <!-- Conversion Reference Card -->
+      <div class="ref-card" id="ref-card">
+        <p class="ref-card-exercise" id="ref-card-exercise">Bench Press</p>
+        <div id="ref-chart-rows">
+          <!-- Populated by JS -->
+        </div>
+        <p class="ref-card-hint">Screenshot this card for gym reference</p>
+      </div>
+
+      <!-- RIR Row -->
+      <div class="rir-row">
+        <span class="rir-pill"><strong>RPE 10</strong> = 0 RIR (max effort)</span>
+        <span class="rir-pill"><strong>RPE 9</strong> = 1 RIR</span>
+        <span class="rir-pill"><strong>RPE 8</strong> = 2 RIR</span>
+        <span class="rir-pill"><strong>RPE 7</strong> = 3 RIR</span>
+      </div>
+
+      <!-- Copy Chart Button -->
+      <button class="btn-copy" id="copy-btn" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        Copy Chart
+      </button>
+
+    </div>
+    <!-- / results-panel -->
+
+    <!-- Explainer -->
+    <div class="explainer fade-in">
+      <h2>RPE, RIR &amp; Velocity</h2>
+      <p>Rate of Perceived Exertion (RPE) and Reps in Reserve (RIR) describe how hard a set felt. RPE 10 means you left nothing in the tank — 0 reps left. RPE 8 means you had roughly 2 more reps available. These are useful, but subjective.</p>
+      <p>Bar velocity makes RPE objective. Research consistently shows that as a set approaches failure, bar speed slows down in a predictable way. Your last rep at RPE 9 will always move slower than your last rep at RPE 7 — the exact velocity is personal to you, your exercise, and your fiber makeup.</p>
+      <p>By entering 2–3 known (RPE, velocity) pairs from your own training, this converter fits a linear model to your personal data and predicts the full RPE-to-velocity curve. Use the generated chart during training: when your device reads a certain velocity, you instantly know your RPE without guessing.</p>
+    </div>
+
+  </div>
+</main>
+
+<!-- CTA Section -->
+<section style="padding: var(--space-8) 0 var(--space-6); text-align: center; position: relative;">
+  <div class="container">
+    <p class="section-label" style="color: var(--color-pink); text-align: center;">Get Started</p>
+    <h2 style="font-family: var(--font-body); font-size: var(--text-xl); font-weight: 700; color: var(--color-text); margin-bottom: var(--space-3);">Want <span style="color: var(--color-teal);">coaching</span> built on this <span style="color: var(--color-pink);">data</span>?</h2>
+    <p style="font-size: var(--text-sm); color: var(--color-text-muted); margin-bottom: var(--space-5); max-width: 45ch; margin-inline: auto;">Train with a coach who measures every rep. Book a free session and see VBT in action.</p>
+    <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="btn btn-primary">Book Your FREE Session!</a>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     FOOTER
+     ═══════════════════════════════════════════ -->
+<footer class="site-footer" role="contentinfo">
+  <div class="container">
+    <div class="footer-nav-columns">
+      <div class="footer-links">
+        <h4>Navigate</h4>
+        <a href="./index.html">Home</a>
+        <a href="./index.html#about">About Brad</a>
+        <a href="./index.html#services">Services &amp; Pricing</a>
+        <a href="./index.html#vbt">VBT Explained</a>
+        <a href="./index.html#results">Results</a>
+        <a href="./index.html#contact">Contact</a>
+      </div>
+      <div class="footer-links">
+        <h4>Resources &amp; Free Tools</h4>
+        <a href="./tools-vbt.html">VBT Calculator</a>
+        <a href="./tools-1rm.html">1RM Calculator</a>
+        <a href="./tools-warmup.html">Warmup Calculator</a>
+        <a href="./tools-lv-profile.html">LV Profile</a>
+        <a href="./tools-rpe.html">RPE Chart</a>
+        <a href="./tools-rpe-velocity.html">RPE-Velocity Converter</a>
+        <a href="./tools-crossfit.html">Machine Converter</a>
+        <a href="./tools-macro.html">Macro Calculator</a>
+        <a href="./tools-peptide.html">Peptide Calculator</a>
+        <a href="./velocity-trackers.html">Velocity Trackers Guide</a>
+        <a href="./quiz.html">Training Type Quiz</a>
+      </div>
+      <div class="footer-links">
+        <h4>Connect</h4>
+        <a href="mailto:brad@yeagersgym.com" class="footer-contact-link">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+          brad@yeagersgym.com
+        </a>
+        <a href="https://www.instagram.com/YeagersGym" target="_blank" rel="noopener noreferrer" class="footer-contact-link">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
+          @YeagersGym
+        </a>
+        <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="footer-vagaro-link">Book via Vagaro →</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>&copy; 2026 Yeager's Gym &middot; San Diego, CA</span>
+      <div class="footer-bottom-right">
+        <a href="https://www.perplexity.ai/computer" target="_blank" rel="noopener noreferrer">Created with Perplexity Computer</a>
+        <a href="./index.html" aria-label="Yeager's Gym Home">
+          <img src="assets/logo.jpeg" alt="Yeager's Gym" class="logo-mark-img" width="24" height="24">
+        </a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- ═══════════════════════════════════════════
+     SCRIPTS
+     ═══════════════════════════════════════════ -->
+<script>
+(function() {
+  'use strict';
+
+  // ══════════════════════════════════════════════════════════
+  // DOM REFS
+  // ══════════════════════════════════════════════════════════
+  var exerciseSelect    = document.getElementById('exercise');
+  var calculateBtn      = document.getElementById('calculate-btn');
+  var resultsPanel      = document.getElementById('results-panel');
+  var validationWarning = document.getElementById('validation-warning');
+  var velocityWarning   = document.getElementById('velocity-warning');
+  var addPointBtn       = document.getElementById('add-point-btn');
+  var dp3Row            = document.getElementById('dp-row-3');
+  var copyBtn           = document.getElementById('copy-btn');
+
+  var show3rd = false;
+
+  // ══════════════════════════════════════════════════════════
+  // RPE STEPPER CONFIG — step 0.5, range 6.5–10
+  // ══════════════════════════════════════════════════════════
+  function initStepper(stepperId, inputId, step, min, max, decimals) {
+    var container = document.getElementById(stepperId);
+    if (!container) return;
+    var input   = document.getElementById(inputId);
+    var downBtn = container.querySelector('.stepper-down');
+    var upBtn   = container.querySelector('.stepper-up');
+
+    var holdTimer    = null;
+    var holdInterval = null;
+
+    function clampAndSet(val) {
+      // Snap to nearest step
+      val = Math.round(val / step) * step;
+      val = Math.max(min, Math.min(max, val));
+      input.value = val.toFixed(decimals);
+    }
+
+    function doStep(dir) {
+      var current = parseFloat(input.value) || min;
+      clampAndSet(current + dir * step);
+    }
+
+    function startHold(dir) {
+      doStep(dir);
+      holdTimer = setTimeout(function() {
+        holdInterval = setInterval(function() { doStep(dir); }, 100);
+      }, 400);
+    }
+
+    function stopHold() {
+      clearTimeout(holdTimer);
+      clearInterval(holdInterval);
+      holdTimer    = null;
+      holdInterval = null;
+    }
+
+    downBtn.addEventListener('mousedown', function(e) { e.preventDefault(); startHold(-1); });
+    upBtn.addEventListener('mousedown',   function(e) { e.preventDefault(); startHold(1);  });
+    document.addEventListener('mouseup',  stopHold);
+
+    downBtn.addEventListener('touchstart', function(e) { e.preventDefault(); startHold(-1); }, { passive: false });
+    upBtn.addEventListener('touchstart',   function(e) { e.preventDefault(); startHold(1);  }, { passive: false });
+    document.addEventListener('touchend',   stopHold);
+    document.addEventListener('touchcancel', stopHold);
+
+    input.addEventListener('blur', function() {
+      var val = parseFloat(input.value);
+      if (isNaN(val)) val = min;
+      clampAndSet(val);
+    });
+  }
+
+  // Init all steppers
+  initStepper('rpe-stepper-1', 'rpe-1', 0.5,  6.5, 10.0, 1);
+  initStepper('vel-stepper-1', 'vel-1', 0.01, 0.01, 2.0,  2);
+  initStepper('rpe-stepper-2', 'rpe-2', 0.5,  6.5, 10.0, 1);
+  initStepper('vel-stepper-2', 'vel-2', 0.01, 0.01, 2.0,  2);
+  initStepper('rpe-stepper-3', 'rpe-3', 0.5,  6.5, 10.0, 1);
+  initStepper('vel-stepper-3', 'vel-3', 0.01, 0.01, 2.0,  2);
+
+  // ══════════════════════════════════════════════════════════
+  // ADD 3RD POINT TOGGLE
+  // ══════════════════════════════════════════════════════════
+  addPointBtn.addEventListener('click', function() {
+    show3rd = !show3rd;
+    dp3Row.classList.toggle('visible', show3rd);
+    addPointBtn.setAttribute('aria-expanded', show3rd);
+
+    if (show3rd) {
+      addPointBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 12h8"/></svg> Remove 3rd data point';
+    } else {
+      addPointBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg> Add 3rd data point';
+    }
+  });
+
+  // ══════════════════════════════════════════════════════════
+  // LINEAR REGRESSION — least squares fit for y = m*x + b
+  // Points: array of {x, y}
+  // Returns { slope, intercept }
+  // ══════════════════════════════════════════════════════════
+  function linearRegression(points) {
+    var n  = points.length;
+    var sx = 0, sy = 0, sxy = 0, sx2 = 0;
+    for (var i = 0; i < n; i++) {
+      sx  += points[i].x;
+      sy  += points[i].y;
+      sxy += points[i].x * points[i].y;
+      sx2 += points[i].x * points[i].x;
+    }
+    var denom = (n * sx2 - sx * sx);
+    if (Math.abs(denom) < 1e-10) {
+      // Degenerate case — same RPE values, return flat
+      return { slope: 0, intercept: sy / n };
+    }
+    var slope     = (n * sxy - sx * sy) / denom;
+    var intercept = (sy - slope * sx) / n;
+    return { slope: slope, intercept: intercept };
+  }
+
+  // ══════════════════════════════════════════════════════════
+  // COLLECT & VALIDATE DATA POINTS
+  // ══════════════════════════════════════════════════════════
+  function getDataPoints() {
+    var pts = [];
+
+    var r1 = parseFloat(document.getElementById('rpe-1').value);
+    var v1 = parseFloat(document.getElementById('vel-1').value);
+    var r2 = parseFloat(document.getElementById('rpe-2').value);
+    var v2 = parseFloat(document.getElementById('vel-2').value);
+
+    if (!isNaN(r1) && !isNaN(v1) && v1 > 0) pts.push({ x: r1, y: v1 });
+    if (!isNaN(r2) && !isNaN(v2) && v2 > 0) pts.push({ x: r2, y: v2 });
+
+    if (show3rd) {
+      var r3 = parseFloat(document.getElementById('rpe-3').value);
+      var v3 = parseFloat(document.getElementById('vel-3').value);
+      if (!isNaN(r3) && !isNaN(v3) && v3 > 0) pts.push({ x: r3, y: v3 });
+    }
+
+    return pts;
+  }
+
+  function validatePoints(pts) {
+    if (pts.length < 2) return 'need_more';
+    // Check all RPEs are different
+    var rpes = pts.map(function(p) { return p.x; });
+    var uniqueRpes = rpes.filter(function(v, i, a) { return a.indexOf(v) === i; });
+    if (uniqueRpes.length < 2) return 'same_rpe';
+    return 'ok';
+  }
+
+  function checkVelocityOrder(pts) {
+    // Higher RPE should generally correlate with lower velocity (negative slope expected)
+    var reg = linearRegression(pts);
+    return reg.slope > 0; // true = warning: positive slope (higher RPE → higher velocity)
+  }
+
+  // ══════════════════════════════════════════════════════════
+  // RPE TABLE — from 10.0 down to 6.5, step 0.5
+  // ══════════════════════════════════════════════════════════
+  var RPE_STEPS = [10.0, 9.5, 9.0, 8.5, 8.0, 7.5, 7.0, 6.5];
+
+  // ══════════════════════════════════════════════════════════
+  // CALCULATE
+  // ══════════════════════════════════════════════════════════
+  calculateBtn.addEventListener('click', function() {
+    runCalculation();
+  });
+
+  // Enter key on any input triggers calculate
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') {
+      var tag = document.activeElement.tagName;
+      if (tag === 'INPUT' || tag === 'SELECT') {
+        calculateBtn.click();
+      }
+    }
+  });
+
+  function shakeButton() {
+    calculateBtn.style.animation = 'shake 0.4s ease';
+    setTimeout(function() { calculateBtn.style.animation = ''; }, 400);
+  }
+
+  // Store last chart data for copy
+  var lastChartData = null;
+
+  function runCalculation() {
+    // Hide old warnings
+    validationWarning.classList.remove('visible');
+    velocityWarning.classList.remove('visible');
+
+    var pts = getDataPoints();
+    var validity = validatePoints(pts);
+
+    if (validity !== 'ok') {
+      shakeButton();
+      validationWarning.classList.add('visible');
+      validationWarning.textContent =
+        validity === 'same_rpe'
+          ? 'RPE values must be different from each other. Please use at least 2 distinct RPE levels.'
+          : 'Please enter valid RPE and velocity values for at least 2 different RPE levels.';
+      return;
+    }
+
+    // Warn if positive slope (unusual)
+    if (checkVelocityOrder(pts)) {
+      velocityWarning.classList.add('visible');
+    }
+
+    // Fit model
+    var reg = linearRegression(pts);
+    var slope     = reg.slope;
+    var intercept = reg.intercept;
+
+    // Build input RPE lookup for dot indicators
+    var inputRpeMap = {};
+    pts.forEach(function(p) {
+      inputRpeMap[p.x.toFixed(1)] = true;
+    });
+
+    // Predict velocity for each RPE step
+    var chartRows = RPE_STEPS.map(function(rpe) {
+      var vel = slope * rpe + intercept;
+      // Clamp to 0.05–2.0 m/s
+      vel = Math.max(0.05, Math.min(2.0, vel));
+      return {
+        rpe: rpe,
+        vel: vel,
+        isInput: !!inputRpeMap[rpe.toFixed(1)]
+      };
+    });
+
+    lastChartData = {
+      exercise: exerciseSelect.value,
+      rows: chartRows
+    };
+
+    // Render
+    renderResults(chartRows);
+  }
+
+  function renderResults(chartRows) {
+    var exerciseName = exerciseSelect.value;
+
+    // Update headers
+    document.getElementById('result-exercise-name').textContent = exerciseName;
+    document.getElementById('ref-card-exercise').textContent   = exerciseName;
+
+    // Render chart rows
+    var container = document.getElementById('ref-chart-rows');
+    container.innerHTML = '';
+
+    chartRows.forEach(function(row) {
+      var div = document.createElement('div');
+      div.className = 'ref-chart-row';
+
+      // RPE label
+      var rpeEl = document.createElement('span');
+      rpeEl.className = 'ref-rpe';
+      rpeEl.textContent = 'RPE ' + row.rpe.toFixed(1);
+
+      // Arrow
+      var arrowEl = document.createElement('span');
+      arrowEl.className = 'ref-arrow';
+      arrowEl.textContent = '→';
+
+      // Velocity
+      var velEl = document.createElement('span');
+      velEl.className = 'ref-velocity';
+      velEl.textContent = row.vel.toFixed(2) + ' m/s';
+
+      // Input dot indicator
+      var dotEl = document.createElement('span');
+      dotEl.className = row.isInput ? 'ref-input-dot' : 'ref-input-dot hidden';
+      dotEl.title = row.isInput ? 'Your data point' : '';
+
+      div.appendChild(rpeEl);
+      div.appendChild(arrowEl);
+      div.appendChild(velEl);
+      div.appendChild(dotEl);
+      container.appendChild(div);
+    });
+
+    // Show results panel
+    resultsPanel.classList.add('visible');
+    setTimeout(function() {
+      resultsPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 50);
+  }
+
+  // ══════════════════════════════════════════════════════════
+  // COPY CHART
+  // ══════════════════════════════════════════════════════════
+  copyBtn.addEventListener('click', function() {
+    if (!lastChartData) return;
+
+    var lines = [
+      lastChartData.exercise + ' — RPE to Velocity Chart',
+      '━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+    ];
+
+    lastChartData.rows.forEach(function(row) {
+      var marker = row.isInput ? ' ●' : '';
+      lines.push('RPE ' + row.rpe.toFixed(1) + '  →  ' + row.vel.toFixed(2) + ' m/s' + marker);
+    });
+
+    lines.push('━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    lines.push('RPE 10 = 0 RIR | RPE 9 = 1 RIR | RPE 8 = 2 RIR | RPE 7 = 3 RIR');
+    lines.push('Generated at yeagersgym.com/tools-rpe-velocity.html');
+
+    var text = lines.join('\n');
+
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(text).then(function() {
+        showCopied();
+      }).catch(function() {
+        fallbackCopy(text);
+      });
+    } else {
+      fallbackCopy(text);
+    }
+  });
+
+  function fallbackCopy(text) {
+    var el = document.createElement('textarea');
+    el.value = text;
+    el.style.position = 'fixed';
+    el.style.opacity = '0';
+    document.body.appendChild(el);
+    el.select();
+    try { document.execCommand('copy'); } catch(e) {}
+    document.body.removeChild(el);
+    showCopied();
+  }
+
+  function showCopied() {
+    copyBtn.classList.add('copied');
+    copyBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Copied!';
+    setTimeout(function() {
+      copyBtn.classList.remove('copied');
+      copyBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> Copy Chart';
+    }, 2000);
+  }
+
+  // ══════════════════════════════════════════════════════════
+  // UTILITIES
+  // ══════════════════════════════════════════════════════════
+
+  // Shake animation
+  var shakeStyle = document.createElement('style');
+  shakeStyle.textContent = '@keyframes shake { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-6px)} 40%{transform:translateX(6px)} 60%{transform:translateX(-4px)} 80%{transform:translateX(4px)} }';
+  document.head.appendChild(shakeStyle);
+
+  // Scroll reveal
+  var fadeEls = document.querySelectorAll('.fade-in');
+  if ('IntersectionObserver' in window) {
+    var observer = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+    fadeEls.forEach(function(el) { observer.observe(el); });
+  } else {
+    fadeEls.forEach(function(el) { el.classList.add('visible'); });
+  }
+
+  // Mobile Menu
+  var hamburger = document.querySelector('.hamburger');
+  var mobileNav = document.querySelector('.mobile-nav');
+  if (hamburger && mobileNav) {
+    hamburger.addEventListener('click', function() {
+      var isOpen = mobileNav.classList.toggle('open');
+      hamburger.classList.toggle('open');
+      hamburger.setAttribute('aria-expanded', isOpen);
+    });
+  }
+
+  // Header scroll shadow
+  var header = document.querySelector('.site-header');
+  window.addEventListener('scroll', function() {
+    if (window.scrollY > 60) {
+      header.style.boxShadow = 'var(--shadow-md)';
+    } else {
+      header.style.boxShadow = 'none';
+    }
+  }, { passive: true });
+
+})();
+</script>
+
+<!-- Mobile Sticky CTA -->
+<div class="mobile-sticky-cta" id="stickyCta" style="display: none; position: fixed; bottom: 0; left: 0; right: 0; z-index: 999; padding: 12px 16px; background: rgba(10,14,23,0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-top: 1px solid rgba(30,200,176,0.2); text-align: center;">
+  <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" style="display: inline-block; width: 100%; max-width: 320px; padding: 10px 20px; background: var(--color-teal); color: #0a0e17; font-family: var(--font-display); font-size: 0.8rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; text-decoration: none; border-radius: 6px;">Book a Free Session</a>
+</div>
+<script>
+(function(){
+  var cta = document.getElementById('stickyCta');
+  if (!cta || window.innerWidth > 768) return;
+  window.addEventListener('scroll', function() {
+    cta.style.display = window.scrollY > 300 ? 'block' : 'none';
+  }, {passive:true});
+})();
+</script>
+
+</body>
+</html>

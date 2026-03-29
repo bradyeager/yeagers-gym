@@ -1,0 +1,1601 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!--
+   ______                            __
+  / ____/___  ____ ___  ____  __  __/ /____  _____
+ / /   / __ \/ __ `__ \/ __ \/ / / / __/ _ \/ ___/
+/ /___/ /_/ / / / / / / /_/ / /_/ / /_/  __/ /
+\____/\____/_/ /_/ /_/ .___/\__,_/\__/\___/_/
+                    /_/
+        Created with Perplexity Computer
+        https://www.perplexity.ai/computer
+-->
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Warmup Set Calculator — Yeager's Gym</title>
+<meta name="description" content="Calculate the ideal weights and reps to ramp up to your working sets. Smart plate rounding included.">
+<meta property="og:title" content="Warmup Set Calculator — Yeager's Gym">
+<meta property="og:description" content="Calculate the ideal weights and reps to ramp up to your working sets. Smart plate rounding included.">
+<meta property="og:type" content="website">
+<link rel="canonical" href="https://yeagersgym.com/tools-warmup.html">
+<link rel="stylesheet" href="./base.css">
+<link rel="stylesheet" href="./style.css">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Warmup Set Calculator",
+  "description": "Calculate the ideal warmup weights and reps to ramp up to your working sets, with smart plate rounding.",
+  "url": "https://yeagersgym.com/tools-warmup.html",
+  "applicationCategory": "HealthApplication",
+  "creator": {
+    "@type": "SoftwareApplication",
+    "name": "Perplexity Computer",
+    "url": "https://www.perplexity.ai/computer"
+  }
+}
+</script>
+
+<style>
+/* ═══════════════════════════════════════════
+   WARMUP CALCULATOR — Widget Styles
+   ═══════════════════════════════════════════ */
+
+.tool-page {
+  padding-top: 100px;
+  padding-bottom: 0;
+  min-height: 100vh;
+}
+
+.tool-back {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  text-decoration: none;
+  margin-bottom: var(--space-8);
+  transition: color var(--transition-interactive);
+}
+.tool-back:hover { color: var(--color-teal); }
+.tool-back svg { width: 16px; height: 16px; }
+
+.tool-header {
+  text-align: center;
+  margin-bottom: var(--space-6);
+}
+
+.tool-header .section-label {
+  margin-bottom: var(--space-4);
+}
+
+.tool-header h1 {
+  font-family: var(--font-body);
+  font-size: var(--text-2xl);
+  font-weight: 700;
+  color: var(--color-text);
+  margin-bottom: var(--space-4);
+  line-height: 1.15;
+}
+
+.tool-header h1 .highlight-teal { color: var(--color-teal); }
+.tool-header h1 .highlight-pink { color: var(--color-pink); }
+
+.tool-header p {
+  font-size: var(--text-base);
+  color: var(--color-text-muted);
+  max-width: 56ch;
+  margin-inline: auto;
+  line-height: 1.7;
+}
+
+/* ── Calculator Card ── */
+.calc-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  padding: var(--space-8);
+  max-width: 600px;
+  margin-inline: auto;
+  margin-bottom: var(--space-10);
+}
+
+@media (max-width: 640px) {
+  .calc-card { padding: var(--space-6) var(--space-4); }
+}
+
+.calc-card h2 {
+  font-family: var(--font-display);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--color-teal);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: var(--space-6);
+}
+
+/* ── Form Fields ── */
+.field-group {
+  margin-bottom: var(--space-6);
+}
+
+.field-group label {
+  display: block;
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-2);
+}
+
+.field-group input[type="number"] {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  color: var(--color-text);
+  font-size: var(--text-base);
+  font-family: var(--font-body);
+  transition: border-color var(--transition-interactive), box-shadow var(--transition-interactive);
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.field-group input[type="number"]:focus {
+  outline: none;
+  border-color: var(--color-teal);
+  box-shadow: 0 0 0 3px var(--color-teal-glow);
+}
+
+.field-group input[type="number"]::placeholder {
+  color: var(--color-text-faint);
+}
+
+/* Remove number spinners */
+.field-group input[type="number"]::-webkit-outer-spin-button,
+.field-group input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.field-group input[type="number"] { -moz-appearance: textfield; }
+
+/* ── Unit Toggle ── */
+.unit-toggle {
+  display: inline-flex;
+  background: var(--color-surface-2);
+  border-radius: var(--radius-full);
+  padding: 3px;
+  margin-bottom: var(--space-3);
+  border: 1px solid var(--color-border);
+}
+
+.unit-toggle button {
+  padding: 0.375rem 1rem;
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  border-radius: var(--radius-full);
+  transition: all var(--transition-interactive);
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.unit-toggle button.active {
+  background: var(--color-teal);
+  color: #0a0e17;
+}
+
+/* ── Input Type Toggle (pill buttons) ── */
+.input-type-toggle {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-2);
+  margin-bottom: var(--space-2);
+}
+
+.input-type-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: var(--space-3) var(--space-2);
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--transition-interactive);
+  text-align: center;
+}
+
+.input-type-btn:hover {
+  border-color: var(--color-text-faint);
+}
+
+.input-type-btn.active {
+  border-color: var(--color-teal);
+  background: rgba(30, 200, 176, 0.08);
+  box-shadow: 0 0 0 1px var(--color-teal);
+}
+
+.input-type-label {
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  font-weight: 700;
+  color: var(--color-text);
+  letter-spacing: 0.03em;
+}
+
+.input-type-btn.active .input-type-label {
+  color: var(--color-teal);
+}
+
+.input-type-desc {
+  font-size: 0.6rem;
+  color: var(--color-text-faint);
+  line-height: 1.3;
+}
+
+/* ── Equipment Toggle (3 buttons) ── */
+.equip-toggle {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: var(--space-2);
+}
+
+.equip-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-2);
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--transition-interactive);
+  text-align: center;
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.equip-btn:hover {
+  border-color: var(--color-text-faint);
+  color: var(--color-text);
+}
+
+.equip-btn.active {
+  border-color: var(--color-pink);
+  background: rgba(240, 68, 138, 0.08);
+  box-shadow: 0 0 0 1px var(--color-pink);
+  color: var(--color-pink);
+}
+
+.equip-btn svg {
+  width: 20px;
+  height: 20px;
+  stroke: currentColor;
+}
+
+/* ── Stepper Input ── */
+.stepper-input {
+  display: flex;
+  align-items: stretch;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: var(--color-surface-2);
+  transition: border-color var(--transition-interactive), box-shadow var(--transition-interactive);
+}
+
+.stepper-input:focus-within {
+  border-color: var(--color-teal);
+  box-shadow: 0 0 0 3px var(--color-teal-glow);
+}
+
+.stepper-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  min-height: 48px;
+  background: var(--color-surface-3);
+  border: none;
+  color: var(--color-text-muted);
+  font-size: 1.25rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+.stepper-btn:hover {
+  background: rgba(30, 200, 176, 0.15);
+  color: var(--color-teal);
+}
+
+.stepper-btn:active {
+  background: rgba(30, 200, 176, 0.25);
+  color: var(--color-teal);
+}
+
+.stepper-value-wrap {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  padding: 0 var(--space-2);
+}
+
+.stepper-value-wrap input {
+  width: 100%;
+  text-align: center;
+  background: transparent;
+  border: none;
+  color: var(--color-text);
+  font-size: var(--text-lg);
+  font-family: var(--font-display);
+  font-weight: 700;
+  padding: 0.5rem 0;
+  outline: none;
+  -moz-appearance: textfield;
+}
+
+.stepper-value-wrap input::-webkit-outer-spin-button,
+.stepper-value-wrap input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.stepper-unit {
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--color-text-faint);
+  margin-left: var(--space-1);
+  pointer-events: none;
+}
+
+/* ── Calculate Button ── */
+.btn-calculate {
+  width: 100%;
+  padding: 0.875rem 1.5rem;
+  font-size: var(--text-base);
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-top: var(--space-4);
+}
+
+/* ── Bar weight field (conditional) ── */
+#bar-weight-group {
+  transition: opacity 0.25s ease;
+}
+#bar-weight-group.hidden {
+  display: none;
+}
+
+/* ═══════════════════════════════════════════
+   RESULTS
+   ═══════════════════════════════════════════ */
+.results-panel {
+  max-width: 720px;
+  margin-inline: auto;
+  display: none;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.5s var(--ease-out), transform 0.5s var(--ease-out);
+  pointer-events: none;
+}
+
+.results-panel.visible {
+  display: block;
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+/* ── Warmup Table Card ── */
+.warmup-table-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  margin-bottom: var(--space-4);
+  position: relative;
+}
+
+.warmup-table-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--color-teal), var(--color-pink), var(--color-purple));
+}
+
+.warmup-table-header {
+  padding: var(--space-5) var(--space-6) var(--space-3);
+}
+
+.warmup-table-header h3 {
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.warmup-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.warmup-table thead tr {
+  background: var(--color-teal);
+}
+
+.warmup-table thead th {
+  padding: 0.625rem 1rem;
+  font-family: var(--font-display);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #0a0e17;
+  text-align: left;
+}
+
+.warmup-table thead th:last-child {
+  text-align: left;
+  min-width: 100px;
+}
+
+.warmup-table tbody tr {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  transition: background 0.15s ease;
+}
+
+.warmup-table tbody tr:nth-child(even) {
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.warmup-table tbody tr:hover {
+  background: rgba(30, 200, 176, 0.05);
+}
+
+/* Last row (heaviest set) gets pink accent */
+.warmup-table tbody tr.set-heavy {
+  border-left: 3px solid var(--color-pink);
+}
+
+.warmup-table tbody td {
+  padding: 0.75rem 1rem;
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+  vertical-align: middle;
+}
+
+.warmup-table tbody td.td-weight {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--text-base);
+  color: var(--color-text);
+}
+
+.warmup-table tbody td.td-set {
+  font-family: var(--font-display);
+  font-weight: 700;
+  color: var(--color-text-muted);
+  font-size: var(--text-xs);
+  letter-spacing: 0.06em;
+}
+
+/* ── Mini progress bar in % column ── */
+.pct-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 90px;
+}
+
+.pct-value {
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--color-text-muted);
+}
+
+.pct-bar-track {
+  width: 100%;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.pct-bar-fill {
+  height: 100%;
+  background: var(--color-teal);
+  border-radius: 2px;
+  transition: width 0.5s var(--ease-out);
+}
+
+/* ── Volume Summary ── */
+.volume-summary {
+  padding: var(--space-4) var(--space-6);
+  border-top: 1px solid var(--color-border);
+  background: rgba(255, 255, 255, 0.02);
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+  letter-spacing: 0.03em;
+}
+
+.volume-summary strong {
+  color: var(--color-teal);
+}
+
+/* ── Plate breakdown notes ── */
+.plate-notes {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  padding: var(--space-5) var(--space-6);
+  margin-bottom: var(--space-4);
+}
+
+.plate-notes h4 {
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-4);
+}
+
+.plate-notes-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.plate-note-row {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+}
+
+.plate-note-set {
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  font-weight: 700;
+  color: var(--color-text-faint);
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  min-width: 40px;
+}
+
+.plate-note-breakdown {
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+  line-height: 1.4;
+}
+
+.plate-chip {
+  display: inline-block;
+  background: rgba(30, 200, 176, 0.1);
+  border: 1px solid rgba(30, 200, 176, 0.2);
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-family: var(--font-display);
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--color-teal);
+  margin-left: 2px;
+  letter-spacing: 0.02em;
+}
+
+/* ── Copy Button ── */
+.copy-btn-wrap {
+  text-align: center;
+  margin-bottom: var(--space-6);
+}
+
+.btn-copy {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 0.625rem 1.5rem;
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition: all var(--transition-interactive);
+}
+
+.btn-copy:hover {
+  border-color: var(--color-teal);
+  color: var(--color-teal);
+}
+
+.btn-copy.copied {
+  border-color: var(--color-teal);
+  color: var(--color-teal);
+  background: rgba(30, 200, 176, 0.08);
+}
+
+.btn-copy svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* ── Explainer ── */
+.explainer {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  padding: var(--space-6);
+  margin-top: var(--space-4);
+  max-width: 720px;
+  margin-inline: auto;
+  margin-bottom: 0;
+}
+
+@media (max-width: 640px) {
+  .explainer { padding: var(--space-6) var(--space-4); }
+}
+
+.explainer h2 {
+  font-family: var(--font-display);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--color-teal);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: var(--space-4);
+}
+
+.explainer p {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+  line-height: 1.8;
+  margin-bottom: var(--space-4);
+}
+
+.explainer p:last-child { margin-bottom: 0; }
+
+/* ── Tool Navigation Pills ── */
+.tool-nav-bar {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-10);
+  flex-wrap: wrap;
+}
+
+.tool-nav-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 0.5rem 1rem;
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--color-text-muted);
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  transition: all var(--transition-interactive);
+}
+
+.tool-nav-pill:hover {
+  border-color: var(--color-teal);
+  color: var(--color-teal);
+}
+
+.tool-nav-pill.active {
+  border-color: var(--color-teal);
+  background: var(--color-teal-glow);
+  color: var(--color-teal);
+}
+
+.tool-nav-pill svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* ── Mobile responsive ── */
+@media (max-width: 640px) {
+  .warmup-table thead th,
+  .warmup-table tbody td {
+    padding: 0.5rem 0.5rem;
+    font-size: 0.7rem;
+  }
+  .warmup-table tbody td.td-weight {
+    font-size: var(--text-sm);
+  }
+  .pct-cell {
+    min-width: 60px;
+  }
+  .plate-notes {
+    padding: var(--space-4);
+  }
+  .plate-note-row {
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+}
+
+/* ── Shake animation ── */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%       { transform: translateX(-6px); }
+  40%       { transform: translateX(6px); }
+  60%       { transform: translateX(-4px); }
+  80%       { transform: translateX(4px); }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════
+     HEADER
+     ═══════════════════════════════════════════ -->
+<header class="site-header" role="banner">
+  <div class="header-inner">
+    <a href="./index.html" class="logo-link" aria-label="Yeager's Gym Home">
+      <img src="./assets/logo.jpeg" alt="Yeager's Gym Logo" class="logo-mark-img" width="48" height="48">
+    </a>
+
+    <nav class="nav-desktop" role="navigation" aria-label="Main navigation">
+      <a href="./index.html" class="nav-link">Home</a>
+      <a href="./index.html#about" class="nav-link">About</a>
+      <div class="nav-dropdown">
+        <a href="./index.html#services" class="nav-link">Services ▾</a>
+        <div class="nav-dropdown-menu">
+          <a href="./in-person.html">In-Person Coaching</a>
+          <a href="./remote.html">Remote Coaching</a>
+          <a href="./nutrition.html">Nutrition Coaching</a>
+          <a href="./peptide-consulting.html">Peptide Consulting</a>
+          <a href="./recovery.html">Recovery</a>
+        </div>
+      </div>
+      <a href="./index.html#vbt" class="nav-link">Velocity Based Training</a>
+      <a href="./index.html#results" class="nav-link">Results</a>
+      <div class="nav-dropdown">
+        <a href="./tools-vbt.html" class="nav-link">Tools ▾</a>
+        <div class="nav-dropdown-menu">
+          <a href="./tools-vbt.html">VBT Calculator</a>
+          <a href="./tools-1rm.html">1RM Calculator</a>
+          <a href="./tools-warmup.html">Warmup Calculator</a>
+          <a href="./tools-lv-profile.html">LV Profile</a>
+          <a href="./tools-rpe.html">RPE Chart</a>
+          <a href="./tools-rpe-velocity.html">RPE-Velocity</a>
+          <a href="./tools-crossfit.html">Machine Converter</a>
+          <a href="./tools-macro.html">Macro Calculator</a>
+          <a href="./tools-peptide.html">Peptide Calculator</a>
+          <a href="./velocity-trackers.html">Velocity Trackers Guide</a>
+        </div>
+      </div>
+      <a href="./quiz.html" class="nav-link">Quiz</a>
+      <div class="nav-utility">
+        <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="btn btn-nav-cta">Book Your FREE Session!</a>
+      </div>
+    </nav>
+
+    <button class="hamburger" aria-label="Toggle menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+
+  <div class="mobile-nav" role="navigation" aria-label="Mobile navigation">
+    <a href="./index.html">Home</a>
+    <a href="./index.html#about">About</a>
+    <a href="./index.html#services">Services</a>
+    <a href="./in-person.html" style="padding-left: 2rem;">In-Person Coaching</a>
+    <a href="./remote.html" style="padding-left: 2rem;">Remote Coaching</a>
+    <a href="./nutrition.html" style="padding-left: 2rem;">Nutrition Coaching</a>
+    <a href="./peptide-consulting.html" style="padding-left: 2rem; color: var(--color-teal);">Peptide Consulting</a>
+    <a href="./recovery.html" style="padding-left: 2rem;">Recovery</a>
+    <a href="./index.html#vbt">Velocity Based Training</a>
+    <a href="./index.html#results">Results</a>
+    <a href="./tools-vbt.html">VBT Calculator</a>
+    <a href="./tools-1rm.html">1RM Calculator</a>
+    <a href="./tools-warmup.html" style="color: var(--color-teal);">Warmup Calculator</a>
+    <a href="./tools-crossfit.html">Machine Converter</a>
+    <a href="./tools-macro.html">Macro Calculator</a>
+    <a href="./tools-peptide.html" style="color: var(--color-purple);">Peptide Calculator</a>
+    <a href="./quiz.html" style="color: var(--color-pink);">Training Type Quiz</a>
+    <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="btn btn-nav-cta" style="margin-top: var(--space-4);">Book Your FREE Session!</a>
+  </div>
+</header>
+
+<!-- ═══════════════════════════════════════════
+     MAIN CONTENT
+     ═══════════════════════════════════════════ -->
+<main class="tool-page">
+  <div class="container">
+
+    <a href="./index.html" class="tool-back">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 12L6 8l4-4"/></svg>
+      Back to Home
+    </a>
+
+    <!-- Tool Nav Tabs -->
+    <div class="tool-nav-bar fade-in">
+      <a href="./tools-vbt.html" class="tool-nav-pill">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+        VBT
+      </a>
+      <a href="./tools-1rm.html" class="tool-nav-pill">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 18L18 6M8 6h10v10"/></svg>
+        1RM
+      </a>
+      <a href="./tools-warmup.html" class="tool-nav-pill active">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83"/></svg>
+        Warmup
+      </a>
+      <a href="./tools-lv-profile.html" class="tool-nav-pill">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        LV Profile
+      </a>
+      <a href="./tools-rpe.html" class="tool-nav-pill">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 3v18"/></svg>
+        RPE Chart
+      </a>
+      <a href="./tools-rpe-velocity.html" class="tool-nav-pill">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="M12 6v6l4 2"/></svg>
+        RPE-Velocity
+      </a>
+      <a href="./tools-crossfit.html" class="tool-nav-pill">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 12h8M12 8v8"/></svg>
+        Machine
+      </a>
+      <a href="./tools-macro.html" class="tool-nav-pill">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z"/><path d="M12 2v10l7 4"/></svg>
+        Macro
+      </a>
+      <a href="./tools-peptide.html" class="tool-nav-pill">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6v11a6 6 0 0 1-6 0V3z"/><path d="M12 14v7"/><path d="M6 3h12"/></svg>
+        Peptide
+      </a>
+    </div>
+
+    <!-- Tool Header -->
+    <div class="tool-header fade-in">
+      <p class="section-label" style="color: var(--color-teal); text-align: center;">Free Tool</p>
+      <h1><span class="highlight-teal">Warmup</span> Set <span class="highlight-pink">Calculator</span></h1>
+      <p>Calculate the ideal weights and reps to ramp up to your working sets. Smart plate rounding included.</p>
+    </div>
+
+    <!-- Calculator Card -->
+    <div class="calc-card fade-in">
+      <h2>Your Lift Setup</h2>
+
+      <!-- Input Type Toggle -->
+      <div class="field-group">
+        <label>Input Type</label>
+        <div class="input-type-toggle">
+          <button class="input-type-btn active" data-input-type="working" type="button">
+            <span class="input-type-label">Working Weight</span>
+            <span class="input-type-desc">Warmup ramps to this exact weight</span>
+          </button>
+          <button class="input-type-btn" data-input-type="1rm" type="button">
+            <span class="input-type-label">Estimated 1RM</span>
+            <span class="input-type-desc">Warmup ramps to ~90% of 1RM</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Weight Input with unit toggle -->
+      <div class="field-group">
+        <label id="weight-label">Working Weight</label>
+        <div class="unit-toggle">
+          <button class="active" data-unit="lbs" type="button">LBS</button>
+          <button data-unit="kg" type="button">KG</button>
+        </div>
+        <div class="stepper-input" id="weight-stepper">
+          <button class="stepper-btn stepper-down" type="button" aria-label="Decrease weight">&#8722;</button>
+          <div class="stepper-value-wrap">
+            <input type="number" id="weight-input" value="225" min="5" max="2000" step="5" inputmode="decimal">
+            <span class="stepper-unit" id="weight-unit-label">lbs</span>
+          </div>
+          <button class="stepper-btn stepper-up" type="button" aria-label="Increase weight">&#43;</button>
+        </div>
+      </div>
+
+      <!-- Equipment Type -->
+      <div class="field-group">
+        <label>Equipment Type</label>
+        <div class="equip-toggle">
+          <button class="equip-btn active" data-equip="barbell" type="button">
+            <!-- Barbell icon -->
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="11" width="3" height="2" rx="0.5"/>
+              <rect x="19" y="11" width="3" height="2" rx="0.5"/>
+              <rect x="4" y="10" width="2" height="4" rx="0.5"/>
+              <rect x="18" y="10" width="2" height="4" rx="0.5"/>
+              <line x1="6" y1="12" x2="18" y2="12"/>
+            </svg>
+            Barbell
+          </button>
+          <button class="equip-btn" data-equip="dumbbell" type="button">
+            <!-- Dumbbell icon -->
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="10" width="3" height="4" rx="1"/>
+              <rect x="19" y="10" width="3" height="4" rx="1"/>
+              <rect x="4" y="11" width="2" height="2" rx="0.5"/>
+              <rect x="18" y="11" width="2" height="2" rx="0.5"/>
+              <line x1="6" y1="12" x2="18" y2="12"/>
+            </svg>
+            Dumbbell
+          </button>
+          <button class="equip-btn" data-equip="machine" type="button">
+            <!-- Machine icon -->
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="4" y="4" width="16" height="16" rx="2"/>
+              <rect x="8" y="8" width="8" height="8" rx="1"/>
+              <line x1="12" y1="2" x2="12" y2="4"/>
+              <line x1="12" y1="20" x2="12" y2="22"/>
+            </svg>
+            Machine
+          </button>
+        </div>
+      </div>
+
+      <!-- Bar Weight (Barbell only) -->
+      <div class="field-group" id="bar-weight-group">
+        <label>Bar Weight</label>
+        <div class="stepper-input" id="bar-stepper">
+          <button class="stepper-btn stepper-down" type="button" aria-label="Decrease bar weight">&#8722;</button>
+          <div class="stepper-value-wrap">
+            <input type="number" id="bar-weight-input" value="45" min="0" max="100" step="5" inputmode="decimal">
+            <span class="stepper-unit" id="bar-unit-label">lbs</span>
+          </div>
+          <button class="stepper-btn stepper-up" type="button" aria-label="Increase bar weight">&#43;</button>
+        </div>
+      </div>
+
+      <button class="btn btn-primary btn-calculate" id="calculate-btn" type="button">
+        Generate Warmup
+      </button>
+    </div>
+
+    <!-- Results Panel -->
+    <div class="results-panel" id="results-panel">
+
+      <!-- Warmup Protocol Table -->
+      <div class="warmup-table-card">
+        <div class="warmup-table-header">
+          <h3>Warmup Protocol</h3>
+        </div>
+        <table class="warmup-table" id="warmup-table" aria-label="Warmup sets">
+          <thead>
+            <tr>
+              <th>Set</th>
+              <th>Weight</th>
+              <th>Reps</th>
+              <th>Rest</th>
+              <th>% of Target</th>
+            </tr>
+          </thead>
+          <tbody id="warmup-tbody">
+            <!-- Populated by JS -->
+          </tbody>
+        </table>
+        <div class="volume-summary" id="volume-summary">
+          Total warmup volume: <strong id="volume-value">—</strong>
+        </div>
+      </div>
+
+      <!-- Plate Breakdown (Barbell only) -->
+      <div class="plate-notes" id="plate-notes" style="display: none;">
+        <h4>Plate Breakdown — Per Side</h4>
+        <div class="plate-notes-list" id="plate-notes-list">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+      <!-- Copy Button -->
+      <div class="copy-btn-wrap">
+        <button class="btn-copy" id="copy-btn" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+          Copy Warmup
+        </button>
+      </div>
+
+    </div><!-- /results-panel -->
+
+    <!-- Explainer -->
+    <div class="explainer fade-in">
+      <h2>Why Warm Up Sets Matter</h2>
+      <p>Jumping straight into heavy working sets is one of the fastest ways to get injured or underperform. Your nervous system, joints, and muscle fibers all need progressive loading to fire optimally — and that takes more than a few air squats.</p>
+      <p>A proper warmup protocol does several things simultaneously: it increases tissue temperature and blood flow, primes the neuromuscular pathways specific to the movement, rehearses the motor pattern under load, and lets you assess your readiness on that day before committing to heavy weight.</p>
+      <p>This calculator uses a <strong style="color: var(--color-text);">5-set progressive ramp</strong> — from 40% up to 90% of your target — designed to arrive at your working weight fully activated without accumulating meaningful fatigue. Each percentage is intentional: 40-55% for neural prep, 70-80% for force production rehearsal, and 90% for specificity without burnout.</p>
+      <p>Smart plate rounding ensures every calculated weight is achievable with standard equipment, so you never waste mental energy doing math between sets.</p>
+    </div>
+
+  </div>
+</main>
+
+<!-- CTA Section -->
+<section style="padding: var(--space-8) 0 var(--space-6); text-align: center; position: relative;">
+  <div class="container">
+    <p class="section-label" style="color: var(--color-pink); text-align: center;">Get Started</p>
+    <h2 style="font-family: var(--font-body); font-size: var(--text-xl); font-weight: 700; color: var(--color-text); margin-bottom: var(--space-3);">Want <span style="color: var(--color-teal);">coaching</span> built on this <span style="color: var(--color-pink);">data</span>?</h2>
+    <p style="font-size: var(--text-sm); color: var(--color-text-muted); margin-bottom: var(--space-5); max-width: 45ch; margin-inline: auto;">Train with a coach who optimizes every warmup, working set, and recovery session. Book a free session today.</p>
+    <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="btn btn-primary">Book Your FREE Session!</a>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     FOOTER
+     ═══════════════════════════════════════════ -->
+<footer class="site-footer" role="contentinfo">
+  <div class="container">
+    <div class="footer-nav-columns">
+      <div class="footer-links">
+        <h4>Navigate</h4>
+        <a href="./index.html">Home</a>
+        <a href="./index.html#about">About Brad</a>
+        <a href="./index.html#services">Services &amp; Pricing</a>
+        <a href="./index.html#vbt">VBT Explained</a>
+        <a href="./index.html#results">Results</a>
+        <a href="./index.html#contact">Contact</a>
+      </div>
+      <div class="footer-links">
+        <h4>Resources &amp; Free Tools</h4>
+        <a href="./tools-vbt.html">VBT Calculator</a>
+        <a href="./tools-1rm.html">1RM Calculator</a>
+        <a href="./tools-warmup.html">Warmup Calculator</a>
+        <a href="./tools-lv-profile.html">LV Profile</a>
+        <a href="./tools-rpe.html">RPE Chart</a>
+        <a href="./tools-rpe-velocity.html">RPE-Velocity</a>
+        <a href="./tools-crossfit.html">Machine Converter</a>
+        <a href="./tools-macro.html">Macro Calculator</a>
+        <a href="./tools-peptide.html">Peptide Calculator</a>
+        <a href="./velocity-trackers.html">Velocity Trackers Guide</a>
+        <a href="./quiz.html">Training Type Quiz</a>
+      </div>
+      <div class="footer-links">
+        <h4>Connect</h4>
+        <a href="mailto:brad@yeagersgym.com" class="footer-contact-link">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+          brad@yeagersgym.com
+        </a>
+        <a href="https://www.instagram.com/YeagersGym" target="_blank" rel="noopener noreferrer" class="footer-contact-link">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
+          @YeagersGym
+        </a>
+        <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="footer-vagaro-link">Book via Vagaro →</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>&copy; 2026 Yeager's Gym &middot; San Diego, CA</span>
+      <div class="footer-bottom-right">
+        <a href="https://www.perplexity.ai/computer" target="_blank" rel="noopener noreferrer">Created with Perplexity Computer</a>
+        <a href="./index.html" aria-label="Yeager's Gym Home">
+          <img src="assets/logo.jpeg" alt="Yeager's Gym" class="logo-mark-img" width="24" height="24">
+        </a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- Mobile Sticky CTA -->
+<div class="mobile-sticky-cta" id="stickyCta" style="display: none; position: fixed; bottom: 0; left: 0; right: 0; z-index: 999; padding: 12px 16px; background: rgba(10,14,23,0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-top: 1px solid rgba(30,200,176,0.2); text-align: center;">
+  <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" style="display: inline-block; width: 100%; max-width: 320px; padding: 10px 20px; background: var(--color-teal); color: #0a0e17; font-family: var(--font-display); font-size: 0.8rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; text-decoration: none; border-radius: 6px;">Book a Free Session</a>
+</div>
+<script>
+(function(){
+  var cta = document.getElementById('stickyCta');
+  if (!cta || window.innerWidth > 768) return;
+  window.addEventListener('scroll', function() {
+    cta.style.display = window.scrollY > 300 ? 'block' : 'none';
+  }, {passive:true});
+})();
+</script>
+
+<!-- ═══════════════════════════════════════════
+     SCRIPTS
+     ═══════════════════════════════════════════ -->
+<script>
+(function() {
+  'use strict';
+
+  // ══════════════════════════════════════════════════════════
+  // CONSTANTS — Warmup ramp protocol
+  // ══════════════════════════════════════════════════════════
+  var WARMUP_SETS = [
+    { pct: 0.40, reps: 10, rest: '60s',      label: 'Set 1' },
+    { pct: 0.55, reps: 8,  rest: '60s',      label: 'Set 2' },
+    { pct: 0.70, reps: 5,  rest: '90s',      label: 'Set 3' },
+    { pct: 0.80, reps: 3,  rest: '2 min',    label: 'Set 4' },
+    { pct: 0.90, reps: 1,  rest: '2–3 min',  label: 'Set 5' }
+  ];
+
+  // Standard plate stacks (lbs and kg)
+  var PLATES_LBS = [45, 35, 25, 10, 5, 2.5];
+  var PLATES_KG  = [20, 15, 10, 5, 2.5, 1.25];
+
+  // ── State ──
+  var currentUnit   = 'lbs';
+  var currentInputType = 'working'; // 'working' | '1rm'
+  var currentEquip  = 'barbell';
+
+  // ── DOM refs ──
+  var weightInput    = document.getElementById('weight-input');
+  var barWeightInput = document.getElementById('bar-weight-input');
+  var barUnitLabel   = document.getElementById('bar-unit-label');
+  var weightUnitLabel = document.getElementById('weight-unit-label');
+  var weightLabel    = document.getElementById('weight-label');
+  var calculateBtn   = document.getElementById('calculate-btn');
+  var resultsPanel   = document.getElementById('results-panel');
+  var barWeightGroup = document.getElementById('bar-weight-group');
+  var warmupTbody    = document.getElementById('warmup-tbody');
+  var volumeValue    = document.getElementById('volume-value');
+  var plateNotesEl   = document.getElementById('plate-notes');
+  var plateNotesList = document.getElementById('plate-notes-list');
+  var copyBtn        = document.getElementById('copy-btn');
+  var unitToggleBtns = document.querySelectorAll('.unit-toggle button');
+  var inputTypeBtns  = document.querySelectorAll('.input-type-btn');
+  var equipBtns      = document.querySelectorAll('.equip-btn');
+
+  // ══════════════════════════════════════════════════════════
+  // UNIT TOGGLE
+  // ══════════════════════════════════════════════════════════
+  unitToggleBtns.forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      unitToggleBtns.forEach(function(b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      var newUnit = btn.getAttribute('data-unit');
+
+      // Convert weight input value
+      if (newUnit !== currentUnit) {
+        var wVal = parseFloat(weightInput.value) || 0;
+        var bVal = parseFloat(barWeightInput.value) || 0;
+        if (newUnit === 'kg') {
+          weightInput.value = Math.round(wVal / 2.2046 * 4) / 4; // quarter-kg
+          barWeightInput.value = currentEquip === 'barbell' ? 20 : 0;
+        } else {
+          weightInput.value = Math.round(wVal * 2.2046 / 5) * 5;
+          barWeightInput.value = currentEquip === 'barbell' ? 45 : 0;
+        }
+      }
+
+      currentUnit = newUnit;
+      weightUnitLabel.textContent = newUnit;
+      barUnitLabel.textContent = newUnit;
+
+      // Recalculate if visible
+      if (resultsPanel.classList.contains('visible')) {
+        runCalculation(false);
+      }
+    });
+  });
+
+  // ══════════════════════════════════════════════════════════
+  // INPUT TYPE TOGGLE
+  // ══════════════════════════════════════════════════════════
+  inputTypeBtns.forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      inputTypeBtns.forEach(function(b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      currentInputType = btn.getAttribute('data-input-type');
+      weightLabel.textContent = currentInputType === '1rm' ? 'Estimated 1RM' : 'Working Weight';
+      if (resultsPanel.classList.contains('visible')) {
+        runCalculation(false);
+      }
+    });
+  });
+
+  // ══════════════════════════════════════════════════════════
+  // EQUIPMENT TOGGLE
+  // ══════════════════════════════════════════════════════════
+  equipBtns.forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      equipBtns.forEach(function(b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      currentEquip = btn.getAttribute('data-equip');
+
+      // Show/hide bar weight
+      if (currentEquip === 'barbell') {
+        barWeightGroup.classList.remove('hidden');
+      } else {
+        barWeightGroup.classList.add('hidden');
+      }
+
+      if (resultsPanel.classList.contains('visible')) {
+        runCalculation(false);
+      }
+    });
+  });
+
+  // ══════════════════════════════════════════════════════════
+  // STEPPER INPUTS — hold-to-repeat
+  // ══════════════════════════════════════════════════════════
+  function initStepper(stepperId, inputId, step, min, max, decimals) {
+    var container = document.getElementById(stepperId);
+    if (!container) return;
+    var input   = document.getElementById(inputId);
+    var downBtn = container.querySelector('.stepper-down');
+    var upBtn   = container.querySelector('.stepper-up');
+
+    var holdTimer    = null;
+    var holdInterval = null;
+
+    function clampAndSet(val) {
+      val = Math.max(min, Math.min(max, parseFloat(val.toFixed(decimals))));
+      input.value = decimals === 0 ? val : val.toFixed(decimals);
+      if (resultsPanel.classList.contains('visible')) {
+        runCalculation(false);
+      }
+    }
+
+    function doStep(dir) {
+      var current = parseFloat(input.value) || 0;
+      clampAndSet(current + dir * step);
+    }
+
+    function startHold(dir) {
+      doStep(dir);
+      holdTimer = setTimeout(function() {
+        holdInterval = setInterval(function() { doStep(dir); }, 80);
+      }, 400);
+    }
+
+    function stopHold() {
+      clearTimeout(holdTimer);
+      clearInterval(holdInterval);
+      holdTimer = holdInterval = null;
+    }
+
+    downBtn.addEventListener('mousedown', function(e) { e.preventDefault(); startHold(-1); });
+    upBtn.addEventListener('mousedown',   function(e) { e.preventDefault(); startHold(1); });
+    document.addEventListener('mouseup', stopHold);
+
+    downBtn.addEventListener('touchstart', function(e) { e.preventDefault(); startHold(-1); }, { passive: false });
+    upBtn.addEventListener('touchstart',   function(e) { e.preventDefault(); startHold(1); },  { passive: false });
+    document.addEventListener('touchend', stopHold);
+    document.addEventListener('touchcancel', stopHold);
+
+    input.addEventListener('blur', function() {
+      var val = parseFloat(input.value);
+      if (isNaN(val)) val = min;
+      clampAndSet(val);
+    });
+
+    input.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') runCalculation(true);
+    });
+  }
+
+  initStepper('weight-stepper', 'weight-input', 5, 5, 2000, 0);
+  initStepper('bar-stepper', 'bar-weight-input', 5, 0, 100, 0);
+
+  // ══════════════════════════════════════════════════════════
+  // ROUNDING LOGIC
+  // ══════════════════════════════════════════════════════════
+  function roundWeight(raw, equip, unit) {
+    var rounded;
+    if (equip === 'machine') {
+      // Round to nearest 10 lbs / 5 kg
+      var step = (unit === 'kg') ? 5 : 10;
+      rounded  = Math.round(raw / step) * step;
+      var minW = (unit === 'kg') ? 5 : 10;
+      return Math.max(minW, rounded);
+    } else {
+      // Barbell & Dumbbell: nearest 5 lbs / 2.5 kg
+      var step2 = (unit === 'kg') ? 2.5 : 5;
+      rounded   = Math.round(raw / step2) * step2;
+      var minW2 = (unit === 'kg') ? 2.5 : 5;
+      return Math.max(minW2, rounded);
+    }
+  }
+
+  // ── Plate breakdown for barbell ──
+  function calcPlates(totalWeight, barWeight, unit) {
+    // Weight on each side
+    var perSide = (totalWeight - barWeight) / 2;
+    if (perSide <= 0) return [];
+
+    var plates = (unit === 'kg') ? PLATES_KG : PLATES_LBS;
+    var result = [];
+    var remaining = perSide;
+
+    for (var i = 0; i < plates.length; i++) {
+      var count = Math.floor(remaining / plates[i] + 0.001); // float tolerance
+      if (count > 0) {
+        result.push({ weight: plates[i], count: count });
+        remaining -= count * plates[i];
+        remaining = Math.round(remaining * 1000) / 1000; // float cleanup
+      }
+    }
+    return result;
+  }
+
+  function formatPlateBreakdown(plateArr, unit) {
+    if (plateArr.length === 0) return 'Bar only';
+    return plateArr.map(function(p) {
+      var label = p.weight + ' ' + unit;
+      return p.count > 1 ? p.count + '×' + label : label;
+    }).join(' + ');
+  }
+
+  // ══════════════════════════════════════════════════════════
+  // CALCULATE
+  // ══════════════════════════════════════════════════════════
+  calculateBtn.addEventListener('click', function() {
+    runCalculation(true);
+  });
+
+  // Enter key on inputs
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' && document.activeElement !== weightInput && document.activeElement !== barWeightInput) {
+      runCalculation(true);
+    }
+  });
+
+  function runCalculation(scrollToResults) {
+    var inputWeight = parseFloat(weightInput.value);
+    var barWeight   = currentEquip === 'barbell' ? (parseFloat(barWeightInput.value) || 0) : 0;
+
+    if (!inputWeight || inputWeight <= 0) {
+      shakeButton();
+      return;
+    }
+
+    // Determine target weight
+    var targetWeight;
+    if (currentInputType === '1rm') {
+      targetWeight = inputWeight * 0.90;
+    } else {
+      targetWeight = inputWeight;
+    }
+
+    // Ensure target is >= bar weight
+    if (currentEquip === 'barbell') {
+      targetWeight = Math.max(targetWeight, barWeight);
+    }
+
+    // Build table rows
+    var totalVolume = 0;
+    var rowsHtml = '';
+    var copyLines = [];
+    var plateBreakdowns = [];
+
+    copyLines.push('WARMUP PROTOCOL — Yeager\'s Gym');
+    copyLines.push('Target: ' + targetWeight.toFixed(0) + ' ' + currentUnit + (currentInputType === '1rm' ? ' (90% of 1RM)' : ''));
+    copyLines.push('Equipment: ' + currentEquip.charAt(0).toUpperCase() + currentEquip.slice(1));
+    copyLines.push('');
+    copyLines.push('Set | Weight      | Reps | Rest    | % Target');
+    copyLines.push('----+-------------+------+---------+---------');
+
+    for (var i = 0; i < WARMUP_SETS.length; i++) {
+      var s = WARMUP_SETS[i];
+      var rawWeight = targetWeight * s.pct;
+      var roundedWeight = roundWeight(rawWeight, currentEquip, currentUnit);
+
+      // For barbell, ensure we never go below bar weight
+      if (currentEquip === 'barbell') {
+        roundedWeight = Math.max(roundedWeight, barWeight);
+      }
+
+      var pctOfTarget = Math.round((roundedWeight / targetWeight) * 100);
+      totalVolume += roundedWeight * s.reps;
+
+      var isHeaviest = (i === WARMUP_SETS.length - 1);
+      var rowClass = isHeaviest ? ' class="set-heavy"' : '';
+
+      // Mini progress bar
+      var barFillPct = Math.min(pctOfTarget, 100);
+
+      rowsHtml += '<tr' + rowClass + '>';
+      rowsHtml += '<td class="td-set">' + s.label + '</td>';
+      rowsHtml += '<td class="td-weight">' + roundedWeight + ' <span style="font-size:0.7em;color:var(--color-text-faint);font-weight:500;">' + currentUnit + '</span></td>';
+      rowsHtml += '<td>' + s.reps + '</td>';
+      rowsHtml += '<td>' + s.rest + '</td>';
+      rowsHtml += '<td><div class="pct-cell"><span class="pct-value">' + pctOfTarget + '%</span><div class="pct-bar-track"><div class="pct-bar-fill" style="width:' + barFillPct + '%;"></div></div></div></td>';
+      rowsHtml += '</tr>';
+
+      // Copy text
+      var wStr  = (roundedWeight + ' ' + currentUnit).padEnd(11);
+      var rStr  = String(s.reps).padEnd(4);
+      var restStr = s.rest.padEnd(7);
+      var pctStr = pctOfTarget + '%';
+      copyLines.push(s.label + ' | ' + wStr + ' | ' + rStr + ' | ' + restStr + ' | ' + pctStr);
+
+      // Plate breakdown
+      if (currentEquip === 'barbell') {
+        var plates = calcPlates(roundedWeight, barWeight, currentUnit);
+        plateBreakdowns.push({ label: s.label, weight: roundedWeight, plates: plates });
+      }
+    }
+
+    // Total volume
+    var totalReps = WARMUP_SETS.reduce(function(acc, s) { return acc + s.reps; }, 0);
+    copyLines.push('');
+    copyLines.push('Total warmup volume: ' + totalVolume.toFixed(0) + ' ' + currentUnit + ' across ' + totalReps + ' reps');
+
+    // Update DOM — table
+    warmupTbody.innerHTML = rowsHtml;
+    volumeValue.innerHTML = totalVolume.toFixed(0) + ' ' + currentUnit + ' across <strong style="color:var(--color-text);">' + totalReps + '</strong> reps';
+
+    // Plate breakdown section
+    if (currentEquip === 'barbell') {
+      plateNotesEl.style.display = '';
+      plateNotesList.innerHTML = plateBreakdowns.map(function(pb) {
+        var breakdown = formatPlateBreakdown(pb.plates, currentUnit);
+        // Build chips
+        var chips = pb.plates.map(function(p) {
+          var chipLabel = (p.count > 1 ? p.count + '×' : '') + p.weight;
+          return '<span class="plate-chip">' + chipLabel + '</span>';
+        }).join(' ');
+        if (pb.plates.length === 0) chips = '<span style="color:var(--color-text-faint);">Bar only</span>';
+        return '<div class="plate-note-row"><span class="plate-note-set">' + pb.label + '</span><span class="plate-note-breakdown">' + (pb.weight) + ' ' + currentUnit + ' → ' + chips + '</span></div>';
+      }).join('');
+
+      // Add plate notes to copy
+      copyLines.push('');
+      copyLines.push('PLATE BREAKDOWN (per side):');
+      plateBreakdowns.forEach(function(pb) {
+        copyLines.push(pb.label + ': ' + formatPlateBreakdown(pb.plates, currentUnit));
+      });
+    } else {
+      plateNotesEl.style.display = 'none';
+    }
+
+    // Store copy text
+    copyBtn._copyText = copyLines.join('\n');
+
+    // Show results
+    resultsPanel.classList.add('visible');
+    if (scrollToResults) {
+      setTimeout(function() {
+        resultsPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 60);
+    }
+  }
+
+  // ── Shake button animation ──
+  function shakeButton() {
+    calculateBtn.style.animation = 'shake 0.4s ease';
+    setTimeout(function() { calculateBtn.style.animation = ''; }, 400);
+  }
+
+  // ══════════════════════════════════════════════════════════
+  // COPY WARMUP
+  // ══════════════════════════════════════════════════════════
+  copyBtn.addEventListener('click', function() {
+    var text = copyBtn._copyText;
+    if (!text) return;
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function() {
+        showCopied();
+      }).catch(function() {
+        fallbackCopy(text);
+      });
+    } else {
+      fallbackCopy(text);
+    }
+  });
+
+  function fallbackCopy(text) {
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand('copy'); } catch(e) {}
+    document.body.removeChild(ta);
+    showCopied();
+  }
+
+  function showCopied() {
+    copyBtn.classList.add('copied');
+    var origHtml = copyBtn.innerHTML;
+    copyBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;"><polyline points="20 6 9 17 4 12"/></svg> Copied!';
+    setTimeout(function() {
+      copyBtn.classList.remove('copied');
+      copyBtn.innerHTML = origHtml;
+    }, 2000);
+  }
+
+  // ══════════════════════════════════════════════════════════
+  // UTILITY — Hamburger Menu
+  // ══════════════════════════════════════════════════════════
+  var hamburger = document.querySelector('.hamburger');
+  var mobileNav = document.querySelector('.mobile-nav');
+
+  if (hamburger && mobileNav) {
+    hamburger.addEventListener('click', function() {
+      var expanded = hamburger.getAttribute('aria-expanded') === 'true';
+      hamburger.setAttribute('aria-expanded', String(!expanded));
+      hamburger.classList.toggle('open');
+      mobileNav.classList.toggle('open');
+    });
+
+    // Close on nav link click
+    mobileNav.querySelectorAll('a').forEach(function(link) {
+      link.addEventListener('click', function() {
+        hamburger.setAttribute('aria-expanded', 'false');
+        hamburger.classList.remove('open');
+        mobileNav.classList.remove('open');
+      });
+    });
+  }
+
+  // ══════════════════════════════════════════════════════════
+  // UTILITY — Header scroll shadow
+  // ══════════════════════════════════════════════════════════
+  var header = document.querySelector('.site-header');
+  if (header) {
+    window.addEventListener('scroll', function() {
+      if (window.scrollY > 20) {
+        header.style.boxShadow = '0 2px 24px rgba(0,0,0,0.4)';
+      } else {
+        header.style.boxShadow = '';
+      }
+    }, { passive: true });
+  }
+
+  // ══════════════════════════════════════════════════════════
+  // UTILITY — Scroll reveal (.fade-in → .visible)
+  // ══════════════════════════════════════════════════════════
+  var fadeEls = document.querySelectorAll('.fade-in');
+  if ('IntersectionObserver' in window) {
+    var observer = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1 });
+    fadeEls.forEach(function(el) { observer.observe(el); });
+  } else {
+    fadeEls.forEach(function(el) { el.classList.add('visible'); });
+  }
+
+})();
+</script>
+
+</body>
+</html>
