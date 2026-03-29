@@ -157,7 +157,7 @@
   text-transform: uppercase;
   color: var(--color-teal);
   margin-bottom: var(--space-3);
-  text-align: center;
+  text-align: center !important;
 }
 
 .section-title {
@@ -3237,4 +3237,10 @@
   .svc-subsection-grid {
     grid-template-columns: 1fr !important;
   }
+}
+
+
+/* NUCLEAR: Force center ALL section labels no matter what */
+.section-label, p.section-label, [class*="section-label"] {
+  text-align: center !important;
 }
