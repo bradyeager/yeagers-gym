@@ -157,6 +157,8 @@
   text-transform: uppercase;
   color: var(--color-teal);
   margin-bottom: var(--space-3);
+  display: block;
+  width: 100%;
   text-align: center !important;
 }
 
@@ -3242,5 +3244,7 @@
 
 /* NUCLEAR: Force center ALL section labels no matter what */
 .section-label, p.section-label, [class*="section-label"] {
+  display: block !important;
+  width: 100% !important;
   text-align: center !important;
 }
