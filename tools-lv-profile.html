@@ -1,0 +1,1548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!--
+   ______                            __
+  / ____/___  ____ ___  ____  __  __/ /____  _____
+ / /   / __ \/ __ `__ \/ __ \/ / / / __/ _ \/ ___/
+/ /___/ /_/ / / / / / / /_/ / /_/ / /_/  __/ /
+\____/\____/_/ /_/ /_/ .___/\__,_/\__/\___/_/
+                    /_/
+        Created with Perplexity Computer
+        https://www.perplexity.ai/computer
+-->
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Load-Velocity Profile Builder — Yeager's Gym</title>
+<meta name="description" content="Plot your personal load-velocity relationship. Enter multiple sets to generate a profile and estimate your true 1RM.">
+<meta property="og:title" content="Load-Velocity Profile Builder — Yeager's Gym">
+<meta property="og:description" content="Plot your personal load-velocity relationship and estimate your true 1RM from multiple sets.">
+<meta property="og:type" content="website">
+<link rel="canonical" href="https://yeagersgym.com/tools-lv-profile.html">
+<link rel="stylesheet" href="./base.css">
+<link rel="stylesheet" href="./style.css">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Load-Velocity Profile Builder",
+  "description": "Plot your personal load-velocity relationship. Enter multiple sets to generate a profile and estimate your true 1RM.",
+  "url": "https://yeagersgym.com/tools-lv-profile.html",
+  "applicationCategory": "HealthApplication",
+  "creator": {
+    "@type": "SoftwareApplication",
+    "name": "Perplexity Computer",
+    "url": "https://www.perplexity.ai/computer"
+  }
+}
+</script>
+
+<style>
+/* ═══════════════════════════════════════════
+   LV PROFILE BUILDER — Widget Styles
+   ═══════════════════════════════════════════ */
+
+.tool-page {
+  padding-top: 100px;
+  padding-bottom: 0;
+  min-height: 100vh;
+}
+
+.tool-back {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  text-decoration: none;
+  margin-bottom: var(--space-8);
+  transition: color var(--transition-interactive);
+}
+.tool-back:hover { color: var(--color-teal); }
+.tool-back svg { width: 16px; height: 16px; }
+
+.tool-header {
+  text-align: center;
+  margin-bottom: var(--space-6);
+}
+
+.tool-header .section-label {
+  margin-bottom: var(--space-4);
+}
+
+.tool-header h1 {
+  font-family: var(--font-body);
+  font-size: var(--text-2xl);
+  font-weight: 700;
+  color: var(--color-text);
+  margin-bottom: var(--space-4);
+  line-height: 1.15;
+}
+
+.tool-header h1 .highlight-teal { color: var(--color-teal); }
+.tool-header h1 .highlight-pink { color: var(--color-pink); }
+
+.tool-header p {
+  font-size: var(--text-base);
+  color: var(--color-text-muted);
+  max-width: 56ch;
+  margin-inline: auto;
+  line-height: 1.7;
+}
+
+/* ── Calculator Card ── */
+.calc-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  padding: var(--space-8);
+  max-width: 900px;
+  margin-inline: auto;
+  margin-bottom: var(--space-10);
+}
+
+@media (max-width: 640px) {
+  .calc-card { padding: var(--space-6) var(--space-4); }
+}
+
+.calc-card h2 {
+  font-family: var(--font-display);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--color-teal);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: var(--space-6);
+}
+
+/* ── Form Fields ── */
+.field-group {
+  margin-bottom: var(--space-6);
+}
+
+.field-group label {
+  display: block;
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-2);
+}
+
+.field-group select,
+.field-group input[type="number"] {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  color: var(--color-text);
+  font-size: var(--text-base);
+  font-family: var(--font-body);
+  transition: border-color var(--transition-interactive), box-shadow var(--transition-interactive);
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.field-group select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none'%3E%3Cpath d='M1 1.5l5 5 5-5' stroke='%238a8d93' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  padding-right: 2.5rem;
+  cursor: pointer;
+}
+
+.field-group select:focus,
+.field-group input[type="number"]:focus {
+  outline: none;
+  border-color: var(--color-teal);
+  box-shadow: 0 0 0 3px var(--color-teal-glow);
+}
+
+.field-group input[type="number"]::placeholder {
+  color: var(--color-text-faint);
+}
+
+/* Remove number spinners */
+.field-group input[type="number"]::-webkit-outer-spin-button,
+.field-group input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.field-group input[type="number"] { -moz-appearance: textfield; }
+
+/* ── Unit Toggle ── */
+.unit-toggle {
+  display: inline-flex;
+  background: var(--color-surface-2);
+  border-radius: var(--radius-full);
+  padding: 3px;
+  margin-bottom: var(--space-3);
+  border: 1px solid var(--color-border);
+}
+
+.unit-toggle button {
+  padding: 0.375rem 1rem;
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  border-radius: var(--radius-full);
+  transition: all var(--transition-interactive);
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.unit-toggle button.active {
+  background: var(--color-teal);
+  color: #0a0e17;
+}
+
+/* ── Calculate Button ── */
+.btn-calculate {
+  width: 100%;
+  padding: 0.875rem 1.5rem;
+  font-size: var(--text-base);
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-top: var(--space-4);
+}
+
+/* ── Add Set Button ── */
+.btn-add-set {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 0.5rem 1.25rem;
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-teal);
+  background: transparent;
+  border: 1px solid var(--color-teal);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--transition-interactive);
+  margin-top: var(--space-3);
+}
+
+.btn-add-set:hover {
+  background: rgba(30, 200, 176, 0.1);
+}
+
+.btn-add-set svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* ── Set Rows ── */
+.sets-header {
+  display: grid;
+  grid-template-columns: 1fr 1fr 40px;
+  gap: var(--space-3);
+  padding: 0 0 var(--space-2) 0;
+  border-bottom: 1px solid var(--color-border);
+  margin-bottom: var(--space-3);
+}
+
+.sets-header span {
+  font-family: var(--font-display);
+  font-size: 0.625rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-faint);
+}
+
+.set-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 40px;
+  gap: var(--space-3);
+  align-items: center;
+  margin-bottom: var(--space-3);
+  animation: rowEnter 0.2s var(--ease-out);
+}
+
+@keyframes rowEnter {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.set-row input[type="number"] {
+  width: 100%;
+  padding: 0.625rem 0.875rem;
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  color: var(--color-text);
+  font-size: var(--text-sm);
+  font-family: var(--font-display);
+  font-weight: 600;
+  transition: border-color var(--transition-interactive), box-shadow var(--transition-interactive);
+  -webkit-appearance: none;
+  appearance: none;
+  -moz-appearance: textfield;
+}
+
+.set-row input[type="number"]::-webkit-outer-spin-button,
+.set-row input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.set-row input[type="number"]:focus {
+  outline: none;
+  border-color: var(--color-teal);
+  box-shadow: 0 0 0 3px var(--color-teal-glow);
+}
+
+.set-row input[type="number"]::placeholder {
+  color: var(--color-text-faint);
+  font-weight: 400;
+}
+
+.btn-remove-set {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: transparent;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  color: var(--color-text-faint);
+  cursor: pointer;
+  font-size: 1.1rem;
+  transition: all var(--transition-interactive);
+  flex-shrink: 0;
+}
+
+.btn-remove-set:hover {
+  border-color: var(--color-pink);
+  color: var(--color-pink);
+  background: rgba(240, 68, 138, 0.08);
+}
+
+/* ── Top row: exercise + mvt + unit ── */
+.calc-top-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-4);
+  margin-bottom: var(--space-6);
+}
+
+@media (min-width: 640px) {
+  .calc-top-row {
+    grid-template-columns: 2fr 1fr auto;
+    align-items: end;
+  }
+}
+
+/* ═══════════════════════════════════════════
+   RESULTS
+   ═══════════════════════════════════════════ */
+.results-panel {
+  max-width: 900px;
+  margin-inline: auto;
+  display: none;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.5s var(--ease-out), transform 0.5s var(--ease-out);
+  pointer-events: none;
+}
+
+.results-panel.visible {
+  display: block;
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+/* ── Primary Result ── */
+.result-hero {
+  text-align: center;
+  padding: var(--space-10) var(--space-6);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  margin-bottom: var(--space-6);
+  position: relative;
+  overflow: hidden;
+}
+
+.result-hero::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--color-teal), var(--color-pink), var(--color-purple));
+}
+
+.result-label {
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-3);
+}
+
+.result-value {
+  font-family: var(--font-display);
+  font-size: clamp(3rem, 8vw, 5rem);
+  font-weight: 700;
+  color: var(--color-teal);
+  line-height: 1;
+  margin-bottom: var(--space-2);
+}
+
+.result-unit {
+  font-size: 0.4em;
+  color: var(--color-text-muted);
+  font-weight: 500;
+}
+
+.result-subtext {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+}
+
+/* ── R² Badge ── */
+.r2-badge {
+  display: inline-block;
+  margin-top: var(--space-3);
+  padding: 0.3rem 0.875rem;
+  border-radius: var(--radius-full);
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.r2-badge.excellent {
+  background: rgba(46, 204, 113, 0.15);
+  color: #2ecc71;
+  border: 1px solid rgba(46, 204, 113, 0.3);
+}
+
+.r2-badge.good {
+  background: rgba(243, 156, 18, 0.15);
+  color: #f39c12;
+  border: 1px solid rgba(243, 156, 18, 0.3);
+}
+
+.r2-badge.poor {
+  background: rgba(231, 76, 60, 0.15);
+  color: #e74c3c;
+  border: 1px solid rgba(231, 76, 60, 0.3);
+}
+
+/* ── LV Chart ── */
+.lv-chart-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  padding: var(--space-6);
+  margin-bottom: var(--space-6);
+}
+
+.lv-chart-card h3 {
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-5);
+}
+
+.lv-chart-wrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16/10;
+}
+
+.lv-chart-wrap canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* ── Predicted Velocities Table ── */
+.pred-table-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  margin-bottom: var(--space-6);
+}
+
+.pred-table-card h3 {
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  padding: var(--space-5) var(--space-6);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.pred-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.pred-table thead tr {
+  background: rgba(30, 200, 176, 0.08);
+  border-bottom: 1px solid rgba(30, 200, 176, 0.2);
+}
+
+.pred-table thead th {
+  padding: 0.75rem var(--space-4);
+  font-family: var(--font-display);
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-teal);
+  text-align: left;
+}
+
+.pred-table tbody tr {
+  border-bottom: 1px solid var(--color-border);
+  transition: background 0.15s ease;
+}
+
+.pred-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.pred-table tbody tr:nth-child(even) {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.pred-table tbody tr:hover {
+  background: rgba(30, 200, 176, 0.05);
+}
+
+.pred-table tbody td {
+  padding: 0.75rem var(--space-4);
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.pred-table tbody td.pct-col {
+  color: var(--color-text-muted);
+}
+
+.pred-table tbody td.vel-col {
+  color: var(--color-teal);
+}
+
+.pred-table tbody td.zone-pill span {
+  display: inline-block;
+  padding: 0.2rem 0.625rem;
+  border-radius: var(--radius-full);
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+/* ── Explainer ── */
+.explainer {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  padding: var(--space-6);
+  margin-top: var(--space-4);
+  max-width: 900px;
+  margin-inline: auto;
+  margin-bottom: 0;
+}
+
+@media (max-width: 640px) {
+  .explainer { padding: var(--space-6) var(--space-4); }
+}
+
+.explainer h2 {
+  font-family: var(--font-display);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--color-teal);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: var(--space-4);
+}
+
+.explainer p {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+  line-height: 1.8;
+  margin-bottom: var(--space-4);
+}
+
+.explainer p:last-child { margin-bottom: 0; }
+
+/* ── Tool Navigation Pills ── */
+.tool-nav-bar {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-10);
+  flex-wrap: wrap;
+}
+
+.tool-nav-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 0.5rem 1rem;
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--color-text-muted);
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  transition: all var(--transition-interactive);
+}
+
+.tool-nav-pill:hover {
+  border-color: var(--color-teal);
+  color: var(--color-teal);
+}
+
+.tool-nav-pill.active {
+  border-color: var(--color-teal);
+  background: var(--color-teal-glow);
+  color: var(--color-teal);
+}
+
+.tool-nav-pill svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* ── Mobile Responsive ── */
+@media (max-width: 640px) {
+  .result-hero {
+    padding: var(--space-5) var(--space-4);
+    margin-bottom: var(--space-3);
+  }
+  .result-value {
+    font-size: clamp(2rem, 6vw, 3rem);
+  }
+  .result-label {
+    font-size: 0.65rem;
+    margin-bottom: var(--space-1);
+  }
+  .result-subtext {
+    font-size: 0.75rem;
+  }
+  .lv-chart-card {
+    padding: var(--space-4);
+    margin-bottom: var(--space-3);
+  }
+  .lv-chart-wrap {
+    aspect-ratio: 16/8;
+  }
+  .sets-header span:nth-child(3),
+  .set-row input:nth-child(3) {
+    /* keep remove button visible on mobile */
+  }
+  .pred-table thead th,
+  .pred-table tbody td {
+    padding: 0.625rem var(--space-3);
+    font-size: 0.6rem;
+  }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════
+     HEADER
+     ═══════════════════════════════════════════ -->
+<header class="site-header" role="banner">
+  <div class="header-inner">
+    <a href="./index.html" class="logo-link" aria-label="Yeager's Gym Home">
+      <img src="./assets/logo.jpeg" alt="Yeager's Gym Logo" class="logo-mark-img" width="48" height="48">
+    </a>
+
+    <nav class="nav-desktop" role="navigation" aria-label="Main navigation">
+      <a href="./index.html" class="nav-link">Home</a>
+      <a href="./index.html#about" class="nav-link">About</a>
+      <div class="nav-dropdown">
+        <a href="./index.html#services" class="nav-link">Services ▾</a>
+        <div class="nav-dropdown-menu">
+          <a href="./in-person.html">In-Person Coaching</a>
+          <a href="./remote.html">Remote Coaching</a>
+          <a href="./nutrition.html">Nutrition Coaching</a>
+          <a href="./peptide-consulting.html">Peptide Consulting</a>
+          <a href="./recovery.html">Recovery</a>
+        </div>
+      </div>
+      <a href="./index.html#vbt" class="nav-link">Velocity Based Training</a>
+      <a href="./index.html#results" class="nav-link">Results</a>
+      <div class="nav-dropdown">
+        <a href="./tools-vbt.html" class="nav-link">Tools ▾</a>
+        <div class="nav-dropdown-menu">
+          <a href="./tools-vbt.html">VBT Calculator</a>
+          <a href="./tools-1rm.html">1RM Calculator</a>
+          <a href="./tools-warmup.html">Warmup Calculator</a>
+          <a href="./tools-lv-profile.html">LV Profile</a>
+          <a href="./tools-rpe.html">RPE Chart</a>
+          <a href="./tools-rpe-velocity.html">RPE-Velocity</a>
+          <a href="./tools-crossfit.html">Machine Converter</a>
+          <a href="./tools-macro.html">Macro Calculator</a>
+          <a href="./tools-peptide.html">Peptide Calculator</a>
+          <a href="./velocity-trackers.html">Velocity Trackers Guide</a>
+        </div>
+      </div>
+      <a href="./quiz.html" class="nav-link">Quiz</a>
+      <div class="nav-utility">
+        <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="btn btn-nav-cta">Book Your FREE Session!</a>
+      </div>
+    </nav>
+
+    <button class="hamburger" aria-label="Toggle menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+
+  <div class="mobile-nav" role="navigation" aria-label="Mobile navigation">
+    <a href="./index.html">Home</a>
+    <a href="./index.html#about">About</a>
+    <a href="./index.html#services">Services</a>
+    <a href="./in-person.html" style="padding-left: 2rem;">In-Person Coaching</a>
+    <a href="./remote.html" style="padding-left: 2rem;">Remote Coaching</a>
+    <a href="./nutrition.html" style="padding-left: 2rem;">Nutrition Coaching</a>
+    <a href="./peptide-consulting.html" style="padding-left: 2rem; color: var(--color-teal);">Peptide Consulting</a>
+    <a href="./recovery.html" style="padding-left: 2rem;">Recovery</a>
+    <a href="./index.html#vbt">Velocity Based Training</a>
+    <a href="./index.html#results">Results</a>
+    <a href="./tools-vbt.html">VBT Calculator</a>
+    <a href="./tools-1rm.html">1RM Calculator</a>
+    <a href="./tools-warmup.html">Warmup Calculator</a>
+    <a href="./tools-lv-profile.html" style="color: var(--color-teal);">LV Profile Builder</a>
+    <a href="./tools-rpe.html">RPE Chart</a>
+    <a href="./tools-rpe-velocity.html">RPE-Velocity</a>
+    <a href="./tools-crossfit.html">Machine Converter</a>
+    <a href="./tools-macro.html">Macro Calculator</a>
+    <a href="./tools-peptide.html" style="color: var(--color-purple);">Peptide Calculator</a>
+    <a href="./quiz.html" style="color: var(--color-pink);">Training Type Quiz</a>
+    <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="btn btn-nav-cta" style="margin-top: var(--space-4);">Book Your FREE Session!</a>
+  </div>
+</header>
+
+<!-- ═══════════════════════════════════════════
+     MAIN CONTENT
+     ═══════════════════════════════════════════ -->
+<main class="tool-page">
+  <div class="container">
+
+    <a href="./index.html" class="tool-back">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 12L6 8l4-4"/></svg>
+      Back to Home
+    </a>
+
+    <!-- Tool Nav Tabs -->
+    <div class="tool-nav-bar fade-in">
+      <a href="./tools-vbt.html" class="tool-nav-pill">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+        VBT
+      </a>
+      <a href="./tools-1rm.html" class="tool-nav-pill">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 18L18 6M8 6h10v10"/></svg>
+        1RM
+      </a>
+      <a href="./tools-warmup.html" class="tool-nav-pill">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83"/></svg>
+        Warmup
+      </a>
+      <a href="./tools-lv-profile.html" class="tool-nav-pill active">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        LV Profile
+      </a>
+      <a href="./tools-rpe.html" class="tool-nav-pill">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 3v18"/></svg>
+        RPE Chart
+      </a>
+      <a href="./tools-rpe-velocity.html" class="tool-nav-pill">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="M12 6v6l4 2"/></svg>
+        RPE-Velocity
+      </a>
+      <a href="./tools-crossfit.html" class="tool-nav-pill">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 12h8M12 8v8"/></svg>
+        Machine
+      </a>
+      <a href="./tools-macro.html" class="tool-nav-pill">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z"/><path d="M12 2v10l7 4"/></svg>
+        Macro
+      </a>
+      <a href="./tools-peptide.html" class="tool-nav-pill">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6v11a6 6 0 0 1-6 0V3z"/><path d="M12 14v7"/><path d="M6 3h12"/></svg>
+        Peptide
+      </a>
+    </div>
+
+    <!-- Tool Header -->
+    <div class="tool-header fade-in">
+      <h1><span class="highlight-teal">Load-Velocity</span> Profile <span class="highlight-pink">Builder</span></h1>
+      <p>Plot your personal load-velocity relationship. Enter multiple sets to generate a profile and estimate your true 1RM.</p>
+    </div>
+
+    <!-- Calculator Card -->
+    <div class="calc-card fade-in">
+      <h2>Profile Data</h2>
+
+      <!-- Top row: Exercise, MVT, Unit -->
+      <div class="calc-top-row">
+        <!-- Exercise Select -->
+        <div class="field-group" style="margin-bottom: 0;">
+          <label for="exercise">Exercise</label>
+          <select id="exercise">
+            <option value="back_squat">Back Squat</option>
+            <option value="front_squat">Front Squat</option>
+            <option value="bench_press">Bench Press</option>
+            <option value="deadlift">Deadlift</option>
+            <option value="sumo_deadlift">Sumo Deadlift</option>
+            <option value="trap_bar_deadlift">Trap Bar Deadlift</option>
+            <option value="barbell_row">Barbell Row</option>
+            <option value="overhead_press">Overhead Press</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+
+        <!-- 1RM Velocity Threshold -->
+        <div class="field-group" style="margin-bottom: 0;">
+          <label for="mvt-input">1RM Velocity Threshold (m/s)</label>
+          <input type="number" id="mvt-input" value="0.25" min="0.05" max="1.0" step="0.01" placeholder="0.25">
+        </div>
+
+        <!-- Unit Toggle -->
+        <div class="field-group" style="margin-bottom: 0;">
+          <label>Units</label>
+          <div class="unit-toggle">
+            <button class="active" data-unit="lbs" type="button">LBS</button>
+            <button data-unit="kg" type="button">KG</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Set Rows -->
+      <div class="field-group" style="margin-bottom: var(--space-3); margin-top: var(--space-6);">
+        <label>Sets — Weight &amp; Velocity Pairs</label>
+        <div class="sets-header">
+          <span id="weight-col-label">Weight (lbs)</span>
+          <span>Mean Velocity (m/s)</span>
+          <span></span>
+        </div>
+        <div id="sets-container">
+          <!-- Dynamic set rows injected by JS -->
+        </div>
+        <button class="btn-add-set" id="add-set-btn" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Add Set
+        </button>
+      </div>
+
+      <button class="btn btn-primary btn-calculate" id="calculate-btn" type="button">
+        Build Profile
+      </button>
+    </div>
+
+    <!-- Results Panel (hidden until calculated) -->
+    <div class="results-panel" id="results-panel">
+
+      <!-- Primary Result Hero -->
+      <div class="result-hero">
+        <p class="result-label">Estimated 1-Rep Max</p>
+        <p class="result-value" id="result-1rm">— <span class="result-unit" id="result-unit">lbs</span></p>
+        <p class="result-subtext" id="result-subtext">Based on your load-velocity profile</p>
+        <div id="r2-badge" class="r2-badge excellent">Excellent fit</div>
+      </div>
+
+      <!-- LV Chart -->
+      <div class="lv-chart-card">
+        <h3>Load-Velocity Profile Chart</h3>
+        <div class="lv-chart-wrap">
+          <canvas id="lv-chart"></canvas>
+        </div>
+      </div>
+
+      <!-- Predicted Velocities Table -->
+      <div class="pred-table-card">
+        <h3>Predicted Velocities at % of 1RM</h3>
+        <table class="pred-table" id="pred-table">
+          <thead>
+            <tr>
+              <th>% of 1RM</th>
+              <th id="load-th">Load (lbs)</th>
+              <th>Predicted Velocity</th>
+              <th>Training Zone</th>
+            </tr>
+          </thead>
+          <tbody id="pred-tbody">
+            <!-- Filled by JS -->
+          </tbody>
+        </table>
+      </div>
+
+    </div><!-- /results-panel -->
+
+    <!-- Explainer -->
+    <div class="explainer fade-in">
+      <h2>How It Works</h2>
+      <p>A load-velocity (LV) profile maps the linear relationship between the load on the bar and the velocity at which you move it. Heavier loads = slower bar; lighter loads = faster bar. This relationship is highly consistent and individually unique.</p>
+      <p>By collecting velocity data across multiple loads — ideally spanning 50–90% of your 1RM — the builder fits a linear regression to your data. The slope and intercept of that line describe your personal LV profile. The estimated 1RM is where your regression line intersects your individual minimum velocity threshold (MVT).</p>
+      <p>The R² value tells you how well your data fits the linear model. An R² above 0.95 is excellent and indicates a reliable profile. If R² is low, add more data points at different loads to improve accuracy.</p>
+    </div>
+
+  </div>
+</main>
+
+<!-- CTA Section -->
+<section style="padding: var(--space-8) 0 var(--space-6); text-align: center; position: relative;">
+  <div class="container">
+    <p class="section-label" style="color: var(--color-pink); text-align: center;">Get Started</p>
+    <h2 style="font-family: var(--font-body); font-size: var(--text-xl); font-weight: 700; color: var(--color-text); margin-bottom: var(--space-3);">Want <span style="color: var(--color-teal);">coaching</span> built on this <span style="color: var(--color-pink);">data</span>?</h2>
+    <p style="font-size: var(--text-sm); color: var(--color-text-muted); margin-bottom: var(--space-5); max-width: 45ch; margin-inline: auto;">Train with a coach who measures every rep. Book a free session and see VBT in action.</p>
+    <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="btn btn-primary">Book Your FREE Session!</a>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     FOOTER
+     ═══════════════════════════════════════════ -->
+<footer class="site-footer" role="contentinfo">
+  <div class="container">
+    <div class="footer-nav-columns">
+      <div class="footer-links">
+        <h4>Navigate</h4>
+        <a href="./index.html">Home</a>
+        <a href="./index.html#about">About Brad</a>
+        <a href="./index.html#services">Services &amp; Pricing</a>
+        <a href="./index.html#vbt">VBT Explained</a>
+        <a href="./index.html#results">Results</a>
+        <a href="./index.html#contact">Contact</a>
+      </div>
+      <div class="footer-links">
+        <h4>Resources &amp; Free Tools</h4>
+        <a href="./tools-vbt.html">VBT Calculator</a>
+        <a href="./tools-1rm.html">1RM Calculator</a>
+        <a href="./tools-warmup.html">Warmup Calculator</a>
+        <a href="./tools-lv-profile.html">LV Profile Builder</a>
+        <a href="./tools-rpe.html">RPE Chart</a>
+        <a href="./tools-rpe-velocity.html">RPE-Velocity</a>
+        <a href="./tools-crossfit.html">Machine Converter</a>
+        <a href="./tools-macro.html">Macro Calculator</a>
+        <a href="./tools-peptide.html">Peptide Calculator</a>
+        <a href="./velocity-trackers.html">Velocity Trackers Guide</a>
+        <a href="./quiz.html">Training Type Quiz</a>
+      </div>
+      <div class="footer-links">
+        <h4>Connect</h4>
+        <a href="mailto:brad@yeagersgym.com" class="footer-contact-link">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+          brad@yeagersgym.com
+        </a>
+        <a href="https://www.instagram.com/YeagersGym" target="_blank" rel="noopener noreferrer" class="footer-contact-link">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
+          @YeagersGym
+        </a>
+        <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="footer-vagaro-link">Book via Vagaro →</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>&copy; 2026 Yeager's Gym &middot; San Diego, CA</span>
+      <div class="footer-bottom-right">
+        <a href="https://www.perplexity.ai/computer" target="_blank" rel="noopener noreferrer">Created with Perplexity Computer</a>
+        <a href="./index.html" aria-label="Yeager's Gym Home">
+          <img src="assets/logo.jpeg" alt="Yeager's Gym" class="logo-mark-img" width="24" height="24">
+        </a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- ═══════════════════════════════════════════
+     SCRIPTS
+     ═══════════════════════════════════════════ -->
+<script>
+(function() {
+  'use strict';
+
+  // ══════════════════════════════════════════════════════════
+  // VELOCITY ZONES
+  // ══════════════════════════════════════════════════════════
+  var zones = [
+    { name: 'Absolute Strength', min: 0,    max: 0.5,  color: '#e74c3c', bg: 'rgba(231,76,60,0.15)' },
+    { name: 'Strength-Speed',    min: 0.5,  max: 0.75, color: '#f39c12', bg: 'rgba(243,156,18,0.15)' },
+    { name: 'Power',             min: 0.75, max: 1.0,  color: '#f1c40f', bg: 'rgba(241,196,15,0.15)' },
+    { name: 'Speed-Strength',    min: 1.0,  max: 1.3,  color: '#2ecc71', bg: 'rgba(46,204,113,0.15)' },
+    { name: 'Speed',             min: 1.3,  max: 999,  color: '#1EC8B0', bg: 'rgba(30,200,176,0.15)' }
+  ];
+
+  function getZone(velocity) {
+    for (var i = 0; i < zones.length; i++) {
+      if (velocity >= zones[i].min && velocity < zones[i].max) return zones[i];
+    }
+    return zones[zones.length - 1];
+  }
+
+  // ══════════════════════════════════════════════════════════
+  // STATE
+  // ══════════════════════════════════════════════════════════
+  var currentUnit = 'lbs';
+  var MAX_SETS = 8;
+  var MIN_SETS = 2;
+
+  // ── DOM refs ──
+  var setsContainer  = document.getElementById('sets-container');
+  var addSetBtn      = document.getElementById('add-set-btn');
+  var calculateBtn   = document.getElementById('calculate-btn');
+  var resultsPanel   = document.getElementById('results-panel');
+  var exerciseSelect = document.getElementById('exercise');
+  var mvtInput       = document.getElementById('mvt-input');
+  var unitToggleBtns = document.querySelectorAll('.unit-toggle button');
+  var weightColLabel = document.getElementById('weight-col-label');
+  var loadTh         = document.getElementById('load-th');
+
+  // ══════════════════════════════════════════════════════════
+  // SET ROW MANAGEMENT
+  // ══════════════════════════════════════════════════════════
+  function createSetRow() {
+    var row = document.createElement('div');
+    row.className = 'set-row';
+    row.innerHTML =
+      '<input type="number" class="set-weight" placeholder="e.g. 225" min="1" max="2000" step="1" inputmode="decimal">' +
+      '<input type="number" class="set-velocity" placeholder="e.g. 0.55" min="0.05" max="3.0" step="0.01" inputmode="decimal">' +
+      '<button class="btn-remove-set" type="button" aria-label="Remove set" title="Remove set">&times;</button>';
+
+    row.querySelector('.btn-remove-set').addEventListener('click', function() {
+      removeRow(row);
+    });
+
+    return row;
+  }
+
+  function addRow() {
+    var rows = setsContainer.querySelectorAll('.set-row');
+    if (rows.length >= MAX_SETS) return;
+    setsContainer.appendChild(createSetRow());
+    updateRemoveButtons();
+    updateAddButton();
+  }
+
+  function removeRow(row) {
+    var rows = setsContainer.querySelectorAll('.set-row');
+    if (rows.length <= MIN_SETS) {
+      // Shake the row instead of removing
+      row.style.animation = 'shake 0.4s ease';
+      setTimeout(function() { row.style.animation = ''; }, 400);
+      return;
+    }
+    row.style.transition = 'opacity 0.15s ease, transform 0.15s ease';
+    row.style.opacity = '0';
+    row.style.transform = 'translateX(-12px)';
+    setTimeout(function() {
+      if (row.parentNode) row.parentNode.removeChild(row);
+      updateRemoveButtons();
+      updateAddButton();
+    }, 150);
+  }
+
+  function updateRemoveButtons() {
+    var rows = setsContainer.querySelectorAll('.set-row');
+    rows.forEach(function(r) {
+      var btn = r.querySelector('.btn-remove-set');
+      btn.style.opacity = rows.length <= MIN_SETS ? '0.3' : '1';
+      btn.style.cursor  = rows.length <= MIN_SETS ? 'not-allowed' : 'pointer';
+    });
+  }
+
+  function updateAddButton() {
+    var rows = setsContainer.querySelectorAll('.set-row');
+    addSetBtn.style.opacity = rows.length >= MAX_SETS ? '0.4' : '1';
+    addSetBtn.style.cursor  = rows.length >= MAX_SETS ? 'not-allowed' : 'pointer';
+  }
+
+  // Initialize with 3 rows
+  addRow(); addRow(); addRow();
+
+  addSetBtn.addEventListener('click', addRow);
+
+  // ══════════════════════════════════════════════════════════
+  // UNIT TOGGLE
+  // ══════════════════════════════════════════════════════════
+  unitToggleBtns.forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      unitToggleBtns.forEach(function(b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      currentUnit = btn.getAttribute('data-unit');
+      var label = currentUnit === 'lbs' ? 'Weight (lbs)' : 'Weight (kg)';
+      weightColLabel.textContent = label;
+      document.getElementById('result-unit').textContent = currentUnit;
+      if (loadTh) loadTh.textContent = 'Load (' + currentUnit + ')';
+    });
+  });
+
+  // ══════════════════════════════════════════════════════════
+  // LINEAR REGRESSION
+  // ══════════════════════════════════════════════════════════
+  function linearRegression(points) {
+    var n = points.length;
+    var sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0, sumY2 = 0;
+    points.forEach(function(p) {
+      sumX  += p.x;
+      sumY  += p.y;
+      sumXY += p.x * p.y;
+      sumX2 += p.x * p.x;
+      sumY2 += p.y * p.y;
+    });
+    var slope     = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
+    var intercept = (sumY - slope * sumX) / n;
+    var meanY     = sumY / n;
+    var ssRes = points.reduce(function(s, p) { return s + Math.pow(p.y - (slope * p.x + intercept), 2); }, 0);
+    var ssTot = points.reduce(function(s, p) { return s + Math.pow(p.y - meanY, 2); }, 0);
+    var r2 = ssTot === 0 ? 1 : 1 - ssRes / ssTot;
+    return { slope: slope, intercept: intercept, r2: r2 };
+  }
+
+  // ══════════════════════════════════════════════════════════
+  // CALCULATE
+  // ══════════════════════════════════════════════════════════
+  calculateBtn.addEventListener('click', function() {
+    runCalculation();
+  });
+
+  function runCalculation() {
+    // Collect data points
+    var rows = setsContainer.querySelectorAll('.set-row');
+    var points = [];
+
+    rows.forEach(function(row) {
+      var w = parseFloat(row.querySelector('.set-weight').value);
+      var v = parseFloat(row.querySelector('.set-velocity').value);
+      if (!isNaN(w) && w > 0 && !isNaN(v) && v > 0) {
+        points.push({ x: w, y: v });
+      }
+    });
+
+    if (points.length < 2) {
+      shakeButton();
+      highlightEmptyRows(rows);
+      return;
+    }
+
+    var mvt = parseFloat(mvtInput.value);
+    if (isNaN(mvt) || mvt <= 0) mvt = 0.25;
+
+    // Run regression: x = load, y = velocity
+    var reg = linearRegression(points);
+
+    // Estimated 1RM: where regression line crosses MVT
+    // velocity = slope * load + intercept  →  load = (velocity - intercept) / slope
+    var estimated1rm = (mvt - reg.intercept) / reg.slope;
+
+    if (!isFinite(estimated1rm) || estimated1rm <= 0) {
+      shakeButton();
+      alert('Could not estimate 1RM — check that heavier loads have lower velocities, and that your data spans a reasonable range.');
+      return;
+    }
+
+    estimated1rm = Math.round(estimated1rm * 10) / 10;
+    var r2 = Math.max(0, Math.min(1, reg.r2));
+
+    // Update DOM
+    document.getElementById('result-1rm').innerHTML = Math.round(estimated1rm) + ' <span class="result-unit" id="result-unit">' + currentUnit + '</span>';
+    document.getElementById('result-subtext').textContent = 'Linear regression across ' + points.length + ' data points  ·  R² = ' + r2.toFixed(3);
+    if (loadTh) loadTh.textContent = 'Load (' + currentUnit + ')';
+
+    // R² badge
+    var badge = document.getElementById('r2-badge');
+    if (r2 > 0.95) {
+      badge.className = 'r2-badge excellent';
+      badge.textContent = 'R² ' + r2.toFixed(3) + ' — Excellent fit';
+    } else if (r2 >= 0.85) {
+      badge.className = 'r2-badge good';
+      badge.textContent = 'R² ' + r2.toFixed(3) + ' — Good fit';
+    } else {
+      badge.className = 'r2-badge poor';
+      badge.textContent = 'R² ' + r2.toFixed(3) + ' — Poor fit — add more data points';
+    }
+
+    // Draw chart
+    drawLVChart(points, reg, estimated1rm, mvt);
+
+    // Build predicted velocities table
+    buildPredTable(reg, estimated1rm);
+
+    // Show results
+    resultsPanel.classList.add('visible');
+    setTimeout(function() {
+      resultsPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 80);
+  }
+
+  function highlightEmptyRows(rows) {
+    rows.forEach(function(row) {
+      var w = row.querySelector('.set-weight');
+      var v = row.querySelector('.set-velocity');
+      var wVal = parseFloat(w.value);
+      var vVal = parseFloat(v.value);
+      if (isNaN(wVal) || wVal <= 0) {
+        w.style.borderColor = 'var(--color-pink)';
+        w.style.animation = 'shake 0.4s ease';
+        setTimeout(function() { w.style.animation = ''; w.style.borderColor = ''; }, 600);
+      }
+      if (isNaN(vVal) || vVal <= 0) {
+        v.style.borderColor = 'var(--color-pink)';
+        v.style.animation = 'shake 0.4s ease';
+        setTimeout(function() { v.style.animation = ''; v.style.borderColor = ''; }, 600);
+      }
+    });
+  }
+
+  function shakeButton() {
+    calculateBtn.style.animation = 'shake 0.4s ease';
+    setTimeout(function() { calculateBtn.style.animation = ''; }, 400);
+  }
+
+  // ══════════════════════════════════════════════════════════
+  // PREDICTED VELOCITIES TABLE
+  // ══════════════════════════════════════════════════════════
+  function buildPredTable(reg, estimated1rm) {
+    var pcts = [60, 70, 75, 80, 85, 90, 95, 100];
+    var tbody = document.getElementById('pred-tbody');
+    tbody.innerHTML = '';
+
+    pcts.forEach(function(pct) {
+      var load = estimated1rm * pct / 100;
+      var vel  = reg.slope * load + reg.intercept;
+      var zone = getZone(vel);
+      var loadDisplay = Math.round(load);
+      var velDisplay  = vel > 0 ? vel.toFixed(2) : '—';
+
+      var tr = document.createElement('tr');
+      tr.innerHTML =
+        '<td class="pct-col">' + pct + '%</td>' +
+        '<td>' + loadDisplay + ' ' + currentUnit + '</td>' +
+        '<td class="vel-col">' + (vel > 0 ? vel.toFixed(2) + ' m/s' : '—') + '</td>' +
+        '<td class="zone-pill"><span style="background:' + zone.bg + '; color:' + zone.color + ';">' + zone.name + '</span></td>';
+
+      tbody.appendChild(tr);
+    });
+  }
+
+  // ══════════════════════════════════════════════════════════
+  // LV CHART (Canvas)
+  // ══════════════════════════════════════════════════════════
+  function drawLVChart(points, reg, estimated1rm, mvt) {
+    var canvas = document.getElementById('lv-chart');
+    var ctx    = canvas.getContext('2d');
+    var dpr    = window.devicePixelRatio || 1;
+    var rect   = canvas.parentElement.getBoundingClientRect();
+
+    canvas.width  = rect.width  * dpr;
+    canvas.height = rect.height * dpr;
+    ctx.scale(dpr, dpr);
+
+    var w = rect.width;
+    var h = rect.height;
+
+    // Padding
+    var pad = { top: 20, right: 20, bottom: 45, left: 55 };
+    var cw = w - pad.left - pad.right;
+    var ch = h - pad.top  - pad.bottom;
+
+    // Clear
+    ctx.clearRect(0, 0, w, h);
+
+    // ── Determine axis ranges ──
+    var loads = points.map(function(p) { return p.x; });
+    var vels  = points.map(function(p) { return p.y; });
+
+    var rawLoadMin = Math.min.apply(null, loads);
+    var rawLoadMax = Math.max.apply(null, loads);
+    var loadPad    = (rawLoadMax - rawLoadMin) * 0.15 || 20;
+    var loadMin    = Math.max(0, rawLoadMin - loadPad);
+    var loadMax    = Math.max(estimated1rm * 1.08, rawLoadMax + loadPad);
+
+    // Velocity range: always show from 0 to max observed + small buffer
+    var velMax = Math.max.apply(null, vels);
+    velMax = Math.max(velMax * 1.2, mvt * 3, 1.0);
+    var velMin = 0;
+
+    function xScale(load) { return pad.left + (load - loadMin) / (loadMax - loadMin) * cw; }
+    function yScale(vel)  { return pad.top + ch - (vel - velMin) / (velMax - velMin) * ch; }
+
+    // ── Zone background bands (Y-axis velocity zones) ──
+    var zoneBandDefs = [
+      { v0: 0,    v1: 0.5,  color: 'rgba(231,76,60,0.07)' },
+      { v0: 0.5,  v1: 0.75, color: 'rgba(243,156,18,0.07)' },
+      { v0: 0.75, v1: 1.0,  color: 'rgba(241,196,15,0.07)' },
+      { v0: 1.0,  v1: 1.3,  color: 'rgba(46,204,113,0.07)' },
+      { v0: 1.3,  v1: 999,  color: 'rgba(30,200,176,0.07)' }
+    ];
+    zoneBandDefs.forEach(function(z) {
+      var y0 = yScale(Math.min(z.v1, velMax));
+      var y1 = yScale(Math.max(z.v0, velMin));
+      if (y0 < y1 && y0 < pad.top + ch && y1 > pad.top) {
+        ctx.fillStyle = z.color;
+        ctx.fillRect(pad.left, Math.max(y0, pad.top), cw, Math.min(y1, pad.top + ch) - Math.max(y0, pad.top));
+      }
+    });
+
+    // ── Grid lines ──
+    ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+    ctx.lineWidth = 1;
+
+    // Horizontal grid (velocity)
+    var velStep = velMax <= 1.0 ? 0.2 : (velMax <= 2.0 ? 0.25 : 0.5);
+    for (var gv = velStep; gv <= velMax; gv += velStep) {
+      var gy = yScale(Math.round(gv * 100) / 100);
+      ctx.beginPath();
+      ctx.moveTo(pad.left, gy);
+      ctx.lineTo(pad.left + cw, gy);
+      ctx.stroke();
+    }
+
+    // Vertical grid (load)
+    var loadRange = loadMax - loadMin;
+    var loadStep  = loadRange < 100 ? 10 : (loadRange < 300 ? 25 : (loadRange < 600 ? 50 : 100));
+    var gridStart = Math.ceil(loadMin / loadStep) * loadStep;
+    for (var gl = gridStart; gl <= loadMax; gl += loadStep) {
+      var gx = xScale(gl);
+      ctx.beginPath();
+      ctx.moveTo(gx, pad.top);
+      ctx.lineTo(gx, pad.top + ch);
+      ctx.stroke();
+    }
+
+    // ── Axes ──
+    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(pad.left, pad.top);
+    ctx.lineTo(pad.left, pad.top + ch);
+    ctx.lineTo(pad.left + cw, pad.top + ch);
+    ctx.stroke();
+
+    // ── Axis labels ──
+    ctx.fillStyle = '#8a8d93';
+    ctx.font = '600 10px "JetBrains Mono", monospace';
+
+    // X axis (load)
+    ctx.textAlign = 'center';
+    for (var xl = gridStart; xl <= loadMax; xl += loadStep) {
+      var xlx = xScale(xl);
+      if (xlx >= pad.left && xlx <= pad.left + cw) {
+        ctx.fillText(Math.round(xl), xlx, pad.top + ch + 16);
+      }
+    }
+    ctx.fillText('Load (' + currentUnit + ')', pad.left + cw / 2, pad.top + ch + 38);
+
+    // Y axis (velocity)
+    ctx.textAlign = 'right';
+    for (var yv = 0; yv <= velMax; yv += velStep) {
+      var yyy = yScale(Math.round(yv * 100) / 100);
+      if (yyy >= pad.top && yyy <= pad.top + ch) {
+        ctx.fillText((Math.round(yv * 100) / 100).toFixed(2), pad.left - 8, yyy + 4);
+      }
+    }
+    ctx.save();
+    ctx.translate(14, pad.top + ch / 2);
+    ctx.rotate(-Math.PI / 2);
+    ctx.textAlign = 'center';
+    ctx.fillText('Velocity (m/s)', 0, 0);
+    ctx.restore();
+
+    // ── Regression line (pink) ──
+    var regSteps = 200;
+    ctx.beginPath();
+    ctx.strokeStyle = 'rgba(240, 68, 138, 0.85)';
+    ctx.lineWidth = 2.5;
+    ctx.setLineDash([]);
+    for (var rs = 0; rs <= regSteps; rs++) {
+      var rl = loadMin + (loadMax - loadMin) * rs / regSteps;
+      var rv = reg.slope * rl + reg.intercept;
+      var rx = xScale(rl);
+      var ry = yScale(Math.max(velMin, Math.min(velMax, rv)));
+      if (rs === 0) ctx.moveTo(rx, ry);
+      else ctx.lineTo(rx, ry);
+    }
+    ctx.stroke();
+
+    // ── Horizontal dashed line at MVT ──
+    if (mvt >= velMin && mvt <= velMax) {
+      var mvtY = yScale(mvt);
+      ctx.beginPath();
+      ctx.strokeStyle = 'rgba(240, 68, 138, 0.5)';
+      ctx.lineWidth = 1.5;
+      ctx.setLineDash([5, 4]);
+      ctx.moveTo(pad.left, mvtY);
+      ctx.lineTo(pad.left + cw, mvtY);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // MVT label on left axis
+      ctx.fillStyle = '#F0448A';
+      ctx.font = '600 9px "JetBrains Mono", monospace';
+      ctx.textAlign = 'left';
+      ctx.fillText('MVT ' + mvt.toFixed(2), pad.left + 4, mvtY - 5);
+    }
+
+    // ── Vertical dashed line at estimated 1RM ──
+    if (estimated1rm >= loadMin && estimated1rm <= loadMax) {
+      var oneRmX = xScale(estimated1rm);
+      ctx.beginPath();
+      ctx.strokeStyle = 'rgba(30, 200, 176, 0.55)';
+      ctx.lineWidth = 1.5;
+      ctx.setLineDash([5, 4]);
+      ctx.moveTo(oneRmX, pad.top);
+      ctx.lineTo(oneRmX, pad.top + ch);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // e1RM label
+      ctx.fillStyle = '#1EC8B0';
+      ctx.font = '600 9px "JetBrains Mono", monospace';
+      ctx.textAlign = 'center';
+      var labelY = pad.top + 10;
+      ctx.fillText('e1RM ~' + Math.round(estimated1rm), oneRmX, labelY);
+    }
+
+    // ── Data point dots (teal with glow) ──
+    points.forEach(function(p) {
+      var dx = xScale(p.x);
+      var dy = yScale(p.y);
+
+      // Glow
+      var grd = ctx.createRadialGradient(dx, dy, 0, dx, dy, 14);
+      grd.addColorStop(0, 'rgba(30,200,176,0.25)');
+      grd.addColorStop(1, 'rgba(30,200,176,0)');
+      ctx.beginPath();
+      ctx.arc(dx, dy, 14, 0, Math.PI * 2);
+      ctx.fillStyle = grd;
+      ctx.fill();
+
+      // Dot
+      ctx.beginPath();
+      ctx.arc(dx, dy, 6, 0, Math.PI * 2);
+      ctx.fillStyle = '#1EC8B0';
+      ctx.fill();
+      ctx.strokeStyle = '#fff';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      // Velocity label above dot
+      ctx.fillStyle = '#e8e6e3';
+      ctx.font = '700 10px "JetBrains Mono", monospace';
+      ctx.textAlign = 'center';
+      var lblY = dy - 13;
+      if (lblY < pad.top + 8) lblY = dy + 18;
+      ctx.fillText(p.y.toFixed(2) + ' m/s', dx, lblY);
+    });
+  }
+
+  // ══════════════════════════════════════════════════════════
+  // UTILITIES
+  // ══════════════════════════════════════════════════════════
+
+  // Shake animation
+  var styleEl = document.createElement('style');
+  styleEl.textContent = '@keyframes shake { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-6px)} 40%{transform:translateX(6px)} 60%{transform:translateX(-4px)} 80%{transform:translateX(4px)} }';
+  document.head.appendChild(styleEl);
+
+  // Scroll reveal
+  var fadeEls = document.querySelectorAll('.fade-in');
+  if ('IntersectionObserver' in window) {
+    var observer = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+    fadeEls.forEach(function(el) { observer.observe(el); });
+  } else {
+    fadeEls.forEach(function(el) { el.classList.add('visible'); });
+  }
+
+  // Mobile Menu
+  var hamburger = document.querySelector('.hamburger');
+  var mobileNav = document.querySelector('.mobile-nav');
+  if (hamburger && mobileNav) {
+    hamburger.addEventListener('click', function() {
+      var isOpen = mobileNav.classList.toggle('open');
+      hamburger.classList.toggle('open');
+      hamburger.setAttribute('aria-expanded', isOpen);
+    });
+  }
+
+  // Header scroll shadow
+  var headerEl = document.querySelector('.site-header');
+  window.addEventListener('scroll', function() {
+    if (window.scrollY > 60) {
+      headerEl.style.boxShadow = 'var(--shadow-md)';
+    } else {
+      headerEl.style.boxShadow = 'none';
+    }
+  }, { passive: true });
+
+  // Enter key triggers calculate from inputs
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') {
+      var tag = document.activeElement && document.activeElement.tagName;
+      if (tag === 'INPUT') {
+        calculateBtn.click();
+      }
+    }
+  });
+
+})();
+</script>
+
+<!-- Mobile Sticky CTA -->
+<div class="mobile-sticky-cta" id="stickyCta" style="display: none; position: fixed; bottom: 0; left: 0; right: 0; z-index: 999; padding: 12px 16px; background: rgba(10,14,23,0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-top: 1px solid rgba(30,200,176,0.2); text-align: center;">
+  <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" style="display: inline-block; width: 100%; max-width: 320px; padding: 10px 20px; background: var(--color-teal); color: #0a0e17; font-family: var(--font-display); font-size: 0.8rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; text-decoration: none; border-radius: 6px;">Book a Free Session</a>
+</div>
+<script>
+(function(){
+  var cta = document.getElementById('stickyCta');
+  if (!cta || window.innerWidth > 768) return;
+  window.addEventListener('scroll', function() {
+    cta.style.display = window.scrollY > 300 ? 'block' : 'none';
+  }, {passive:true});
+})();
+</script>
+
+</body>
+</html>

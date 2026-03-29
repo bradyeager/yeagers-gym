@@ -1,0 +1,1227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!--
+   ______                            __
+  / ____/___  ____ ___  ____  __  __/ /____  _____
+ / /   / __ \/ __ `__ \/ __ \/ / / / __/ _ \/ ___/
+/ /___/ /_/ / / / / / / /_/ / /_/ / /_/  __/ /
+\____/\____/_/ /_/ /_/ .___/\__,_/\__/\___/_/
+                    /_/
+        Created with Perplexity Computer
+        https://www.perplexity.ai/computer
+-->
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RPE Chart Generator — Yeager's Gym</title>
+<meta name="description" content="Generate your personalized RPE-load chart. Enter one lift to know exactly what weight to use for every RPE and rep range.">
+<meta property="og:title" content="RPE Chart Generator — Yeager's Gym">
+<meta property="og:description" content="Enter one lift to generate your personalized RPE-load chart. Know exactly what weight to use for every RPE and rep range.">
+<meta property="og:type" content="website">
+<link rel="canonical" href="https://yeagersgym.com/tools-rpe.html">
+<link rel="stylesheet" href="./base.css">
+<link rel="stylesheet" href="./style.css">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "RPE Chart Generator",
+  "description": "Generate a personalized RPE-load chart from a single lift. Based on the Tuchscherer/RTS RPE table.",
+  "url": "https://yeagersgym.com/tools-rpe.html",
+  "applicationCategory": "HealthApplication",
+  "creator": {
+    "@type": "SoftwareApplication",
+    "name": "Perplexity Computer",
+    "url": "https://www.perplexity.ai/computer"
+  }
+}
+</script>
+
+<style>
+/* ═══════════════════════════════════════════
+   RPE CHART GENERATOR — Widget Styles
+   ═══════════════════════════════════════════ */
+
+.tool-page {
+  padding-top: 100px;
+  padding-bottom: 0;
+  min-height: 100vh;
+}
+
+.tool-back {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  text-decoration: none;
+  margin-bottom: var(--space-8);
+  transition: color var(--transition-interactive);
+}
+.tool-back:hover { color: var(--color-teal); }
+.tool-back svg { width: 16px; height: 16px; }
+
+.tool-header {
+  text-align: center;
+  margin-bottom: var(--space-6);
+}
+
+.tool-header .section-label {
+  margin-bottom: var(--space-4);
+}
+
+.tool-header h1 {
+  font-family: var(--font-body);
+  font-size: var(--text-2xl);
+  font-weight: 700;
+  color: var(--color-text);
+  margin-bottom: var(--space-4);
+  line-height: 1.15;
+}
+
+.tool-header h1 .highlight-teal { color: var(--color-teal); }
+.tool-header h1 .highlight-pink { color: var(--color-pink); }
+
+.tool-header p {
+  font-size: var(--text-base);
+  color: var(--color-text-muted);
+  max-width: 56ch;
+  margin-inline: auto;
+  line-height: 1.7;
+}
+
+/* ── Calculator Card ── */
+.calc-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  padding: var(--space-8);
+  max-width: 600px;
+  margin-inline: auto;
+  margin-bottom: var(--space-10);
+}
+
+@media (max-width: 640px) {
+  .calc-card { padding: var(--space-6) var(--space-4); }
+}
+
+.calc-card h2 {
+  font-family: var(--font-display);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--color-teal);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: var(--space-6);
+}
+
+/* ── Form Fields ── */
+.field-group {
+  margin-bottom: var(--space-6);
+}
+
+.field-group label {
+  display: block;
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-2);
+}
+
+.field-group select,
+.field-group input[type="number"] {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  color: var(--color-text);
+  font-size: var(--text-base);
+  font-family: var(--font-body);
+  transition: border-color var(--transition-interactive), box-shadow var(--transition-interactive);
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.field-group select:focus,
+.field-group input[type="number"]:focus {
+  outline: none;
+  border-color: var(--color-teal);
+  box-shadow: 0 0 0 3px var(--color-teal-glow);
+}
+
+.field-group input[type="number"]::placeholder {
+  color: var(--color-text-faint);
+}
+
+/* Remove number spinners */
+.field-group input[type="number"]::-webkit-outer-spin-button,
+.field-group input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.field-group input[type="number"] { -moz-appearance: textfield; }
+
+/* ── Unit Toggle ── */
+.unit-toggle {
+  display: inline-flex;
+  background: var(--color-surface-2);
+  border-radius: var(--radius-full);
+  padding: 3px;
+  margin-bottom: var(--space-3);
+  border: 1px solid var(--color-border);
+}
+
+.unit-toggle button {
+  padding: 0.375rem 1rem;
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  border-radius: var(--radius-full);
+  transition: all var(--transition-interactive);
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.unit-toggle button.active {
+  background: var(--color-teal);
+  color: #0a0e17;
+}
+
+/* ── Calculate Button ── */
+.btn-calculate {
+  width: 100%;
+  padding: 0.875rem 1.5rem;
+  font-size: var(--text-base);
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-top: var(--space-4);
+}
+
+/* ── Stepper Input ── */
+.stepper-input {
+  display: flex;
+  align-items: stretch;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: var(--color-surface-2);
+  transition: border-color var(--transition-interactive), box-shadow var(--transition-interactive);
+}
+
+.stepper-input:focus-within {
+  border-color: var(--color-teal);
+  box-shadow: 0 0 0 3px var(--color-teal-glow);
+}
+
+.stepper-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  min-height: 48px;
+  background: var(--color-surface-3);
+  border: none;
+  color: var(--color-text-muted);
+  font-size: 1.25rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+.stepper-btn:hover {
+  background: rgba(30, 200, 176, 0.15);
+  color: var(--color-teal);
+}
+
+.stepper-btn:active {
+  background: rgba(30, 200, 176, 0.25);
+  color: var(--color-teal);
+}
+
+.stepper-value-wrap {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  padding: 0 var(--space-2);
+}
+
+.stepper-value-wrap input {
+  width: 100%;
+  text-align: center;
+  background: transparent;
+  border: none;
+  color: var(--color-text);
+  font-size: var(--text-lg);
+  font-family: var(--font-display);
+  font-weight: 700;
+  padding: 0.5rem 0;
+  outline: none;
+  -moz-appearance: textfield;
+}
+
+.stepper-value-wrap input::-webkit-outer-spin-button,
+.stepper-value-wrap input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.stepper-unit {
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--color-text-faint);
+  margin-left: var(--space-1);
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+/* ── Shake animation for invalid inputs ── */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-6px); }
+  40% { transform: translateX(6px); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(4px); }
+}
+.shake {
+  animation: shake 0.4s ease;
+  border-color: var(--color-pink) !important;
+}
+
+/* ═══════════════════════════════════════════
+   RESULTS
+   ═══════════════════════════════════════════ */
+.results-panel {
+  max-width: 900px;
+  margin-inline: auto;
+  display: none;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.5s var(--ease-out), transform 0.5s var(--ease-out);
+  pointer-events: none;
+}
+
+.results-panel.visible {
+  display: block;
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+/* ── e1RM Hero ── */
+.result-hero {
+  text-align: center;
+  padding: var(--space-10) var(--space-6);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  margin-bottom: var(--space-6);
+  position: relative;
+  overflow: hidden;
+}
+
+.result-hero::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--color-teal), var(--color-pink), var(--color-purple));
+}
+
+.result-label {
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-3);
+}
+
+.result-value {
+  font-family: var(--font-display);
+  font-size: clamp(3rem, 8vw, 5rem);
+  font-weight: 700;
+  color: var(--color-teal);
+  line-height: 1;
+  margin-bottom: var(--space-2);
+}
+
+.result-unit {
+  font-size: 0.4em;
+  color: var(--color-text-muted);
+  font-weight: 500;
+}
+
+.result-subtext {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+}
+
+/* ── RPE Matrix Table ── */
+.rpe-matrix-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  padding: var(--space-6);
+  margin-bottom: var(--space-6);
+  overflow: hidden;
+}
+
+.rpe-matrix-card h3 {
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-5);
+}
+
+.table-scroll-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin: 0 calc(-1 * var(--space-2));
+  padding: 0 var(--space-2);
+}
+
+.rpe-matrix-table {
+  width: 100%;
+  min-width: 560px;
+  border-collapse: collapse;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+}
+
+.rpe-matrix-table th {
+  background: var(--color-teal);
+  color: #0a0e17;
+  font-family: var(--font-display);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 7px 6px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.rpe-matrix-table th:first-child {
+  text-align: left;
+  padding-left: 10px;
+  border-radius: var(--radius-sm) 0 0 0;
+  min-width: 72px;
+  position: sticky;
+  left: 0;
+  z-index: 2;
+}
+
+.rpe-matrix-table th:last-child {
+  border-radius: 0 var(--radius-sm) 0 0;
+}
+
+.rpe-matrix-table td {
+  padding: 7px 5px;
+  text-align: center;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  color: var(--color-text);
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.rpe-matrix-table td:first-child {
+  font-family: var(--font-display);
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--color-teal);
+  text-align: left;
+  padding-left: 10px;
+  position: sticky;
+  left: 0;
+  background: var(--color-surface);
+  z-index: 1;
+  border-right: 1px solid rgba(30, 200, 176, 0.15);
+}
+
+.rpe-matrix-table tr:last-child td {
+  border-bottom: none;
+}
+
+.rpe-matrix-table tr:hover td:not(:first-child) {
+  background-color: rgba(255,255,255,0.02) !important;
+}
+
+/* Highlighted input cell */
+.rpe-matrix-table td.input-cell {
+  box-shadow: inset 0 0 0 2px var(--color-teal), 0 0 12px rgba(30, 200, 176, 0.25);
+  font-weight: 700;
+  color: var(--color-teal) !important;
+  border-radius: 3px;
+  background: rgba(30, 200, 176, 0.08) !important;
+}
+
+/* ── RIR Reference Pills ── */
+.rir-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: var(--space-5);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--color-border);
+}
+
+.rir-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  font-family: var(--font-display);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--color-text-faint);
+  white-space: nowrap;
+}
+
+.rir-pill .rir-rpe {
+  color: var(--color-teal);
+}
+
+/* ── Explainer ── */
+.explainer {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  padding: var(--space-6);
+  margin-top: var(--space-4);
+  max-width: 900px;
+  margin-inline: auto;
+  margin-bottom: 0;
+}
+
+@media (max-width: 640px) {
+  .explainer { padding: var(--space-6) var(--space-4); }
+}
+
+.explainer h2 {
+  font-family: var(--font-display);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--color-teal);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: var(--space-4);
+}
+
+.explainer p {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+  line-height: 1.8;
+  margin-bottom: var(--space-4);
+}
+
+.explainer p:last-child { margin-bottom: 0; }
+
+/* ── Tool Navigation Pills ── */
+.tool-nav-bar {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-10);
+  flex-wrap: wrap;
+}
+
+.tool-nav-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 0.5rem 1rem;
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--color-text-muted);
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  transition: all var(--transition-interactive);
+}
+
+.tool-nav-pill:hover {
+  border-color: var(--color-teal);
+  color: var(--color-teal);
+}
+
+.tool-nav-pill.active {
+  border-color: var(--color-teal);
+  background: var(--color-teal-glow);
+  color: var(--color-teal);
+}
+
+.tool-nav-pill svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* ── CTA Section ── */
+.tool-cta {
+  text-align: center;
+  padding: var(--space-8) var(--space-4) var(--space-6);
+  position: relative;
+}
+
+/* ── Mobile compact ── */
+@media (max-width: 640px) {
+  .result-hero {
+    padding: var(--space-5) var(--space-4);
+    margin-bottom: var(--space-3);
+  }
+  .result-value {
+    font-size: clamp(2rem, 6vw, 3rem);
+  }
+  .result-label {
+    font-size: 0.65rem;
+    margin-bottom: var(--space-1);
+  }
+  .result-subtext {
+    font-size: 0.75rem;
+  }
+  .rpe-matrix-card {
+    padding: var(--space-4);
+    margin-bottom: var(--space-3);
+  }
+  .rpe-matrix-card h3 {
+    font-size: 0.6rem;
+    margin-bottom: var(--space-3);
+  }
+  .calc-card {
+    max-width: 100%;
+  }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════
+     HEADER
+     ═══════════════════════════════════════════ -->
+<header class="site-header" role="banner">
+  <div class="header-inner">
+    <a href="./index.html" class="logo-link" aria-label="Yeager's Gym Home">
+      <img src="./assets/logo.jpeg" alt="Yeager's Gym Logo" class="logo-mark-img" width="48" height="48">
+    </a>
+
+    <nav class="nav-desktop" role="navigation" aria-label="Main navigation">
+      <a href="./index.html" class="nav-link">Home</a>
+      <a href="./index.html#about" class="nav-link">About</a>
+      <div class="nav-dropdown">
+        <a href="./index.html#services" class="nav-link">Services ▾</a>
+        <div class="nav-dropdown-menu">
+          <a href="./in-person.html">In-Person Coaching</a>
+          <a href="./remote.html">Remote Coaching</a>
+          <a href="./nutrition.html">Nutrition Coaching</a>
+          <a href="./peptide-consulting.html">Peptide Consulting</a>
+          <a href="./recovery.html">Recovery</a>
+        </div>
+      </div>
+      <a href="./index.html#vbt" class="nav-link">Velocity Based Training</a>
+      <a href="./index.html#results" class="nav-link">Results</a>
+      <div class="nav-dropdown">
+        <a href="./tools-vbt.html" class="nav-link">Tools ▾</a>
+        <div class="nav-dropdown-menu">
+          <a href="./tools-vbt.html">VBT Calculator</a>
+          <a href="./tools-1rm.html">1RM Calculator</a>
+          <a href="./tools-warmup.html">Warmup Calculator</a>
+          <a href="./tools-lv-profile.html">LV Profile</a>
+          <a href="./tools-rpe.html">RPE Chart</a>
+          <a href="./tools-rpe-velocity.html">RPE-Velocity</a>
+          <a href="./tools-crossfit.html">Machine Converter</a>
+          <a href="./tools-macro.html">Macro Calculator</a>
+          <a href="./tools-peptide.html">Peptide Calculator</a>
+          <a href="./velocity-trackers.html">Velocity Trackers Guide</a>
+        </div>
+      </div>
+      <a href="./quiz.html" class="nav-link">Quiz</a>
+      <div class="nav-utility">
+        <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="btn btn-nav-cta">Book Your FREE Session!</a>
+      </div>
+    </nav>
+
+    <button class="hamburger" aria-label="Toggle menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+
+  <div class="mobile-nav" role="navigation" aria-label="Mobile navigation">
+    <a href="./index.html">Home</a>
+    <a href="./index.html#about">About</a>
+    <a href="./index.html#services">Services</a>
+    <a href="./in-person.html" style="padding-left: 2rem;">In-Person Coaching</a>
+    <a href="./remote.html" style="padding-left: 2rem;">Remote Coaching</a>
+    <a href="./nutrition.html" style="padding-left: 2rem;">Nutrition Coaching</a>
+    <a href="./peptide-consulting.html" style="padding-left: 2rem; color: var(--color-teal);">Peptide Consulting</a>
+    <a href="./recovery.html" style="padding-left: 2rem;">Recovery</a>
+    <a href="./index.html#vbt">Velocity Based Training</a>
+    <a href="./index.html#results">Results</a>
+    <a href="./tools-vbt.html">VBT Calculator</a>
+    <a href="./tools-1rm.html">1RM Calculator</a>
+    <a href="./tools-warmup.html">Warmup Calculator</a>
+    <a href="./tools-lv-profile.html">LV Profile</a>
+    <a href="./tools-rpe.html" style="color: var(--color-teal);">RPE Chart</a>
+    <a href="./tools-rpe-velocity.html">RPE-Velocity</a>
+    <a href="./tools-crossfit.html">Machine Converter</a>
+    <a href="./tools-macro.html">Macro Calculator</a>
+    <a href="./tools-peptide.html" style="color: var(--color-purple);">Peptide Calculator</a>
+    <a href="./quiz.html" style="color: var(--color-pink);">Training Type Quiz</a>
+    <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="btn btn-nav-cta" style="margin-top: var(--space-4);">Book Your FREE Session!</a>
+  </div>
+</header>
+
+<!-- ═══════════════════════════════════════════
+     MAIN CONTENT
+     ═══════════════════════════════════════════ -->
+<main class="tool-page">
+  <div class="container">
+
+    <a href="./index.html" class="tool-back">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 12L6 8l4-4"/></svg>
+      Back to Home
+    </a>
+
+    <!-- Tool Nav Tabs -->
+    <div class="tool-nav-bar fade-in">
+      <a href="./tools-vbt.html" class="tool-nav-pill">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+        VBT
+      </a>
+      <a href="./tools-1rm.html" class="tool-nav-pill">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 18L18 6M8 6h10v10"/></svg>
+        1RM
+      </a>
+      <a href="./tools-warmup.html" class="tool-nav-pill">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83"/></svg>
+        Warmup
+      </a>
+      <a href="./tools-lv-profile.html" class="tool-nav-pill">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        LV Profile
+      </a>
+      <a href="./tools-rpe.html" class="tool-nav-pill active">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 3v18"/></svg>
+        RPE Chart
+      </a>
+      <a href="./tools-rpe-velocity.html" class="tool-nav-pill">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="M12 6v6l4 2"/></svg>
+        RPE-Velocity
+      </a>
+      <a href="./tools-crossfit.html" class="tool-nav-pill">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 12h8M12 8v8"/></svg>
+        Machine
+      </a>
+      <a href="./tools-macro.html" class="tool-nav-pill">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z"/><path d="M12 2v10l7 4"/></svg>
+        Macro
+      </a>
+      <a href="./tools-peptide.html" class="tool-nav-pill">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6v11a6 6 0 0 1-6 0V3z"/><path d="M12 14v7"/><path d="M6 3h12"/></svg>
+        Peptide
+      </a>
+    </div>
+
+    <!-- Tool Header -->
+    <div class="tool-header fade-in">
+      <h1><span class="highlight-teal">RPE</span> Chart <span class="highlight-pink">Generator</span></h1>
+      <p>Enter one lift to generate your personalized RPE-load chart. Know exactly what weight to use for every RPE and rep range.</p>
+    </div>
+
+    <!-- Calculator Card -->
+    <div class="calc-card fade-in">
+      <h2>Your Lift Data</h2>
+
+      <!-- Load Lifted -->
+      <div class="field-group">
+        <label>Load Lifted</label>
+        <div class="unit-toggle" id="unit-toggle">
+          <button class="active" data-unit="lbs" type="button">LBS</button>
+          <button data-unit="kg" type="button">KG</button>
+        </div>
+        <div class="stepper-input" id="load-stepper">
+          <button class="stepper-btn stepper-down" type="button" data-target="load" data-dir="-1" aria-label="Decrease load">&#8722;</button>
+          <div class="stepper-value-wrap">
+            <input type="number" id="load" value="225" min="1" max="2000" step="5" inputmode="decimal">
+            <span class="stepper-unit" id="load-unit-label">lbs</span>
+          </div>
+          <button class="stepper-btn stepper-up" type="button" data-target="load" data-dir="1" aria-label="Increase load">&#43;</button>
+        </div>
+      </div>
+
+      <!-- Reps -->
+      <div class="field-group">
+        <label>Reps Performed</label>
+        <div class="stepper-input" id="reps-stepper">
+          <button class="stepper-btn stepper-down" type="button" data-target="reps" data-dir="-1" aria-label="Decrease reps">&#8722;</button>
+          <div class="stepper-value-wrap">
+            <input type="number" id="reps" value="5" min="1" max="12" step="1" inputmode="numeric">
+            <span class="stepper-unit">reps</span>
+          </div>
+          <button class="stepper-btn stepper-up" type="button" data-target="reps" data-dir="1" aria-label="Increase reps">&#43;</button>
+        </div>
+      </div>
+
+      <!-- RPE -->
+      <div class="field-group">
+        <label>RPE (Rate of Perceived Exertion)</label>
+        <div class="stepper-input" id="rpe-stepper">
+          <button class="stepper-btn stepper-down" type="button" data-target="rpe" data-dir="-0.5" aria-label="Decrease RPE">&#8722;</button>
+          <div class="stepper-value-wrap">
+            <input type="number" id="rpe" value="8" min="6.5" max="10" step="0.5" inputmode="decimal">
+            <span class="stepper-unit" id="rpe-display-label">RPE</span>
+          </div>
+          <button class="stepper-btn stepper-up" type="button" data-target="rpe" data-dir="0.5" aria-label="Increase RPE">&#43;</button>
+        </div>
+      </div>
+
+      <button class="btn btn-primary btn-calculate" id="calculate-btn" type="button">
+        Generate RPE Chart
+      </button>
+    </div>
+
+    <!-- Results Panel (hidden until calculated) -->
+    <div class="results-panel" id="results-panel">
+
+      <!-- e1RM Hero -->
+      <div class="result-hero">
+        <p class="result-label">Estimated 1-Rep Max (e1RM)</p>
+        <p class="result-value" id="result-e1rm">— <span class="result-unit" id="result-unit">lbs</span></p>
+        <p class="result-subtext" id="result-subtext">Based on — × — @ RPE —</p>
+      </div>
+
+      <!-- RPE Matrix Table -->
+      <div class="rpe-matrix-card">
+        <h3>Full RPE — Load Matrix</h3>
+        <div class="table-scroll-wrap">
+          <table class="rpe-matrix-table" id="rpe-matrix-table">
+            <thead>
+              <tr>
+                <th>RPE \ Reps</th>
+                <th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th>
+                <th>7</th><th>8</th><th>9</th><th>10</th><th>11</th><th>12</th>
+              </tr>
+            </thead>
+            <tbody id="rpe-matrix-body">
+              <!-- Populated by JS -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- RIR Pills -->
+        <div class="rir-pills">
+          <span class="rir-pill"><span class="rir-rpe">RPE 10</span> = 0 RIR</span>
+          <span class="rir-pill"><span class="rir-rpe">RPE 9.5</span> = 0–1 RIR</span>
+          <span class="rir-pill"><span class="rir-rpe">RPE 9</span> = 1 RIR</span>
+          <span class="rir-pill"><span class="rir-rpe">RPE 8.5</span> = 1–2 RIR</span>
+          <span class="rir-pill"><span class="rir-rpe">RPE 8</span> = 2 RIR</span>
+          <span class="rir-pill"><span class="rir-rpe">RPE 7.5</span> = 2–3 RIR</span>
+          <span class="rir-pill"><span class="rir-rpe">RPE 7</span> = 3 RIR</span>
+          <span class="rir-pill"><span class="rir-rpe">RPE 6.5</span> = 3–4 RIR</span>
+        </div>
+      </div>
+
+    </div><!-- end results-panel -->
+
+    <!-- Explainer -->
+    <div class="explainer fade-in">
+      <h2>What is RPE?</h2>
+      <p>Rate of Perceived Exertion (RPE) is a subjective scale used to measure how hard a set feels. In powerlifting and strength training, the <strong style="color: var(--color-text);">Tuchscherer/RTS scale</strong> is the standard — it runs from 6.5 to 10, where <strong style="color: var(--color-teal);">RPE 10</strong> means you could not have done another rep, and <strong style="color: var(--color-pink);">RPE 7</strong> means you had 3 reps left in the tank.</p>
+      <p>The complementary metric is <strong style="color: var(--color-text);">RIR (Reps In Reserve)</strong> — the number of reps you could still do before technical failure. RPE 10 = 0 RIR. RPE 9 = 1 RIR. RPE 8 = 2 RIR. RPE 7 = 3 RIR, and so on.</p>
+      <p>This generator uses the <strong style="color: var(--color-text);">Tuchscherer RPE percentage table</strong> to calculate your estimated 1-rep max from any single working set, then populates the full matrix so you can plan every training block with precision — no guessing, no leaving gains on the table.</p>
+    </div>
+
+  </div>
+</main>
+
+<!-- CTA Section -->
+<section style="padding: var(--space-8) 0 var(--space-6); text-align: center; position: relative;">
+  <div class="container">
+    <p class="section-label" style="color: var(--color-pink); text-align: center;">Get Started</p>
+    <h2 style="font-family: var(--font-body); font-size: var(--text-xl); font-weight: 700; color: var(--color-text); margin-bottom: var(--space-3);">Want <span style="color: var(--color-teal);">coaching</span> built on this <span style="color: var(--color-pink);">data</span>?</h2>
+    <p style="font-size: var(--text-sm); color: var(--color-text-muted); margin-bottom: var(--space-5); max-width: 45ch; margin-inline: auto;">Train with a coach who autoregulates every session using RPE. Book a free session and see it in action.</p>
+    <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="btn btn-primary">Book Your FREE Session!</a>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     FOOTER
+     ═══════════════════════════════════════════ -->
+<footer class="site-footer" role="contentinfo">
+  <div class="container">
+    <div class="footer-nav-columns">
+      <div class="footer-links">
+        <h4>Navigate</h4>
+        <a href="./index.html">Home</a>
+        <a href="./index.html#about">About Brad</a>
+        <a href="./index.html#services">Services &amp; Pricing</a>
+        <a href="./index.html#vbt">VBT Explained</a>
+        <a href="./index.html#results">Results</a>
+        <a href="./index.html#contact">Contact</a>
+      </div>
+      <div class="footer-links">
+        <h4>Resources &amp; Free Tools</h4>
+        <a href="./tools-vbt.html">VBT Calculator</a>
+        <a href="./tools-1rm.html">1RM Calculator</a>
+        <a href="./tools-warmup.html">Warmup Calculator</a>
+        <a href="./tools-lv-profile.html">LV Profile</a>
+        <a href="./tools-rpe.html">RPE Chart Generator</a>
+        <a href="./tools-rpe-velocity.html">RPE-Velocity</a>
+        <a href="./tools-crossfit.html">Machine Converter</a>
+        <a href="./tools-macro.html">Macro Calculator</a>
+        <a href="./tools-peptide.html">Peptide Calculator</a>
+        <a href="./velocity-trackers.html">Velocity Trackers Guide</a>
+        <a href="./quiz.html">Training Type Quiz</a>
+      </div>
+      <div class="footer-links">
+        <h4>Connect</h4>
+        <a href="mailto:brad@yeagersgym.com" class="footer-contact-link">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+          brad@yeagersgym.com
+        </a>
+        <a href="https://www.instagram.com/YeagersGym" target="_blank" rel="noopener noreferrer" class="footer-contact-link">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
+          @YeagersGym
+        </a>
+        <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="footer-vagaro-link">Book via Vagaro →</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>&copy; 2026 Yeager's Gym &middot; San Diego, CA</span>
+      <div class="footer-bottom-right">
+        <a href="https://www.perplexity.ai/computer" target="_blank" rel="noopener noreferrer">Created with Perplexity Computer</a>
+        <a href="./index.html" aria-label="Yeager's Gym Home">
+          <img src="assets/logo.jpeg" alt="Yeager's Gym" class="logo-mark-img" width="24" height="24">
+        </a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- ═══════════════════════════════════════════
+     SCRIPTS
+     ═══════════════════════════════════════════ -->
+<script>
+(function() {
+  'use strict';
+
+  // ══════════════════════════════════════════════════════════
+  // RPE TABLE — Tuchscherer/RTS Standard
+  // Rows: RPE value. Columns index: reps-1 (0=1rep, 11=12reps)
+  // ══════════════════════════════════════════════════════════
+  var RPE_TABLE = {
+    10:   [100,   95.5,  92.2,  89.2,  86.3,  83.7,  81.1,  78.6,  76.2,  73.9,  70.7,  68.0],
+    9.5:  [97.8,  93.9,  90.7,  87.8,  85.0,  82.4,  79.9,  77.4,  75.1,  72.3,  69.4,  66.7],
+    9:    [95.5,  92.2,  89.2,  86.3,  83.7,  81.1,  78.6,  76.2,  73.9,  70.7,  68.0,  65.3],
+    8.5:  [93.9,  90.7,  87.8,  85.0,  82.4,  79.9,  77.4,  75.1,  72.3,  69.4,  66.7,  64.0],
+    8:    [92.2,  89.2,  86.3,  83.7,  81.1,  78.6,  76.2,  73.9,  70.7,  68.0,  65.3,  62.6],
+    7.5:  [90.7,  87.8,  85.0,  82.4,  79.9,  77.4,  75.1,  72.3,  69.4,  66.7,  64.0,  61.3],
+    7:    [89.2,  86.3,  83.7,  81.1,  78.6,  76.2,  73.9,  70.7,  68.0,  65.3,  62.6,  59.9],
+    6.5:  [87.8,  85.0,  82.4,  79.9,  77.4,  75.1,  72.3,  69.4,  66.7,  64.0,  61.3,  58.6]
+  };
+
+  // RPE order for table display (top to bottom: highest to lowest)
+  var RPE_ROWS = [10, 9.5, 9, 8.5, 8, 7.5, 7, 6.5];
+
+  // ── State ──
+  var currentUnit = 'lbs';
+
+  // ── DOM refs ──
+  var loadInput      = document.getElementById('load');
+  var repsInput      = document.getElementById('reps');
+  var rpeInput       = document.getElementById('rpe');
+  var calculateBtn   = document.getElementById('calculate-btn');
+  var resultsPanel   = document.getElementById('results-panel');
+  var unitToggleBtns = document.querySelectorAll('#unit-toggle button');
+  var loadUnitLabel  = document.getElementById('load-unit-label');
+  var resultE1rm     = document.getElementById('result-e1rm');
+  var resultUnit     = document.getElementById('result-unit');
+  var resultSubtext  = document.getElementById('result-subtext');
+  var matrixBody     = document.getElementById('rpe-matrix-body');
+
+  // ══════════════════════════════════════════════════════════
+  // STEPPER BUTTONS
+  // ══════════════════════════════════════════════════════════
+  document.querySelectorAll('.stepper-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var target = btn.dataset.target;
+      var dir    = parseFloat(btn.dataset.dir);
+      var input  = document.getElementById(target);
+      if (!input) return;
+
+      var val  = parseFloat(input.value) || 0;
+      var step = parseFloat(input.step)  || 1;
+      var min  = parseFloat(input.min);
+      var max  = parseFloat(input.max);
+
+      // For RPE stepper, use its explicit dir value which is already ±0.5
+      var newVal = Math.round((val + dir) * 10) / 10;
+      newVal = Math.max(min, Math.min(max, newVal));
+      input.value = newVal;
+    });
+
+    // Hold-to-repeat
+    var holdTimer, holdInterval;
+    btn.addEventListener('mousedown', function() {
+      holdTimer = setTimeout(function() {
+        holdInterval = setInterval(function() { btn.click(); }, 80);
+      }, 400);
+    });
+    ['mouseup', 'mouseleave', 'touchend'].forEach(function(ev) {
+      btn.addEventListener(ev, function() {
+        clearTimeout(holdTimer);
+        clearInterval(holdInterval);
+      });
+    });
+  });
+
+  // ══════════════════════════════════════════════════════════
+  // UNIT TOGGLE
+  // ══════════════════════════════════════════════════════════
+  unitToggleBtns.forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var newUnit = btn.dataset.unit;
+      if (newUnit === currentUnit) return;
+
+      var val = parseFloat(loadInput.value) || 0;
+
+      if (newUnit === 'kg' && currentUnit === 'lbs') {
+        loadInput.value = Math.round(val / 2.2046 * 10) / 10;
+        loadInput.step  = '2.5';
+      } else if (newUnit === 'lbs' && currentUnit === 'kg') {
+        loadInput.value = Math.round(val * 2.2046 / 5) * 5;
+        loadInput.step  = '5';
+      }
+
+      currentUnit = newUnit;
+      loadUnitLabel.textContent = newUnit;
+      resultUnit.textContent    = newUnit;
+
+      unitToggleBtns.forEach(function(b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+
+      // Regenerate if results are showing
+      if (resultsPanel.classList.contains('visible')) {
+        runCalculation();
+      }
+    });
+  });
+
+  // ══════════════════════════════════════════════════════════
+  // CALCULATION CORE
+  // ══════════════════════════════════════════════════════════
+  function formatWeight(w, unit) {
+    if (unit === 'kg') return (Math.round(w * 10) / 10).toFixed(1);
+    return Math.round(w).toString();
+  }
+
+  function runCalculation() {
+    var load = parseFloat(loadInput.value);
+    var reps = parseInt(repsInput.value, 10);
+    var rpe  = parseFloat(rpeInput.value);
+
+    // Validate
+    var valid = true;
+    if (!load || load <= 0) { shake(document.getElementById('load-stepper')); valid = false; }
+    if (!reps || reps < 1 || reps > 12) { shake(document.getElementById('reps-stepper')); valid = false; }
+    if (!rpe  || !RPE_TABLE[rpe]) { shake(document.getElementById('rpe-stepper'));  valid = false; }
+    if (!valid) return;
+
+    // Look up percentage for entered RPE + reps
+    var repIdx     = reps - 1; // 0-based column index
+    var pct        = RPE_TABLE[rpe][repIdx];
+
+    // Derive e1RM
+    var e1rm = load / (pct / 100);
+    var e1rmRounded = currentUnit === 'kg'
+      ? Math.round(e1rm * 10) / 10
+      : Math.round(e1rm);
+
+    // Update hero
+    resultE1rm.innerHTML   = formatWeight(e1rmRounded, currentUnit) + ' <span class="result-unit" id="result-unit">' + currentUnit + '</span>';
+    resultSubtext.textContent = 'Based on ' + formatWeight(load, currentUnit) + ' ' + currentUnit + ' \u00d7 ' + reps + ' reps @ RPE ' + rpe.toFixed(1);
+
+    // Build matrix
+    buildMatrix(e1rm, rpe, reps);
+
+    // Show panel
+    if (!resultsPanel.classList.contains('visible')) {
+      resultsPanel.style.display = 'block';
+      // Force reflow before adding visible class for transition
+      void resultsPanel.offsetHeight;
+      resultsPanel.classList.add('visible');
+    }
+
+    // Scroll to results
+    setTimeout(function() {
+      resultsPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 80);
+  }
+
+  function buildMatrix(e1rm, inputRpe, inputReps) {
+    // Find the min and max possible weights in the whole table for gradient scaling
+    var allWeights = [];
+    RPE_ROWS.forEach(function(rpeVal) {
+      for (var r = 0; r < 12; r++) {
+        allWeights.push(e1rm * (RPE_TABLE[rpeVal][r] / 100));
+      }
+    });
+    var minW = Math.min.apply(null, allWeights);
+    var maxW = Math.max.apply(null, allWeights);
+
+    var html = '';
+    RPE_ROWS.forEach(function(rpeVal) {
+      html += '<tr>';
+      html += '<td>RPE&nbsp;' + rpeVal.toFixed(1) + '</td>';
+      for (var r = 1; r <= 12; r++) {
+        var colIdx  = r - 1;
+        var pct     = RPE_TABLE[rpeVal][colIdx];
+        var weight  = e1rm * (pct / 100);
+        var display = formatWeight(weight, currentUnit);
+
+        // Gradient color: teal tint for lighter loads (low RPE / high reps), pink tint for heavier (high RPE / low reps)
+        // Normalize weight in [0,1] where 0=lightest, 1=heaviest
+        var norm    = (maxW - minW) > 0 ? (weight - minW) / (maxW - minW) : 0;
+        // Heavier = more pink; lighter = more teal
+        var tealAlpha = Math.round((1 - norm) * 0.12 * 100) / 100;
+        var pinkAlpha = Math.round(norm * 0.12 * 100) / 100;
+
+        var bgStyle = '';
+        if (norm > 0.5) {
+          bgStyle = 'background-color: rgba(240,68,138,' + pinkAlpha + ');';
+        } else {
+          bgStyle = 'background-color: rgba(30,200,176,' + tealAlpha + ');';
+        }
+
+        // Is this the input cell?
+        var isInputCell = (rpeVal === inputRpe && r === inputReps);
+        var cellClass   = isInputCell ? ' class="input-cell"' : '';
+
+        html += '<td' + cellClass + ' style="' + bgStyle + '">' + display + '</td>';
+      }
+      html += '</tr>';
+    });
+
+    matrixBody.innerHTML = html;
+  }
+
+  // ══════════════════════════════════════════════════════════
+  // SHAKE ANIMATION
+  // ══════════════════════════════════════════════════════════
+  function shake(el) {
+    el.classList.remove('shake');
+    void el.offsetHeight; // reflow
+    el.classList.add('shake');
+    setTimeout(function() { el.classList.remove('shake'); }, 500);
+  }
+
+  // ══════════════════════════════════════════════════════════
+  // EVENT LISTENERS
+  // ══════════════════════════════════════════════════════════
+  calculateBtn.addEventListener('click', runCalculation);
+
+  // Enter key triggers calculate from any input
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' &&
+        (document.activeElement === loadInput ||
+         document.activeElement === repsInput ||
+         document.activeElement === rpeInput)) {
+      calculateBtn.click();
+    }
+  });
+
+  // ══════════════════════════════════════════════════════════
+  // SCROLL REVEAL
+  // ══════════════════════════════════════════════════════════
+  var fadeEls = document.querySelectorAll('.fade-in');
+  if ('IntersectionObserver' in window) {
+    var observer = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+    fadeEls.forEach(function(el) { observer.observe(el); });
+  } else {
+    fadeEls.forEach(function(el) { el.classList.add('visible'); });
+  }
+
+  // ══════════════════════════════════════════════════════════
+  // MOBILE MENU
+  // ══════════════════════════════════════════════════════════
+  var hamburger = document.querySelector('.hamburger');
+  var mobileNav = document.querySelector('.mobile-nav');
+  if (hamburger && mobileNav) {
+    hamburger.addEventListener('click', function() {
+      var isOpen = mobileNav.classList.toggle('open');
+      hamburger.classList.toggle('open');
+      hamburger.setAttribute('aria-expanded', isOpen);
+    });
+  }
+
+  // ══════════════════════════════════════════════════════════
+  // HEADER SCROLL SHADOW
+  // ══════════════════════════════════════════════════════════
+  var header = document.querySelector('.site-header');
+  window.addEventListener('scroll', function() {
+    if (window.scrollY > 60) {
+      header.style.boxShadow = 'var(--shadow-md)';
+    } else {
+      header.style.boxShadow = 'none';
+    }
+  }, { passive: true });
+
+})();
+</script>
+
+<!-- Mobile Sticky CTA -->
+<div class="mobile-sticky-cta" id="stickyCta" style="display: none; position: fixed; bottom: 0; left: 0; right: 0; z-index: 999; padding: 12px 16px; background: rgba(10,14,23,0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-top: 1px solid rgba(30,200,176,0.2); text-align: center;">
+  <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" style="display: inline-block; width: 100%; max-width: 320px; padding: 10px 20px; background: var(--color-teal); color: #0a0e17; font-family: var(--font-display); font-size: 0.8rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; text-decoration: none; border-radius: 6px;">Book a Free Session</a>
+</div>
+<script>
+(function(){
+  var cta = document.getElementById('stickyCta');
+  if (!cta || window.innerWidth > 768) return;
+  window.addEventListener('scroll', function() {
+    cta.style.display = window.scrollY > 300 ? 'block' : 'none';
+  }, {passive:true});
+})();
+</script>
+
+</body>
+</html>
