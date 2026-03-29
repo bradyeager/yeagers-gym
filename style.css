@@ -157,6 +157,7 @@
   text-transform: uppercase;
   color: var(--color-teal);
   margin-bottom: var(--space-3);
+  text-align: center;
 }
 
 .section-title {
