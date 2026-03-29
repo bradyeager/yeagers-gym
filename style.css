@@ -2086,10 +2086,11 @@
    VBT EXPLAINED PAGE
    ═══════════════════════════════════════════ */
 .vbt-page-section h3 {
-  font-family: var(--font-display);
+  font-family: var(--font-body);
   font-size: var(--text-lg);
   font-weight: 700;
   margin-bottom: var(--space-4);
+  text-align: center;
 }
 
 .vbt-page-section p {
