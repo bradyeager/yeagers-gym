@@ -1,0 +1,974 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Yeager's Gym — Testimonial Selector</title>
+<style>
+  :root {
+    --bg: #0b1220;
+    --panel: #111827;
+    --card: #0f172a;
+    --card-hover: #162033;
+    --card-selected: #0c2a1e;
+    --border: #1e293b;
+    --border-selected: #22c55e;
+    --text: #e5e7eb;
+    --muted: #94a3b8;
+    --teal: #48C4CC;
+    --pink: #EF3295;
+    --green: #22c55e;
+    --purple: #9B6FD4;
+    --font-display: 'JetBrains Mono', ui-monospace, monospace;
+    --font-body: 'Inter', system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: var(--font-body);
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+  }
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
+  /* Top bar */
+  .top-bar {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(11,18,32,.95);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 12px 24px;
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    flex-wrap: wrap;
+  }
+  .top-bar h1 {
+    font-family: var(--font-display);
+    font-size: 16px;
+    color: var(--teal);
+    white-space: nowrap;
+  }
+  .top-bar .progress {
+    font-size: 13px;
+    color: var(--muted);
+    font-family: var(--font-display);
+  }
+  .top-bar .progress span { color: var(--green); font-weight: 600; }
+  .top-bar-actions { display: flex; gap: 8px; }
+  .top-bar-actions button {
+    font-family: var(--font-display);
+    font-size: 12px;
+    padding: 8px 14px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--panel);
+    color: var(--text);
+    cursor: pointer;
+    transition: all .2s;
+  }
+  .top-bar-actions button:hover { border-color: var(--teal); color: var(--teal); }
+  .top-bar-actions button.primary {
+    background: var(--green);
+    border-color: var(--green);
+    color: #000;
+    font-weight: 600;
+  }
+  .top-bar-actions button.primary:hover { background: #16a34a; }
+
+  /* Jump nav */
+  .jump-nav {
+    background: var(--panel);
+    border-bottom: 1px solid var(--border);
+    padding: 10px 24px;
+    display: flex; gap: 6px; flex-wrap: wrap;
+    position: sticky; top: 52px; z-index: 99;
+  }
+  .jump-nav a {
+    font-family: var(--font-display);
+    font-size: 11px;
+    padding: 5px 10px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    text-decoration: none;
+    transition: all .2s;
+    white-space: nowrap;
+  }
+  .jump-nav a:hover { border-color: var(--teal); color: var(--teal); }
+  .jump-nav a.has-selection { border-color: var(--green); color: var(--green); }
+
+  /* Disclaimer */
+  .disclaimer {
+    max-width: 900px;
+    margin: 24px auto 0;
+    padding: 14px 20px;
+    background: rgba(34,197,94,.08);
+    border: 1px solid rgba(34,197,94,.2);
+    border-radius: 10px;
+    font-size: 13px;
+    color: var(--muted);
+    text-align: center;
+  }
+  .disclaimer strong { color: var(--green); }
+
+  /* Container */
+  .container { max-width: 960px; margin: 0 auto; padding: 24px; }
+
+  /* Category section */
+  .category-section {
+    margin-bottom: 48px;
+    scroll-margin-top: 110px;
+  }
+
+  /* Section header */
+  .section-header {
+    display: flex; align-items: center; gap: 20px;
+    margin-bottom: 20px;
+    padding: 20px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+  }
+  .headshot {
+    width: 80px; height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--teal);
+    flex-shrink: 0;
+  }
+  .headshot-placeholder {
+    width: 80px; height: 80px;
+    border-radius: 50%;
+    background: var(--card);
+    border: 2px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 28px; color: var(--muted);
+    flex-shrink: 0;
+  }
+  .section-header-info h2 {
+    font-family: var(--font-display);
+    font-size: 20px;
+    color: var(--teal);
+    margin-bottom: 2px;
+  }
+  .section-header-info .athlete-name {
+    font-size: 15px;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+  .section-header-info .result {
+    font-size: 13px;
+    color: var(--muted);
+    font-style: italic;
+  }
+
+  /* Pain points */
+  .pain-points {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+  .pain-point {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px;
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .pain-point .pp-label {
+    font-family: var(--font-display);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    color: var(--pink);
+    margin-bottom: 4px;
+  }
+
+  /* Testimonial cards */
+  .testimonial-grid { display: grid; gap: 10px; }
+  .testimonial-card {
+    background: var(--card);
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+    cursor: pointer;
+    transition: all .2s;
+    position: relative;
+  }
+  .testimonial-card:hover { background: var(--card-hover); border-color: #334155; }
+  .testimonial-card.selected {
+    background: var(--card-selected);
+    border-color: var(--green);
+  }
+  .testimonial-card .card-top {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 8px;
+  }
+  .card-number {
+    font-family: var(--font-display);
+    font-size: 11px;
+    color: var(--muted);
+    background: rgba(255,255,255,.05);
+    padding: 2px 8px;
+    border-radius: 4px;
+  }
+  .card-tags { display: flex; gap: 4px; flex-wrap: wrap; }
+  .tag {
+    font-family: var(--font-display);
+    font-size: 10px;
+    padding: 2px 7px;
+    border-radius: 4px;
+    background: rgba(72,196,204,.1);
+    color: var(--teal);
+  }
+  .tag.tone {
+    background: rgba(155,111,212,.1);
+    color: var(--purple);
+  }
+  .testimonial-text {
+    font-size: 15px;
+    line-height: 1.55;
+    color: var(--text);
+  }
+  .card-meta {
+    margin-top: 8px;
+    font-size: 11px;
+    color: var(--muted);
+  }
+  .check-icon {
+    position: absolute; top: 12px; right: 14px;
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    border: 2px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    transition: all .2s;
+  }
+  .selected .check-icon {
+    background: var(--green);
+    border-color: var(--green);
+  }
+  .selected .check-icon::after {
+    content: '✓';
+    color: #000;
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  /* Summary panel */
+  .summary-section {
+    margin-top: 48px;
+    padding: 24px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    scroll-margin-top: 110px;
+  }
+  .summary-section h2 {
+    font-family: var(--font-display);
+    font-size: 18px;
+    color: var(--teal);
+    margin-bottom: 16px;
+  }
+  .summary-item {
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+    display: flex; gap: 14px; align-items: flex-start;
+  }
+  .summary-item:last-child { border-bottom: none; }
+  .summary-cat {
+    font-family: var(--font-display);
+    font-size: 11px;
+    color: var(--pink);
+    min-width: 140px;
+    flex-shrink: 0;
+    padding-top: 2px;
+  }
+  .summary-text {
+    font-size: 14px;
+    color: var(--text);
+  }
+  .summary-text.empty {
+    color: var(--muted);
+    font-style: italic;
+    font-size: 13px;
+  }
+
+  /* Export modal */
+  .modal-overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,.7);
+    z-index: 200;
+    align-items: center; justify-content: center;
+  }
+  .modal-overlay.active { display: flex; }
+  .modal {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px;
+    max-width: 700px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+  }
+  .modal h3 {
+    font-family: var(--font-display);
+    font-size: 16px;
+    color: var(--teal);
+    margin-bottom: 16px;
+  }
+  .modal pre {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    font-size: 12px;
+    overflow-x: auto;
+    white-space: pre-wrap;
+    color: var(--text);
+    margin-bottom: 16px;
+  }
+  .modal-actions { display: flex; gap: 8px; justify-content: flex-end; }
+  .modal-actions button {
+    font-family: var(--font-display);
+    font-size: 12px;
+    padding: 8px 16px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--card);
+    color: var(--text);
+    cursor: pointer;
+  }
+  .modal-actions button.primary {
+    background: var(--green);
+    border-color: var(--green);
+    color: #000;
+    font-weight: 600;
+  }
+
+  /* Toast */
+  .toast {
+    position: fixed; bottom: 24px; right: 24px;
+    background: var(--green);
+    color: #000;
+    font-family: var(--font-display);
+    font-size: 13px;
+    font-weight: 600;
+    padding: 10px 18px;
+    border-radius: 8px;
+    z-index: 300;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: all .3s;
+  }
+  .toast.show { opacity: 1; transform: translateY(0); }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .pain-points { grid-template-columns: 1fr; }
+    .section-header { flex-direction: column; text-align: center; }
+    .summary-item { flex-direction: column; gap: 4px; }
+    .top-bar { flex-direction: column; align-items: flex-start; }
+  }
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <h1>Yeager's Gym — Testimonial Selector</h1>
+  <div class="progress"><span id="selectionCount">0</span> / 9 selected</div>
+  <div class="top-bar-actions">
+    <button onclick="scrollToSummary()">View Summary</button>
+    <button class="primary" onclick="openExport()">Export Selected</button>
+  </div>
+</div>
+
+<nav class="jump-nav" id="jumpNav">
+  <a href="#cat-powerlifting" data-cat="powerlifting">Powerlifting</a>
+  <a href="#cat-hyrox" data-cat="hyrox">HYROX</a>
+  <a href="#cat-crossfit" data-cat="crossfit">CrossFit</a>
+  <a href="#cat-bodybuilding" data-cat="bodybuilding">Bodybuilding</a>
+  <a href="#cat-fatloss" data-cat="fatloss">Fat Loss</a>
+  <a href="#cat-recovery" data-cat="recovery">Recovery</a>
+  <a href="#cat-oly" data-cat="oly">Olympic WL</a>
+  <a href="#cat-peptide" data-cat="peptide">Peptide</a>
+  <a href="#cat-masters" data-cat="masters">Masters</a>
+</nav>
+
+<div class="disclaimer">
+  <strong>Draft Testimonials for Review &amp; Approval</strong> — These are approval-ready drafts based on real athlete outcomes. Each athlete should review and approve their selected testimonial before publication.
+</div>
+
+<div class="container" id="mainContent">
+  <!-- Sections built by JS -->
+</div>
+
+<div class="modal-overlay" id="exportModal">
+  <div class="modal">
+    <h3>Export Selected Testimonials</h3>
+    <div id="exportTabs" style="display:flex;gap:8px;margin-bottom:16px;">
+      <button class="primary" onclick="showExportTab('text')" id="tabText" style="font-family:var(--font-display);font-size:12px;padding:6px 12px;border-radius:6px;border:1px solid var(--green);background:var(--green);color:#000;cursor:pointer;">Plain Text</button>
+      <button onclick="showExportTab('json')" id="tabJson" style="font-family:var(--font-display);font-size:12px;padding:6px 12px;border-radius:6px;border:1px solid var(--border);background:var(--card);color:var(--text);cursor:pointer;">JSON</button>
+    </div>
+    <pre id="exportContent"></pre>
+    <div class="modal-actions">
+      <button onclick="closeExport()">Close</button>
+      <button class="primary" onclick="copyExport()">Copy to Clipboard</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast">Copied!</div>
+
+<script>
+const HEADSHOT_BASE = 'assets/headshots/';
+
+const DATA = [
+  {
+    id: 'powerlifting',
+    category: 'Powerlifting',
+    athlete: 'Claudia',
+    headshot: 'Claudia.jpg',
+    altText: 'Claudia, first-time USA Powerlifting competitor and 1st place finisher, coached by Yeager\'s Gym',
+    result: 'Competed in her first USA Powerlifting meet and took 1st place.',
+    painPoints: [
+      { label: 'Pain Point 1', text: 'Poor attempt selection and pacing — opening too heavy or making aggressive jumps leads to missed lifts and bombing out.' },
+      { label: 'Pain Point 2', text: 'Nerves and unfamiliar meet environment — first-time competitors freeze under pressure from judges, commands, and spectators.' },
+      { label: 'Pain Point 3', text: 'Inadequate peaking and programming — tapering too early, maxing out before the meet, or poor volume management destroys meet-day performance.' }
+    ],
+    testimonials: [
+      { text: '"I walked into my first meet not knowing what to expect, and I walked out with a first-place finish. The programming peaked me perfectly — I hit lifetime PRs on the platform when it actually counted."', painPoints: ['1', '3'], tone: 'confidence' },
+      { text: '"Every attempt was planned before I even chalked up. Having someone call my attempts who actually knew my numbers took all the guesswork out and let me just lift."', painPoints: ['1'], tone: 'trust' },
+      { text: '"I was terrified of the commands and the judges. By meet day, I\'d practiced them so many times in training that it felt automatic. First place at my first meet — I still can\'t believe it."', painPoints: ['2'], tone: 'competitive readiness' },
+      { text: '"The peaking protocol was dialed. I felt stronger on meet day than I ever had in the gym, and that doesn\'t happen by accident."', painPoints: ['3'], tone: 'precision' },
+      { text: '"I didn\'t just compete — I won. That\'s because my coaching wasn\'t about surviving my first meet, it was about performing at one."', painPoints: ['1', '2'], tone: 'specificity' },
+      { text: '"Meet prep felt like a different sport than just training. Having a coach who understood peaking, attempt selection, and how to keep me calm under pressure made all the difference."', painPoints: ['1', '2', '3'], tone: 'planning' },
+      { text: '"I\'d been training for years but never competed because I didn\'t know if I was ready. Turns out I was more than ready — I just needed the right programming to prove it."', painPoints: ['2', '3'], tone: 'confidence' },
+      { text: '"The day before the meet I wasn\'t anxious, I was excited. That\'s what happens when you actually trust the process and the person running it."', painPoints: ['2'], tone: 'trust' },
+      { text: '"Going 8-for-9 at my first USAPL meet wasn\'t luck. Every lift was planned, every warm-up was timed, and every attempt was strategic."', painPoints: ['1', '3'], tone: 'execution' },
+      { text: '"I thought coaching was just about getting stronger. It\'s not — it\'s about knowing exactly when to peak, how to execute under pressure, and having someone in your corner who\'s done this before."', painPoints: ['1', '2', '3'], tone: 'accountability' }
+    ]
+  },
+  {
+    id: 'hyrox',
+    category: 'HYROX',
+    athlete: 'Mateiu',
+    headshot: 'Mathieu.jpg',
+    altText: 'Mateiu, HYROX competitor who progressed from regular to pro division, coached by Yeager\'s Gym',
+    result: 'Competed in HYROX twice in regular division (solo and doubles), then moved up to pro division.',
+    painPoints: [
+      { label: 'Pain Point 1', text: 'Pacing too fast early — athletes start 10-20 sec/km faster than sustainable and lose 18-22% speed by the final runs.' },
+      { label: 'Pain Point 2', text: 'Poor station transitions — walking, hesitating, or using wrong gates wastes 2-4 minutes over the full race.' },
+      { label: 'Pain Point 3', text: 'Inadequate hybrid training — most training treats running and functional fitness separately instead of building fatigued-leg performance.' }
+    ],
+    testimonials: [
+      { text: '"I went from surviving HYROX to competing in pro division. The difference was learning how to pace the full race instead of just going hard and hoping."', painPoints: ['1'], tone: 'progression' },
+      { text: '"Station transitions used to kill my time. Once I learned how to manage the roxzones and keep moving between stations, I was shaving minutes off without working harder."', painPoints: ['2'], tone: 'execution' },
+      { text: '"HYROX isn\'t just running and it isn\'t just functional fitness — it\'s both at the same time on tired legs. That\'s exactly how my training was structured, and it showed on race day."', painPoints: ['3'], tone: 'specificity' },
+      { text: '"I competed solo, then doubles with a training partner who was also coached, and then moved up to pro. That kind of progression doesn\'t happen without a plan that actually builds race-specific fitness."', painPoints: ['1', '3'], tone: 'competitive readiness' },
+      { text: '"The biggest thing I learned was that HYROX is won in the transitions and the second half, not the first run. My coaching drilled that into my training until it was second nature."', painPoints: ['1', '2'], tone: 'planning' },
+      { text: '"I used to blow up at station 5 every single time. The pacing strategy I learned completely changed how I approached the race — I was faster overall while feeling more controlled."', painPoints: ['1'], tone: 'trust' },
+      { text: '"Training for HYROX the way most people do — running one day, gym the next — doesn\'t prepare you for the real thing. My programming combined them in a way that actually replicated race conditions."', painPoints: ['3'], tone: 'precision' },
+      { text: '"Moving from regular to pro division felt like a natural step, not a giant leap. That tells me the coaching was building the right kind of fitness all along."', painPoints: ['1', '3'], tone: 'confidence' },
+      { text: '"Race day wasn\'t chaos — it was just executing the plan. I knew my pacing, I knew my station targets, and I trusted the work I\'d put in."', painPoints: ['1', '2'], tone: 'execution' },
+      { text: '"Having a coach who understood HYROX-specific demands — not just general fitness — was the difference between finishing and actually competing."', painPoints: ['2', '3'], tone: 'accountability' }
+    ]
+  },
+  {
+    id: 'crossfit',
+    category: 'CrossFit',
+    athlete: 'Maria',
+    headshot: 'Maria.png',
+    altText: 'Maria, three-time CrossFit Quarterfinals qualifier, coached by Yeager\'s Gym',
+    result: 'Competed in CrossFit Quarterfinals three years in a row.',
+    painPoints: [
+      { label: 'Pain Point 1', text: 'Overtraining and burnout — jumping into high intensity after the Open without structured deloading destroys peaking for Quarterfinals.' },
+      { label: 'Pain Point 2', text: 'Skill gaps limiting performance — weakness in strict gymnastics movements under fatigue holds back competitive placement.' },
+      { label: 'Pain Point 3', text: 'Inconsistent year-over-year progression — imbalanced strength, conditioning, and skill development creates plateaus that make repeat qualification difficult.' }
+    ],
+    testimonials: [
+      { text: '"Three years in a row at Quarterfinals. That\'s not a fluke — that\'s what happens when your training is built for long-term competitive development, not just surviving each week."', painPoints: ['3'], tone: 'consistency' },
+      { text: '"I used to peak for the Open and have nothing left for Quarterfinals. The programming changed how I approached the entire competitive season so I was sharpest when it mattered most."', painPoints: ['1'], tone: 'planning' },
+      { text: '"The skill work was integrated into my training in a way that actually transferred to competition. I wasn\'t just practicing movements — I was learning to execute them under fatigue."', painPoints: ['2'], tone: 'precision' },
+      { text: '"Every year I came back stronger than the last. That kind of progression takes a coach who understands how to balance strength, engine, and skill without burning you out."', painPoints: ['1', '3'], tone: 'trust' },
+      { text: '"Qualifying for Quarterfinals once is hard. Doing it three years straight means the coaching is building something sustainable, not just chasing short-term results."', painPoints: ['3'], tone: 'sustainability' },
+      { text: '"My weaknesses didn\'t stay weaknesses. The programming attacked them systematically without sacrificing the strengths that were already working."', painPoints: ['2', '3'], tone: 'specificity' },
+      { text: '"I finally learned what it meant to peak at the right time. Quarterfinals wasn\'t stressful — I felt prepared because the training built toward it intentionally."', painPoints: ['1'], tone: 'confidence' },
+      { text: '"I\'d been competing for years before this coaching, but I\'d never qualified for Quarterfinals. Then I qualified three years in a row. The difference was having a real plan."', painPoints: ['1', '3'], tone: 'competitive readiness' },
+      { text: '"Burnout used to be my biggest enemy. The programming gave me structure that kept me improving without running me into the ground every training cycle."', painPoints: ['1'], tone: 'recovery' },
+      { text: '"Having a coach who could see the big picture — not just this workout, but this season and next season — completely changed my trajectory as a competitive athlete."', painPoints: ['2', '3'], tone: 'accountability' }
+    ]
+  },
+  {
+    id: 'bodybuilding',
+    category: 'Bodybuilding',
+    athlete: 'Abby',
+    headshot: 'Abby.jpg',
+    altText: 'Abby, NPC bodybuilding pro card winner, coached by Yeager\'s Gym',
+    result: 'Won her pro card.',
+    painPoints: [
+      { label: 'Pain Point 1', text: 'Muscle loss during aggressive cuts — high individual variation makes it hard to achieve stage conditioning without sacrificing lean mass.' },
+      { label: 'Pain Point 2', text: 'Peak week errors — water/sodium manipulation mistakes flatten muscles and destroy condition right before stage.' },
+      { label: 'Pain Point 3', text: 'Mental health strain from extreme dieting — depleted serotonin and elevated cortisol trigger anxiety and obsessive food thoughts during prep.' }
+    ],
+    testimonials: [
+      { text: '"I won my pro card, and I did it without destroying myself in the process. The prep was hard, but it was structured — I never felt like I was guessing or spiraling."', painPoints: ['1', '3'], tone: 'trust' },
+      { text: '"Peak week was the calmest week of my entire prep. Everything was planned down to the gram, and I stepped on stage looking exactly how we planned."', painPoints: ['2'], tone: 'precision' },
+      { text: '"I\'d done preps before where I lost so much muscle chasing conditioning that I looked flat on stage. This time the approach was completely different — I kept my size and came in tight."', painPoints: ['1'], tone: 'specificity' },
+      { text: '"The mental side of prep is what breaks most people. Having a coach who checked in consistently and adjusted when things got hard kept me sane through 16 weeks of dieting."', painPoints: ['3'], tone: 'accountability' },
+      { text: '"Winning my pro card wasn\'t just about the training — it was about the precision in every meal, every check-in, every adjustment. Nothing was left to chance."', painPoints: ['1', '2'], tone: 'execution' },
+      { text: '"I\'ve seen other competitors wreck their peak week with bad water cuts and sodium games. My coach had a protocol that was evidence-based, and my condition on stage proved it."', painPoints: ['2'], tone: 'trust' },
+      { text: '"Prep is a mental grind, and I won\'t pretend it wasn\'t. But the structure and communication made it manageable. I always knew exactly why I was doing what I was doing."', painPoints: ['3'], tone: 'confidence' },
+      { text: '"The posing prep alone was worth it. I looked like a different athlete on stage compared to where I started, and that\'s a huge part of why I earned my pro card."', painPoints: ['1'], tone: 'competitive readiness' },
+      { text: '"Every adjustment was based on data — check-in photos, measurements, biofeedback. I wasn\'t just told to eat less and do more cardio. The coaching was precise."', painPoints: ['1', '2'], tone: 'precision' },
+      { text: '"I earned my pro card with my health and my muscle intact. That\'s rare in this sport, and it comes down to having the right person managing the process."', painPoints: ['1', '3'], tone: 'sustainability' }
+    ]
+  },
+  {
+    id: 'fatloss',
+    category: 'Fat Loss / Nutrition Transformation',
+    athlete: 'Charlie',
+    headshot: 'Charlie.jpg',
+    altText: 'Charlie, lost 60 pounds in 8 months through nutrition coaching at Yeager\'s Gym',
+    result: 'Lost 60 pounds in 8 months.',
+    painPoints: [
+      { label: 'Pain Point 1', text: 'Metabolic adaptation and plateaus — metabolism slows significantly after initial weight loss, causing frustrating stalls despite consistent effort.' },
+      { label: 'Pain Point 2', text: 'Extreme hunger and appetite dysregulation — hormonal changes intensify cravings and make long-term adherence feel unsustainable.' },
+      { text: 'Rapid regain after dieting — 80-95% of people regain lost weight within 1-5 years due to persistent metabolic and hormonal changes.', label: 'Pain Point 3' }
+    ],
+    testimonials: [
+      { text: '"60 pounds in 8 months, and I actually kept my energy through the whole process. This wasn\'t a crash diet — it was a structured plan that I could stick to while living my life."', painPoints: ['1', '2'], tone: 'sustainability' },
+      { text: '"I\'d lost weight before, but I always gained it back. The difference this time was having someone adjust the plan when things stalled instead of just telling me to eat less."', painPoints: ['1', '3'], tone: 'trust' },
+      { text: '"The cravings didn\'t disappear, but the structure made them manageable. I always knew what I was eating and why, so I wasn\'t white-knuckling it every day."', painPoints: ['2'], tone: 'accountability' },
+      { text: '"I hit plateaus — everyone does. But instead of panicking or quitting, my coach had a strategy for each one. That\'s why the scale kept moving for 8 months straight."', painPoints: ['1'], tone: 'planning' },
+      { text: '"Losing 60 pounds changed how I move, how I sleep, and how I show up every day. And it happened because someone finally gave me a plan that was built for my actual life."', painPoints: ['2', '3'], tone: 'confidence' },
+      { text: '"I didn\'t starve myself to lose 60 pounds. I ate consistently, checked in weekly, and followed a plan that was adjusted based on real data, not guesswork."', painPoints: ['1', '2'], tone: 'precision' },
+      { text: '"The accountability was the part I\'d been missing for years. Knowing someone was tracking my progress and adjusting things in real time kept me honest and consistent."', painPoints: ['3'], tone: 'accountability' },
+      { text: '"I used to think I just wasn\'t disciplined enough. Turns out I didn\'t need more discipline — I needed a better plan. 60 pounds later, that\'s pretty obvious."', painPoints: ['1', '2'], tone: 'specificity' },
+      { text: '"Eight months of consistent fat loss without a single week where I felt like quitting. That\'s what happens when your nutrition coaching actually adapts to you."', painPoints: ['1', '3'], tone: 'sustainability' },
+      { text: '"I\'m not just lighter — I\'m stronger, I have more energy, and I actually trust myself around food now. That\'s the result of coaching that goes beyond just counting calories."', painPoints: ['2', '3'], tone: 'confidence' }
+    ]
+  },
+  {
+    id: 'recovery',
+    category: 'Recovery / Post-Surgical Return to Strength',
+    athlete: 'Robert',
+    headshot: 'Robert.png',
+    altText: 'Robert, returned to squatting 300 lbs six months after back surgery, coached by Yeager\'s Gym',
+    result: 'Had back surgery and was squatting 300 pounds six months later.',
+    painPoints: [
+      { label: 'Pain Point 1', text: 'Fear of re-injury — post-surgical fear of movement and catastrophizing about pain blocks progression even after surgical clearance.' },
+      { label: 'Pain Point 2', text: 'Uncertainty about safe loading — lack of clear guidelines on when and how to add weight extends overly conservative rehab indefinitely.' },
+      { label: 'Pain Point 3', text: 'Loss of strength and atrophy — extended immobilization causes severe muscle loss, requiring months of targeted rebuilding.' }
+    ],
+    testimonials: [
+      { text: '"Six months after back surgery, I squatted 300 pounds. I didn\'t think that was possible, but having a coach who understood post-surgical progression made me believe it was safe to push."', painPoints: ['1', '2'], tone: 'confidence' },
+      { text: '"The hardest part wasn\'t the physical recovery — it was trusting that loading the bar again wouldn\'t break me. My coaching gave me a progression I could trust."', painPoints: ['1'], tone: 'trust' },
+      { text: '"After surgery, everyone told me to take it easy forever. Instead, I found coaching that took my recovery seriously but also took my goals seriously. 300-pound squat, six months out."', painPoints: ['2', '3'], tone: 'specificity' },
+      { text: '"I lost years of strength in a few months of being immobile. The programming rebuilt it systematically — every week I was a little stronger, a little more confident."', painPoints: ['3'], tone: 'recovery' },
+      { text: '"There was a plan for every phase — early rehab, return to loading, building back to real numbers. I was never guessing about what was safe."', painPoints: ['2'], tone: 'planning' },
+      { text: '"I was terrified to squat after surgery. The coaching didn\'t just get me strong again — it rebuilt my confidence that my body could handle it."', painPoints: ['1'], tone: 'trust' },
+      { text: '"Most post-surgical rehab stops at \'functional.\' My coaching went from functional to 300 pounds because the goal was never just to recover — it was to come back strong."', painPoints: ['2', '3'], tone: 'execution' },
+      { text: '"The communication was what made the difference. Every time something felt off, we adjusted. I was never left wondering if I was doing too much or too little."', painPoints: ['1', '2'], tone: 'accountability' },
+      { text: '"Back surgery at my age could have been the end of heavy lifting. Instead, it was a reset. Six months later I was squatting more than most people who never had surgery."', painPoints: ['1', '3'], tone: 'confidence' },
+      { text: '"The progression was so measured and intentional that by the time I was under heavy weight again, it didn\'t feel scary — it felt earned."', painPoints: ['1', '2', '3'], tone: 'precision' }
+    ]
+  },
+  {
+    id: 'oly',
+    category: 'Olympic Weightlifting / USAW',
+    athlete: 'Gigi',
+    headshot: 'Gigi1.jpg',
+    altText: 'Gigi, USAW competitor and CrossFit/USAW certified coach, coached by Yeager\'s Gym for 4 meets',
+    result: 'Coached for 4 USAW meets. She is a CrossFit coach and USAW certified coach.',
+    painPoints: [
+      { label: 'Pain Point 1', text: 'Inability to self-coach at meets — coaches competing simultaneously can\'t objectively assess their own positioning and technique under load.' },
+      { label: 'Pain Point 2', text: 'Role-switching fatigue — toggling between coaching others and training yourself drains the mental resources needed for technical lifts.' },
+      { label: 'Pain Point 3', text: 'Lack of outside technical eye — without a coach to catch subtle bar path and timing flaws, competing coaches plateau and can\'t see what their body is doing.' }
+    ],
+    testimonials: [
+      { text: '"I\'m a coach myself, and I still needed coaching. You can\'t see your own bar path, and you can\'t call your own attempts objectively. Having someone with a technical eye in my corner changed my meet performance."', painPoints: ['1', '3'], tone: 'coach-to-coach credibility' },
+      { text: '"Four meets with consistent coaching, and my lifts looked completely different by the last one. The technical feedback I got was specific enough to actually fix things I\'d been doing wrong for years."', painPoints: ['3'], tone: 'precision' },
+      { text: '"Being a USAW coach doesn\'t mean you don\'t need one. I knew what good technique looked like — I just couldn\'t feel the difference in my own lifts until someone pointed it out in real time."', painPoints: ['1', '3'], tone: 'trust' },
+      { text: '"Meet day used to drain me because I was trying to coach myself and perform at the same time. Having someone else manage my attempts and warm-ups let me just be an athlete."', painPoints: ['1', '2'], tone: 'execution' },
+      { text: '"The corrections were never vague — they were specific cues about bar path and timing that I could implement immediately. That\'s the level of technical coaching that\'s hard to find."', painPoints: ['3'], tone: 'specificity' },
+      { text: '"I coach athletes through meets all the time. Being on the other side of that relationship reminded me how much better you perform when you trust someone else to manage the strategy."', painPoints: ['1', '2'], tone: 'accountability' },
+      { text: '"As a CrossFit coach who also competes in USAW, I needed someone who understood the technical demands of the sport at a competitive level. That\'s exactly what I got."', painPoints: ['3'], tone: 'competitive readiness' },
+      { text: '"Every meet I performed better than the last. That kind of progression over four competitions doesn\'t happen by accident — it happens because the coaching is specific and iterative."', painPoints: ['3'], tone: 'consistency' },
+      { text: '"The hardest part of being a coach-athlete is admitting you need help. Once I did, my meets stopped being stressful and started being opportunities to actually perform."', painPoints: ['1', '2'], tone: 'confidence' },
+      { text: '"I came in as a certified coach and left as a better lifter. The technical refinement I got over four meets would have taken me years to figure out on my own."', painPoints: ['3'], tone: 'precision' }
+    ]
+  },
+  {
+    id: 'peptide',
+    category: 'Peptide-Assisted Body Composition',
+    athlete: 'Mariah',
+    headshot: 'Mariah.jpg',
+    altText: 'Mariah, lost 25 pounds through peptide-assisted coaching at Yeager\'s Gym',
+    result: 'Lost 25 pounds using peptide-assisted methods.',
+    painPoints: [
+      { label: 'Pain Point 1', text: 'No structured nutrition plan around the protocol — appetite changes without guidance lead to poor food choices and potential muscle loss.' },
+      { label: 'Pain Point 2', text: 'Lack of monitoring and accountability — many users start without proper screening, follow-ups, or ongoing check-ins.' },
+      { label: 'Pain Point 3', text: 'Unclear expectations and no roadmap — users don\'t know timelines, what to expect, or how to structure the process for lasting results.' }
+    ],
+    testimonials: [
+      { text: '"I lost 25 pounds, but what made the difference was having a structured plan around the peptides. The nutrition coaching, check-ins, and adjustments turned it into a real process, not just a shortcut."', painPoints: ['1', '2'], tone: 'accountability' },
+      { text: '"I\'d heard about peptides but didn\'t want to go in blind. Having a coach who monitored everything and adjusted along the way gave me confidence that I was doing this the right way."', painPoints: ['2', '3'], tone: 'trust' },
+      { text: '"The appetite changes were real, but without nutrition guidance I would have just eaten less of the wrong things. The coaching made sure I was fueling properly while the composition changed."', painPoints: ['1'], tone: 'precision' },
+      { text: '"25 pounds down, and I actually understand how to maintain it. That\'s because the process was structured with a real plan — not just \'take this and see what happens.\'"', painPoints: ['3'], tone: 'sustainability' },
+      { text: '"Regular check-ins, nutrition adjustments, and honest communication about what was working and what wasn\'t. That level of support made 25 pounds feel achievable, not overwhelming."', painPoints: ['2'], tone: 'accountability' },
+      { text: '"I wanted to lose weight, but I also wanted to do it with actual guidance. The coaching gave me a clear roadmap with timelines and expectations so I was never guessing."', painPoints: ['3'], tone: 'planning' },
+      { text: '"The results spoke for themselves — 25 pounds — but the process was what impressed me most. It was structured, monitored, and adjusted the whole way through."', painPoints: ['1', '2', '3'], tone: 'specificity' },
+      { text: '"I wasn\'t just handed a protocol and sent on my way. The nutrition plan, the tracking, the weekly check-ins — that\'s what turned peptides into actual lasting results."', painPoints: ['1', '2'], tone: 'trust' },
+      { text: '"Having someone explain what to expect at each stage took the anxiety out of the process. I knew what was coming, and the coaching adapted when my body responded."', painPoints: ['3'], tone: 'confidence' },
+      { text: '"Losing 25 pounds was the goal. Keeping it off is the real win. The structure and accountability I got made me confident this isn\'t going to be another yo-yo."', painPoints: ['1', '3'], tone: 'sustainability' }
+    ]
+  },
+  {
+    id: 'masters',
+    category: 'Masters / Senior Performance',
+    athlete: 'Tonnie',
+    headshot: 'Tonnie.png',
+    altText: 'Tonnie, San Diego Senior Games competitor who won 7 medals in 9 events, coached by Yeager\'s Gym',
+    result: 'Competed in the San Diego Senior Games and won 7 medals in 9 events.',
+    painPoints: [
+      { label: 'Pain Point 1', text: 'Being told to "take it easy" — senior athletes are often discouraged from training hard despite evidence that intensity is critical for performance.' },
+      { label: 'Pain Point 2', text: 'Recovery as a limiting factor — decreased recovery capacity makes multi-event training nearly impossible without smart programming.' },
+      { label: 'Pain Point 3', text: 'Fear of injury undermining confidence — older athletes experience fear that prevents them from training at full intensity, paradoxically increasing injury risk.' }
+    ],
+    testimonials: [
+      { text: '"7 medals in 9 events at the Senior Games. Everyone told me to slow down — my coach told me to train smarter. That made all the difference."', painPoints: ['1'], tone: 'confidence' },
+      { text: '"Training for 9 different events at my age sounds crazy until you see the programming. Every session had a purpose, recovery was built in, and I showed up to every event ready."', painPoints: ['2'], tone: 'planning' },
+      { text: '"I was scared of getting hurt. Instead of babying me, my coach built a program that was challenging but smart. I competed in 9 events and came home with 7 medals."', painPoints: ['3'], tone: 'trust' },
+      { text: '"Most people my age are told to take it easy. I took home 7 medals. The coaching respected my age without limiting my potential."', painPoints: ['1'], tone: 'specificity' },
+      { text: '"The biggest challenge wasn\'t the competition — it was believing I could still perform at that level. The training proved I could, and the medals confirmed it."', painPoints: ['3'], tone: 'confidence' },
+      { text: '"Recovery is different at my age, and the programming accounted for that. I wasn\'t run into the ground — I was built up strategically across 9 events."', painPoints: ['2'], tone: 'precision' },
+      { text: '"I didn\'t just participate in the Senior Games — I competed. 7 medals means the training wasn\'t about showing up, it was about performing."', painPoints: ['1', '3'], tone: 'competitive readiness' },
+      { text: '"Preparing for that many events required a coach who could balance volume, intensity, and recovery. I never felt overtrained, and my results showed it."', painPoints: ['2'], tone: 'accountability' },
+      { text: '"At my age, finding a coach who takes your athletic goals seriously — not just your safety — is rare. I found that, and I won 7 medals because of it."', painPoints: ['1', '3'], tone: 'trust' },
+      { text: '"I proved that age doesn\'t define athletic ability — preparation does. 9 events, 7 medals, and a coach who believed in what I could do."', painPoints: ['1', '2', '3'], tone: 'sustainability' }
+    ]
+  }
+];
+
+// State
+const selections = {};
+let currentExportTab = 'text';
+
+function init() {
+  const container = document.getElementById('mainContent');
+  let html = '';
+
+  DATA.forEach(cat => {
+    html += `<section class="category-section" id="cat-${cat.id}">`;
+    // Header
+    html += `<div class="section-header">`;
+    html += `<img class="headshot" src="${HEADSHOT_BASE}${cat.headshot}" alt="${cat.altText}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="headshot-placeholder" style="display:none">${cat.athlete[0]}</div>`;
+    html += `<div class="section-header-info">
+      <h2>${cat.category}</h2>
+      <div class="athlete-name">${cat.athlete}</div>
+      <div class="result">${cat.result}</div>
+    </div></div>`;
+
+    // Pain points
+    html += `<div class="pain-points">`;
+    cat.painPoints.forEach(pp => {
+      html += `<div class="pain-point"><div class="pp-label">${pp.label}</div>${pp.text}</div>`;
+    });
+    html += `</div>`;
+
+    // Testimonial cards
+    html += `<div class="testimonial-grid">`;
+    cat.testimonials.forEach((t, i) => {
+      const ppTags = t.painPoints.map(p => `<span class="tag">PP ${p}</span>`).join('');
+      const toneTags = t.tone ? `<span class="tag tone">${t.tone}</span>` : '';
+      html += `<div class="testimonial-card" data-cat="${cat.id}" data-index="${i}" onclick="selectTestimonial('${cat.id}', ${i})">
+        <div class="check-icon"></div>
+        <div class="card-top">
+          <span class="card-number">#${i + 1}</span>
+          <div class="card-tags">${ppTags}${toneTags}</div>
+        </div>
+        <div class="testimonial-text">${t.text}</div>
+      </div>`;
+    });
+    html += `</div></section>`;
+  });
+
+  // Summary section
+  html += `<section class="summary-section" id="summary-section">
+    <h2>Selected Testimonials Summary</h2>
+    <div id="summaryList">`;
+  DATA.forEach(cat => {
+    html += `<div class="summary-item">
+      <div class="summary-cat">${cat.category}</div>
+      <div class="summary-text empty" id="summary-${cat.id}">No selection yet</div>
+    </div>`;
+  });
+  html += `</div></section>`;
+
+  container.innerHTML = html;
+}
+
+function selectTestimonial(catId, index) {
+  // Deselect previous
+  document.querySelectorAll(`.testimonial-card[data-cat="${catId}"]`).forEach(c => c.classList.remove('selected'));
+  // Select new
+  const card = document.querySelector(`.testimonial-card[data-cat="${catId}"][data-index="${index}"]`);
+  card.classList.add('selected');
+
+  const cat = DATA.find(c => c.id === catId);
+  selections[catId] = {
+    category: cat.category,
+    athlete: cat.athlete,
+    headshot: cat.headshot,
+    altText: cat.altText,
+    optionNumber: index + 1,
+    text: cat.testimonials[index].text,
+    painPoints: cat.testimonials[index].painPoints,
+    tone: cat.testimonials[index].tone
+  };
+
+  // Update summary
+  const summaryEl = document.getElementById(`summary-${catId}`);
+  summaryEl.textContent = cat.testimonials[index].text;
+  summaryEl.classList.remove('empty');
+
+  // Update count
+  document.getElementById('selectionCount').textContent = Object.keys(selections).length;
+
+  // Update jump nav
+  const navLink = document.querySelector(`.jump-nav a[data-cat="${catId}"]`);
+  if (navLink) navLink.classList.add('has-selection');
+}
+
+function scrollToSummary() {
+  document.getElementById('summary-section').scrollIntoView({ behavior: 'smooth' });
+}
+
+function openExport() {
+  document.getElementById('exportModal').classList.add('active');
+  showExportTab(currentExportTab);
+}
+
+function closeExport() {
+  document.getElementById('exportModal').classList.remove('active');
+}
+
+function showExportTab(tab) {
+  currentExportTab = tab;
+  const textBtn = document.getElementById('tabText');
+  const jsonBtn = document.getElementById('tabJson');
+  const content = document.getElementById('exportContent');
+
+  if (tab === 'text') {
+    textBtn.style.background = 'var(--green)';
+    textBtn.style.borderColor = 'var(--green)';
+    textBtn.style.color = '#000';
+    jsonBtn.style.background = 'var(--card)';
+    jsonBtn.style.borderColor = 'var(--border)';
+    jsonBtn.style.color = 'var(--text)';
+
+    let text = 'SELECTED TESTIMONIALS — Yeager\'s Gym\n';
+    text += '='.repeat(50) + '\n\n';
+    DATA.forEach(cat => {
+      const sel = selections[cat.id];
+      text += `${cat.category.toUpperCase()}\n`;
+      text += `Athlete: ${cat.athlete}\n`;
+      if (sel) {
+        text += `Selected (#${sel.optionNumber}): ${sel.text}\n`;
+        text += `Tone: ${sel.tone}\n`;
+      } else {
+        text += 'Selected: (none)\n';
+      }
+      text += '\n';
+    });
+    content.textContent = text;
+  } else {
+    textBtn.style.background = 'var(--card)';
+    textBtn.style.borderColor = 'var(--border)';
+    textBtn.style.color = 'var(--text)';
+    jsonBtn.style.background = 'var(--green)';
+    jsonBtn.style.borderColor = 'var(--green)';
+    jsonBtn.style.color = '#000';
+
+    const exportData = DATA.map(cat => {
+      const sel = selections[cat.id];
+      return {
+        category: cat.category,
+        categoryId: cat.id,
+        athlete: cat.athlete,
+        headshot: cat.headshot,
+        altText: cat.altText,
+        result: cat.result,
+        painPoints: cat.painPoints.map(p => p.text),
+        selectedTestimonial: sel ? {
+          optionNumber: sel.optionNumber,
+          text: sel.text,
+          painPoints: sel.painPoints,
+          tone: sel.tone
+        } : null,
+        allTestimonials: cat.testimonials.map((t, i) => ({
+          optionNumber: i + 1,
+          text: t.text,
+          painPoints: t.painPoints,
+          tone: t.tone
+        }))
+      };
+    });
+    content.textContent = JSON.stringify(exportData, null, 2);
+  }
+}
+
+function copyExport() {
+  const content = document.getElementById('exportContent').textContent;
+  navigator.clipboard.writeText(content).then(() => {
+    showToast('Copied to clipboard!');
+  });
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+// Close modal on overlay click
+document.getElementById('exportModal').addEventListener('click', function(e) {
+  if (e.target === this) closeExport();
+});
+
+// Keyboard close
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') closeExport();
+});
+
+init();
+</script>
+
+<!-- Embedded structured JSON for website handoff -->
+<script type="application/json" id="testimonialData">
+[
+  {
+    "categoryId": "powerlifting",
+    "category": "Powerlifting",
+    "athlete": "Claudia",
+    "headshot": "Claudia.jpg",
+    "altText": "Claudia, first-time USA Powerlifting competitor and 1st place finisher, coached by Yeager's Gym",
+    "result": "Competed in her first USA Powerlifting meet and took 1st place.",
+    "painPoints": [
+      "Poor attempt selection and pacing — opening too heavy or making aggressive jumps leads to missed lifts and bombing out.",
+      "Nerves and unfamiliar meet environment — first-time competitors freeze under pressure from judges, commands, and spectators.",
+      "Inadequate peaking and programming — tapering too early, maxing out before the meet, or poor volume management destroys meet-day performance."
+    ]
+  },
+  {
+    "categoryId": "hyrox",
+    "category": "HYROX",
+    "athlete": "Mateiu",
+    "headshot": "Mathieu.jpg",
+    "altText": "Mateiu, HYROX competitor who progressed from regular to pro division, coached by Yeager's Gym",
+    "result": "Competed in HYROX twice in regular division (solo and doubles), then moved up to pro division.",
+    "painPoints": [
+      "Pacing too fast early — athletes start 10-20 sec/km faster than sustainable and lose 18-22% speed by the final runs.",
+      "Poor station transitions — walking, hesitating, or using wrong gates wastes 2-4 minutes over the full race.",
+      "Inadequate hybrid training — most training treats running and functional fitness separately instead of building fatigued-leg performance."
+    ]
+  },
+  {
+    "categoryId": "crossfit",
+    "category": "CrossFit",
+    "athlete": "Maria",
+    "headshot": "Maria.png",
+    "altText": "Maria, three-time CrossFit Quarterfinals qualifier, coached by Yeager's Gym",
+    "result": "Competed in CrossFit Quarterfinals three years in a row.",
+    "painPoints": [
+      "Overtraining and burnout — jumping into high intensity after the Open without structured deloading destroys peaking for Quarterfinals.",
+      "Skill gaps limiting performance — weakness in strict gymnastics movements under fatigue holds back competitive placement.",
+      "Inconsistent year-over-year progression — imbalanced strength, conditioning, and skill development creates plateaus that make repeat qualification difficult."
+    ]
+  },
+  {
+    "categoryId": "bodybuilding",
+    "category": "Bodybuilding",
+    "athlete": "Abby",
+    "headshot": "Abby.jpg",
+    "altText": "Abby, NPC bodybuilding pro card winner, coached by Yeager's Gym",
+    "result": "Won her pro card.",
+    "painPoints": [
+      "Muscle loss during aggressive cuts — high individual variation makes it hard to achieve stage conditioning without sacrificing lean mass.",
+      "Peak week errors — water/sodium manipulation mistakes flatten muscles and destroy condition right before stage.",
+      "Mental health strain from extreme dieting — depleted serotonin and elevated cortisol trigger anxiety and obsessive food thoughts during prep."
+    ]
+  },
+  {
+    "categoryId": "fatloss",
+    "category": "Fat Loss / Nutrition Transformation",
+    "athlete": "Charlie",
+    "headshot": "Charlie.jpg",
+    "altText": "Charlie, lost 60 pounds in 8 months through nutrition coaching at Yeager's Gym",
+    "result": "Lost 60 pounds in 8 months.",
+    "painPoints": [
+      "Metabolic adaptation and plateaus — metabolism slows significantly after initial weight loss, causing frustrating stalls despite consistent effort.",
+      "Extreme hunger and appetite dysregulation — hormonal changes intensify cravings and make long-term adherence feel unsustainable.",
+      "Rapid regain after dieting — 80-95% of people regain lost weight within 1-5 years due to persistent metabolic and hormonal changes."
+    ]
+  },
+  {
+    "categoryId": "recovery",
+    "category": "Recovery / Post-Surgical Return to Strength",
+    "athlete": "Robert",
+    "headshot": "Robert.png",
+    "altText": "Robert, returned to squatting 300 lbs six months after back surgery, coached by Yeager's Gym",
+    "result": "Had back surgery and was squatting 300 pounds six months later.",
+    "painPoints": [
+      "Fear of re-injury — post-surgical fear of movement and catastrophizing about pain blocks progression even after surgical clearance.",
+      "Uncertainty about safe loading — lack of clear guidelines on when and how to add weight extends overly conservative rehab indefinitely.",
+      "Loss of strength and atrophy — extended immobilization causes severe muscle loss, requiring months of targeted rebuilding."
+    ]
+  },
+  {
+    "categoryId": "oly",
+    "category": "Olympic Weightlifting / USAW",
+    "athlete": "Gigi",
+    "headshot": "Gigi1.jpg",
+    "altText": "Gigi, USAW competitor and CrossFit/USAW certified coach, coached by Yeager's Gym for 4 meets",
+    "result": "Coached for 4 USAW meets. She is a CrossFit coach and USAW certified coach.",
+    "painPoints": [
+      "Inability to self-coach at meets — coaches competing simultaneously can't objectively assess their own positioning and technique under load.",
+      "Role-switching fatigue — toggling between coaching others and training yourself drains the mental resources needed for technical lifts.",
+      "Lack of outside technical eye — without a coach to catch subtle bar path and timing flaws, competing coaches plateau and can't see what their body is doing."
+    ]
+  },
+  {
+    "categoryId": "peptide",
+    "category": "Peptide-Assisted Body Composition",
+    "athlete": "Mariah",
+    "headshot": "Mariah.jpg",
+    "altText": "Mariah, lost 25 pounds through peptide-assisted coaching at Yeager's Gym",
+    "result": "Lost 25 pounds using peptide-assisted methods.",
+    "painPoints": [
+      "No structured nutrition plan around the protocol — appetite changes without guidance lead to poor food choices and potential muscle loss.",
+      "Lack of monitoring and accountability — many users start without proper screening, follow-ups, or ongoing check-ins.",
+      "Unclear expectations and no roadmap — users don't know timelines, what to expect, or how to structure the process for lasting results."
+    ]
+  },
+  {
+    "categoryId": "masters",
+    "category": "Masters / Senior Performance",
+    "athlete": "Tonnie",
+    "headshot": "Tonnie.png",
+    "altText": "Tonnie, San Diego Senior Games competitor who won 7 medals in 9 events, coached by Yeager's Gym",
+    "result": "Competed in the San Diego Senior Games and won 7 medals in 9 events.",
+    "painPoints": [
+      "Being told to 'take it easy' — senior athletes are often discouraged from training hard despite evidence that intensity is critical for performance.",
+      "Recovery as a limiting factor — decreased recovery capacity makes multi-event training nearly impossible without smart programming.",
+      "Fear of injury undermining confidence — older athletes experience fear that prevents them from training at full intensity, paradoxically increasing injury risk."
+    ]
+  }
+]
+</script>
+</body>
+</html>
