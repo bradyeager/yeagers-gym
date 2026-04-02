@@ -547,7 +547,7 @@
 
 .profile-btn.active {
   border-color: var(--color-teal);
-  background: rgba(30, 200, 176, 0.08);
+  background: rgba(72, 196, 204, 0.08);
   box-shadow: 0 0 0 1px var(--color-teal);
 }
 
@@ -603,12 +603,12 @@
 }
 
 .stepper-btn:hover {
-  background: rgba(30, 200, 176, 0.15);
+  background: rgba(72, 196, 204, 0.15);
   color: var(--color-teal);
 }
 
 .stepper-btn:active {
-  background: rgba(30, 200, 176, 0.25);
+  background: rgba(72, 196, 204, 0.25);
   color: var(--color-teal);
 }
 
@@ -1242,7 +1242,7 @@
     { name: 'Strength-Speed',    min: 0.5,  max: 0.75, color: '#f39c12' },
     { name: 'Power',             min: 0.75, max: 1.0,  color: '#f1c40f' },
     { name: 'Speed-Strength',    min: 1.0,  max: 1.3,  color: '#2ecc71' },
-    { name: 'Speed',             min: 1.3,  max: 2.0,  color: '#1EC8B0' }
+    { name: 'Speed',             min: 1.3,  max: 2.0,  color: '#48C4CC' }
   ];
 
   // ── DOM refs ──
@@ -1562,7 +1562,7 @@
       { v0: 0.5,  v1: 0.75, color: 'rgba(243,156,18,0.08)' },
       { v0: 0.75, v1: 1.0,  color: 'rgba(241,196,15,0.08)' },
       { v0: 1.0,  v1: 1.3,  color: 'rgba(46,204,113,0.08)' },
-      { v0: 1.3,  v1: vMax, color: 'rgba(30,200,176,0.08)' }
+      { v0: 1.3,  v1: vMax, color: 'rgba(72,196,204,0.08)' }
     ];
     zoneBands.forEach(function(z) {
       ctx.fillStyle = z.color;
@@ -1571,7 +1571,7 @@
 
     // ── Load-velocity line (active profile) ──
     ctx.beginPath();
-    ctx.strokeStyle = 'rgba(30, 200, 176, 0.8)';
+    ctx.strokeStyle = 'rgba(72, 196, 204, 0.8)';
     ctx.lineWidth = 2.5;
     var steps = 100;
     for (var s = 0; s <= steps; s++) {
@@ -1590,8 +1590,8 @@
     ctx.lineTo(xScale(vMin), yScale(0));
     ctx.closePath();
     var grad = ctx.createLinearGradient(0, pad.top, 0, pad.top + ch);
-    grad.addColorStop(0, 'rgba(30, 200, 176, 0.15)');
-    grad.addColorStop(1, 'rgba(30, 200, 176, 0.02)');
+    grad.addColorStop(0, 'rgba(72, 196, 204, 0.15)');
+    grad.addColorStop(1, 'rgba(72, 196, 204, 0.02)');
     ctx.fillStyle = grad;
     ctx.fill();
 
@@ -1600,8 +1600,8 @@
     var profileKeys = ['fast', 'standard', 'slow'];
     var ghostColors = {
       fast: 'rgba(155, 111, 212, 0.25)',
-      standard: 'rgba(30, 200, 176, 0.25)',
-      slow: 'rgba(240, 68, 138, 0.25)'
+      standard: 'rgba(72, 196, 204, 0.25)',
+      slow: 'rgba(239, 50, 149, 0.25)'
     };
     profileKeys.forEach(function(pk) {
       if (pk === currentProfile) return;
@@ -1623,7 +1623,7 @@
 
     // ── MVT vertical line ──
     ctx.beginPath();
-    ctx.strokeStyle = 'rgba(240, 68, 138, 0.5)';
+    ctx.strokeStyle = 'rgba(239, 50, 149, 0.5)';
     ctx.lineWidth = 1;
     ctx.setLineDash([4, 4]);
     ctx.moveTo(xScale(ex.mvt), pad.top);
@@ -1632,7 +1632,7 @@
     ctx.setLineDash([]);
 
     // MVT label
-    ctx.fillStyle = '#F0448A';
+    ctx.fillStyle = '#EF3295';
     ctx.font = '600 9px "JetBrains Mono", monospace';
     ctx.textAlign = 'center';
     ctx.fillText('MVT ' + ex.mvt.toFixed(2), xScale(ex.mvt), pad.top - 6);
@@ -1645,13 +1645,13 @@
     // Glow
     ctx.beginPath();
     ctx.arc(dotX, dotY, 16, 0, Math.PI * 2);
-    ctx.fillStyle = 'rgba(30, 200, 176, 0.2)';
+    ctx.fillStyle = 'rgba(72, 196, 204, 0.2)';
     ctx.fill();
 
     // Dot
     ctx.beginPath();
     ctx.arc(dotX, dotY, 6, 0, Math.PI * 2);
-    ctx.fillStyle = '#1EC8B0';
+    ctx.fillStyle = '#48C4CC';
     ctx.fill();
     ctx.strokeStyle = '#fff';
     ctx.lineWidth = 2;
@@ -1795,7 +1795,7 @@
 </script>
 
 <!-- Mobile Sticky CTA -->
-<div class="mobile-sticky-cta" id="stickyCta" style="display: none; position: fixed; bottom: 0; left: 0; right: 0; z-index: 999; padding: 12px 16px; background: rgba(10,14,23,0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-top: 1px solid rgba(30,200,176,0.2); text-align: center;">
+<div class="mobile-sticky-cta" id="stickyCta" style="display: none; position: fixed; bottom: 0; left: 0; right: 0; z-index: 999; padding: 12px 16px; background: rgba(10,14,23,0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-top: 1px solid rgba(72,196,204,0.2); text-align: center;">
   <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" style="display: inline-block; width: 100%; max-width: 320px; padding: 10px 20px; background: var(--color-teal); color: #0a0e17; font-family: var(--font-display); font-size: 0.8rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; text-decoration: none; border-radius: 6px;">Book a Free Session</a>
 </div>
 <script>

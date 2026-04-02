@@ -328,7 +328,7 @@
 .syringe-toggle button.active {
   background: var(--color-pink);
   color: #fff;
-  box-shadow: 0 2px 8px rgba(240, 68, 138, 0.3);
+  box-shadow: 0 2px 8px rgba(239, 50, 149, 0.3);
 }
 
 /* ── Frequency Pills ── */
@@ -482,8 +482,8 @@
   display: none;
   margin-top: var(--space-3);
   padding: var(--space-3);
-  background: rgba(240, 68, 138, 0.08);
-  border: 1px solid rgba(240, 68, 138, 0.2);
+  background: rgba(239, 50, 149, 0.08);
+  border: 1px solid rgba(239, 50, 149, 0.2);
   border-radius: var(--radius-md);
   font-size: var(--text-xs);
   color: var(--color-pink);
@@ -523,8 +523,8 @@
   display: none;
   margin-top: var(--space-3);
   padding: var(--space-3);
-  background: rgba(240, 68, 138, 0.08);
-  border: 1px solid rgba(240, 68, 138, 0.2);
+  background: rgba(239, 50, 149, 0.08);
+  border: 1px solid rgba(239, 50, 149, 0.2);
   border-radius: var(--radius-md);
   font-size: var(--text-xs);
   color: var(--color-pink);
@@ -621,7 +621,7 @@
 
 .recon-step:hover {
   border-color: var(--color-teal);
-  box-shadow: 0 0 24px rgba(30, 200, 176, 0.12);
+  box-shadow: 0 0 24px rgba(72, 196, 204, 0.12);
 }
 
 .recon-step-num {
@@ -670,8 +670,8 @@
 }
 
 .faq-item {
-  background: rgba(240, 68, 138, 0.06);
-  border: 1px solid rgba(240, 68, 138, 0.15);
+  background: rgba(239, 50, 149, 0.06);
+  border: 1px solid rgba(239, 50, 149, 0.15);
   border-radius: var(--radius-md);
   margin-bottom: var(--space-2);
   overflow: hidden;
@@ -765,8 +765,8 @@
 .peptide-cta {
   max-width: 800px;
   margin-inline: auto;
-  background: linear-gradient(135deg, rgba(30, 200, 176, 0.08), rgba(240, 68, 138, 0.05));
-  border: 1px solid rgba(30, 200, 176, 0.2);
+  background: linear-gradient(135deg, rgba(72, 196, 204, 0.08), rgba(239, 50, 149, 0.05));
+  border: 1px solid rgba(72, 196, 204, 0.2);
   border-radius: var(--radius-lg);
   padding: var(--space-6);
   text-align: center;
@@ -1072,7 +1072,7 @@
             <!-- Barrel inner -->
             <rect x="64" y="46" width="162" height="28" rx="2" fill="#0f1420"/>
             <!-- Fluid fill -->
-            <rect id="fluidFill" x="64" y="46" width="0" height="28" rx="2" fill="rgba(30, 200, 176, 0.3)"/>
+            <rect id="fluidFill" x="64" y="46" width="0" height="28" rx="2" fill="rgba(72, 196, 204, 0.3)"/>
             <!-- Tick marks group -->
             <g id="tickMarks"></g>
             <!-- Needle hub -->
@@ -1571,7 +1571,7 @@
         var fillX = barrelStart + barrelWidth - fillWidth;
         fluidFill.setAttribute('x', fillX);
         fluidFill.setAttribute('width', fillWidth);
-        fluidFill.setAttribute('fill', 'rgba(30, 200, 176, 0.3)');
+        fluidFill.setAttribute('fill', 'rgba(72, 196, 204, 0.3)');
 
         var plungerEnd = fillX - 4;
         var rodWidth = plungerEnd - 40;
@@ -1589,7 +1589,7 @@
       } else if (drawMl > maxMl) {
         fluidFill.setAttribute('x', barrelStart);
         fluidFill.setAttribute('width', barrelWidth);
-        fluidFill.setAttribute('fill', 'rgba(240, 68, 138, 0.25)');
+        fluidFill.setAttribute('fill', 'rgba(239, 50, 149, 0.25)');
         plungerRod.setAttribute('width', 5);
         drawLine.setAttribute('opacity', '0');
         drawLabel.setAttribute('opacity', '0');

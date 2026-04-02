@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "Static Dev Server",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["serve", ".", "-l", "3003", "--no-clipboard"],
+      "port": 3003
+    }
+  ]
+}
