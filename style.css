@@ -941,7 +941,7 @@
   .testimonial-grid { grid-template-columns: 1fr 1fr; }
 }
 @media (min-width: 1024px) {
-  .testimonial-grid { grid-template-columns: repeat(4, 1fr); }
+  .testimonial-grid { grid-template-columns: repeat(3, 1fr); }
 }
 
 .testimonial-card {
@@ -992,8 +992,8 @@
 }
 
 .testimonial-avatar-img {
-  width: 32px;
-  height: 32px;
+  width: 48px;
+  height: 48px;
   border-radius: var(--radius-full);
   object-fit: cover;
   flex-shrink: 0;
