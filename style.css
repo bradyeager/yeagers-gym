@@ -404,7 +404,7 @@
   display: inline-block;
   margin-top: 1.5rem;
   padding: 0.9rem 2.2rem;
-  background: #F0448A;
+  background: #1EC8B0;
   color: #fff;
   text-decoration: none;
   border-radius: 8px;
@@ -413,12 +413,12 @@
   font-weight: 700;
   letter-spacing: 0.02em;
   transition: background 0.2s, transform 0.15s;
-  box-shadow: 0 0 20px rgba(240, 68, 138, 0.3);
+  box-shadow: 0 0 20px rgba(30, 200, 176, 0.3);
 }
 .btn-hero-cta:hover {
-  background: #d63079;
+  background: #17a594;
   transform: translateY(-2px);
-  box-shadow: 0 0 30px rgba(240, 68, 138, 0.5);
+  box-shadow: 0 0 30px rgba(30, 200, 176, 0.5);
 }
 
 .hero-tagline {
@@ -689,7 +689,7 @@
 }
 
 .hero-testi-stars {
-  color: var(--color-teal);
+  color: var(--color-pink);
   font-size: var(--text-xs);
   letter-spacing: 2px;
   margin-bottom: 2px;
