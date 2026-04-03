@@ -400,6 +400,27 @@
   .hero-content { padding: var(--space-12) var(--space-8); }
 }
 
+.btn-hero-cta {
+  display: inline-block;
+  margin-top: 1.5rem;
+  padding: 0.9rem 2.2rem;
+  background: #F0448A;
+  color: #fff;
+  text-decoration: none;
+  border-radius: 8px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  transition: background 0.2s, transform 0.15s;
+  box-shadow: 0 0 20px rgba(240, 68, 138, 0.3);
+}
+.btn-hero-cta:hover {
+  background: #d63079;
+  transform: translateY(-2px);
+  box-shadow: 0 0 30px rgba(240, 68, 138, 0.5);
+}
+
 .hero-tagline {
   font-family: var(--font-display);
   font-size: var(--text-xs);

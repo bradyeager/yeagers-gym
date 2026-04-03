@@ -73,7 +73,7 @@ Before declaring any visual change complete, render the page and check it. Font 
 
 ## Pricing
 - In-person: $70–$170 (varies by group size and duration)
-- Remote coaching: $60/month
+- Remote coaching: $149/month
 - Nutrition: $199 (90-min consultation + 3-month follow-up)
 - Peptide initial: $199/60 min
 - Peptide follow-up: $99/45 min
