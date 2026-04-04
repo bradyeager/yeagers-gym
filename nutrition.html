@@ -355,7 +355,7 @@
   background: var(--color-surface-2);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
-  padding: var(--space-8);
+  padding: var(--space-4) var(--space-5);
   display: flex;
   align-items: center;
   gap: var(--space-6);
@@ -399,9 +399,18 @@
 
 @media (max-width: 520px) {
   .credential-block {
-    flex-direction: column;
-    text-align: center;
+    flex-direction: row;
+    align-items: center;
+    text-align: left;
+    padding: var(--space-3) var(--space-4);
+    gap: var(--space-3);
   }
+  .credential-icon {
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+  }
+  .credential-icon svg { width: 20px; height: 20px; }
 }
 
 /* ── CTA Section ── */
@@ -754,19 +763,7 @@
 <!-- ═══════════════════════════════════════════
      CTA
      ═══════════════════════════════════════════ -->
-<div class="final-cta">
-  <p class="section-label" style="color: var(--color-pink); text-align: center; max-width: none;">Ready to Start?</p>
-  <h3 style="font-family: var(--font-body); font-size: var(--text-lg); font-weight: 700; margin-bottom: var(--space-3);"><span style="color: var(--color-teal);">Get a Plan</span> Built Around <span style="color: var(--color-pink);">Your Goals</span></h3>
-  <p>One session. One clear plan.<br>Everything you need to align your nutrition with the work you're putting in.</p>
-  <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="btn btn-primary">Book a Consultation!</a>
-</div>
-
-<!-- ═══════════════════════════════════════════
-     FOOTER
-     ═══════════════════════════════════════════ -->
-
 <!-- TESTIMONIAL SECTION -->
-
 <style>
 .testimonial-section { padding: 80px 0; background: var(--color-bg-dark, #05070B); }
 .testimonial-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; max-width: 1200px; margin: 0 auto; padding: 0 24px; }
@@ -802,6 +799,17 @@
   </div>
 </section>
 <!-- END TESTIMONIAL SECTION -->
+
+<div class="final-cta">
+  <p class="section-label" style="color: var(--color-pink); text-align: center; max-width: none;">Ready to Start?</p>
+  <h3 style="font-family: var(--font-body); font-size: var(--text-lg); font-weight: 700; margin-bottom: var(--space-3);"><span style="color: var(--color-teal);">Get a Plan</span> Built Around <span style="color: var(--color-pink);">Your Goals</span></h3>
+  <p>One session. One clear plan.<br>Everything you need to align your nutrition with the work you're putting in.</p>
+  <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="btn btn-primary">Book a Consultation!</a>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     FOOTER
+     ═══════════════════════════════════════════ -->
 
 <footer class="site-footer" role="contentinfo">
   <div class="container">
