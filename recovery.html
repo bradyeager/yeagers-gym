@@ -46,8 +46,8 @@
   padding-bottom: var(--space-3);
   position: relative;
   overflow: hidden;
-  background: url('./assets/recovery-09.png') center 45% / cover no-repeat;
-  min-height: 550px;
+  background: url('./assets/recovery-09.png') center 35% / cover no-repeat;
+  min-height: 600px;
 }
 
 .rec-hero::before {
@@ -455,27 +455,7 @@
       <a href="./method.html" class="nav-link" style="color: var(--color-pink); font-weight: 700;">The Method</a>
       <a href="./index.html#vbt" class="nav-link">What is VBT?</a>
       <a href="./index.html#results" class="nav-link">Results</a>
-      <div class="nav-dropdown">
-        <a href="./tools.html" class="nav-link">Free Tools ▾</a>
-        <div class="nav-dropdown-menu">
-          <a href="./tools-vbt.html">VBT Calculator</a>
-          <a href="./tools-1rm.html">1RM Calculator</a>
-          <a href="./tools-warmup.html">Warmup Calculator</a>
-          <a href="./tools-lv-profile.html">LV Profile</a>
-          <a href="./tools-rpe.html">RPE Chart</a>
-          <a href="./tools-rpe-velocity.html">RPE-Velocity</a>
-          <a href="./tools-crossfit.html">Machine Converter</a>
-          <a href="./tools-hyrox.html">Hyrox Race Calculator</a>
-          <a href="./tools-strength.html">Strength Standards</a>
-          <a href="./tools-readiness.html">Daily Readiness</a>
-          <a href="./tools-limiter.html">CrossFit Limiter Quiz</a>
-          <a href="./tools-recomp.html">Body Recomp Estimator</a>
-          <a href="./tools-hyrox-splits.html">Hyrox Split Analyzer</a>
-          <a href="./tools-macro.html">Macro Calculator</a>
-          <a href="./tools-peptide.html">Peptide Calculator</a>
-          <a href="./velocity-trackers.html">Velocity Trackers Guide</a>
-        </div>
-      </div>
+      <a href="./tools.html" class="nav-link" style="color: var(--color-teal);">Free Tools</a>
       <a href="./quiz.html" class="nav-link">Quiz</a>
       <div class="nav-utility">
         <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="btn btn-nav-cta">Book Your FREE Session!</a>
@@ -651,54 +631,100 @@
 <!-- ═══════════════════════════════════════════
      BOTTOM CTA
      ═══════════════════════════════════════════ -->
+<!-- TESTIMONIALS (carousel style) -->
+<div class="hero-testimonial-carousel" aria-label="Client testimonials" style="padding: var(--space-6) 0;">
+  <div style="text-align: center; margin-bottom: var(--space-4);">
+    <p class="section-label" style="color: var(--color-teal); text-align: center; max-width: none;">What Athletes Say</p>
+  </div>
+  <div class="hero-testimonial-track">
+    <div class="hero-testimonial-card">
+      <img src="assets/headshots/Claudia.jpg" alt="Claudia Arzillo" class="hero-testi-avatar" width="48" height="48">
+      <div class="hero-testi-body">
+        <div class="hero-testi-stars" style="color: var(--color-pink);">★★★★★</div>
+        <p class="hero-testi-quote">"The peaking protocol was dialed. I felt stronger on meet day than I ever had in the gym."</p>
+        <span class="hero-testi-name">Claudia Arzillo</span>
+        <span class="hero-testi-type">USAPL Powerlifter</span>
+      </div>
+    </div>
+    <div class="hero-testimonial-card">
+      <img src="assets/headshots/Robert.png" alt="Robert Brower" class="hero-testi-avatar" width="48" height="48">
+      <div class="hero-testi-body">
+        <div class="hero-testi-stars" style="color: var(--color-pink);">★★★★★</div>
+        <p class="hero-testi-quote">"Six months after back surgery, I squatted 300 pounds. Brad made me believe it was safe to push."</p>
+        <span class="hero-testi-name">Robert Brower</span>
+        <span class="hero-testi-type">Financial Planner</span>
+      </div>
+    </div>
+    <div class="hero-testimonial-card">
+      <img src="assets/headshots/Charlie.jpg" alt="Charlie Houck" class="hero-testi-avatar" width="48" height="48">
+      <div class="hero-testi-body">
+        <div class="hero-testi-stars" style="color: var(--color-pink);">★★★★★</div>
+        <p class="hero-testi-quote">"60 pounds in 8 months. This wasn't a crash diet — it was a structured plan I could stick to."</p>
+        <span class="hero-testi-name">Charlie Houck</span>
+        <span class="hero-testi-type">Fat Loss / Nutrition</span>
+      </div>
+    </div>
+    <div class="hero-testimonial-card">
+      <img src="assets/headshots/Tonnie.png" alt="Tonnie Dahl" class="hero-testi-avatar" width="48" height="48">
+      <div class="hero-testi-body">
+        <div class="hero-testi-stars" style="color: var(--color-pink);">★★★★★</div>
+        <p class="hero-testi-quote">"7 medals in 9 events at the Senior Games. Brad told me to train smarter. That made all the difference."</p>
+        <span class="hero-testi-name">Tonnie Dahl</span>
+        <span class="hero-testi-type">SD Sr. Games Gold Medalist</span>
+      </div>
+    </div>
+    <!-- Duplicates -->
+    <div class="hero-testimonial-card">
+      <img src="assets/headshots/Claudia.jpg" alt="Claudia Arzillo" class="hero-testi-avatar" width="48" height="48">
+      <div class="hero-testi-body">
+        <div class="hero-testi-stars" style="color: var(--color-pink);">★★★★★</div>
+        <p class="hero-testi-quote">"The peaking protocol was dialed. I felt stronger on meet day than I ever had in the gym."</p>
+        <span class="hero-testi-name">Claudia Arzillo</span>
+        <span class="hero-testi-type">USAPL Powerlifter</span>
+      </div>
+    </div>
+    <div class="hero-testimonial-card">
+      <img src="assets/headshots/Robert.png" alt="Robert Brower" class="hero-testi-avatar" width="48" height="48">
+      <div class="hero-testi-body">
+        <div class="hero-testi-stars" style="color: var(--color-pink);">★★★★★</div>
+        <p class="hero-testi-quote">"Six months after back surgery, I squatted 300 pounds. Brad made me believe it was safe to push."</p>
+        <span class="hero-testi-name">Robert Brower</span>
+        <span class="hero-testi-type">Financial Planner</span>
+      </div>
+    </div>
+    <div class="hero-testimonial-card">
+      <img src="assets/headshots/Charlie.jpg" alt="Charlie Houck" class="hero-testi-avatar" width="48" height="48">
+      <div class="hero-testi-body">
+        <div class="hero-testi-stars" style="color: var(--color-pink);">★★★★★</div>
+        <p class="hero-testi-quote">"60 pounds in 8 months. This wasn't a crash diet — it was a structured plan I could stick to."</p>
+        <span class="hero-testi-name">Charlie Houck</span>
+        <span class="hero-testi-type">Fat Loss / Nutrition</span>
+      </div>
+    </div>
+    <div class="hero-testimonial-card">
+      <img src="assets/headshots/Tonnie.png" alt="Tonnie Dahl" class="hero-testi-avatar" width="48" height="48">
+      <div class="hero-testi-body">
+        <div class="hero-testi-stars" style="color: var(--color-pink);">★★★★★</div>
+        <p class="hero-testi-quote">"7 medals in 9 events at the Senior Games. Brad told me to train smarter. That made all the difference."</p>
+        <span class="hero-testi-name">Tonnie Dahl</span>
+        <span class="hero-testi-type">SD Sr. Games Gold Medalist</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<hr class="glow-line">
+
 <div class="final-cta">
   <p class="section-label" style="color: var(--color-pink); text-align: center; max-width: none;">Get Started</p>
   <h2>Recover Smarter, <span class="highlight-teal">Train Harder</span></h2>
-  <p>Book a session to see how recovery fits into your program. Whether it's a 15-minute cupping session between sets or a cold plunge after training — your next workout starts with recovery.</p>
+  <p>Book a session to see how recovery fits into your program. Your next workout starts with recovery.</p>
   <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="btn btn-primary">Book a Session</a>
 </div>
 
 <!-- ═══════════════════════════════════════════
      FOOTER
      ═══════════════════════════════════════════ -->
-
-<!-- TESTIMONIAL SECTION -->
-
-<style>
-.testimonial-section { padding: 80px 0; background: var(--color-bg-dark, #05070B); }
-.testimonial-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; max-width: 1200px; margin: 0 auto; padding: 0 24px; }
-.testimonial-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 16px; padding: 32px; position: relative; }
-.testimonial-card::before { content: '\201C'; font-size: 48px; color: var(--color-teal, #1EC8B0); position: absolute; top: 16px; left: 24px; line-height: 1; font-family: Georgia, serif; }
-.testimonial-quote { font-size: 15px; line-height: 1.7; color: rgba(255,255,255,0.8); margin-top: 24px; font-style: italic; }
-.testimonial-result { display: inline-block; background: rgba(239,50,149,0.12); color: var(--color-pink, #EF3295); padding: 4px 12px; border-radius: 6px; font-size: 13px; font-weight: 600; margin-top: 16px; font-family: 'JetBrains Mono', monospace; }
-.testimonial-attribution { margin-top: 12px; font-size: 13px; color: rgba(255,255,255,0.4); font-family: 'JetBrains Mono', monospace; }
-@media (max-width: 768px) { .testimonial-grid { grid-template-columns: 1fr; } }
-</style>
-
-<section class="testimonial-section">
-  <div style="text-align: center; margin-bottom: 48px;">
-    <p style="text-align: center; font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: var(--color-teal, #1EC8B0); margin-bottom: 8px;">WHAT ATHLETES SAY</p>
-    <h2 style="font-size: clamp(28px, 4vw, 42px); font-weight: 700; color: white; margin: 0;">Real Results. Real Athletes.</h2>
-  </div>
-  <div class="testimonial-grid">
-      <div class="testimonial-card">
-        <p class="testimonial-quote">"The peaking protocol was dialed. I felt stronger on meet day than I ever had in the gym, and that doesn't happen by accident."</p>
-        <span class="testimonial-result">USAPL Powerlifter</span>
-        <p class="testimonial-attribution">Claudia Arzillo · In-Person</p>
-      </div>
-      <div class="testimonial-card">
-        <p class="testimonial-quote">"Six months after back surgery, I squatted 300 pounds. Brad understood post-surgical progression and made me believe it was safe to push."</p>
-        <span class="testimonial-result">Post-Surgical Rehab</span>
-        <p class="testimonial-attribution">Robert Brower · In-Person</p>
-      </div>
-      <div class="testimonial-card">
-        <p class="testimonial-quote">"60 pounds in 8 months, and I actually kept my energy through the whole process. This wasn't a crash diet — it was a structured plan I could stick to."</p>
-        <span class="testimonial-result">Fat Loss / Nutrition</span>
-        <p class="testimonial-attribution">Charlie Houck · Client</p>
-      </div>
-  </div>
-</section>
-<!-- END TESTIMONIAL SECTION -->
 
 <footer class="site-footer" role="contentinfo">
   <div class="container">
