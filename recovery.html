@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
 <!--
@@ -8,8 +8,6 @@
 / /___/ /_/ / / / / / / /_/ / /_/ / /_/  __/ /
 \____/\____/_/ /_/ /_/ .___/\__,_/\__/\___/_/
                     /_/
-        Created with Perplexity Computer
-        https://www.perplexity.ai/computer
 -->
 
 <meta charset="UTF-8">
@@ -33,11 +31,6 @@
   "provider": {
     "@type": "Person",
     "name": "Brad Yeager"
-  },
-  "creator": {
-    "@type": "SoftwareApplication",
-    "name": "Perplexity Computer",
-    "url": "https://www.perplexity.ai/computer"
   }
 }
 </script>
@@ -63,7 +56,7 @@
   transform: translateX(-50%);
   width: 800px;
   height: 800px;
-  background: radial-gradient(circle, rgba(30, 200, 176, 0.06) 0%, transparent 60%);
+  background: radial-gradient(circle, rgba(72, 196, 204, 0.06) 0%, transparent 60%);
   pointer-events: none;
 }
 
@@ -135,7 +128,7 @@
 
 .recovery-card:hover {
   border-color: var(--color-teal);
-  box-shadow: 0 0 28px rgba(30, 200, 176, 0.09);
+  box-shadow: 0 0 28px rgba(72, 196, 204, 0.09);
 }
 
 .recovery-card::before {
@@ -154,7 +147,7 @@
 
 .recovery-card--coming-soon:hover {
   border-color: var(--color-teal);
-  box-shadow: 0 0 28px rgba(30, 200, 176, 0.07);
+  box-shadow: 0 0 28px rgba(72, 196, 204, 0.07);
 }
 
 /* Coming Soon badge */
@@ -193,12 +186,12 @@
 }
 
 .recovery-card-icon--teal {
-  background: rgba(30, 200, 176, 0.12);
+  background: rgba(72, 196, 204, 0.12);
   color: var(--color-teal);
 }
 
 .recovery-card-icon--pink {
-  background: rgba(240, 68, 138, 0.12);
+  background: rgba(239, 50, 149, 0.12);
   color: var(--color-pink);
 }
 
@@ -238,8 +231,8 @@
   align-items: center;
   gap: var(--space-1);
   padding: 0.3rem 0.75rem;
-  background: var(--color-teal-glow, rgba(30, 200, 176, 0.08));
-  border: 1px solid rgba(30, 200, 176, 0.2);
+  background: var(--color-teal-glow, rgba(72, 196, 204, 0.08));
+  border: 1px solid rgba(72, 196, 204, 0.2);
   border-radius: var(--radius-full);
   font-family: var(--font-display);
   font-size: var(--text-xs);
@@ -281,7 +274,7 @@
 
 .link-card:hover {
   border-color: var(--color-pink);
-  box-shadow: 0 0 28px rgba(240, 68, 138, 0.08);
+  box-shadow: 0 0 28px rgba(239, 50, 149, 0.08);
 }
 
 .link-card::before {
@@ -349,7 +342,7 @@
   transform: translate(-50%, -50%);
   width: 600px;
   height: 600px;
-  background: radial-gradient(circle, rgba(30, 200, 176, 0.05) 0%, transparent 65%);
+  background: radial-gradient(circle, rgba(72, 196, 204, 0.05) 0%, transparent 65%);
   pointer-events: none;
 }
 
@@ -449,15 +442,16 @@
           <a href="./recovery.html">Recovery</a>
         </div>
       </div>
-      <a href="./index.html#vbt" class="nav-link">Velocity Based Training</a>
+      <a href="./method.html" class="nav-link" style="color: var(--color-pink); font-weight: 700;">The Method</a>
+      <a href="./index.html#vbt" class="nav-link">What is VBT?</a>
       <a href="./index.html#results" class="nav-link">Results</a>
       <div class="nav-dropdown">
-        <a href="./tools-vbt.html" class="nav-link">Tools ▾</a>
+        <a href="./tools-vbt.html" class="nav-link">Free Tools ▾</a>
         <div class="nav-dropdown-menu">
           <a href="./tools-vbt.html">VBT Calculator</a>
           <a href="./tools-1rm.html">1RM Calculator</a>
           <a href="./tools-warmup.html">Warmup Calculator</a>
-          <a href="./tools-lv-profile.html">LV Profile Builder</a>
+          <a href="./tools-lv-profile.html">LV Profile</a>
           <a href="./tools-rpe.html">RPE Chart</a>
           <a href="./tools-rpe-velocity.html">RPE-Velocity</a>
           <a href="./tools-crossfit.html">Machine Converter</a>
@@ -486,12 +480,10 @@
     <a href="./nutrition.html" style="padding-left: 2rem;">Nutrition Coaching</a>
     <a href="./peptide-consulting.html" style="padding-left: 2rem; color: var(--color-teal);">Peptide Consulting</a>
     <a href="./recovery.html" style="padding-left: 2rem;">Recovery</a>
-    <a href="./index.html#vbt">Velocity Based Training</a>
+    <a href="./method.html" style="color: var(--color-pink); font-weight: 700;">The Velocity Method</a>
+    <a href="./index.html#vbt">What is VBT?</a>
     <a href="./index.html#results">Results</a>
-    <a href="./tools-vbt.html">VBT Calculator</a>
-    <a href="./tools-crossfit.html">Machine Converter</a>
-    <a href="./tools-macro.html">Macro Calculator</a>
-    <a href="./tools-peptide.html" style="color: var(--color-purple);">Peptide Calculator</a>
+    <a href="./tools.html" style="color: var(--color-teal); font-weight: 700;">Free Tools</a>
     <a href="./quiz.html" style="color: var(--color-pink);">Training Type Quiz</a>
     <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="btn btn-nav-cta" style="margin-top: var(--space-4);">Book Your FREE Session!</a>
   </div>
@@ -631,20 +623,55 @@
 <!-- ═══════════════════════════════════════════
      BOTTOM CTA
      ═══════════════════════════════════════════ -->
-<section class="rec-bottom-cta" aria-label="Book a Recovery Session">
-  <div class="container">
-    <div class="rec-bottom-cta-inner fade-in">
-      <p class="section-label" style="color: var(--color-pink); text-align: center;">Get Started</p>
-      <h2>Recover Smarter, <span class="highlight-teal">Train Harder</span></h2>
-      <p>Book a session to see how recovery fits into your program. Whether it's a 15-minute cupping session between sets or a cold plunge after training — your next workout starts with recovery.</p>
-      <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="btn btn-primary">Book a Session</a>
-    </div>
-  </div>
-</section>
+<div class="final-cta">
+  <p class="section-label" style="color: var(--color-pink); text-align: center; max-width: none;">Get Started</p>
+  <h2>Recover Smarter, <span class="highlight-teal">Train Harder</span></h2>
+  <p>Book a session to see how recovery fits into your program. Whether it's a 15-minute cupping session between sets or a cold plunge after training — your next workout starts with recovery.</p>
+  <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="btn btn-primary">Book a Session</a>
+</div>
 
 <!-- ═══════════════════════════════════════════
      FOOTER
      ═══════════════════════════════════════════ -->
+
+<!-- TESTIMONIAL SECTION -->
+
+<style>
+.testimonial-section { padding: 80px 0; background: var(--color-bg-dark, #05070B); }
+.testimonial-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+.testimonial-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 16px; padding: 32px; position: relative; }
+.testimonial-card::before { content: '\201C'; font-size: 48px; color: var(--color-teal, #1EC8B0); position: absolute; top: 16px; left: 24px; line-height: 1; font-family: Georgia, serif; }
+.testimonial-quote { font-size: 15px; line-height: 1.7; color: rgba(255,255,255,0.8); margin-top: 24px; font-style: italic; }
+.testimonial-result { display: inline-block; background: rgba(239,50,149,0.12); color: var(--color-pink, #EF3295); padding: 4px 12px; border-radius: 6px; font-size: 13px; font-weight: 600; margin-top: 16px; font-family: 'JetBrains Mono', monospace; }
+.testimonial-attribution { margin-top: 12px; font-size: 13px; color: rgba(255,255,255,0.4); font-family: 'JetBrains Mono', monospace; }
+@media (max-width: 768px) { .testimonial-grid { grid-template-columns: 1fr; } }
+</style>
+
+<section class="testimonial-section">
+  <div style="text-align: center; margin-bottom: 48px;">
+    <p style="text-align: center; font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: var(--color-teal, #1EC8B0); margin-bottom: 8px;">WHAT ATHLETES SAY</p>
+    <h2 style="font-size: clamp(28px, 4vw, 42px); font-weight: 700; color: white; margin: 0;">Real Results. Real Athletes.</h2>
+  </div>
+  <div class="testimonial-grid">
+      <div class="testimonial-card">
+        <p class="testimonial-quote">[Placeholder] The cupping sessions between heavy training weeks keep me recovering faster than anything I've tried.</p>
+        <span class="testimonial-result">[Result]</span>
+        <p class="testimonial-attribution">[Name] · Recovery Client</p>
+      </div>
+      <div class="testimonial-card">
+        <p class="testimonial-quote">[Placeholder] Cold plunge plus velocity tracking. My readiness scores are consistently higher on recovery weeks.</p>
+        <span class="testimonial-result">[Result]</span>
+        <p class="testimonial-attribution">[Name] · Recovery Client</p>
+      </div>
+      <div class="testimonial-card">
+        <p class="testimonial-quote">[Placeholder] I was skeptical about recovery services but the difference in how I feel session to session is undeniable.</p>
+        <span class="testimonial-result">[Result]</span>
+        <p class="testimonial-attribution">[Name] · Recovery Client</p>
+      </div>
+  </div>
+</section>
+<!-- END TESTIMONIAL SECTION -->
+
 <footer class="site-footer" role="contentinfo">
   <div class="container">
     <div class="footer-nav-columns">
@@ -653,21 +680,14 @@
         <a href="./index.html">Home</a>
         <a href="./index.html#about">About Brad</a>
         <a href="./index.html#services">Services &amp; Pricing</a>
+        <a href="./method.html" style="display: block; font-size: 11px; color: var(--color-pink); text-decoration: none; padding: 1px 0; line-height: 1.5; font-weight: 600;">The Velocity Method</a>
         <a href="./index.html#vbt">VBT Explained</a>
         <a href="./index.html#results">Results</a>
         <a href="./index.html#contact">Contact</a>
       </div>
       <div class="footer-links">
         <h4>Resources &amp; Free Tools</h4>
-        <a href="./tools-vbt.html">VBT Calculator</a>
-        <a href="./tools-1rm.html">1RM Calculator</a>
-        <a href="./tools-warmup.html">Warmup Calculator</a>
-        <a href="./tools-lv-profile.html">LV Profile Builder</a>
-        <a href="./tools-rpe.html">RPE Chart</a>
-        <a href="./tools-rpe-velocity.html">RPE-Velocity</a>
-        <a href="./tools-crossfit.html">Machine Converter</a>
-        <a href="./tools-macro.html">Macro Calculator</a>
-        <a href="./tools-peptide.html">Peptide Calculator</a>
+        <a href="./tools.html">Calculators &amp; Converters</a>
         <a href="./velocity-trackers.html">Velocity Trackers Guide</a>
         <a href="./quiz.html">Training Type Quiz</a>
       </div>
@@ -687,7 +707,6 @@
     <div class="footer-bottom">
       <span>&copy; 2026 Yeager's Gym &middot; San Diego, CA</span>
       <div class="footer-bottom-right">
-        <a href="https://www.perplexity.ai/computer" target="_blank" rel="noopener noreferrer">Created with Perplexity Computer</a>
         <a href="./index.html" aria-label="Yeager's Gym Home">
           <img src="assets/logo.jpeg" alt="Yeager's Gym" class="logo-mark-img" width="24" height="24">
         </a>

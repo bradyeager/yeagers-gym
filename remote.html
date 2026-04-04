@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
 <!--
@@ -8,14 +8,12 @@
 / /___/ /_/ / / / / / / /_/ / /_/ / /_/  __/ /
 \____/\____/_/ /_/ /_/ .___/\__,_/\__/\___/_/
                     /_/
-        Created with Perplexity Computer
-        https://www.perplexity.ai/computer
 -->
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Remote Coaching — Yeager's Gym</title>
-<meta name="description" content="Velocity-powered remote coaching from anywhere in the world. Weekly programming, VBT data integration, and direct coaching communication for $99/month.">
+<meta name="description" content="Velocity-powered remote coaching from anywhere in the world. Weekly programming, VBT data integration, and direct coaching communication for $149/month.">
 <meta property="og:title" content="Remote Coaching — Yeager's Gym">
 <meta property="og:description" content="Remote programming powered by velocity data. Your coach sees your bar speed — not just your check-in form. Coaching from anywhere, powered by real performance data.">
 <meta property="og:type" content="website">
@@ -33,11 +31,6 @@
   "provider": {
     "@type": "Person",
     "name": "Brad Yeager"
-  },
-  "creator": {
-    "@type": "SoftwareApplication",
-    "name": "Perplexity Computer",
-    "url": "https://www.perplexity.ai/computer"
   }
 }
 </script>
@@ -94,7 +87,7 @@
   transform: translateX(-50%);
   width: 800px;
   height: 800px;
-  background: radial-gradient(circle, rgba(30, 200, 176, 0.06) 0%, transparent 60%);
+  background: radial-gradient(circle, rgba(72, 196, 204, 0.06) 0%, transparent 60%);
   pointer-events: none;
 }
 
@@ -154,6 +147,7 @@
   font-size: var(--text-lg);
   font-weight: 700;
   margin-bottom: var(--space-4);
+  text-align: center;
 }
 
 .rm-problem-box p {
@@ -273,13 +267,13 @@
   background: var(--color-surface-2);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
-  padding: var(--space-5);
+  padding: var(--space-4);
   transition: border-color var(--transition-interactive), box-shadow var(--transition-interactive);
 }
 
 .rm-who-card:hover {
   border-color: var(--color-teal);
-  box-shadow: 0 0 24px rgba(30, 200, 176, 0.08);
+  box-shadow: 0 0 24px rgba(72, 196, 204, 0.08);
 }
 
 .rm-who-card p {
@@ -295,8 +289,8 @@
   align-items: center;
   justify-content: center;
   border-radius: var(--radius-sm);
-  background: rgba(30, 200, 176, 0.08);
-  border: 1px solid rgba(30, 200, 176, 0.2);
+  background: rgba(72, 196, 204, 0.08);
+  border: 1px solid rgba(72, 196, 204, 0.2);
   margin-bottom: var(--space-3);
 }
 
@@ -505,7 +499,7 @@
   right: 0;
   width: 200px;
   height: 200px;
-  background: radial-gradient(circle, rgba(30, 200, 176, 0.07) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(72, 196, 204, 0.07) 0%, transparent 70%);
   pointer-events: none;
 }
 
@@ -567,7 +561,7 @@
   transform: translate(-50%, -50%);
   width: 600px;
   height: 600px;
-  background: radial-gradient(circle, rgba(30, 200, 176, 0.05) 0%, transparent 60%);
+  background: radial-gradient(circle, rgba(72, 196, 204, 0.05) 0%, transparent 60%);
   pointer-events: none;
 }
 
@@ -615,15 +609,16 @@
           <a href="./recovery.html">Recovery</a>
         </div>
       </div>
-      <a href="./index.html#vbt" class="nav-link">Velocity Based Training</a>
+      <a href="./method.html" class="nav-link" style="color: var(--color-pink); font-weight: 700;">The Method</a>
+      <a href="./index.html#vbt" class="nav-link">What is VBT?</a>
       <a href="./index.html#results" class="nav-link">Results</a>
       <div class="nav-dropdown">
-        <a href="./tools-vbt.html" class="nav-link">Tools ▾</a>
+        <a href="./tools-vbt.html" class="nav-link">Free Tools ▾</a>
         <div class="nav-dropdown-menu">
           <a href="./tools-vbt.html">VBT Calculator</a>
           <a href="./tools-1rm.html">1RM Calculator</a>
           <a href="./tools-warmup.html">Warmup Calculator</a>
-          <a href="./tools-lv-profile.html">LV Profile Builder</a>
+          <a href="./tools-lv-profile.html">LV Profile</a>
           <a href="./tools-rpe.html">RPE Chart</a>
           <a href="./tools-rpe-velocity.html">RPE-Velocity</a>
           <a href="./tools-crossfit.html">Machine Converter</a>
@@ -652,12 +647,10 @@
     <a href="./nutrition.html" style="padding-left: 2rem;">Nutrition Coaching</a>
     <a href="./peptide-consulting.html" style="padding-left: 2rem; color: var(--color-teal);">Peptide Consulting</a>
     <a href="./recovery.html" style="padding-left: 2rem;">Recovery</a>
-    <a href="./index.html#vbt">Velocity Based Training</a>
+    <a href="./method.html" style="color: var(--color-pink); font-weight: 700;">The Velocity Method</a>
+    <a href="./index.html#vbt">What is VBT?</a>
     <a href="./index.html#results">Results</a>
-    <a href="./tools-vbt.html">VBT Calculator</a>
-    <a href="./tools-crossfit.html">Machine Converter</a>
-    <a href="./tools-macro.html">Macro Calculator</a>
-    <a href="./tools-peptide.html" style="color: var(--color-purple);">Peptide Calculator</a>
+    <a href="./tools.html" style="color: var(--color-teal); font-weight: 700;">Free Tools</a>
     <a href="./quiz.html" style="color: var(--color-pink);">Training Type Quiz</a>
     <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="btn btn-nav-cta" style="margin-top: var(--space-4);">Book Your FREE Session!</a>
   </div>
@@ -690,11 +683,15 @@
       <p class="section-label" style="color: var(--color-pink); text-align: center;">The Problem</p>
       <h2 class="section-title">Most remote coaching flies blind.</h2>
     </div>
-    <div class="rm-problem-box fade-in" style="border: 1px solid rgba(240,68,138,0.25); transition: border-color 0.2s, box-shadow 0.2s;" onmouseover="this.style.borderColor='var(--color-pink)';this.style.boxShadow='0 0 16px rgba(240,68,138,0.12)'" onmouseout="this.style.borderColor='rgba(240,68,138,0.25)';this.style.boxShadow='none'">
+    <div class="rm-problem-box fade-in" style="border: 1px solid rgba(239,50,149,0.25); transition: border-color 0.2s, box-shadow 0.2s;" onmouseover="this.style.borderColor='var(--color-pink)';this.style.boxShadow='0 0 16px rgba(239,50,149,0.12)'" onmouseout="this.style.borderColor='rgba(239,50,149,0.25)';this.style.boxShadow='none'">
       <h3>The problem with most remote coaching</h3>
-      <p>Most remote coaching works like this: you get a program. You train. You fill out a check-in form once a week. Your coach reads it, maybe adjusts a few things, sends next week's program.</p>
-      <p>The problem? The coach only sees what you report. And self-reported data is limited.</p>
-      <p class="rm-accent-quote">"How did the set feel?" is a useful question. But "How fast did the bar move?" is a better one.</p>
+      <ul class="rm-benefits-list" style="list-style: none; padding: 0; margin: 0;">
+        <li style="padding: var(--space-1) 0; color: var(--color-text-muted); font-size: var(--text-sm);">✕ PDF program with no real feedback loop</li>
+        <li style="padding: var(--space-1) 0; color: var(--color-text-muted); font-size: var(--text-sm);">✕ Coach never sees your actual bar speed or fatigue</li>
+        <li style="padding: var(--space-1) 0; color: var(--color-text-muted); font-size: var(--text-sm);">✕ Weekly check-in based on feel, not data</li>
+        <li style="padding: var(--space-1) 0; color: var(--color-text-muted); font-size: var(--text-sm);">✕ Load adjustments are reactive, not proactive</li>
+      </ul>
+      <p class="rm-accent-quote" style="margin-top: var(--space-3);">"How did the set feel?" is useful. "How fast did the bar move?" is better.</p>
     </div>
   </div>
 </section>
@@ -710,10 +707,14 @@
       <p class="section-label" style="color: var(--color-teal); text-align: center;">The Solution</p>
       <h2 class="section-title">The solution to effective remote coaching.</h2>
     </div>
-    <div class="rm-problem-box fade-in" style="border-color: rgba(30,200,176,0.3); background: rgba(30,200,176,0.03); transition: border-color 0.2s, box-shadow 0.2s;" onmouseover="this.style.borderColor='var(--color-teal)';this.style.boxShadow='0 0 16px rgba(30,200,176,0.12)'" onmouseout="this.style.borderColor='rgba(30,200,176,0.3)';this.style.boxShadow='none'">
+    <div class="rm-problem-box fade-in" style="border-color: rgba(72,196,204,0.3); background: rgba(72,196,204,0.03); transition: border-color 0.2s, box-shadow 0.2s;" onmouseover="this.style.borderColor='var(--color-teal)';this.style.boxShadow='0 0 16px rgba(72,196,204,0.12)'" onmouseout="this.style.borderColor='rgba(72,196,204,0.3)';this.style.boxShadow='none'">
       <h3 style="color: var(--color-teal);">Velocity data bridges the gap</h3>
-      <p>What if your coach could see exactly how every set moved — how fast the bar traveled, when fatigue kicked in, and whether today was a push day or a pull-back day? That's what velocity-based remote coaching gives you. Instead of relying on subjective check-ins, your bar speed tells the whole story.</p>
-      <p>Your programming adjusts week to week based on real performance data — the same objective feedback Brad uses with in-person athletes. Distance doesn't dilute the coaching. Data closes the gap.</p>
+      <ul class="rm-benefits-list" style="list-style: none; padding: 0; margin: 0;">
+        <li style="padding: var(--space-1) 0; color: var(--color-text-muted); font-size: var(--text-sm);">✓ Brad sees how every set moved — speed, fatigue, readiness</li>
+        <li style="padding: var(--space-1) 0; color: var(--color-text-muted); font-size: var(--text-sm);">✓ Bar speed tells the whole story, not a check-in form</li>
+        <li style="padding: var(--space-1) 0; color: var(--color-text-muted); font-size: var(--text-sm);">✓ Programming adjusts weekly based on real performance data</li>
+        <li style="padding: var(--space-1) 0; color: var(--color-text-muted); font-size: var(--text-sm);">✓ Same objective feedback as in-person — distance doesn't dilute it</li>
+      </ul>
     </div>
   </div>
 </section>
@@ -731,12 +732,12 @@
     </div>
 
     <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: var(--space-3); margin-top: var(--space-4);">
-      <div class="fade-in" style="background: var(--color-surface-2); border: 1px solid rgba(240,68,138,0.25); border-radius: var(--radius-md); padding: var(--space-4); font-size: var(--text-sm); color: var(--color-text-muted); line-height: 1.6; transition: all 0.2s;" onmouseover="this.style.borderColor='var(--color-pink)';this.style.boxShadow='0 0 16px rgba(240,68,138,0.12)'" onmouseout="this.style.borderColor='rgba(240,68,138,0.25)';this.style.boxShadow='none'"><strong style="color: var(--color-text); display: block; margin-bottom: var(--space-2);">Velocity Data Integration</strong>Your bar speed feeds directly into your programming — session by session.</div>
-      <div class="fade-in" style="background: var(--color-surface-2); border: 1px solid rgba(240,68,138,0.25); border-radius: var(--radius-md); padding: var(--space-4); font-size: var(--text-sm); color: var(--color-text-muted); line-height: 1.6; transition: all 0.2s;" onmouseover="this.style.borderColor='var(--color-pink)';this.style.boxShadow='0 0 16px rgba(240,68,138,0.12)'" onmouseout="this.style.borderColor='rgba(240,68,138,0.25)';this.style.boxShadow='none'"><strong style="color: var(--color-text); display: block; margin-bottom: var(--space-2);">Daily Load Calibration</strong>Whether the prescribed weight was right for you that day, based on real bar speed.</div>
-      <div class="fade-in" style="background: var(--color-surface-2); border: 1px solid rgba(240,68,138,0.25); border-radius: var(--radius-md); padding: var(--space-4); font-size: var(--text-sm); color: var(--color-text-muted); line-height: 1.6; transition: all 0.2s;" onmouseover="this.style.borderColor='var(--color-pink)';this.style.boxShadow='0 0 16px rgba(240,68,138,0.12)'" onmouseout="this.style.borderColor='rgba(240,68,138,0.25)';this.style.boxShadow='none'"><strong style="color: var(--color-text); display: block; margin-bottom: var(--space-2);">Fatigue Monitoring</strong>Track how fatigue accumulates across sessions and within training blocks.</div>
-      <div class="fade-in" style="background: var(--color-surface-2); border: 1px solid rgba(240,68,138,0.25); border-radius: var(--radius-md); padding: var(--space-4); font-size: var(--text-sm); color: var(--color-text-muted); line-height: 1.6; transition: all 0.2s;" onmouseover="this.style.borderColor='var(--color-pink)';this.style.boxShadow='0 0 16px rgba(240,68,138,0.12)'" onmouseout="this.style.borderColor='rgba(240,68,138,0.25)';this.style.boxShadow='none'"><strong style="color: var(--color-text); display: block; margin-bottom: var(--space-2);">Strength Trend Tracking</strong>See whether you're trending stronger, maintaining, or needing recovery.</div>
-      <div class="fade-in" style="background: var(--color-surface-2); border: 1px solid rgba(240,68,138,0.25); border-radius: var(--radius-md); padding: var(--space-4); font-size: var(--text-sm); color: var(--color-text-muted); line-height: 1.6; transition: all 0.2s;" onmouseover="this.style.borderColor='var(--color-pink)';this.style.boxShadow='0 0 16px rgba(240,68,138,0.12)'" onmouseout="this.style.borderColor='rgba(240,68,138,0.25)';this.style.boxShadow='none'"><strong style="color: var(--color-text); display: block; margin-bottom: var(--space-2);">Autoregulated Programming</strong>Know when to push and when to pull back — automatically, based on your data.</div>
-      <div class="fade-in" style="background: var(--color-surface-2); border: 1px solid rgba(240,68,138,0.25); border-radius: var(--radius-md); padding: var(--space-4); font-size: var(--text-sm); color: var(--color-text-muted); line-height: 1.6; transition: all 0.2s;" onmouseover="this.style.borderColor='var(--color-pink)';this.style.boxShadow='0 0 16px rgba(240,68,138,0.12)'" onmouseout="this.style.borderColor='rgba(240,68,138,0.25)';this.style.boxShadow='none'"><strong style="color: var(--color-text); display: block; margin-bottom: var(--space-2);">No VBT? No Problem</strong>We start with RPE-based autoregulation and structured feedback until you're ready for velocity tracking.</div>
+      <div class="fade-in" style="background: var(--color-surface-2); border: 1px solid rgba(239,50,149,0.25); border-radius: var(--radius-md); padding: var(--space-4); font-size: var(--text-sm); color: var(--color-text-muted); line-height: 1.6; transition: all 0.2s;" onmouseover="this.style.borderColor='var(--color-pink)';this.style.boxShadow='0 0 16px rgba(239,50,149,0.12)'" onmouseout="this.style.borderColor='rgba(239,50,149,0.25)';this.style.boxShadow='none'"><strong style="color: var(--color-text); display: block; margin-bottom: var(--space-2);">Velocity Data Integration</strong>Your bar speed feeds directly into your programming — session by session.</div>
+      <div class="fade-in" style="background: var(--color-surface-2); border: 1px solid rgba(239,50,149,0.25); border-radius: var(--radius-md); padding: var(--space-4); font-size: var(--text-sm); color: var(--color-text-muted); line-height: 1.6; transition: all 0.2s;" onmouseover="this.style.borderColor='var(--color-pink)';this.style.boxShadow='0 0 16px rgba(239,50,149,0.12)'" onmouseout="this.style.borderColor='rgba(239,50,149,0.25)';this.style.boxShadow='none'"><strong style="color: var(--color-text); display: block; margin-bottom: var(--space-2);">Daily Load Calibration</strong>Whether the prescribed weight was right for you that day, based on real bar speed.</div>
+      <div class="fade-in" style="background: var(--color-surface-2); border: 1px solid rgba(239,50,149,0.25); border-radius: var(--radius-md); padding: var(--space-4); font-size: var(--text-sm); color: var(--color-text-muted); line-height: 1.6; transition: all 0.2s;" onmouseover="this.style.borderColor='var(--color-pink)';this.style.boxShadow='0 0 16px rgba(239,50,149,0.12)'" onmouseout="this.style.borderColor='rgba(239,50,149,0.25)';this.style.boxShadow='none'"><strong style="color: var(--color-text); display: block; margin-bottom: var(--space-2);">Fatigue Monitoring</strong>Track how fatigue accumulates across sessions and within training blocks.</div>
+      <div class="fade-in" style="background: var(--color-surface-2); border: 1px solid rgba(239,50,149,0.25); border-radius: var(--radius-md); padding: var(--space-4); font-size: var(--text-sm); color: var(--color-text-muted); line-height: 1.6; transition: all 0.2s;" onmouseover="this.style.borderColor='var(--color-pink)';this.style.boxShadow='0 0 16px rgba(239,50,149,0.12)'" onmouseout="this.style.borderColor='rgba(239,50,149,0.25)';this.style.boxShadow='none'"><strong style="color: var(--color-text); display: block; margin-bottom: var(--space-2);">Strength Trend Tracking</strong>See whether you're trending stronger, maintaining, or needing recovery.</div>
+      <div class="fade-in" style="background: var(--color-surface-2); border: 1px solid rgba(239,50,149,0.25); border-radius: var(--radius-md); padding: var(--space-4); font-size: var(--text-sm); color: var(--color-text-muted); line-height: 1.6; transition: all 0.2s;" onmouseover="this.style.borderColor='var(--color-pink)';this.style.boxShadow='0 0 16px rgba(239,50,149,0.12)'" onmouseout="this.style.borderColor='rgba(239,50,149,0.25)';this.style.boxShadow='none'"><strong style="color: var(--color-text); display: block; margin-bottom: var(--space-2);">Autoregulated Programming</strong>Know when to push and when to pull back — automatically, based on your data.</div>
+      <div class="fade-in" style="background: var(--color-surface-2); border: 1px solid rgba(239,50,149,0.25); border-radius: var(--radius-md); padding: var(--space-4); font-size: var(--text-sm); color: var(--color-text-muted); line-height: 1.6; transition: all 0.2s;" onmouseover="this.style.borderColor='var(--color-pink)';this.style.boxShadow='0 0 16px rgba(239,50,149,0.12)'" onmouseout="this.style.borderColor='rgba(239,50,149,0.25)';this.style.boxShadow='none'"><strong style="color: var(--color-text); display: block; margin-bottom: var(--space-2);">No VBT? No Problem</strong>We start with RPE-based autoregulation and structured feedback until you're ready for velocity tracking.</div>
     </div>
   </div>
 </section>
@@ -801,6 +802,16 @@
           <h4 style="font-family: var(--font-display); font-size: var(--text-sm); font-weight: 700;">Competitors</h4>
         </div>
         <p>Competitors preparing for meets, events, or seasons who need a coach in their corner.</p>
+      </div>
+
+      <div class="rm-who-card fade-in">
+        <div style="display: flex; align-items: center; gap: var(--space-2); margin-bottom: var(--space-2);">
+          <div class="rm-who-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          </div>
+          <h4 style="font-family: var(--font-display); font-size: var(--text-sm); font-weight: 700;">General Population</h4>
+        </div>
+        <p>You lift consistently and want a program that's actually built for you — not a template. You don't need to compete to benefit from data-driven training.</p>
       </div>
 
     </div>
@@ -896,20 +907,54 @@
 <!-- ═══════════════════════════════════════════
      CTA
      ═══════════════════════════════════════════ -->
-<section class="rm-cta-section" aria-label="Get Started">
-  <div class="container">
-    <div class="rm-cta-inner fade-in">
-      <p class="section-label" style="color: var(--color-pink); text-align: center;">Get Started</p>
-      <h2>Try a Week Free!</h2>
-      <p>First week on Brad. No commitment, no credit card. See what data-driven remote coaching actually feels like.</p>
-      <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="btn btn-primary">Try a Week Free!</a>
-    </div>
+<!-- TESTIMONIAL SECTION -->
+<style>
+.testimonial-section { padding: 80px 0; background: var(--color-bg-dark, #05070B); }
+.testimonial-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+.testimonial-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 16px; padding: 32px; position: relative; }
+.testimonial-card::before { content: '\201C'; font-size: 48px; color: var(--color-teal, #1EC8B0); position: absolute; top: 16px; left: 24px; line-height: 1; font-family: Georgia, serif; }
+.testimonial-quote { font-size: 15px; line-height: 1.7; color: rgba(255,255,255,0.8); margin-top: 24px; font-style: italic; }
+.testimonial-result { display: inline-block; background: rgba(239,50,149,0.12); color: var(--color-pink, #EF3295); padding: 4px 12px; border-radius: 6px; font-size: 13px; font-weight: 600; margin-top: 16px; font-family: 'JetBrains Mono', monospace; }
+.testimonial-attribution { margin-top: 12px; font-size: 13px; color: rgba(255,255,255,0.4); font-family: 'JetBrains Mono', monospace; }
+@media (max-width: 768px) { .testimonial-grid { grid-template-columns: 1fr; } }
+</style>
+
+<section class="testimonial-section">
+  <div style="text-align: center; margin-bottom: 48px;">
+    <p style="text-align: center; font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: var(--color-teal, #1EC8B0); margin-bottom: 8px;">WHAT ATHLETES SAY</p>
+    <h2 style="font-size: clamp(28px, 4vw, 42px); font-weight: 700; color: white; margin: 0;">Real Results. Real Athletes.</h2>
+  </div>
+  <div class="testimonial-grid">
+      <div class="testimonial-card">
+        <p class="testimonial-quote">[Placeholder] I didn't think remote coaching could feel this personalized. Brad adjusts my program based on my actual bar speed data.</p>
+        <span class="testimonial-result">[Result]</span>
+        <p class="testimonial-attribution">[Name] · Remote</p>
+      </div>
+      <div class="testimonial-card">
+        <p class="testimonial-quote">[Placeholder] Living overseas, I needed a coach who could see my training without being there. The velocity data bridges the gap completely.</p>
+        <span class="testimonial-result">[Result]</span>
+        <p class="testimonial-attribution">[Name] · Remote</p>
+      </div>
+      <div class="testimonial-card">
+        <p class="testimonial-quote">[Placeholder] Data-driven programming that adapts every week based on real performance. Nothing else comes close.</p>
+        <span class="testimonial-result">[Result]</span>
+        <p class="testimonial-attribution">[Name] · Remote</p>
+      </div>
   </div>
 </section>
+<!-- END TESTIMONIAL SECTION -->
+
+<div class="final-cta">
+  <p class="section-label" style="color: var(--color-pink); text-align: center; max-width: none;">Get Started</p>
+  <h2>Try a Week Free!</h2>
+  <p>First week on Brad. No commitment, no credit card. See what data-driven remote coaching actually feels like.</p>
+  <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="btn btn-primary">Try a Week Free!</a>
+</div>
 
 <!-- ═══════════════════════════════════════════
      FOOTER
      ═══════════════════════════════════════════ -->
+
 <footer class="site-footer" role="contentinfo">
   <div class="container">
     <div class="footer-nav-columns">
@@ -918,21 +963,14 @@
         <a href="./index.html">Home</a>
         <a href="./index.html#about">About Brad</a>
         <a href="./index.html#services">Services &amp; Pricing</a>
+        <a href="./method.html" style="display: block; font-size: 11px; color: var(--color-pink); text-decoration: none; padding: 1px 0; line-height: 1.5; font-weight: 600;">The Velocity Method</a>
         <a href="./index.html#vbt">VBT Explained</a>
         <a href="./index.html#results">Results</a>
         <a href="./index.html#contact">Contact</a>
       </div>
       <div class="footer-links">
         <h4>Resources &amp; Free Tools</h4>
-        <a href="./tools-vbt.html">VBT Calculator</a>
-        <a href="./tools-1rm.html">1RM Calculator</a>
-        <a href="./tools-warmup.html">Warmup Calculator</a>
-        <a href="./tools-lv-profile.html">LV Profile Builder</a>
-        <a href="./tools-rpe.html">RPE Chart</a>
-        <a href="./tools-rpe-velocity.html">RPE-Velocity</a>
-        <a href="./tools-crossfit.html">Machine Converter</a>
-        <a href="./tools-macro.html">Macro Calculator</a>
-        <a href="./tools-peptide.html">Peptide Calculator</a>
+        <a href="./tools.html">Calculators &amp; Converters</a>
         <a href="./velocity-trackers.html">Velocity Trackers Guide</a>
         <a href="./quiz.html">Training Type Quiz</a>
       </div>
@@ -952,7 +990,6 @@
     <div class="footer-bottom">
       <span>&copy; 2026 Yeager's Gym &middot; San Diego, CA</span>
       <div class="footer-bottom-right">
-        <a href="https://www.perplexity.ai/computer" target="_blank" rel="noopener noreferrer">Created with Perplexity Computer</a>
         <a href="./index.html" aria-label="Yeager's Gym Home">
           <img src="assets/logo.jpeg" alt="Yeager's Gym" class="logo-mark-img" width="24" height="24">
         </a>

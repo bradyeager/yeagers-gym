@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
 <!--
@@ -8,8 +8,6 @@
 / /___/ /_/ / / / / / / /_/ / /_/ / /_/  __/ /
 \____/\____/_/ /_/ /_/ .___/\__,_/\__/\___/_/
                     /_/
-        Created with Perplexity Computer
-        https://www.perplexity.ai/computer
 -->
 
 <meta charset="UTF-8">
@@ -30,12 +28,7 @@
   "name": "Load-Velocity Profile Builder",
   "description": "Plot your personal load-velocity relationship. Enter multiple sets to generate a profile and estimate your true 1RM.",
   "url": "https://yeagersgym.com/tools-lv-profile.html",
-  "applicationCategory": "HealthApplication",
-  "creator": {
-    "@type": "SoftwareApplication",
-    "name": "Perplexity Computer",
-    "url": "https://www.perplexity.ai/computer"
-  }
+  "applicationCategory": "HealthApplication"
 }
 </script>
 
@@ -242,7 +235,7 @@
 }
 
 .btn-add-set:hover {
-  background: rgba(30, 200, 176, 0.1);
+  background: rgba(72, 196, 204, 0.1);
 }
 
 .btn-add-set svg {
@@ -335,7 +328,7 @@
 .btn-remove-set:hover {
   border-color: var(--color-pink);
   color: var(--color-pink);
-  background: rgba(240, 68, 138, 0.08);
+  background: rgba(239, 50, 149, 0.08);
 }
 
 /* ── Top row: exercise + mvt + unit ── */
@@ -512,8 +505,8 @@
 }
 
 .pred-table thead tr {
-  background: rgba(30, 200, 176, 0.08);
-  border-bottom: 1px solid rgba(30, 200, 176, 0.2);
+  background: rgba(72, 196, 204, 0.08);
+  border-bottom: 1px solid rgba(72, 196, 204, 0.2);
 }
 
 .pred-table thead th {
@@ -541,7 +534,7 @@
 }
 
 .pred-table tbody tr:hover {
-  background: rgba(30, 200, 176, 0.05);
+  background: rgba(72, 196, 204, 0.05);
 }
 
 .pred-table tbody td {
@@ -706,10 +699,11 @@
           <a href="./recovery.html">Recovery</a>
         </div>
       </div>
-      <a href="./index.html#vbt" class="nav-link">Velocity Based Training</a>
+      <a href="./method.html" class="nav-link" style="color: var(--color-pink); font-weight: 700;">The Method</a>
+      <a href="./index.html#vbt" class="nav-link">What is VBT?</a>
       <a href="./index.html#results" class="nav-link">Results</a>
       <div class="nav-dropdown">
-        <a href="./tools-vbt.html" class="nav-link">Tools ▾</a>
+        <a href="./tools-vbt.html" class="nav-link">Free Tools ▾</a>
         <div class="nav-dropdown-menu">
           <a href="./tools-vbt.html">VBT Calculator</a>
           <a href="./tools-1rm.html">1RM Calculator</a>
@@ -743,17 +737,10 @@
     <a href="./nutrition.html" style="padding-left: 2rem;">Nutrition Coaching</a>
     <a href="./peptide-consulting.html" style="padding-left: 2rem; color: var(--color-teal);">Peptide Consulting</a>
     <a href="./recovery.html" style="padding-left: 2rem;">Recovery</a>
-    <a href="./index.html#vbt">Velocity Based Training</a>
+    <a href="./method.html" style="color: var(--color-pink); font-weight: 700;">The Velocity Method</a>
+    <a href="./index.html#vbt">What is VBT?</a>
     <a href="./index.html#results">Results</a>
-    <a href="./tools-vbt.html">VBT Calculator</a>
-    <a href="./tools-1rm.html">1RM Calculator</a>
-    <a href="./tools-warmup.html">Warmup Calculator</a>
-    <a href="./tools-lv-profile.html" style="color: var(--color-teal);">LV Profile Builder</a>
-    <a href="./tools-rpe.html">RPE Chart</a>
-    <a href="./tools-rpe-velocity.html">RPE-Velocity</a>
-    <a href="./tools-crossfit.html">Machine Converter</a>
-    <a href="./tools-macro.html">Macro Calculator</a>
-    <a href="./tools-peptide.html" style="color: var(--color-purple);">Peptide Calculator</a>
+    <a href="./tools.html" style="color: var(--color-teal); font-weight: 700;">Free Tools</a>
     <a href="./quiz.html" style="color: var(--color-pink);">Training Type Quiz</a>
     <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="btn btn-nav-cta" style="margin-top: var(--space-4);">Book Your FREE Session!</a>
   </div>
@@ -772,39 +759,30 @@
 
     <!-- Tool Nav Tabs -->
     <div class="tool-nav-bar fade-in">
-      <a href="./tools-vbt.html" class="tool-nav-pill">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
         VBT
       </a>
-      <a href="./tools-1rm.html" class="tool-nav-pill">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 18L18 6M8 6h10v10"/></svg>
         1RM
       </a>
-      <a href="./tools-warmup.html" class="tool-nav-pill">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83"/></svg>
         Warmup
       </a>
-      <a href="./tools-lv-profile.html" class="tool-nav-pill active">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
         LV Profile
       </a>
-      <a href="./tools-rpe.html" class="tool-nav-pill">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 3v18"/></svg>
         RPE Chart
       </a>
-      <a href="./tools-rpe-velocity.html" class="tool-nav-pill">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="M12 6v6l4 2"/></svg>
         RPE-Velocity
       </a>
-      <a href="./tools-crossfit.html" class="tool-nav-pill">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 12h8M12 8v8"/></svg>
         Machine
       </a>
-      <a href="./tools-macro.html" class="tool-nav-pill">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z"/><path d="M12 2v10l7 4"/></svg>
         Macro
       </a>
-      <a href="./tools-peptide.html" class="tool-nav-pill">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6v11a6 6 0 0 1-6 0V3z"/><path d="M12 14v7"/><path d="M6 3h12"/></svg>
         Peptide
       </a>
@@ -927,14 +905,12 @@
 </main>
 
 <!-- CTA Section -->
-<section style="padding: var(--space-8) 0 var(--space-6); text-align: center; position: relative;">
-  <div class="container">
-    <p class="section-label" style="color: var(--color-pink); text-align: center;">Get Started</p>
-    <h2 style="font-family: var(--font-body); font-size: var(--text-xl); font-weight: 700; color: var(--color-text); margin-bottom: var(--space-3);">Want <span style="color: var(--color-teal);">coaching</span> built on this <span style="color: var(--color-pink);">data</span>?</h2>
-    <p style="font-size: var(--text-sm); color: var(--color-text-muted); margin-bottom: var(--space-5); max-width: 45ch; margin-inline: auto;">Train with a coach who measures every rep. Book a free session and see VBT in action.</p>
-    <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="btn btn-primary">Book Your FREE Session!</a>
-  </div>
-</section>
+<div class="final-cta">
+  <p class="section-label" style="color: var(--color-pink); text-align: center; max-width: none;">Get Started</p>
+  <h2 style="font-family: var(--font-body); font-size: var(--text-xl); font-weight: 700; color: var(--color-text); margin-bottom: var(--space-3);">Want <span style="color: var(--color-teal);">coaching</span> built on this <span style="color: var(--color-pink);">data</span>?</h2>
+  <p style="font-size: var(--text-sm); color: var(--color-text-muted); margin-bottom: var(--space-5); max-width: 45ch; margin-inline: auto;">Train with a coach who measures every rep. Book a free session and see VBT in action.</p>
+  <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="btn btn-primary">Book Your FREE Session!</a>
+</div>
 
 <!-- ═══════════════════════════════════════════
      FOOTER
@@ -947,21 +923,14 @@
         <a href="./index.html">Home</a>
         <a href="./index.html#about">About Brad</a>
         <a href="./index.html#services">Services &amp; Pricing</a>
+        <a href="./method.html" style="display: block; font-size: 11px; color: var(--color-pink); text-decoration: none; padding: 1px 0; line-height: 1.5; font-weight: 600;">The Velocity Method</a>
         <a href="./index.html#vbt">VBT Explained</a>
         <a href="./index.html#results">Results</a>
         <a href="./index.html#contact">Contact</a>
       </div>
       <div class="footer-links">
         <h4>Resources &amp; Free Tools</h4>
-        <a href="./tools-vbt.html">VBT Calculator</a>
-        <a href="./tools-1rm.html">1RM Calculator</a>
-        <a href="./tools-warmup.html">Warmup Calculator</a>
-        <a href="./tools-lv-profile.html">LV Profile Builder</a>
-        <a href="./tools-rpe.html">RPE Chart</a>
-        <a href="./tools-rpe-velocity.html">RPE-Velocity</a>
-        <a href="./tools-crossfit.html">Machine Converter</a>
-        <a href="./tools-macro.html">Macro Calculator</a>
-        <a href="./tools-peptide.html">Peptide Calculator</a>
+        <a href="./tools.html">Calculators &amp; Converters</a>
         <a href="./velocity-trackers.html">Velocity Trackers Guide</a>
         <a href="./quiz.html">Training Type Quiz</a>
       </div>
@@ -981,7 +950,6 @@
     <div class="footer-bottom">
       <span>&copy; 2026 Yeager's Gym &middot; San Diego, CA</span>
       <div class="footer-bottom-right">
-        <a href="https://www.perplexity.ai/computer" target="_blank" rel="noopener noreferrer">Created with Perplexity Computer</a>
         <a href="./index.html" aria-label="Yeager's Gym Home">
           <img src="assets/logo.jpeg" alt="Yeager's Gym" class="logo-mark-img" width="24" height="24">
         </a>
@@ -1005,7 +973,7 @@
     { name: 'Strength-Speed',    min: 0.5,  max: 0.75, color: '#f39c12', bg: 'rgba(243,156,18,0.15)' },
     { name: 'Power',             min: 0.75, max: 1.0,  color: '#f1c40f', bg: 'rgba(241,196,15,0.15)' },
     { name: 'Speed-Strength',    min: 1.0,  max: 1.3,  color: '#2ecc71', bg: 'rgba(46,204,113,0.15)' },
-    { name: 'Speed',             min: 1.3,  max: 999,  color: '#1EC8B0', bg: 'rgba(30,200,176,0.15)' }
+    { name: 'Speed',             min: 1.3,  max: 999,  color: '#48C4CC', bg: 'rgba(72,196,204,0.15)' }
   ];
 
   function getZone(velocity) {
@@ -1308,7 +1276,7 @@
       { v0: 0.5,  v1: 0.75, color: 'rgba(243,156,18,0.07)' },
       { v0: 0.75, v1: 1.0,  color: 'rgba(241,196,15,0.07)' },
       { v0: 1.0,  v1: 1.3,  color: 'rgba(46,204,113,0.07)' },
-      { v0: 1.3,  v1: 999,  color: 'rgba(30,200,176,0.07)' }
+      { v0: 1.3,  v1: 999,  color: 'rgba(72,196,204,0.07)' }
     ];
     zoneBandDefs.forEach(function(z) {
       var y0 = yScale(Math.min(z.v1, velMax));
@@ -1386,7 +1354,7 @@
     // ── Regression line (pink) ──
     var regSteps = 200;
     ctx.beginPath();
-    ctx.strokeStyle = 'rgba(240, 68, 138, 0.85)';
+    ctx.strokeStyle = 'rgba(239, 50, 149, 0.85)';
     ctx.lineWidth = 2.5;
     ctx.setLineDash([]);
     for (var rs = 0; rs <= regSteps; rs++) {
@@ -1403,7 +1371,7 @@
     if (mvt >= velMin && mvt <= velMax) {
       var mvtY = yScale(mvt);
       ctx.beginPath();
-      ctx.strokeStyle = 'rgba(240, 68, 138, 0.5)';
+      ctx.strokeStyle = 'rgba(239, 50, 149, 0.5)';
       ctx.lineWidth = 1.5;
       ctx.setLineDash([5, 4]);
       ctx.moveTo(pad.left, mvtY);
@@ -1412,7 +1380,7 @@
       ctx.setLineDash([]);
 
       // MVT label on left axis
-      ctx.fillStyle = '#F0448A';
+      ctx.fillStyle = '#EF3295';
       ctx.font = '600 9px "JetBrains Mono", monospace';
       ctx.textAlign = 'left';
       ctx.fillText('MVT ' + mvt.toFixed(2), pad.left + 4, mvtY - 5);
@@ -1422,7 +1390,7 @@
     if (estimated1rm >= loadMin && estimated1rm <= loadMax) {
       var oneRmX = xScale(estimated1rm);
       ctx.beginPath();
-      ctx.strokeStyle = 'rgba(30, 200, 176, 0.55)';
+      ctx.strokeStyle = 'rgba(72, 196, 204, 0.55)';
       ctx.lineWidth = 1.5;
       ctx.setLineDash([5, 4]);
       ctx.moveTo(oneRmX, pad.top);
@@ -1431,7 +1399,7 @@
       ctx.setLineDash([]);
 
       // e1RM label
-      ctx.fillStyle = '#1EC8B0';
+      ctx.fillStyle = '#48C4CC';
       ctx.font = '600 9px "JetBrains Mono", monospace';
       ctx.textAlign = 'center';
       var labelY = pad.top + 10;
@@ -1445,8 +1413,8 @@
 
       // Glow
       var grd = ctx.createRadialGradient(dx, dy, 0, dx, dy, 14);
-      grd.addColorStop(0, 'rgba(30,200,176,0.25)');
-      grd.addColorStop(1, 'rgba(30,200,176,0)');
+      grd.addColorStop(0, 'rgba(72,196,204,0.25)');
+      grd.addColorStop(1, 'rgba(72,196,204,0)');
       ctx.beginPath();
       ctx.arc(dx, dy, 14, 0, Math.PI * 2);
       ctx.fillStyle = grd;
@@ -1455,7 +1423,7 @@
       // Dot
       ctx.beginPath();
       ctx.arc(dx, dy, 6, 0, Math.PI * 2);
-      ctx.fillStyle = '#1EC8B0';
+      ctx.fillStyle = '#48C4CC';
       ctx.fill();
       ctx.strokeStyle = '#fff';
       ctx.lineWidth = 2;
@@ -1531,7 +1499,7 @@
 </script>
 
 <!-- Mobile Sticky CTA -->
-<div class="mobile-sticky-cta" id="stickyCta" style="display: none; position: fixed; bottom: 0; left: 0; right: 0; z-index: 999; padding: 12px 16px; background: rgba(10,14,23,0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-top: 1px solid rgba(30,200,176,0.2); text-align: center;">
+<div class="mobile-sticky-cta" id="stickyCta" style="display: none; position: fixed; bottom: 0; left: 0; right: 0; z-index: 999; padding: 12px 16px; background: rgba(10,14,23,0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-top: 1px solid rgba(72,196,204,0.2); text-align: center;">
   <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" style="display: inline-block; width: 100%; max-width: 320px; padding: 10px 20px; background: var(--color-teal); color: #0a0e17; font-family: var(--font-display); font-size: 0.8rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; text-decoration: none; border-radius: 6px;">Book a Free Session</a>
 </div>
 <script>
