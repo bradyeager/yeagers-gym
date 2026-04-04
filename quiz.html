@@ -1053,10 +1053,12 @@
     // Set hidden field
     document.getElementById('hidden-result').value = winner;
 
-    // Send to Brevo
-    submitToBrevo(firstName, email, winner);
+    // Send to Brevo + show toast on success
+    submitToBrevo(firstName, email, winner).then(function(ok) {
+      if (ok) brevoToast();
+    });
 
-    // Show result
+    // Show result immediately (don't wait for API)
     showResult(winner);
   });
 

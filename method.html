@@ -1211,10 +1211,11 @@
     <button type="button" id="cheatsheetBtn" class="btn btn-primary" onclick="submitCheatsheet()" style="white-space: nowrap;">Get the Cheat Sheet</button>
   </div>
   <p id="cheatsheetError" style="display: none; color: var(--color-pink); font-size: var(--text-xs); margin-top: var(--space-2); font-family: var(--font-display);">Something went wrong. Try again.</p>
-  <p id="cheatsheetSuccess" style="display: none; margin-top: var(--space-3);">
-    <span style="color: var(--color-teal); font-weight: 600; font-size: var(--text-sm);">You're in.</span><br>
-    <a href="./assets/6-lift-cheatsheet.pdf" target="_blank" rel="noopener noreferrer" class="btn btn-primary" style="margin-top: var(--space-2); display: inline-flex;">Download Your Cheat Sheet →</a>
-  </p>
+  <div id="cheatsheetSuccess" style="display: none; margin-top: var(--space-3); text-align: center;">
+    <span style="color: var(--color-teal); font-weight: 700; font-size: var(--text-base);">Thank you!</span><br>
+    <span style="color: var(--color-text-muted); font-size: var(--text-sm); line-height: 1.6; display: inline-block; margin-top: var(--space-2); max-width: 36ch;">Your bar speed just increased by reading this far. Imagine what happens when you actually train with it.</span><br>
+    <a href="./assets/6-lift-cheatsheet.pdf" target="_blank" rel="noopener noreferrer" class="btn btn-primary" style="margin-top: var(--space-4); display: inline-flex;">Download Your Cheat Sheet →</a>
+  </div>
   <p style="font-size: 0.55rem; color: var(--color-text-faint); margin-top: var(--space-2);">No spam. Unsubscribe anytime.</p>
 </div>
       </div>
@@ -1408,6 +1409,7 @@
       if (ok) {
         formEl.style.display = 'none';
         successEl.style.display = 'block';
+        brevoToast();
       } else {
         errEl.textContent = 'Something went wrong. Try again.';
         errEl.style.display = 'block';
