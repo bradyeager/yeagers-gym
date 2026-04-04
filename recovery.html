@@ -442,6 +442,7 @@
           <a href="./recovery.html">Recovery</a>
         </div>
       </div>
+      <a href="./method.html" class="nav-link" style="color: var(--color-pink); font-weight: 700;">The Method</a>
       <a href="./index.html#vbt" class="nav-link">Velocity Based Training</a>
       <a href="./index.html#results" class="nav-link">Results</a>
       <div class="nav-dropdown">
@@ -479,6 +480,7 @@
     <a href="./nutrition.html" style="padding-left: 2rem;">Nutrition Coaching</a>
     <a href="./peptide-consulting.html" style="padding-left: 2rem; color: var(--color-teal);">Peptide Consulting</a>
     <a href="./recovery.html" style="padding-left: 2rem;">Recovery</a>
+    <a href="./method.html" style="color: var(--color-pink); font-weight: 700;">The Velocity Method</a>
     <a href="./index.html#vbt">Velocity Based Training</a>
     <a href="./index.html#results">Results</a>
     <a href="./tools-vbt.html">VBT Calculator</a>
@@ -639,6 +641,45 @@
 <!-- ═══════════════════════════════════════════
      FOOTER
      ═══════════════════════════════════════════ -->
+
+<!-- TESTIMONIAL SECTION -->
+
+<style>
+.testimonial-section { padding: 80px 0; background: var(--color-bg-dark, #05070B); }
+.testimonial-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+.testimonial-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 16px; padding: 32px; position: relative; }
+.testimonial-card::before { content: '\201C'; font-size: 48px; color: var(--color-teal, #1EC8B0); position: absolute; top: 16px; left: 24px; line-height: 1; font-family: Georgia, serif; }
+.testimonial-quote { font-size: 15px; line-height: 1.7; color: rgba(255,255,255,0.8); margin-top: 24px; font-style: italic; }
+.testimonial-result { display: inline-block; background: rgba(239,50,149,0.12); color: var(--color-pink, #EF3295); padding: 4px 12px; border-radius: 6px; font-size: 13px; font-weight: 600; margin-top: 16px; font-family: 'JetBrains Mono', monospace; }
+.testimonial-attribution { margin-top: 12px; font-size: 13px; color: rgba(255,255,255,0.4); font-family: 'JetBrains Mono', monospace; }
+@media (max-width: 768px) { .testimonial-grid { grid-template-columns: 1fr; } }
+</style>
+
+<section class="testimonial-section">
+  <div style="text-align: center; margin-bottom: 48px;">
+    <p style="text-align: center; font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: var(--color-teal, #1EC8B0); margin-bottom: 8px;">WHAT ATHLETES SAY</p>
+    <h2 style="font-size: clamp(28px, 4vw, 42px); font-weight: 700; color: white; margin: 0;">Real Results. Real Athletes.</h2>
+  </div>
+  <div class="testimonial-grid">
+      <div class="testimonial-card">
+        <p class="testimonial-quote">[Placeholder] The cupping sessions between heavy training weeks keep me recovering faster than anything I've tried.</p>
+        <span class="testimonial-result">[Result]</span>
+        <p class="testimonial-attribution">[Name] · Recovery Client</p>
+      </div>
+      <div class="testimonial-card">
+        <p class="testimonial-quote">[Placeholder] Cold plunge plus velocity tracking. My readiness scores are consistently higher on recovery weeks.</p>
+        <span class="testimonial-result">[Result]</span>
+        <p class="testimonial-attribution">[Name] · Recovery Client</p>
+      </div>
+      <div class="testimonial-card">
+        <p class="testimonial-quote">[Placeholder] I was skeptical about recovery services but the difference in how I feel session to session is undeniable.</p>
+        <span class="testimonial-result">[Result]</span>
+        <p class="testimonial-attribution">[Name] · Recovery Client</p>
+      </div>
+  </div>
+</section>
+<!-- END TESTIMONIAL SECTION -->
+
 <footer class="site-footer" role="contentinfo">
   <div class="container">
     <div class="footer-nav-columns">
@@ -647,6 +688,7 @@
         <a href="./index.html">Home</a>
         <a href="./index.html#about">About Brad</a>
         <a href="./index.html#services">Services &amp; Pricing</a>
+        <a href="./method.html" style="display: block; font-size: 11px; color: var(--color-pink); text-decoration: none; padding: 1px 0; line-height: 1.5; font-weight: 600;">The Velocity Method</a>
         <a href="./index.html#vbt">VBT Explained</a>
         <a href="./index.html#results">Results</a>
         <a href="./index.html#contact">Contact</a>
