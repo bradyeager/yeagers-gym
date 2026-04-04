@@ -453,43 +453,87 @@
 <!-- ═══════════════════════════════════════════
      CTA
      ═══════════════════════════════════════════ -->
-<!-- TESTIMONIAL SECTION -->
-
-<style>
-.testimonial-section { padding: 80px 0; background: var(--color-bg-dark, #05070B); }
-.testimonial-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; max-width: 1200px; margin: 0 auto; padding: 0 24px; }
-.testimonial-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 16px; padding: 32px; position: relative; }
-.testimonial-card::before { content: '\201C'; font-size: 48px; color: var(--color-teal, #1EC8B0); position: absolute; top: 16px; left: 24px; line-height: 1; font-family: Georgia, serif; }
-.testimonial-quote { font-size: 15px; line-height: 1.7; color: rgba(255,255,255,0.8); margin-top: 24px; font-style: italic; }
-.testimonial-result { display: inline-block; background: rgba(239,50,149,0.12); color: var(--color-pink, #EF3295); padding: 4px 12px; border-radius: 6px; font-size: 13px; font-weight: 600; margin-top: 16px; font-family: 'JetBrains Mono', monospace; }
-.testimonial-attribution { margin-top: 12px; font-size: 13px; color: rgba(255,255,255,0.4); font-family: 'JetBrains Mono', monospace; }
-@media (max-width: 768px) { .testimonial-grid { grid-template-columns: 1fr; } }
-</style>
-
-<section class="testimonial-section">
-  <div style="text-align: center; margin-bottom: 48px;">
+<!-- TESTIMONIALS (carousel style) -->
+<div class="hero-testimonial-carousel" aria-label="Client testimonials" style="padding: var(--space-6) 0;">
+  <div style="text-align: center; margin-bottom: var(--space-4);">
     <p class="section-label" style="color: var(--color-teal); text-align: center; max-width: none;">What Athletes Say</p>
-    <h2 style="font-size: clamp(28px, 4vw, 42px); font-weight: 700; color: white; margin: 0;">Real Results. Real Athletes.</h2>
   </div>
-  <div class="testimonial-grid">
-      <div class="testimonial-card">
-        <p class="testimonial-quote">"The peaking protocol was dialed. I felt stronger on meet day than I ever had in the gym, and that doesn't happen by accident."</p>
-        <span class="testimonial-result">USAPL Powerlifter</span>
-        <p class="testimonial-attribution">Claudia Arzillo · In-Person</p>
+  <div class="hero-testimonial-track">
+    <div class="hero-testimonial-card">
+      <img src="assets/headshots/Claudia.jpg" alt="Claudia Arzillo" class="hero-testi-avatar" width="48" height="48">
+      <div class="hero-testi-body">
+        <div class="hero-testi-stars" style="color: var(--color-pink);">★★★★★</div>
+        <p class="hero-testi-quote">"The peaking protocol was dialed. I felt stronger on meet day than I ever had in the gym."</p>
+        <span class="hero-testi-name">Claudia Arzillo</span>
+        <span class="hero-testi-type">USAPL Powerlifter</span>
       </div>
-      <div class="testimonial-card">
-        <p class="testimonial-quote">"Six months after back surgery, I squatted 300 pounds. Brad understood post-surgical progression and made me believe it was safe to push."</p>
-        <span class="testimonial-result">Post-Surgical Rehab</span>
-        <p class="testimonial-attribution">Robert Brower · In-Person</p>
+    </div>
+    <div class="hero-testimonial-card">
+      <img src="assets/headshots/Robert.png" alt="Robert Brower" class="hero-testi-avatar" width="48" height="48">
+      <div class="hero-testi-body">
+        <div class="hero-testi-stars" style="color: var(--color-pink);">★★★★★</div>
+        <p class="hero-testi-quote">"Six months after back surgery, I squatted 300 pounds. Brad made me believe it was safe to push."</p>
+        <span class="hero-testi-name">Robert Brower</span>
+        <span class="hero-testi-type">Financial Planner</span>
       </div>
-      <div class="testimonial-card">
-        <p class="testimonial-quote">"7 medals in 9 events at the Senior Games. Everyone told me to slow down — Brad told me to train smarter. That made all the difference."</p>
-        <span class="testimonial-result">SD Sr. Games Gold Medalist</span>
-        <p class="testimonial-attribution">Tonnie Dahl · In-Person</p>
+    </div>
+    <div class="hero-testimonial-card">
+      <img src="assets/headshots/Tonnie.png" alt="Tonnie Dahl" class="hero-testi-avatar" width="48" height="48">
+      <div class="hero-testi-body">
+        <div class="hero-testi-stars" style="color: var(--color-pink);">★★★★★</div>
+        <p class="hero-testi-quote">"7 medals in 9 events at the Senior Games. Brad told me to train smarter."</p>
+        <span class="hero-testi-name">Tonnie Dahl</span>
+        <span class="hero-testi-type">SD Sr. Games Gold Medalist</span>
       </div>
+    </div>
+    <div class="hero-testimonial-card">
+      <img src="assets/headshots/Abby.jpg" alt="Abby Fleisner" class="hero-testi-avatar" width="48" height="48">
+      <div class="hero-testi-body">
+        <div class="hero-testi-stars" style="color: var(--color-pink);">★★★★★</div>
+        <p class="hero-testi-quote">"I won my pro card without destroying myself. The prep was structured — never guessing."</p>
+        <span class="hero-testi-name">Abby Fleisner</span>
+        <span class="hero-testi-type">IFBB Pro Bodybuilder</span>
+      </div>
+    </div>
+    <!-- Duplicates for scroll -->
+    <div class="hero-testimonial-card">
+      <img src="assets/headshots/Claudia.jpg" alt="Claudia Arzillo" class="hero-testi-avatar" width="48" height="48">
+      <div class="hero-testi-body">
+        <div class="hero-testi-stars" style="color: var(--color-pink);">★★★★★</div>
+        <p class="hero-testi-quote">"The peaking protocol was dialed. I felt stronger on meet day than I ever had in the gym."</p>
+        <span class="hero-testi-name">Claudia Arzillo</span>
+        <span class="hero-testi-type">USAPL Powerlifter</span>
+      </div>
+    </div>
+    <div class="hero-testimonial-card">
+      <img src="assets/headshots/Robert.png" alt="Robert Brower" class="hero-testi-avatar" width="48" height="48">
+      <div class="hero-testi-body">
+        <div class="hero-testi-stars" style="color: var(--color-pink);">★★★★★</div>
+        <p class="hero-testi-quote">"Six months after back surgery, I squatted 300 pounds. Brad made me believe it was safe to push."</p>
+        <span class="hero-testi-name">Robert Brower</span>
+        <span class="hero-testi-type">Financial Planner</span>
+      </div>
+    </div>
+    <div class="hero-testimonial-card">
+      <img src="assets/headshots/Tonnie.png" alt="Tonnie Dahl" class="hero-testi-avatar" width="48" height="48">
+      <div class="hero-testi-body">
+        <div class="hero-testi-stars" style="color: var(--color-pink);">★★★★★</div>
+        <p class="hero-testi-quote">"7 medals in 9 events at the Senior Games. Brad told me to train smarter."</p>
+        <span class="hero-testi-name">Tonnie Dahl</span>
+        <span class="hero-testi-type">SD Sr. Games Gold Medalist</span>
+      </div>
+    </div>
+    <div class="hero-testimonial-card">
+      <img src="assets/headshots/Abby.jpg" alt="Abby Fleisner" class="hero-testi-avatar" width="48" height="48">
+      <div class="hero-testi-body">
+        <div class="hero-testi-stars" style="color: var(--color-pink);">★★★★★</div>
+        <p class="hero-testi-quote">"I won my pro card without destroying myself. The prep was structured — never guessing."</p>
+        <span class="hero-testi-name">Abby Fleisner</span>
+        <span class="hero-testi-type">IFBB Pro Bodybuilder</span>
+      </div>
+    </div>
   </div>
-</section>
-<!-- END TESTIMONIAL SECTION -->
+</div>
 
 <div class="final-cta">
   <p class="section-label" style="color: var(--color-pink); text-align: center; max-width: none;">Get Started</p>

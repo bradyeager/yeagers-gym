@@ -891,42 +891,86 @@
 <!-- ═══════════════════════════════════════════
      CTA
      ═══════════════════════════════════════════ -->
-<!-- TESTIMONIAL SECTION -->
-<style>
-.testimonial-section { padding: 80px 0; background: var(--color-bg-dark, #05070B); }
-.testimonial-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; max-width: 1200px; margin: 0 auto; padding: 0 24px; }
-.testimonial-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 16px; padding: 32px; position: relative; }
-.testimonial-card::before { content: '\201C'; font-size: 48px; color: var(--color-teal, #1EC8B0); position: absolute; top: 16px; left: 24px; line-height: 1; font-family: Georgia, serif; }
-.testimonial-quote { font-size: 15px; line-height: 1.7; color: rgba(255,255,255,0.8); margin-top: 24px; font-style: italic; }
-.testimonial-result { display: inline-block; background: rgba(239,50,149,0.12); color: var(--color-pink, #EF3295); padding: 4px 12px; border-radius: 6px; font-size: 13px; font-weight: 600; margin-top: 16px; font-family: 'JetBrains Mono', monospace; }
-.testimonial-attribution { margin-top: 12px; font-size: 13px; color: rgba(255,255,255,0.4); font-family: 'JetBrains Mono', monospace; }
-@media (max-width: 768px) { .testimonial-grid { grid-template-columns: 1fr; } }
-</style>
-
-<section class="testimonial-section">
-  <div style="text-align: center; margin-bottom: 48px;">
-    <p style="text-align: center; font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: var(--color-teal, #1EC8B0); margin-bottom: 8px; max-width: none; display: block; width: 100%;">WHAT ATHLETES SAY</p>
-    <h2 style="font-size: clamp(28px, 4vw, 42px); font-weight: 700; color: white; margin: 0;">Real Results. Real Athletes.</h2>
+<!-- TESTIMONIALS (carousel style) -->
+<div class="hero-testimonial-carousel" aria-label="Client testimonials" style="padding: var(--space-6) 0;">
+  <div style="text-align: center; margin-bottom: var(--space-4);">
+    <p class="section-label" style="color: var(--color-teal); text-align: center; max-width: none;">What Athletes Say</p>
   </div>
-  <div class="testimonial-grid">
-      <div class="testimonial-card">
-        <p class="testimonial-quote">"Qualifying for Quarterfinals once is hard. Doing it three years straight means the coaching is building something sustainable."</p>
-        <span class="testimonial-result">CrossFit Athlete</span>
-        <p class="testimonial-attribution">Maria Alvarez · Remote</p>
+  <div class="hero-testimonial-track">
+    <div class="hero-testimonial-card">
+      <img src="assets/headshots/Claudia.jpg" alt="Claudia Arzillo" class="hero-testi-avatar" width="48" height="48">
+      <div class="hero-testi-body">
+        <div class="hero-testi-stars" style="color: var(--color-pink);">★★★★★</div>
+        <p class="hero-testi-quote">"The peaking protocol was dialed. I felt stronger on meet day than I ever had in the gym."</p>
+        <span class="hero-testi-name">Claudia Arzillo</span>
+        <span class="hero-testi-type">USAPL Powerlifter</span>
       </div>
-      <div class="testimonial-card">
-        <p class="testimonial-quote">"Brad's programming is the real deal. Data-driven, no guesswork, and I hit PRs I didn't think were possible."</p>
-        <span class="testimonial-result">Strength Athlete</span>
-        <p class="testimonial-attribution">Mariah Yeager · Remote</p>
+    </div>
+    <div class="hero-testimonial-card">
+      <img src="assets/headshots/Maria.png" alt="Maria Alvarez" class="hero-testi-avatar" width="48" height="48">
+      <div class="hero-testi-body">
+        <div class="hero-testi-stars" style="color: var(--color-pink);">★★★★★</div>
+        <p class="hero-testi-quote">"Qualifying for Quarterfinals three years straight means the coaching is sustainable."</p>
+        <span class="hero-testi-name">Maria Alvarez</span>
+        <span class="hero-testi-type">CrossFit Athlete</span>
       </div>
-      <div class="testimonial-card">
-        <p class="testimonial-quote">"The combination of VBT tracking and smart programming took my training to another level. I wish I started sooner."</p>
-        <span class="testimonial-result">Performance Athlete</span>
-        <p class="testimonial-attribution">Mathieu · Remote</p>
+    </div>
+    <div class="hero-testimonial-card">
+      <img src="assets/headshots/Charlie.jpg" alt="Charlie Houck" class="hero-testi-avatar" width="48" height="48">
+      <div class="hero-testi-body">
+        <div class="hero-testi-stars" style="color: var(--color-pink);">★★★★★</div>
+        <p class="hero-testi-quote">"60 pounds in 8 months. This wasn’t a crash diet — it was a structured plan."</p>
+        <span class="hero-testi-name">Charlie Houck</span>
+        <span class="hero-testi-type">Fat Loss / Nutrition</span>
       </div>
+    </div>
+    <div class="hero-testimonial-card">
+      <img src="assets/headshots/Mathieu.jpg" alt="Mathieu Celestin" class="hero-testi-avatar" width="48" height="48">
+      <div class="hero-testi-body">
+        <div class="hero-testi-stars" style="color: var(--color-pink);">★★★★★</div>
+        <p class="hero-testi-quote">"I went from surviving HYROX to competing in pro division."</p>
+        <span class="hero-testi-name">Mathieu Celestin</span>
+        <span class="hero-testi-type">Hyrox Pro</span>
+      </div>
+    </div>
+    <div class="hero-testimonial-card">
+      <img src="assets/headshots/Claudia.jpg" alt="Claudia Arzillo" class="hero-testi-avatar" width="48" height="48">
+      <div class="hero-testi-body">
+        <div class="hero-testi-stars" style="color: var(--color-pink);">★★★★★</div>
+        <p class="hero-testi-quote">"The peaking protocol was dialed. I felt stronger on meet day than I ever had in the gym."</p>
+        <span class="hero-testi-name">Claudia Arzillo</span>
+        <span class="hero-testi-type">USAPL Powerlifter</span>
+      </div>
+    </div>
+    <div class="hero-testimonial-card">
+      <img src="assets/headshots/Maria.png" alt="Maria Alvarez" class="hero-testi-avatar" width="48" height="48">
+      <div class="hero-testi-body">
+        <div class="hero-testi-stars" style="color: var(--color-pink);">★★★★★</div>
+        <p class="hero-testi-quote">"Qualifying for Quarterfinals three years straight means the coaching is sustainable."</p>
+        <span class="hero-testi-name">Maria Alvarez</span>
+        <span class="hero-testi-type">CrossFit Athlete</span>
+      </div>
+    </div>
+    <div class="hero-testimonial-card">
+      <img src="assets/headshots/Charlie.jpg" alt="Charlie Houck" class="hero-testi-avatar" width="48" height="48">
+      <div class="hero-testi-body">
+        <div class="hero-testi-stars" style="color: var(--color-pink);">★★★★★</div>
+        <p class="hero-testi-quote">"60 pounds in 8 months. This wasn’t a crash diet — it was a structured plan."</p>
+        <span class="hero-testi-name">Charlie Houck</span>
+        <span class="hero-testi-type">Fat Loss / Nutrition</span>
+      </div>
+    </div>
+    <div class="hero-testimonial-card">
+      <img src="assets/headshots/Mathieu.jpg" alt="Mathieu Celestin" class="hero-testi-avatar" width="48" height="48">
+      <div class="hero-testi-body">
+        <div class="hero-testi-stars" style="color: var(--color-pink);">★★★★★</div>
+        <p class="hero-testi-quote">"I went from surviving HYROX to competing in pro division."</p>
+        <span class="hero-testi-name">Mathieu Celestin</span>
+        <span class="hero-testi-type">Hyrox Pro</span>
+      </div>
+    </div>
   </div>
-</section>
-<!-- END TESTIMONIAL SECTION -->
+</div>
 
 <div class="final-cta">
   <p class="section-label" style="color: var(--color-pink); text-align: center; max-width: none;">Get Started</p>
