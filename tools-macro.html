@@ -1572,25 +1572,12 @@
     emailGate.classList.remove('visible');
   }
 
-  function submitToKit(email) {
-    // Kit (ConvertKit) form submission
-    // Replace YOUR_KIT_FORM_ID with your actual Kit form ID
-    var KIT_FORM_ID = 'YOUR_KIT_FORM_ID';
-    if (KIT_FORM_ID === 'YOUR_KIT_FORM_ID') {
-      console.log('[Kit] Form ID not configured. Email captured:', email);
-      return;
+  async function submitToBrevo(email) {
+    var result = await BREVO.submitMacroCalc(email);
+    if (!result.success) {
+      console.error('[BREVO] Macro calc submit failed:', result.error);
     }
-    var url = 'https://app.kit.com/forms/' + KIT_FORM_ID + '/subscriptions';
-    fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        email_address: email,
-        tags: ['macro-calculator', state.goal, $('style').value]
-      })
-    }).catch(function(err) {
-      console.log('[Kit] Subscription error:', err);
-    });
+    return result.success;
   }
 
   // Calculate button
@@ -1613,7 +1600,7 @@
       $('gateEmail').setAttribute('placeholder', 'Enter a valid email');
       return;
     }
-    submitToKit(email);
+    submitToBrevo(email);
     hideEmailGate();
     renderResults(cachedResults);
   });
@@ -1679,5 +1666,6 @@
 })();
 </script>
 
+<script src="brevo.js"></script>
 </body>
 </html>

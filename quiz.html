@@ -1052,9 +1052,8 @@
     // Set hidden field
     document.getElementById('hidden-result').value = winner;
 
-    // Send to Kit (ConvertKit) — using their form endpoint
-    // Brad will replace this form ID with his actual Kit form ID
-    submitToKit(firstName, email, winner);
+    // Send to Brevo
+    submitToBrevo(firstName, email, winner);
 
     // Show result
     showResult(winner);
@@ -1065,40 +1064,12 @@
     showResult(winner);
   });
 
-  function submitToKit(firstName, email, quizResult) {
-    // Kit (ConvertKit) form submission
-    // Replace FORM_ID with your actual Kit form ID from:
-    // Kit dashboard → Forms → select form → grab the form ID from the URL
-    var KIT_FORM_ID = 'YOUR_KIT_FORM_ID';
-
-    // If form ID hasn't been set yet, just log and skip
-    if (KIT_FORM_ID === 'YOUR_KIT_FORM_ID') {
-      console.log('Kit form not configured yet. Would submit:', {
-        first_name: firstName,
-        email: email,
-        quiz_result: quizResult
-      });
-      return;
+  async function submitToBrevo(firstName, email, quizResult) {
+    var result = await BREVO.submitQuiz(firstName, email, quizResult);
+    if (!result.success) {
+      console.error('[BREVO] Quiz submit failed:', result.error);
     }
-
-    // Kit API endpoint
-    var url = 'https://api.convertkit.com/v3/forms/' + KIT_FORM_ID + '/subscribe';
-
-    fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        api_key: 'YOUR_KIT_API_KEY', // Replace with your Kit public API key
-        email: email,
-        first_name: firstName,
-        fields: {
-          quiz_result: quizResult
-        },
-        tags: [quizResult] // Tag subscriber with their archetype
-      })
-    }).catch(function(err) {
-      console.log('Kit submission error (non-blocking):', err);
-    });
+    return result.success;
   }
 
   // ══════════════════════════════════════════════════════════
@@ -1203,5 +1174,6 @@
 })();
 </script>
 
+<script src="brevo.js"></script>
 </body>
 </html>
