@@ -544,7 +544,7 @@
 
       <!-- Coaching Philosophy -->
       <div class="about-philosophy-block" style="text-align: center;">
-        <h3 style="font-family: var(--font-body); font-size: var(--text-xl); font-weight: 700; color: var(--color-text); margin-bottom: var(--space-6); text-align: center;">Principles, not gimmicks.</h3>
+        <h3 style="font-family: var(--font-body); font-size: var(--text-xl); font-weight: 700; color: var(--color-text); margin-bottom: var(--space-6); text-align: center;"><span style="color: var(--color-teal);">Principles</span>, not <span style="color: var(--color-pink);">gimmicks.</span></h3>
 
         <div class="philosophy-grid">
           <div class="philosophy-card">
@@ -586,16 +586,19 @@
      ═══════════════════════════════════════════════════════════ -->
 <div id="page-services" class="page">
   <div style="padding-top: 80px;"></div>
-  <section class="section" style="padding-top: var(--space-6); position: relative; overflow: hidden;" aria-label="Services and Pricing">
-    <div style="position: absolute; inset: 0; background: url('assets/promo-geo-resting.png') center center / contain no-repeat; opacity: 0.4; pointer-events: none;"></div>
-    <div style="position: absolute; inset: 0; background: linear-gradient(to bottom, transparent 0%, var(--color-bg) 70%); pointer-events: none;"></div>
+  <section style="position: relative; overflow: hidden; background: url('assets/promo-geo-resting.png') center 30% / cover no-repeat; padding: var(--space-8) 0 var(--space-6);" aria-label="Services Hero">
+    <div style="position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(5,7,11,0.3) 0%, rgba(5,7,11,0.55) 50%, var(--color-bg) 100%); pointer-events: none;"></div>
     <div class="container" style="position: relative; z-index: 1;">
-      <div class="section-header" style="margin-bottom: var(--space-8); text-align: center;">
+      <div class="section-header" style="text-align: center;">
         <p class="section-label" style="color: var(--color-pink); text-align: center;">Services & Pricing</p>
         <h1 class="section-title">Strength Coaching.<br><span style="color: var(--color-teal);">Measured</span> and <span style="color: var(--color-pink);">Programmed.</span></h1>
         <p class="section-desc" style="margin-inline: auto;">In-person in San Diego or remote worldwide. Every option includes data-driven programming and direct coaching.</p>
       </div>
+    </div>
+  </section>
 
+  <section class="section" style="padding-top: var(--space-6);" aria-label="Services and Pricing">
+    <div class="container">
       <!-- In-Person Training -->
       <div class="pricing-category">
         <div class="pricing-category-header">
@@ -704,31 +707,63 @@
           </div>
         </div>
         <div class="svc-subsection-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-4); margin-top: var(--space-4);">
-          <div class="svc-subsection-card" style="background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: var(--space-5);">
-            <h4 style="font-family: var(--font-display); font-size: var(--text-sm); font-weight: 600; color: var(--color-pink); margin-bottom: var(--space-2);">Cupping Therapy</h4>
-            <div style="font-size: var(--text-sm); color: var(--color-text);"><strong>15 min</strong> — $20 · <strong>30 min</strong> — $30</div>
-            <div style="font-size: var(--text-xs); color: var(--color-text-muted); margin-bottom: var(--space-4);">Recovery add-on</div>
-            <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="btn btn-primary" style="font-size: var(--text-xs); padding: 8px 16px;">Book a Session</a>
+          <!-- Cupping -->
+          <div class="svc-subsection-card" style="background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: var(--space-4); display: flex; gap: var(--space-3); align-items: flex-start;">
+            <div style="flex: 1;">
+              <h4 style="font-family: var(--font-display); font-size: var(--text-sm); font-weight: 600; color: var(--color-pink); margin-bottom: var(--space-2);">Cupping Therapy</h4>
+              <div style="font-size: var(--text-sm); color: var(--color-text);"><strong>15 min</strong> — $20 · <strong>30 min</strong> — $30</div>
+              <div style="font-size: var(--text-xs); color: var(--color-text-muted); margin-bottom: var(--space-3);">Recovery add-on</div>
+              <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="btn btn-primary" style="font-size: var(--text-xs); padding: 8px 16px;">Book a Session</a>
+            </div>
+            <img src="assets/recovery-02.png" alt="Cupping therapy" style="width: 80px; height: 80px; object-fit: cover; border-radius: var(--radius-md); border: 1px solid var(--color-border); flex-shrink: 0;" loading="lazy">
           </div>
-          <div class="svc-subsection-card" style="background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: var(--space-5);">
-            <h4 style="font-family: var(--font-display); font-size: var(--text-sm); font-weight: 600; color: var(--color-pink); margin-bottom: var(--space-2);">Cold Plunge</h4>
-            <div style="font-size: var(--text-lg); font-weight: 700; color: var(--color-text);">$15</div>
-            <div style="font-size: var(--text-xs); color: var(--color-text-muted); margin-bottom: var(--space-4);">Per session</div>
-            <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="btn btn-primary" style="font-size: var(--text-xs); padding: 8px 16px;">Take the Plunge</a>
+          <!-- Cold Plunge -->
+          <div class="svc-subsection-card" style="background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: var(--space-4); display: flex; gap: var(--space-3); align-items: flex-start;">
+            <div style="flex: 1;">
+              <h4 style="font-family: var(--font-display); font-size: var(--text-sm); font-weight: 600; color: var(--color-pink); margin-bottom: var(--space-2);">Cold Plunge</h4>
+              <div style="font-size: var(--text-lg); font-weight: 700; color: var(--color-text);">$15</div>
+              <div style="font-size: var(--text-xs); color: var(--color-text-muted); margin-bottom: var(--space-3);">Per session</div>
+              <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="btn btn-primary" style="font-size: var(--text-xs); padding: 8px 16px;">Take the Plunge</a>
+            </div>
+            <img src="assets/recovery-01.png" alt="Cold plunge" style="width: 80px; height: 80px; object-fit: cover; border-radius: var(--radius-md); border: 1px solid var(--color-border); flex-shrink: 0;" loading="lazy">
           </div>
-          <div class="svc-subsection-card" style="background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: var(--space-5);">
-            <h4 style="font-family: var(--font-display); font-size: var(--text-sm); font-weight: 600; color: var(--color-pink); margin-bottom: var(--space-2);">Peptide Therapy Consulting</h4>
-            <div style="font-size: var(--text-lg); font-weight: 700; color: var(--color-text);">$200</div>
-            <div style="font-size: var(--text-xs); color: var(--color-text-muted); margin-bottom: var(--space-4);">One-time consultation</div>
-            <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="btn btn-primary" style="font-size: var(--text-xs); padding: 8px 16px;">Book a Consultation</a>
-            <a href="./peptide-consulting.html" style="display: block; margin-top: var(--space-2); font-size: var(--text-xs); color: var(--color-teal);">Learn more →</a>
+          <!-- Peptide Consulting -->
+          <div class="svc-subsection-card" style="background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: var(--space-4); display: flex; gap: var(--space-3); align-items: flex-start;">
+            <div style="flex: 1;">
+              <h4 style="font-family: var(--font-display); font-size: var(--text-sm); font-weight: 600; color: var(--color-pink); margin-bottom: var(--space-2);">Peptide Therapy Consulting</h4>
+              <div style="font-size: var(--text-lg); font-weight: 700; color: var(--color-text);">$200</div>
+              <div style="font-size: var(--text-xs); color: var(--color-text-muted); margin-bottom: var(--space-3);">One-time consultation</div>
+              <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="btn btn-primary" style="font-size: var(--text-xs); padding: 8px 16px;">Book a Consultation</a>
+              <a href="./peptide-consulting.html" style="display: block; margin-top: var(--space-2); font-size: var(--text-xs); color: var(--color-teal);">Learn more →</a>
+            </div>
+            <img src="assets/peptide-07.png" alt="Peptide consulting" style="width: 80px; height: 80px; object-fit: cover; border-radius: var(--radius-md); border: 1px solid var(--color-border); flex-shrink: 0;" loading="lazy">
           </div>
-          <div class="svc-subsection-card" style="background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: var(--space-5); display: flex; align-items: center; justify-content: center;">
-            <a href="./recovery.html" style="font-family: var(--font-display); font-size: var(--text-sm); font-weight: 600; color: var(--color-teal); text-decoration: none;">View All Recovery Services →</a>
+          <!-- Barrel Sauna -->
+          <div class="svc-subsection-card" style="background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: var(--space-4); display: flex; gap: var(--space-3); align-items: flex-start;">
+            <div style="flex: 1;">
+              <h4 style="font-family: var(--font-display); font-size: var(--text-sm); font-weight: 600; color: var(--color-pink); margin-bottom: var(--space-2);">Barrel Sauna</h4>
+              <div style="font-size: var(--text-xs); color: var(--color-text-muted); margin-bottom: var(--space-3);">Deep tissue recovery, improved sleep, cardiovascular conditioning. Coming soon.</div>
+              <span style="font-family: var(--font-display); font-size: var(--text-xs); color: var(--color-teal); border: 1px solid rgba(30,200,176,0.3); padding: 2px 8px; border-radius: var(--radius-full);">Coming Soon</span>
+            </div>
+            <img src="assets/recovery-07.png" alt="Barrel sauna" style="width: 80px; height: 80px; object-fit: cover; border-radius: var(--radius-md); border: 1px solid var(--color-border); flex-shrink: 0;" loading="lazy">
           </div>
         </div>
+        <!-- Full-width View All -->
+        <a href="./recovery.html" style="display: block; margin-top: var(--space-4); background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: var(--space-4); text-align: center; font-family: var(--font-display); font-size: var(--text-sm); font-weight: 600; color: var(--color-teal); text-decoration: none; transition: border-color 0.2s;" onmouseover="this.style.borderColor='var(--color-teal)'" onmouseout="this.style.borderColor='var(--color-border)'">View All Recovery Services →</a>
 
       </div>
+    </div>
+  </section>
+
+  <hr class="glow-line">
+
+  <!-- Recovery CTA -->
+  <section style="padding: var(--space-8) 0 var(--space-6); text-align: center;">
+    <div class="container">
+      <p class="section-label" style="color: var(--color-pink); text-align: center; max-width: none;">Get Started</p>
+      <h2 style="font-family: var(--font-body); font-size: var(--text-xl); font-weight: 700; color: var(--color-text); margin-bottom: var(--space-3);">Ready to <span style="color: var(--color-teal);">train</span> with <span style="color: var(--color-pink);">data</span>?</h2>
+      <p style="font-size: var(--text-sm); color: var(--color-text-muted); margin-bottom: var(--space-5); max-width: 45ch; margin-inline: auto;">Your first session is free. No commitment, no credit card. See what data-driven coaching feels like.</p>
+      <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="btn btn-primary">Book Your FREE Session!</a>
     </div>
   </section>
 </div>
