@@ -848,6 +848,7 @@
 <!-- ═══════════════════════════════════════════
      SCRIPTS
      ═══════════════════════════════════════════ -->
+<script src="./brevo.js"></script>
 <script>
 (function() {
   'use strict';
@@ -1064,12 +1065,20 @@
     showResult(winner);
   });
 
-  async function submitToBrevo(firstName, email, quizResult) {
-    var result = await BREVO.submitQuiz(firstName, email, quizResult);
-    if (!result.success) {
-      console.error('[BREVO] Quiz submit failed:', result.error);
+  function submitToBrevo(firstName, email, quizResult) {
+    if (!brevoValidateEmail(email)) {
+      return Promise.resolve(false);
     }
-    return result.success;
+
+    return brevoSubmit({
+      email: email,
+      firstName: firstName,
+      listIds: [BREVO_LISTS.ALL_LEADS, BREVO_LISTS.QUIZ_COMPLETIONS],
+      attributes: {
+        QUIZ_RESULT: quizResult,
+        LEAD_SOURCE: 'training-quiz'
+      }
+    });
   }
 
   // ══════════════════════════════════════════════════════════
@@ -1174,6 +1183,5 @@
 })();
 </script>
 
-<script src="brevo.js"></script>
 </body>
 </html>

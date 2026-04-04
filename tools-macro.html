@@ -1236,6 +1236,7 @@
 <!-- ═══════════════════════════════════════════
      SCRIPTS
      ═══════════════════════════════════════════ -->
+<script src="./brevo.js"></script>
 <script>
 (function() {
   'use strict';
@@ -1575,12 +1576,19 @@
     emailGate.classList.remove('visible');
   }
 
-  async function submitToBrevo(email) {
-    var result = await BREVO.submitMacroCalc(email);
-    if (!result.success) {
-      console.error('[BREVO] Macro calc submit failed:', result.error);
+  function submitToBrevo(email) {
+    if (!brevoValidateEmail(email)) {
+      return Promise.resolve(false);
     }
-    return result.success;
+
+    return brevoSubmit({
+      email: email,
+      listIds: [BREVO_LISTS.ALL_LEADS, BREVO_LISTS.LEAD_MAGNETS],
+      attributes: {
+        LEAD_MAGNET: 'macro-calculator',
+        LEAD_SOURCE: 'macro-calculator'
+      }
+    });
   }
 
   // Calculate button
@@ -1669,6 +1677,5 @@
 })();
 </script>
 
-<script src="brevo.js"></script>
 </body>
 </html>
