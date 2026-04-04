@@ -93,4 +93,38 @@
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   };
 
+  // ── Toast notification on successful signup ──
+  var toastLines = [
+    'Thank you! Your m/s just went up.',
+    'Thank you! That signup had elite bar speed.',
+    'Thank you! Faster than a competition deadlift.',
+    'Thank you! 0.2 seconds — PR signup velocity.',
+    'Thank you! You just auto-regulated your inbox.'
+  ];
+
+  window.brevoToast = function () {
+    var msg = toastLines[Math.floor(Math.random() * toastLines.length)];
+    var el = document.createElement('div');
+    el.setAttribute('role', 'status');
+    el.setAttribute('aria-live', 'polite');
+    el.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);' +
+      'background:rgba(10,14,23,0.92);border:1px solid rgba(30,200,176,0.35);' +
+      'border-radius:10px;padding:14px 24px;z-index:9999;' +
+      'font-family:inherit;font-size:0.85rem;color:#e8eaed;text-align:center;' +
+      'backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);' +
+      'box-shadow:0 8px 32px rgba(0,0,0,0.4);' +
+      'opacity:0;transition:opacity 0.4s ease,transform 0.4s ease;max-width:90vw;';
+    el.textContent = msg;
+    document.body.appendChild(el);
+    requestAnimationFrame(function () {
+      el.style.opacity = '1';
+      el.style.transform = 'translateX(-50%) translateY(0)';
+    });
+    setTimeout(function () {
+      el.style.opacity = '0';
+      el.style.transform = 'translateX(-50%) translateY(20px)';
+      setTimeout(function () { el.remove(); }, 400);
+    }, 3500);
+  };
+
 })();

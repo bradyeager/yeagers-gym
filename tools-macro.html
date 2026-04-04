@@ -1611,7 +1611,9 @@
       $('gateEmail').setAttribute('placeholder', 'Enter a valid email');
       return;
     }
-    submitToBrevo(email);
+    submitToBrevo(email).then(function(ok) {
+      if (ok) brevoToast();
+    });
     hideEmailGate();
     renderResults(cachedResults);
   });
