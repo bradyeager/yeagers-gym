@@ -29,6 +29,15 @@
   margin-inline: auto;
 }
 
+/* ── Mobile: make table scrollable ── */
+@media (max-width: 600px) {
+  .stations-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .stations-table { min-width: 480px; }
+  .hyrox-results { padding: var(--space-3); }
+  .hyrox-stat { padding: var(--space-2); }
+  .hyrox-stat-val { font-size: var(--text-sm); }
+}
+
 /* ── Calculator Layout ── */
 .hyrox-calc {
   max-width: 900px;
@@ -383,6 +392,7 @@
     </div>
 
     <!-- Stations Table -->
+    <div class="stations-table-wrap">
     <table class="stations-table fade-in">
       <thead>
         <tr>
@@ -404,6 +414,7 @@
         </tr>
       </tfoot>
     </table>
+    </div>
 
     <!-- Results -->
     <div class="hyrox-results fade-in" id="resultsPanel">
@@ -468,26 +479,36 @@
 
     <!-- Strategy Tips -->
     <div class="hyrox-tips fade-in" id="strategyTips">
-      <h3>Race Strategy</h3>
-      <p id="strategyText">Enter your pace and station times above to get personalized pacing recommendations.</p>
+      <h3>Dynamic Strategy Tips</h3>
+      <p style="font-size: 0.65rem; color: var(--color-text-faint); margin-bottom: var(--space-3); font-style: italic;">(These recommendations change based on your splits — e.g. if your sled push exceeds 4 minutes, you'll see sled-specific pacing advice.)</p>
+      <ul id="strategyList" style="list-style: none; padding: 0; margin: 0; text-align: left; max-width: 700px; margin-inline: auto;">
+        <li style="padding: 6px 0; color: var(--color-text-muted); font-size: var(--text-xs); border-bottom: 1px solid rgba(255,255,255,0.04);">Enter your pace and station times above to get personalized recommendations.</li>
+      </ul>
     </div>
 
     <!-- Citations -->
-    <div class="hyrox-citations fade-in">
+    <div class="hyrox-citations fade-in" style="text-align: center;">
       <h4>Data Sources & Methodology</h4>
       <p>Finish time distributions based on publicly available Hyrox race results from 2023-2025 seasons across Open, Pro, and Doubles divisions. Percentile estimates are approximate and vary by event location and field size. Station time benchmarks derived from aggregate community data across 50+ Hyrox events. Run pacing assumes even splits across all 8 x 1km segments. Transition estimates account for movement between stations and equipment setup. This calculator provides estimates for race planning — actual results depend on conditions, strategy, and individual fitness. Not affiliated with Hyrox GmbH.</p>
     </div>
   </div>
 </main>
 
+<hr class="glow-line">
+
 <!-- ═══════════════════════════════════════════
-     BRIDGE + CTA
+     CTA
      ═══════════════════════════════════════════ -->
-<div class="tool-bridge" style="margin: 0 auto var(--space-4); max-width: 900px; padding: 1.5rem; border: 1px solid #1EC8B0; border-radius: 10px; background: rgba(30, 200, 176, 0.06); text-align: center;">
-  <p style="font-family: 'JetBrains Mono', monospace; font-size: 0.95rem; color: #E2E8F0; margin-bottom: 0.5rem; font-weight: 600;">Want a coach who programs for Hyrox athletes?</p>
-  <p style="font-size: 0.85rem; color: #8492A6; margin-bottom: 1rem; line-height: 1.5;">Brad coaches CrossFit and Hyrox athletes using velocity data and structured periodization. Your race prep should be as precise as your race plan.</p>
-  <a href="https://www.vagaro.com/tmoxgj" target="_blank" style="display: inline-block; padding: 0.7rem 1.8rem; background: #F0448A; color: #fff; text-decoration: none; border-radius: 6px; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; font-weight: 600;">Book Your Free Intro Session!</a>
-</div>
+<section style="padding: var(--space-8) 0 var(--space-6); text-align: center;">
+  <div class="container">
+    <p class="section-label" style="color: var(--color-pink); text-align: center; max-width: none;">Get Coached</p>
+    <h2 style="font-family: var(--font-body); font-size: var(--text-xl); font-weight: 700; color: var(--color-text); margin-bottom: var(--space-3);">Want a coach who <span style="color: var(--color-teal);">programs</span> for <span style="color: var(--color-pink);">Hyrox</span> athletes?</h2>
+    <p style="font-size: var(--text-sm); color: var(--color-text-muted); margin-bottom: var(--space-5); max-width: 50ch; margin-inline: auto;">Brad coaches CrossFit and Hyrox athletes using velocity data and structured periodization. Your race prep should be as precise as your race plan.</p>
+    <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="btn btn-primary">Book Your FREE Session!</a>
+  </div>
+</section>
+
+<hr class="glow-line">
 
 <!-- ═══════════════════════════════════════════
      FOOTER
@@ -740,18 +761,57 @@
       document.getElementById('fastestStation').textContent = fastest;
     }
 
-    // Strategy tips
+    // Strategy tips — always at least 3
     var tips = [];
-    if (runPct > 55) tips.push('Your running makes up over half your race. Station efficiency is your biggest time-saver — focus training there.');
-    if (runPct < 45) tips.push('You\'re station-dominant. Improving your 5K pace by 15 sec/km could drop 2+ minutes off your total.');
-    if (stationTimes['Sled Push'] && stationTimes['Sled Push'] > 240) tips.push('Sled push is your longest station. Practice pacing: steady steps beat sprinting to failure.');
-    if (stationTimes['Burpee Broad Jump'] && stationTimes['Burpee Broad Jump'] > 360) tips.push('Burpee broad jumps are eating time. Work on rhythm — consistent pace beats bursts.');
-    if (stationTimes['Wall Balls'] && stationTimes['Wall Balls'] > 360) tips.push('Wall balls over 6 minutes means you\'re breaking too much. Train sets of 15-20 unbroken.');
-    if (percentile <= 25) tips.push('You\'re tracking for a strong result. Focus on negative splitting your runs — start conservative, finish fast.');
-    if (percentile > 50) tips.push('Start conservative on runs. Most first-timers go out too fast and blow up by station 5. Save energy for the back half.');
-    if (tips.length === 0) tips.push('Solid pacing across the board. Focus on consistent transitions and avoid going to failure on any single station.');
 
-    document.getElementById('strategyText').textContent = tips.join(' ');
+    // Run vs station balance
+    if (runPct > 55) {
+      tips.push('Your running makes up over half your race. Station efficiency is your biggest time-saver — focus gym training there.');
+    } else if (runPct < 45) {
+      tips.push('You\'re station-dominant. Improving your 5K pace by 15 sec/km could drop 2+ minutes off your total.');
+    } else {
+      tips.push('Good run-to-station balance. Maintain this ratio and focus on consistency across all 16 segments.');
+    }
+
+    // Station-specific
+    if (stationTimes['Sled Push'] && stationTimes['Sled Push'] > 240) {
+      tips.push('Sled push is your longest station. Practice pacing: steady steps beat sprinting to failure. Drive with your legs, not your arms.');
+    }
+    if (stationTimes['Burpee Broad Jump'] && stationTimes['Burpee Broad Jump'] > 360) {
+      tips.push('Burpee broad jumps are eating time. Work on rhythm — consistent pace beats bursts. Aim for 1 rep every 3-4 seconds.');
+    }
+    if (stationTimes['Wall Balls'] && stationTimes['Wall Balls'] > 360) {
+      tips.push('Wall balls over 6 minutes means you\'re breaking too often. Train sets of 15-20 unbroken. Use your hips, not your arms.');
+    }
+    if (stationTimes['Rowing'] && stationTimes['Rowing'] > 270) {
+      tips.push('Your row is slower than average. Focus on leg drive and stroke rate (24-28 SPM). Don\'t death-grip the handle.');
+    }
+    if (stationTimes['Farmers Carry'] && stationTimes['Farmers Carry'] > 210) {
+      tips.push('Farmers carry over 3:30 means grip is a limiter. Train heavy carries weekly — 200m at race weight, no drops.');
+    }
+
+    // Placement-based
+    if (percentile <= 10) {
+      tips.push('You\'re tracking for a podium-level result. Negative split your runs — go out at 90% effort and build. The back half wins races.');
+    } else if (percentile <= 25) {
+      tips.push('Strong competitor pace. Focus on shaving transition time — 5 seconds per transition saves 40 seconds total.');
+    } else if (percentile <= 50) {
+      tips.push('Solid middle-of-pack pace. Your biggest gains will come from station training, not running. Most athletes overtrain runs and undertrain stations.');
+    } else {
+      tips.push('Start conservative on runs. Most first-timers go out too fast and blow up by station 5. Walk the first 200m of each run if needed — you\'ll finish faster.');
+    }
+
+    // Always add general tips to hit at least 3
+    tips.push('Hydrate and fuel the night before — not race morning. Race-day nerves kill digestion. Stick to familiar foods.');
+    if (tips.length < 4) {
+      tips.push('Practice transitions in training. Walk into every station knowing exactly where to stand and how to start. Hesitation costs seconds.');
+    }
+
+    // Render as bullet list
+    var list = document.getElementById('strategyList');
+    list.innerHTML = tips.map(function(t) {
+      return '<li style="padding: 6px 0; padding-left: 1.2em; position: relative; color: var(--color-text-muted); font-size: var(--text-xs); border-bottom: 1px solid rgba(255,255,255,0.04); line-height: 1.5;"><span style="position: absolute; left: 0; color: var(--color-pink); font-weight: 700;">+</span>' + t + '</li>';
+    }).join('');
   }
 
   // Initial calc
