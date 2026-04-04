@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Free Tools — Calculators & Converters | Yeager's Gym</title>
+<meta name="description" content="Free strength training tools: VBT calculator, 1RM estimator, macro calculator, RPE chart, warmup generator, CrossFit machine converter, peptide dosing calculator, and more.">
+<link rel="stylesheet" href="./base.css">
+<link rel="stylesheet" href="./style.css">
+
+<style>
+.tools-hero {
+  padding: var(--space-12) 0 var(--space-8);
+  text-align: center;
+}
+.tools-hero h1 {
+  font-family: var(--font-body);
+  font-size: clamp(var(--text-xl), 5vw, var(--text-2xl));
+  font-weight: 700;
+  margin-bottom: var(--space-3);
+}
+.tools-hero p {
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+  max-width: 50ch;
+  margin-inline: auto;
+}
+.tools-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-4);
+  max-width: 900px;
+  margin-inline: auto;
+  padding: 0 0 var(--space-12);
+}
+@media (max-width: 768px) {
+  .tools-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 480px) {
+  .tools-grid { grid-template-columns: 1fr; max-width: 380px; }
+}
+.tool-card {
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  text-decoration: none;
+  transition: border-color var(--transition-interactive), box-shadow var(--transition-interactive), transform 0.15s;
+  display: block;
+}
+.tool-card:hover {
+  border-color: var(--color-teal);
+  box-shadow: 0 4px 20px rgba(30, 200, 176, 0.1);
+  transform: translateY(-2px);
+}
+.tool-card h3 {
+  font-family: var(--font-display);
+  font-size: var(--text-sm);
+  font-weight: 700;
+  color: var(--color-text);
+  margin-bottom: var(--space-1);
+}
+.tool-card p {
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+  line-height: 1.5;
+  margin: 0;
+}
+.tool-card .tool-tag {
+  display: inline-block;
+  font-family: var(--font-display);
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  margin-bottom: var(--space-2);
+}
+.tool-tag--vbt { background: rgba(30, 200, 176, 0.1); color: var(--color-teal); }
+.tool-tag--strength { background: rgba(240, 68, 138, 0.1); color: var(--color-pink); }
+.tool-tag--nutrition { background: rgba(155, 111, 212, 0.1); color: var(--color-purple); }
+.tool-tag--crossfit { background: rgba(240, 68, 138, 0.1); color: var(--color-pink); }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════
+     HEADER
+     ═══════════════════════════════════════════ -->
+<header class="site-header" role="banner">
+  <div class="header-inner">
+    <a href="./index.html" class="logo-link" aria-label="Yeager's Gym Home">
+      <img src="assets/logo.jpeg" alt="Yeager's Gym Logo" class="logo-mark-img" width="48" height="48">
+    </a>
+
+    <nav class="nav-desktop" role="navigation" aria-label="Main navigation">
+      <a href="./index.html" class="nav-link">Home</a>
+      <a href="./index.html#about" class="nav-link">About</a>
+      <div class="nav-dropdown">
+        <a href="./index.html#services" class="nav-link">Services ▾</a>
+        <div class="nav-dropdown-menu">
+          <a href="./in-person.html">In-Person Coaching</a>
+          <a href="./remote.html">Remote Coaching</a>
+          <a href="./nutrition.html">Nutrition Coaching</a>
+          <a href="./peptide-consulting.html">Peptide Consulting</a>
+          <a href="./recovery.html">Recovery</a>
+        </div>
+      </div>
+      <a href="./method.html" class="nav-link" style="color: var(--color-pink); font-weight: 700;">The Method</a>
+      <a href="./index.html#vbt" class="nav-link">What is VBT?</a>
+      <a href="./index.html#results" class="nav-link">Results</a>
+      <div class="nav-dropdown">
+        <a href="./tools.html" class="nav-link" style="color: var(--color-teal);">Free Tools ▾</a>
+        <div class="nav-dropdown-menu">
+          <a href="./tools-vbt.html">VBT Calculator</a>
+          <a href="./tools-1rm.html">1RM Calculator</a>
+          <a href="./tools-warmup.html">Warmup Calculator</a>
+          <a href="./tools-lv-profile.html">LV Profile</a>
+          <a href="./tools-rpe.html">RPE Chart</a>
+          <a href="./tools-rpe-velocity.html">RPE-Velocity</a>
+          <a href="./tools-crossfit.html">Machine Converter</a>
+          <a href="./tools-macro.html">Macro Calculator</a>
+          <a href="./tools-peptide.html">Peptide Calculator</a>
+          <a href="./velocity-trackers.html">Velocity Trackers Guide</a>
+        </div>
+      </div>
+      <a href="./quiz.html" class="nav-link">Quiz</a>
+      <div class="nav-utility">
+        <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="btn btn-nav-cta">Book Your FREE Session!</a>
+      </div>
+    </nav>
+
+    <button class="hamburger" aria-label="Toggle menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+
+  <div class="mobile-nav" role="navigation" aria-label="Mobile navigation">
+    <a href="./index.html">Home</a>
+    <a href="./index.html#about">About</a>
+    <a href="./index.html#services">Services</a>
+    <a href="./in-person.html" style="padding-left: 2rem;">In-Person Coaching</a>
+    <a href="./remote.html" style="padding-left: 2rem;">Remote Coaching</a>
+    <a href="./nutrition.html" style="padding-left: 2rem;">Nutrition Coaching</a>
+    <a href="./peptide-consulting.html" style="padding-left: 2rem; color: var(--color-teal);">Peptide Consulting</a>
+    <a href="./recovery.html" style="padding-left: 2rem;">Recovery</a>
+    <a href="./method.html" style="color: var(--color-pink); font-weight: 700;">The Velocity Method</a>
+    <a href="./index.html#vbt">What is VBT?</a>
+    <a href="./index.html#results">Results</a>
+    <a href="./tools.html" style="color: var(--color-teal); font-weight: 700;">Free Tools</a>
+    <a href="./quiz.html" style="color: var(--color-pink);">Training Type Quiz</a>
+    <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="btn btn-nav-cta" style="margin-top: var(--space-4);">Book Your FREE Session!</a>
+  </div>
+</header>
+
+<main>
+  <div class="container">
+    <div class="tools-hero fade-in">
+      <p class="section-label" style="color: var(--color-teal); text-align: center; max-width: none;">Free Tools</p>
+      <h1>Calculators & <span style="color: var(--color-teal);">Converters</span></h1>
+      <p>Free tools built for lifters. Calculate your 1RM from bar speed, dial in your macros, convert CrossFit machine calories, and more.</p>
+    </div>
+
+    <div class="tools-grid">
+      <a href="./tools-vbt.html" class="tool-card fade-in">
+        <span class="tool-tag tool-tag--vbt">VBT</span>
+        <h3>VBT Calculator</h3>
+        <p>Estimate your 1RM from bar speed and load. Uses research-backed load-velocity equations.</p>
+      </a>
+
+      <a href="./tools-1rm.html" class="tool-card fade-in">
+        <span class="tool-tag tool-tag--strength">Strength</span>
+        <h3>1RM Calculator</h3>
+        <p>Classic 1RM estimation from reps and weight using Epley, Brzycki, and Lombardi formulas.</p>
+      </a>
+
+      <a href="./tools-warmup.html" class="tool-card fade-in">
+        <span class="tool-tag tool-tag--strength">Strength</span>
+        <h3>Warmup Calculator</h3>
+        <p>Generate a progressive warmup protocol based on your working weight and set count.</p>
+      </a>
+
+      <a href="./tools-lv-profile.html" class="tool-card fade-in">
+        <span class="tool-tag tool-tag--vbt">VBT</span>
+        <h3>Load-Velocity Profile</h3>
+        <p>Plot your personal load-velocity curve from multiple data points. See your strength profile.</p>
+      </a>
+
+      <a href="./tools-rpe.html" class="tool-card fade-in">
+        <span class="tool-tag tool-tag--strength">Strength</span>
+        <h3>RPE Chart</h3>
+        <p>Interactive RPE-to-percentage chart. Find your target load from RPE and rep count.</p>
+      </a>
+
+      <a href="./tools-rpe-velocity.html" class="tool-card fade-in">
+        <span class="tool-tag tool-tag--vbt">VBT</span>
+        <h3>RPE-Velocity Bridge</h3>
+        <p>Map RPE values to velocity ranges. Bridge subjective effort with objective bar speed.</p>
+      </a>
+
+      <a href="./tools-crossfit.html" class="tool-card fade-in">
+        <span class="tool-tag tool-tag--crossfit">CrossFit</span>
+        <h3>Machine Converter</h3>
+        <p>Convert calories and distances between rower, bike, ski erg, and echo bike.</p>
+      </a>
+
+      <a href="./tools-macro.html" class="tool-card fade-in">
+        <span class="tool-tag tool-tag--nutrition">Nutrition</span>
+        <h3>Macro Calculator</h3>
+        <p>TDEE, protein, carbs, and fat targets based on your body stats and training goals.</p>
+      </a>
+
+      <a href="./tools-peptide.html" class="tool-card fade-in">
+        <span class="tool-tag tool-tag--nutrition">Peptide</span>
+        <h3>Peptide Calculator</h3>
+        <p>Reconstitution math, syringe units, draw volume, and vial duration for peptide dosing.</p>
+      </a>
+    </div>
+  </div>
+</main>
+
+<!-- ═══════════════════════════════════════════
+     CTA
+     ═══════════════════════════════════════════ -->
+<div class="final-cta">
+  <p class="section-label" style="color: var(--color-pink); text-align: center; max-width: none;">Get Started</p>
+  <h2>Want coaching built on <span style="color: var(--color-teal);">this data</span>?</h2>
+  <p>These tools give you a snapshot. Coaching gives you the full picture. Book a free session and see the difference.</p>
+  <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="btn btn-primary">Book Your FREE Session!</a>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     FOOTER
+     ═══════════════════════════════════════════ -->
+<footer class="site-footer" role="contentinfo">
+  <div class="container">
+    <div class="footer-nav-columns">
+      <div class="footer-links">
+        <h4>Navigate</h4>
+        <a href="./index.html">Home</a>
+        <a href="./index.html#about">About Brad</a>
+        <a href="./index.html#services">Services &amp; Pricing</a>
+        <a href="./method.html" style="color: var(--color-pink); font-weight: 600;">The Velocity Method</a>
+        <a href="./index.html#vbt">VBT Explained</a>
+        <a href="./index.html#results">Results</a>
+        <a href="./index.html#contact">Contact</a>
+      </div>
+      <div class="footer-links">
+        <h4>Resources &amp; Free Tools</h4>
+        <a href="./tools.html">Calculators &amp; Converters</a>
+        <a href="./velocity-trackers.html">Velocity Trackers Guide</a>
+        <a href="./quiz.html">Training Type Quiz</a>
+      </div>
+      <div class="footer-links">
+        <h4>Connect</h4>
+        <a href="mailto:brad@yeagersgym.com" class="footer-contact-link">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+          brad@yeagersgym.com
+        </a>
+        <a href="https://www.instagram.com/YeagersGym" target="_blank" rel="noopener noreferrer" class="footer-contact-link">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
+          @YeagersGym
+        </a>
+        <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="footer-vagaro-link">Book via Vagaro →</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>&copy; 2026 Yeager's Gym &middot; San Diego, CA</span>
+      <div class="footer-bottom-right">
+        <a href="./index.html" aria-label="Yeager's Gym Home">
+          <img src="assets/logo.jpeg" alt="Yeager's Gym" class="logo-mark-img" width="24" height="24">
+        </a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function() {
+  'use strict';
+  var fadeEls = document.querySelectorAll('.fade-in');
+  if ('IntersectionObserver' in window) {
+    var observer = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+    fadeEls.forEach(function(el) { observer.observe(el); });
+  } else {
+    fadeEls.forEach(function(el) { el.classList.add('visible'); });
+  }
+
+  var hamburger = document.querySelector('.hamburger');
+  var mobileNav = document.querySelector('.mobile-nav');
+  hamburger.addEventListener('click', function() {
+    var isOpen = hamburger.classList.toggle('open');
+    mobileNav.classList.toggle('open', isOpen);
+    hamburger.setAttribute('aria-expanded', isOpen);
+    document.body.style.overflow = isOpen ? 'hidden' : '';
+  });
+  mobileNav.querySelectorAll('a').forEach(function(link) {
+    link.addEventListener('click', function() {
+      hamburger.classList.remove('open');
+      mobileNav.classList.remove('open');
+      hamburger.setAttribute('aria-expanded', 'false');
+      document.body.style.overflow = '';
+    });
+  });
+
+  var header = document.querySelector('.site-header');
+  window.addEventListener('scroll', function() {
+    header.style.boxShadow = window.scrollY > 10 ? 'var(--shadow-md)' : 'none';
+  }, { passive: true });
+})();
+</script>
+
+</body>
+</html>
