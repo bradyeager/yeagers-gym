@@ -111,6 +111,8 @@
 }
 .tool-tag--vbt { background: rgba(30, 200, 176, 0.1); color: var(--color-teal); }
 .tool-tag--strength { background: rgba(240, 68, 138, 0.1); color: var(--color-pink); }
+.tool-tag--hyrox { background: rgba(155, 111, 212, 0.1); color: var(--color-purple); }
+.tool-tag--recovery { background: rgba(30, 200, 176, 0.1); color: var(--color-teal); }
 .tool-tag--nutrition { background: rgba(155, 111, 212, 0.1); color: var(--color-purple); }
 .tool-tag--crossfit { background: rgba(240, 68, 138, 0.1); color: var(--color-pink); }
 </style>
@@ -142,22 +144,7 @@
       <a href="./method.html" class="nav-link" style="color: var(--color-pink); font-weight: 700;">The Method</a>
       <a href="./index.html#vbt" class="nav-link">What is VBT?</a>
       <a href="./index.html#results" class="nav-link">Results</a>
-      <div class="nav-dropdown">
-        <a href="./tools.html" class="nav-link" style="color: var(--color-teal);">Free Tools ▾</a>
-        <div class="nav-dropdown-menu">
-          <a href="./tools-vbt.html">VBT Calculator</a>
-          <a href="./tools-1rm.html">1RM Calculator</a>
-          <a href="./tools-warmup.html">Warmup Calculator</a>
-          <a href="./tools-lv-profile.html">LV Profile</a>
-          <a href="./tools-rpe.html">RPE Chart</a>
-          <a href="./tools-rpe-velocity.html">RPE-Velocity</a>
-          <a href="./tools-crossfit.html">Machine Converter</a>
-          <a href="./tools-hyrox.html">Hyrox Race Calculator</a>
-          <a href="./tools-macro.html">Macro Calculator</a>
-          <a href="./tools-peptide.html">Peptide Calculator</a>
-          <a href="./velocity-trackers.html">Velocity Trackers Guide</a>
-        </div>
-      </div>
+      <a href="./tools.html" class="nav-link" style="color: var(--color-teal);">Free Tools</a>
       <a href="./quiz.html" class="nav-link">Quiz</a>
       <div class="nav-utility">
         <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="btn btn-nav-cta">Book Your FREE Session!</a>
@@ -203,24 +190,24 @@
 
   <div class="container">
     <div class="tools-grid">
-      <!-- VBT -->
+      <!-- Velocity Based Training (teal) -->
       <a href="./tools-vbt.html" class="tool-card fade-in">
-        <span class="tool-tag tool-tag--vbt">VBT</span>
+        <span class="tool-tag tool-tag--vbt">Velocity Based Training</span>
         <h3>VBT Calculator</h3>
         <p>Estimate your 1RM from bar speed and load. Research-backed load-velocity equations.</p>
       </a>
       <a href="./tools-lv-profile.html" class="tool-card fade-in">
-        <span class="tool-tag tool-tag--vbt">VBT</span>
+        <span class="tool-tag tool-tag--vbt">Velocity Based Training</span>
         <h3>Load-Velocity Profile</h3>
         <p>Plot your personal load-velocity curve. See your strength profile across loads.</p>
       </a>
       <a href="./tools-rpe-velocity.html" class="tool-card fade-in">
-        <span class="tool-tag tool-tag--vbt">VBT</span>
+        <span class="tool-tag tool-tag--vbt">Velocity Based Training</span>
         <h3>RPE-Velocity Bridge</h3>
         <p>Map RPE values to velocity ranges. Bridge subjective effort with bar speed data.</p>
       </a>
 
-      <!-- Strength -->
+      <!-- Strength (pink) -->
       <a href="./tools-1rm.html" class="tool-card fade-in">
         <span class="tool-tag tool-tag--strength">Strength</span>
         <h3>1RM Calculator</h3>
@@ -236,53 +223,47 @@
         <h3>RPE Chart</h3>
         <p>Interactive RPE-to-percentage chart. Find your target load from RPE and rep count.</p>
       </a>
-
-      <!-- CrossFit / Hyrox -->
-      <a href="./tools-crossfit.html" class="tool-card fade-in">
-        <span class="tool-tag tool-tag--crossfit">CrossFit</span>
-        <h3>Machine Converter</h3>
-        <p>Convert calories and distances between rower, bike, ski erg, and echo bike.</p>
-      </a>
-      <a href="./tools-hyrox.html" class="tool-card fade-in">
-        <span class="tool-tag tool-tag--crossfit">Hyrox</span>
-        <h3>Hyrox Race Predictor</h3>
-        <p>Plan your next race. Input your pace, estimate stations, get a predicted finish time and placement.</p>
-      </a>
-      <a href="./tools-hyrox-splits.html" class="tool-card fade-in">
-        <span class="tool-tag tool-tag--crossfit">Hyrox</span>
-        <h3>Hyrox Split Analyzer</h3>
-        <p>Break down your last race. Enter actual splits, find where you bled time, get a diagnosis.</p>
-      </a>
-
-      <!-- Strength -->
       <a href="./tools-strength.html" class="tool-card fade-in">
         <span class="tool-tag tool-tag--strength">Strength</span>
         <h3>Strength Standards</h3>
         <p>Compare your lifts to real standards by sex and bodyweight. Find your tier and your weakest link.</p>
       </a>
-
-      <!-- Readiness -->
-      <a href="./tools-readiness.html" class="tool-card fade-in">
-        <span class="tool-tag tool-tag--vbt">Recovery</span>
-        <h3>Daily Readiness Score</h3>
-        <p>30-second check-in. Push day, maintain day, or recovery day? Your body tells you — if you listen.</p>
-      </a>
-
-      <!-- CrossFit Limiter -->
       <a href="./tools-limiter.html" class="tool-card fade-in">
-        <span class="tool-tag tool-tag--crossfit">CrossFit</span>
+        <span class="tool-tag tool-tag--strength">Strength</span>
         <h3>CrossFit Limiter Quiz</h3>
-        <p>Engine, strength, gymnastics, pacing — find out what's holding you back and where to focus next.</p>
+        <p>Engine, strength, gymnastics, pacing — find out what’s holding you back.</p>
       </a>
 
-      <!-- Body Recomp -->
+      <!-- Hyrox (purple) -->
+      <a href="./tools-crossfit.html" class="tool-card fade-in">
+        <span class="tool-tag tool-tag--hyrox">Hyrox / CrossFit</span>
+        <h3>Machine Converter</h3>
+        <p>Convert calories and distances between rower, bike, ski erg, and echo bike.</p>
+      </a>
+      <a href="./tools-hyrox.html" class="tool-card fade-in">
+        <span class="tool-tag tool-tag--hyrox">Hyrox</span>
+        <h3>Hyrox Race Predictor</h3>
+        <p>Plan your next race. Input your pace, estimate stations, get predicted finish time.</p>
+      </a>
+      <a href="./tools-hyrox-splits.html" class="tool-card fade-in">
+        <span class="tool-tag tool-tag--hyrox">Hyrox</span>
+        <h3>Hyrox Split Analyzer</h3>
+        <p>Break down your last race. Enter actual splits, find where you bled time.</p>
+      </a>
+
+      <!-- Recovery (teal) -->
+      <a href="./tools-readiness.html" class="tool-card fade-in">
+        <span class="tool-tag tool-tag--recovery">Recovery</span>
+        <h3>Daily Readiness Score</h3>
+        <p>30-second check-in. Push day, maintain day, or recovery day?</p>
+      </a>
+
+      <!-- Body Comp / Nutrition / Peptide (purple) -->
       <a href="./tools-recomp.html" class="tool-card fade-in">
         <span class="tool-tag tool-tag--nutrition">Body Comp</span>
         <h3>Body Recomp Estimator</h3>
-        <p>How realistic is your goal? Fat loss, muscle gain, or recomp — see what's actually possible in your timeframe.</p>
+        <p>How realistic is your goal? Fat loss, muscle gain, or recomp — see what’s possible.</p>
       </a>
-
-      <!-- Nutrition & Peptide -->
       <a href="./tools-macro.html" class="tool-card fade-in">
         <span class="tool-tag tool-tag--nutrition">Nutrition</span>
         <h3>Macro Calculator</h3>
@@ -291,17 +272,7 @@
       <a href="./tools-peptide.html" class="tool-card fade-in">
         <span class="tool-tag tool-tag--nutrition">Peptide</span>
         <h3>Peptide Dosing Calculator</h3>
-        <p>Reconstitution math, syringe units, draw volume, and vial duration. No more guessing draws.</p>
-      </a>
-      <a href="./tools-macro.html" class="tool-card fade-in">
-        <span class="tool-tag tool-tag--nutrition">Nutrition</span>
-        <h3>Protein Intake Calculator</h3>
-        <p>Daily protein target by bodyweight, training phase, and goal. ISSN-backed ranges for athletes.</p>
-      </a>
-      <a href="./tools-peptide.html" class="tool-card fade-in">
-        <span class="tool-tag tool-tag--nutrition">Peptide</span>
-        <h3>BPC-157 / TB-500 Guide</h3>
-        <p>Dosing protocols, reconstitution, cycling, and stacking for the two most popular recovery peptides.</p>
+        <p>Reconstitution math, syringe units, draw volume, and vial duration.</p>
       </a>
     </div>
   </div>
