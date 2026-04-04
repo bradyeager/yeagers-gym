@@ -81,17 +81,15 @@
   padding-bottom: var(--space-6);
   position: relative;
   overflow: hidden;
+  background: url('./assets/inperson-10.png') center 30% / cover no-repeat;
+  min-height: 420px;
 }
 
 .ip-hero::before {
   content: '';
   position: absolute;
-  top: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 800px;
-  height: 800px;
-  background: radial-gradient(circle, rgba(72, 196, 204, 0.06) 0%, transparent 60%);
+  inset: 0;
+  background: linear-gradient(to bottom, rgba(5,7,11,0.25) 0%, rgba(5,7,11,0.55) 50%, var(--color-bg) 100%);
   pointer-events: none;
 }
 
@@ -495,19 +493,19 @@
   </div>
   <div class="testimonial-grid">
       <div class="testimonial-card">
-        <p class="testimonial-quote">[Placeholder] Brad's coaching changed how I approach the barbell. The velocity feedback makes every session feel purposeful.</p>
-        <span class="testimonial-result">+XX lbs Squat</span>
-        <p class="testimonial-attribution">[Name] · In-Person</p>
+        <p class="testimonial-quote">"The peaking protocol was dialed. I felt stronger on meet day than I ever had in the gym, and that doesn't happen by accident."</p>
+        <span class="testimonial-result">USAPL Powerlifter</span>
+        <p class="testimonial-attribution">Claudia Arzillo · In-Person</p>
       </div>
       <div class="testimonial-card">
-        <p class="testimonial-quote">[Placeholder] I've trained at big box gyms for years. This is the first time I've had measurable progress every single week.</p>
-        <span class="testimonial-result">[Result]</span>
-        <p class="testimonial-attribution">[Name] · In-Person</p>
+        <p class="testimonial-quote">"Six months after back surgery, I squatted 300 pounds. Brad understood post-surgical progression and made me believe it was safe to push."</p>
+        <span class="testimonial-result">Post-Surgical Rehab</span>
+        <p class="testimonial-attribution">Robert Brower · In-Person</p>
       </div>
       <div class="testimonial-card">
-        <p class="testimonial-quote">[Placeholder] The six-lift system is so simple but the results speak for themselves. Strongest I've been in my life.</p>
-        <span class="testimonial-result">[Result]</span>
-        <p class="testimonial-attribution">[Name] · In-Person</p>
+        <p class="testimonial-quote">"7 medals in 9 events at the Senior Games. Everyone told me to slow down — Brad told me to train smarter. That made all the difference."</p>
+        <span class="testimonial-result">SD Sr. Games Gold Medalist</span>
+        <p class="testimonial-attribution">Tonnie Dahl · In-Person</p>
       </div>
   </div>
 </section>
