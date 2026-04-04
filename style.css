@@ -3280,3 +3280,30 @@
 .section-label, p.section-label, [class*="section-label"] {
   text-align: center !important;
 }
+
+/* About page — mobile headshot: smaller, right-biased, text wraps left */
+@media (max-width: 768px) {
+  .about-inline-headshot {
+    float: right;
+    margin: 0 0 var(--space-3) var(--space-4);
+    width: 100px !important;
+    height: 100px !important;
+    flex-shrink: 0;
+  }
+  .about-inline-headshot img {
+    width: 100px !important;
+    height: 100px !important;
+    object-fit: cover;
+    border-radius: var(--radius-lg);
+  }
+  .about-text-with-photo::after {
+    content: '';
+    display: table;
+    clear: both;
+  }
+  .about-headshot-lg {
+    width: 100px !important;
+    height: 100px !important;
+    max-width: 100px !important;
+  }
+}
