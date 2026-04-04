@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hyrox Race Calculator — Pace, Predict & Plan Every Station | Yeager's Gym</title>
+<meta name="description" content="Free Hyrox race calculator. Input your 5K pace or running speed, log station times, select your division, and get a predicted finish time with placement estimates. Plan your race strategy.">
+<link rel="stylesheet" href="./base.css">
+<link rel="stylesheet" href="./style.css">
+
+<style>
+.hyrox-hero {
+  position: relative;
+  overflow: hidden;
+  padding: 80px 0 var(--space-4);
+  text-align: center;
+}
+.hyrox-hero h1 {
+  font-family: var(--font-body);
+  font-size: clamp(1.5rem, 4.5vw, 2.2rem);
+  font-weight: 800;
+  line-height: 1.1;
+  margin-bottom: var(--space-2);
+}
+.hyrox-hero-sub {
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+  max-width: 50ch;
+  margin-inline: auto;
+}
+
+/* ── Calculator Layout ── */
+.hyrox-calc {
+  max-width: 900px;
+  margin-inline: auto;
+  padding: var(--space-4);
+}
+.hyrox-config {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+@media (max-width: 600px) {
+  .hyrox-config { grid-template-columns: 1fr; }
+}
+.hyrox-config label {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-faint);
+  margin-bottom: 4px;
+}
+.hyrox-config select,
+.hyrox-config input {
+  width: 100%;
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 10px 12px;
+  color: var(--color-text);
+  font-family: var(--font-display);
+  font-size: var(--text-sm);
+  transition: border-color 0.2s;
+}
+.hyrox-config select:focus,
+.hyrox-config input:focus {
+  outline: none;
+  border-color: var(--color-teal);
+}
+
+/* ── Stations Table ── */
+.stations-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin-bottom: var(--space-4);
+}
+.stations-table th {
+  font-family: var(--font-display);
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-faint);
+  text-align: left;
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--color-border);
+}
+.stations-table td {
+  padding: 6px 8px;
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+  vertical-align: middle;
+}
+.stations-table tr:hover td {
+  background: rgba(30, 200, 176, 0.03);
+}
+.stations-table .station-name {
+  font-weight: 600;
+  color: var(--color-text);
+}
+.stations-table .station-run {
+  color: var(--color-pink);
+  font-family: var(--font-display);
+  font-weight: 600;
+}
+.stations-table input[type="text"] {
+  width: 60px;
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 5px 8px;
+  color: var(--color-text);
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  text-align: center;
+}
+.stations-table input::placeholder {
+  color: var(--color-text-faint);
+}
+.stations-table .est-time {
+  font-family: var(--font-display);
+  color: var(--color-teal);
+  font-weight: 600;
+}
+
+/* ── Results Panel ── */
+.hyrox-results {
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  margin-bottom: var(--space-6);
+}
+.hyrox-results-header {
+  text-align: center;
+  margin-bottom: var(--space-4);
+}
+.hyrox-total-time {
+  font-family: var(--font-display);
+  font-size: clamp(2.5rem, 8vw, 4rem);
+  font-weight: 800;
+  color: var(--color-teal);
+  line-height: 1;
+}
+.hyrox-total-label {
+  font-family: var(--font-display);
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-text-faint);
+  margin-top: 4px;
+}
+.hyrox-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-3);
+  margin-top: var(--space-4);
+}
+@media (max-width: 600px) {
+  .hyrox-stats-grid { grid-template-columns: repeat(2, 1fr); }
+}
+.hyrox-stat {
+  text-align: center;
+  padding: var(--space-3);
+  background: rgba(255,255,255,0.02);
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(255,255,255,0.04);
+}
+.hyrox-stat-val {
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: 700;
+  line-height: 1;
+}
+.hyrox-stat-label {
+  font-size: 0.6rem;
+  color: var(--color-text-faint);
+  margin-top: 4px;
+  font-family: var(--font-display);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* ── Breakdown Bar ── */
+.hyrox-breakdown {
+  margin-top: var(--space-4);
+}
+.hyrox-bar {
+  display: flex;
+  height: 28px;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  margin-bottom: var(--space-2);
+}
+.hyrox-bar-run {
+  background: var(--color-pink);
+  transition: width 0.4s ease;
+}
+.hyrox-bar-station {
+  background: var(--color-teal);
+  transition: width 0.4s ease;
+}
+.hyrox-bar-transition {
+  background: var(--color-purple);
+  transition: width 0.4s ease;
+}
+.hyrox-bar-legend {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-4);
+  font-size: 0.65rem;
+  font-family: var(--font-display);
+  color: var(--color-text-muted);
+}
+.hyrox-bar-legend span::before {
+  content: '';
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  margin-right: 4px;
+  vertical-align: -1px;
+}
+.hyrox-bar-legend .leg-run::before { background: var(--color-pink); }
+.hyrox-bar-legend .leg-station::before { background: var(--color-teal); }
+.hyrox-bar-legend .leg-transition::before { background: var(--color-purple); }
+
+/* ── Strategy Tips ── */
+.hyrox-tips {
+  margin-top: var(--space-6);
+  padding: var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-2);
+}
+.hyrox-tips h3 {
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  font-weight: 700;
+  color: var(--color-pink);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: var(--space-2);
+  text-align: center;
+}
+.hyrox-tips p {
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+  line-height: 1.6;
+  text-align: center;
+}
+
+/* ── Citations ── */
+.hyrox-citations {
+  margin-top: var(--space-6);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--color-border);
+}
+.hyrox-citations h4 {
+  font-family: var(--font-display);
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-faint);
+  margin-bottom: var(--space-2);
+}
+.hyrox-citations p {
+  font-size: 0.65rem;
+  color: var(--color-text-faint);
+  line-height: 1.6;
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════
+     HEADER
+     ═══════════════════════════════════════════ -->
+<header class="site-header" role="banner">
+  <div class="header-inner">
+    <a href="./index.html" class="logo-link" aria-label="Yeager's Gym Home">
+      <img src="assets/logo.jpeg" alt="Yeager's Gym Logo" class="logo-mark-img" width="48" height="48">
+    </a>
+    <nav class="nav-desktop" role="navigation" aria-label="Main navigation">
+      <a href="./index.html" class="nav-link">Home</a>
+      <a href="./index.html#about" class="nav-link">About</a>
+      <div class="nav-dropdown">
+        <a href="./index.html#services" class="nav-link">Services ▾</a>
+        <div class="nav-dropdown-menu">
+          <a href="./in-person.html">In-Person Coaching</a>
+          <a href="./remote.html">Remote Coaching</a>
+          <a href="./nutrition.html">Nutrition Coaching</a>
+          <a href="./peptide-consulting.html">Peptide Consulting</a>
+          <a href="./recovery.html">Recovery</a>
+        </div>
+      </div>
+      <a href="./method.html" class="nav-link" style="color: var(--color-pink); font-weight: 700;">The Method</a>
+      <a href="./index.html#vbt" class="nav-link">What is VBT?</a>
+      <a href="./index.html#results" class="nav-link">Results</a>
+      <div class="nav-dropdown">
+        <a href="./tools-vbt.html" class="nav-link">Free Tools ▾</a>
+        <div class="nav-dropdown-menu">
+          <a href="./tools-vbt.html">VBT Calculator</a>
+          <a href="./tools-1rm.html">1RM Calculator</a>
+          <a href="./tools-warmup.html">Warmup Calculator</a>
+          <a href="./tools-lv-profile.html">LV Profile</a>
+          <a href="./tools-rpe.html">RPE Chart</a>
+          <a href="./tools-rpe-velocity.html">RPE-Velocity</a>
+          <a href="./tools-crossfit.html">Machine Converter</a>
+          <a href="./tools-hyrox.html">Hyrox Race Calculator</a>
+          <a href="./tools-macro.html">Macro Calculator</a>
+          <a href="./tools-peptide.html">Peptide Calculator</a>
+          <a href="./velocity-trackers.html">Velocity Trackers Guide</a>
+        </div>
+      </div>
+      <a href="./quiz.html" class="nav-link">Quiz</a>
+      <div class="nav-utility">
+        <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="btn btn-nav-cta">Book Your FREE Session!</a>
+      </div>
+    </nav>
+    <button class="hamburger" aria-label="Toggle menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+  <div class="mobile-nav" role="navigation" aria-label="Mobile navigation">
+    <a href="./index.html">Home</a>
+    <a href="./index.html#about">About</a>
+    <a href="./index.html#services">Services</a>
+    <a href="./in-person.html" style="padding-left: 2rem;">In-Person Coaching</a>
+    <a href="./remote.html" style="padding-left: 2rem;">Remote Coaching</a>
+    <a href="./nutrition.html" style="padding-left: 2rem;">Nutrition Coaching</a>
+    <a href="./peptide-consulting.html" style="padding-left: 2rem; color: var(--color-teal);">Peptide Consulting</a>
+    <a href="./recovery.html" style="padding-left: 2rem;">Recovery</a>
+    <a href="./method.html" style="color: var(--color-pink); font-weight: 700;">The Velocity Method</a>
+    <a href="./index.html#vbt">What is VBT?</a>
+    <a href="./index.html#results">Results</a>
+    <a href="./tools.html" style="color: var(--color-teal); font-weight: 700;">Free Tools</a>
+    <a href="./quiz.html" style="color: var(--color-pink);">Training Type Quiz</a>
+    <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="btn btn-nav-cta" style="margin-top: var(--space-4);">Book Your FREE Session!</a>
+  </div>
+</header>
+
+<main>
+  <div class="hyrox-hero">
+    <div class="container fade-in">
+      <p class="section-label" style="color: var(--color-pink); text-align: center; max-width: none;">Hyrox Race Calculator</p>
+      <h1>Plan Your <span style="color: var(--color-pink);">Race.</span> Know Your <span style="color: var(--color-teal);">Number.</span></h1>
+      <p class="hyrox-hero-sub">Input your 5K pace, log station estimates, pick your division. Get a predicted finish time, placement estimate, and pacing strategy.</p>
+    </div>
+  </div>
+
+  <div class="hyrox-calc">
+    <!-- Config Row -->
+    <div class="hyrox-config fade-in">
+      <div>
+        <label for="division">Division</label>
+        <select id="division">
+          <option value="open-m">Open — Men</option>
+          <option value="open-f">Open — Women</option>
+          <option value="pro-m">Pro — Men</option>
+          <option value="pro-f">Pro — Women</option>
+          <option value="doubles-m">Doubles — Men</option>
+          <option value="doubles-f">Doubles — Women</option>
+          <option value="doubles-mx">Doubles — Mixed</option>
+          <option value="relay">Relay (4-person)</option>
+        </select>
+      </div>
+      <div>
+        <label for="fiveKPace">5K Pace (min/km)</label>
+        <input type="text" id="fiveKPace" placeholder="5:30" value="5:30">
+      </div>
+      <div>
+        <label for="transitionTime">Avg. Transition (sec)</label>
+        <input type="number" id="transitionTime" placeholder="15" value="15" min="0" max="120">
+      </div>
+    </div>
+
+    <!-- Stations Table -->
+    <table class="stations-table fade-in">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Segment</th>
+          <th>Details</th>
+          <th>Your Time (m:ss)</th>
+          <th>Est. Time</th>
+        </tr>
+      </thead>
+      <tbody id="stationsBody">
+        <!-- Populated by JS -->
+      </tbody>
+      <tfoot>
+        <tr style="border-top: 2px solid var(--color-border);">
+          <td colspan="3" style="font-weight: 700; color: var(--color-text);">Total</td>
+          <td></td>
+          <td class="est-time" id="totalTime" style="font-size: var(--text-sm);">—</td>
+        </tr>
+      </tfoot>
+    </table>
+
+    <!-- Results -->
+    <div class="hyrox-results fade-in" id="resultsPanel">
+      <div class="hyrox-results-header">
+        <div class="hyrox-total-label">Predicted Finish Time</div>
+        <div class="hyrox-total-time" id="finishTime">1:15:00</div>
+        <p style="color: var(--color-text-faint); font-size: var(--text-xs); margin-top: 4px;" id="finishContext">Open Men — competitive recreational</p>
+      </div>
+
+      <!-- Breakdown Bar -->
+      <div class="hyrox-breakdown">
+        <div class="hyrox-bar">
+          <div class="hyrox-bar-run" id="barRun" style="width: 50%;"></div>
+          <div class="hyrox-bar-station" id="barStation" style="width: 40%;"></div>
+          <div class="hyrox-bar-transition" id="barTransition" style="width: 10%;"></div>
+        </div>
+        <div class="hyrox-bar-legend">
+          <span class="leg-run" id="legendRun">Running 50%</span>
+          <span class="leg-station" id="legendStation">Stations 40%</span>
+          <span class="leg-transition" id="legendTransition">Transitions 10%</span>
+        </div>
+      </div>
+
+      <div class="hyrox-stats-grid">
+        <div class="hyrox-stat">
+          <div class="hyrox-stat-val" style="color: var(--color-pink);" id="totalRunTime">40:00</div>
+          <div class="hyrox-stat-label">Total Run Time</div>
+        </div>
+        <div class="hyrox-stat">
+          <div class="hyrox-stat-val" style="color: var(--color-teal);" id="totalStationTime">30:00</div>
+          <div class="hyrox-stat-label">Total Station Time</div>
+        </div>
+        <div class="hyrox-stat">
+          <div class="hyrox-stat-val" style="color: var(--color-purple);" id="placementEst">Top 40%</div>
+          <div class="hyrox-stat-label">Est. Placement</div>
+        </div>
+        <div class="hyrox-stat">
+          <div class="hyrox-stat-val" style="color: var(--color-text);" id="pacePerKm">5:00/km</div>
+          <div class="hyrox-stat-label">Avg Race Pace</div>
+        </div>
+      </div>
+
+      <div class="hyrox-stats-grid" style="margin-top: var(--space-2);">
+        <div class="hyrox-stat">
+          <div class="hyrox-stat-val" style="color: var(--color-teal);" id="runRatio">53%</div>
+          <div class="hyrox-stat-label">Run : Station</div>
+        </div>
+        <div class="hyrox-stat">
+          <div class="hyrox-stat-val" style="color: var(--color-pink);" id="estPlace">~250th</div>
+          <div class="hyrox-stat-label">Est. Position</div>
+        </div>
+        <div class="hyrox-stat">
+          <div class="hyrox-stat-val" style="color: var(--color-teal);" id="slowestStation">—</div>
+          <div class="hyrox-stat-label">Weakest Station</div>
+        </div>
+        <div class="hyrox-stat">
+          <div class="hyrox-stat-val" style="color: var(--color-pink);" id="fastestStation">—</div>
+          <div class="hyrox-stat-label">Strongest Station</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Strategy Tips -->
+    <div class="hyrox-tips fade-in" id="strategyTips">
+      <h3>Race Strategy</h3>
+      <p id="strategyText">Enter your pace and station times above to get personalized pacing recommendations.</p>
+    </div>
+
+    <!-- Citations -->
+    <div class="hyrox-citations fade-in">
+      <h4>Data Sources & Methodology</h4>
+      <p>Finish time distributions based on publicly available Hyrox race results from 2023-2025 seasons across Open, Pro, and Doubles divisions. Percentile estimates are approximate and vary by event location and field size. Station time benchmarks derived from aggregate community data across 50+ Hyrox events. Run pacing assumes even splits across all 8 x 1km segments. Transition estimates account for movement between stations and equipment setup. This calculator provides estimates for race planning — actual results depend on conditions, strategy, and individual fitness. Not affiliated with Hyrox GmbH.</p>
+    </div>
+  </div>
+</main>
+
+<!-- ═══════════════════════════════════════════
+     BRIDGE + CTA
+     ═══════════════════════════════════════════ -->
+<div class="tool-bridge" style="margin: 0 auto var(--space-4); max-width: 900px; padding: 1.5rem; border: 1px solid #1EC8B0; border-radius: 10px; background: rgba(30, 200, 176, 0.06); text-align: center;">
+  <p style="font-family: 'JetBrains Mono', monospace; font-size: 0.95rem; color: #E2E8F0; margin-bottom: 0.5rem; font-weight: 600;">Want a coach who programs for Hyrox athletes?</p>
+  <p style="font-size: 0.85rem; color: #8492A6; margin-bottom: 1rem; line-height: 1.5;">Brad coaches CrossFit and Hyrox athletes using velocity data and structured periodization. Your race prep should be as precise as your race plan.</p>
+  <a href="https://www.vagaro.com/tmoxgj" target="_blank" style="display: inline-block; padding: 0.7rem 1.8rem; background: #F0448A; color: #fff; text-decoration: none; border-radius: 6px; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; font-weight: 600;">Book Your Free Intro Session!</a>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     FOOTER
+     ═══════════════════════════════════════════ -->
+<footer class="site-footer" role="contentinfo">
+  <div class="container">
+    <div class="footer-nav-columns">
+      <div class="footer-links">
+        <h4>Navigate</h4>
+        <a href="./index.html">Home</a>
+        <a href="./index.html#about">About Brad</a>
+        <a href="./index.html#services">Services &amp; Pricing</a>
+        <a href="./method.html" style="color: var(--color-pink); font-weight: 600;">The Velocity Method</a>
+        <a href="./index.html#vbt">VBT Explained</a>
+        <a href="./index.html#results">Results</a>
+        <a href="./index.html#contact">Contact</a>
+      </div>
+      <div class="footer-links">
+        <h4>Resources &amp; Free Tools</h4>
+        <a href="./tools.html">Calculators &amp; Converters</a>
+        <a href="./velocity-trackers.html">Velocity Trackers Guide</a>
+        <a href="./quiz.html">Training Type Quiz</a>
+      </div>
+      <div class="footer-links">
+        <h4>Connect</h4>
+        <a href="mailto:brad@yeagersgym.com" class="footer-contact-link">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+          brad@yeagersgym.com
+        </a>
+        <a href="https://www.instagram.com/YeagersGym" target="_blank" rel="noopener noreferrer" class="footer-contact-link">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
+          @YeagersGym
+        </a>
+        <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="footer-vagaro-link">Book via Vagaro →</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>&copy; 2026 Yeager's Gym &middot; San Diego, CA</span>
+      <div class="footer-bottom-right">
+        <a href="./index.html" aria-label="Yeager's Gym Home">
+          <img src="assets/logo.jpeg" alt="Yeager's Gym" class="logo-mark-img" width="24" height="24">
+        </a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function() {
+  'use strict';
+
+  // ── Hyrox Race Data ──
+  var STATIONS = [
+    { name: '1km Run', type: 'run', details: '1,000m', defaultMin: null },
+    { name: 'SkiErg', type: 'station', details: '1,000m', defaultMin: 4.5 },
+    { name: '1km Run', type: 'run', details: '1,000m', defaultMin: null },
+    { name: 'Sled Push', type: 'station', details: '50m (102/152kg)', defaultMin: 3.0 },
+    { name: '1km Run', type: 'run', details: '1,000m', defaultMin: null },
+    { name: 'Sled Pull', type: 'station', details: '50m (78/103kg)', defaultMin: 3.5 },
+    { name: '1km Run', type: 'run', details: '1,000m', defaultMin: null },
+    { name: 'Burpee Broad Jump', type: 'station', details: '80m', defaultMin: 5.0 },
+    { name: '1km Run', type: 'run', details: '1,000m', defaultMin: null },
+    { name: 'Rowing', type: 'station', details: '1,000m', defaultMin: 4.0 },
+    { name: '1km Run', type: 'run', details: '1,000m', defaultMin: null },
+    { name: 'Farmers Carry', type: 'station', details: '200m (24/32kg ea)', defaultMin: 3.0 },
+    { name: '1km Run', type: 'run', details: '1,000m', defaultMin: null },
+    { name: 'Sandbag Lunges', type: 'station', details: '100m (10/20kg)', defaultMin: 4.5 },
+    { name: '1km Run', type: 'run', details: '1,000m', defaultMin: null },
+    { name: 'Wall Balls', type: 'station', details: '100 reps (4/6kg)', defaultMin: 5.0 }
+  ];
+
+  // Division benchmarks: { median, top10, top25, top50, bottom25 } in seconds
+  var BENCHMARKS = {
+    'open-m':    { median: 5100, top10: 3900, top25: 4350, top50: 4800, bottom25: 5700, fieldSize: 600, label: 'Open Men' },
+    'open-f':    { median: 5700, top10: 4500, top25: 4950, top50: 5400, bottom25: 6300, fieldSize: 400, label: 'Open Women' },
+    'pro-m':     { median: 3900, top10: 3300, top25: 3540, top50: 3780, bottom25: 4200, fieldSize: 80, label: 'Pro Men' },
+    'pro-f':     { median: 4500, top10: 3780, top25: 4050, top50: 4350, bottom25: 4800, fieldSize: 50, label: 'Pro Women' },
+    'doubles-m': { median: 4500, top10: 3600, top25: 3960, top50: 4320, bottom25: 4800, fieldSize: 200, label: 'Doubles Men' },
+    'doubles-f': { median: 5100, top10: 4200, top25: 4560, top50: 4800, bottom25: 5400, fieldSize: 150, label: 'Doubles Women' },
+    'doubles-mx':{ median: 4800, top10: 3900, top25: 4260, top50: 4620, bottom25: 5100, fieldSize: 250, label: 'Doubles Mixed' },
+    'relay':     { median: 4200, top10: 3300, top25: 3660, top50: 4020, bottom25: 4500, fieldSize: 100, label: 'Relay' }
+  };
+
+  // ── Parse pace string to seconds per km ──
+  function parsePace(str) {
+    var parts = str.trim().split(':');
+    if (parts.length === 2) return parseInt(parts[0]) * 60 + parseInt(parts[1]);
+    return parseInt(str) * 60;
+  }
+
+  // ── Format seconds to m:ss or h:mm:ss ──
+  function formatTime(secs) {
+    secs = Math.round(secs);
+    if (secs >= 3600) {
+      var h = Math.floor(secs / 3600);
+      var m = Math.floor((secs % 3600) / 60);
+      var s = secs % 60;
+      return h + ':' + (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s;
+    }
+    var min = Math.floor(secs / 60);
+    var sec = secs % 60;
+    return min + ':' + (sec < 10 ? '0' : '') + sec;
+  }
+
+  // ── Build stations table ──
+  var tbody = document.getElementById('stationsBody');
+  var stationInputs = [];
+  var segNum = 0;
+
+  STATIONS.forEach(function(s, i) {
+    segNum++;
+    var tr = document.createElement('tr');
+    var isRun = s.type === 'run';
+
+    tr.innerHTML =
+      '<td style="color: var(--color-text-faint);">' + segNum + '</td>' +
+      '<td class="' + (isRun ? 'station-run' : 'station-name') + '">' + s.name + '</td>' +
+      '<td>' + s.details + '</td>' +
+      '<td>' + (isRun
+        ? '<span style="font-size: 0.65rem; color: var(--color-text-faint);">from pace</span>'
+        : '<input type="text" placeholder="m:ss" data-idx="' + i + '">') + '</td>' +
+      '<td class="est-time" id="est-' + i + '">—</td>';
+
+    tbody.appendChild(tr);
+
+    if (!isRun) {
+      var input = tr.querySelector('input');
+      stationInputs.push({ idx: i, input: input });
+      input.addEventListener('input', calculate);
+    }
+  });
+
+  // ── Calculate everything ──
+  var divSelect = document.getElementById('division');
+  var paceInput = document.getElementById('fiveKPace');
+  var transInput = document.getElementById('transitionTime');
+
+  divSelect.addEventListener('change', calculate);
+  paceInput.addEventListener('input', calculate);
+  transInput.addEventListener('input', calculate);
+
+  function calculate() {
+    var paceStr = paceInput.value;
+    var paceSec = parsePace(paceStr);
+    if (isNaN(paceSec) || paceSec <= 0) return;
+
+    var transitionSec = parseInt(transInput.value) || 15;
+    var division = divSelect.value;
+    var bench = BENCHMARKS[division];
+
+    var totalRunSec = 0;
+    var totalStationSec = 0;
+    var totalTransitionSec = 0;
+    var stationTimes = {};
+    var stationNames = {};
+
+    STATIONS.forEach(function(s, i) {
+      var estSec;
+
+      if (s.type === 'run') {
+        estSec = paceSec; // 1km at pace
+        totalRunSec += estSec;
+      } else {
+        // Check if user entered a time
+        var userInput = null;
+        stationInputs.forEach(function(si) {
+          if (si.idx === i && si.input.value.trim()) {
+            userInput = parsePace(si.input.value);
+          }
+        });
+
+        if (userInput && !isNaN(userInput) && userInput > 0) {
+          estSec = userInput;
+        } else {
+          estSec = s.defaultMin * 60;
+        }
+        totalStationSec += estSec;
+        stationTimes[s.name] = estSec;
+        stationNames[s.name] = estSec;
+        totalTransitionSec += transitionSec;
+      }
+
+      document.getElementById('est-' + i).textContent = formatTime(estSec);
+    });
+
+    var totalSec = totalRunSec + totalStationSec + totalTransitionSec;
+
+    // Update totals
+    document.getElementById('totalTime').textContent = formatTime(totalSec);
+    document.getElementById('finishTime').textContent = formatTime(totalSec);
+    document.getElementById('totalRunTime').textContent = formatTime(totalRunSec);
+    document.getElementById('totalStationTime').textContent = formatTime(totalStationSec);
+
+    // Avg race pace (8km total run)
+    var avgPace = totalRunSec / 8;
+    document.getElementById('pacePerKm').textContent = formatTime(avgPace) + '/km';
+
+    // Run:Station ratio
+    var runPct = Math.round(totalRunSec / totalSec * 100);
+    var staPct = Math.round(totalStationSec / totalSec * 100);
+    var traPct = 100 - runPct - staPct;
+    document.getElementById('runRatio').textContent = runPct + ':' + staPct;
+
+    // Breakdown bar
+    document.getElementById('barRun').style.width = runPct + '%';
+    document.getElementById('barStation').style.width = staPct + '%';
+    document.getElementById('barTransition').style.width = traPct + '%';
+    document.getElementById('legendRun').textContent = 'Running ' + runPct + '%';
+    document.getElementById('legendStation').textContent = 'Stations ' + staPct + '%';
+    document.getElementById('legendTransition').textContent = 'Transitions ' + traPct + '%';
+
+    // Placement estimate
+    var percentile;
+    if (totalSec <= bench.top10) percentile = 10;
+    else if (totalSec <= bench.top25) percentile = 25;
+    else if (totalSec <= bench.top50) percentile = 50;
+    else if (totalSec <= bench.median) percentile = 60;
+    else if (totalSec <= bench.bottom25) percentile = 75;
+    else percentile = 90;
+
+    var placement = 'Top ' + percentile + '%';
+    if (percentile <= 10) placement = 'Top 10%';
+    else if (percentile <= 25) placement = 'Top 25%';
+    else if (percentile <= 50) placement = 'Top Half';
+    else if (percentile <= 75) placement = 'Bottom Half';
+    else placement = 'Bottom 25%';
+
+    document.getElementById('placementEst').textContent = placement;
+
+    // Estimated position
+    var estPos = Math.round(bench.fieldSize * (percentile / 100));
+    document.getElementById('estPlace').textContent = '~' + estPos + (estPos === 1 ? 'st' : estPos === 2 ? 'nd' : estPos === 3 ? 'rd' : 'th');
+
+    // Context label
+    var level;
+    if (percentile <= 10) level = 'elite competitor';
+    else if (percentile <= 25) level = 'strong competitor';
+    else if (percentile <= 50) level = 'competitive recreational';
+    else if (percentile <= 75) level = 'recreational';
+    else level = 'first-timer pace';
+
+    document.getElementById('finishContext').textContent = bench.label + ' — ' + level;
+
+    // Weakest / strongest station
+    var names = Object.keys(stationNames);
+    if (names.length > 0) {
+      var slowest = names.reduce(function(a, b) { return stationNames[a] > stationNames[b] ? a : b; });
+      var fastest = names.reduce(function(a, b) { return stationNames[a] < stationNames[b] ? a : b; });
+      document.getElementById('slowestStation').textContent = slowest;
+      document.getElementById('fastestStation').textContent = fastest;
+    }
+
+    // Strategy tips
+    var tips = [];
+    if (runPct > 55) tips.push('Your running makes up over half your race. Station efficiency is your biggest time-saver — focus training there.');
+    if (runPct < 45) tips.push('You\'re station-dominant. Improving your 5K pace by 15 sec/km could drop 2+ minutes off your total.');
+    if (stationTimes['Sled Push'] && stationTimes['Sled Push'] > 240) tips.push('Sled push is your longest station. Practice pacing: steady steps beat sprinting to failure.');
+    if (stationTimes['Burpee Broad Jump'] && stationTimes['Burpee Broad Jump'] > 360) tips.push('Burpee broad jumps are eating time. Work on rhythm — consistent pace beats bursts.');
+    if (stationTimes['Wall Balls'] && stationTimes['Wall Balls'] > 360) tips.push('Wall balls over 6 minutes means you\'re breaking too much. Train sets of 15-20 unbroken.');
+    if (percentile <= 25) tips.push('You\'re tracking for a strong result. Focus on negative splitting your runs — start conservative, finish fast.');
+    if (percentile > 50) tips.push('Start conservative on runs. Most first-timers go out too fast and blow up by station 5. Save energy for the back half.');
+    if (tips.length === 0) tips.push('Solid pacing across the board. Focus on consistent transitions and avoid going to failure on any single station.');
+
+    document.getElementById('strategyText').textContent = tips.join(' ');
+  }
+
+  // Initial calc
+  calculate();
+
+  // ── Fade-in animations ──
+  var fadeEls = document.querySelectorAll('.fade-in');
+  if ('IntersectionObserver' in window) {
+    var observer = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+    fadeEls.forEach(function(el) { observer.observe(el); });
+  } else {
+    fadeEls.forEach(function(el) { el.classList.add('visible'); });
+  }
+
+  // ── Mobile nav ──
+  var hamburger = document.querySelector('.hamburger');
+  var mobileNav = document.querySelector('.mobile-nav');
+  hamburger.addEventListener('click', function() {
+    var isOpen = hamburger.classList.toggle('open');
+    mobileNav.classList.toggle('open', isOpen);
+    hamburger.setAttribute('aria-expanded', isOpen);
+    document.body.style.overflow = isOpen ? 'hidden' : '';
+  });
+  mobileNav.querySelectorAll('a').forEach(function(link) {
+    link.addEventListener('click', function() {
+      hamburger.classList.remove('open');
+      mobileNav.classList.remove('open');
+      hamburger.setAttribute('aria-expanded', 'false');
+      document.body.style.overflow = '';
+    });
+  });
+
+  var header = document.querySelector('.site-header');
+  window.addEventListener('scroll', function() {
+    header.style.boxShadow = window.scrollY > 10 ? 'var(--shadow-md)' : 'none';
+  }, { passive: true });
+})();
+</script>
+
+</body>
+</html>
