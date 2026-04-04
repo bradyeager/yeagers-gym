@@ -175,7 +175,7 @@
   background: var(--color-surface-2);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
-  padding: var(--space-6);
+  padding: var(--space-4);
   transition: border-color var(--transition-interactive), box-shadow var(--transition-interactive);
 }
 
@@ -249,6 +249,9 @@
   color: var(--color-text-muted);
   margin-bottom: var(--space-6);
 }
+
+.session-includes-grid { grid-template-columns: 1fr 1fr 1fr; }
+@media (max-width: 600px) { .session-includes-grid { grid-template-columns: 1fr 1fr; } }
 </style>
 </head>
 <body>
@@ -330,14 +333,14 @@
 
     <div class="ip-hero-inner fade-in">
       <h1>In-Person <span style="color: var(--color-teal);">Strength Coaching</span> in<br><span style="color: var(--color-pink);">San Diego</span></h1>
-      <p class="ip-hero-sub">Velocity-tracked 1-on-1 coaching at Yeager's Gym.<br>Every set measured in real time — bar speed, fatigue, readiness.<br>Programming that adapts session to session based on data, not guesswork.</p>
+      <p class="ip-hero-sub">Every rep tracked in real time. Programming that adapts to your data — not a fixed template.</p>
 
       <div class="ip-location-badge">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
           <circle cx="12" cy="10" r="3"/>
         </svg>
-        3090 Monarch St., San Diego, CA 92123
+        San Diego, CA
       </div>
 
       <div class="ip-hero-ctas">
@@ -366,7 +369,7 @@
         <div class="pricing-category-icon">🏋️</div>
         <div>
           <h3>In-Person <span style="color: var(--color-pink);">Coaching</span></h3>
-          <p style="font-size: var(--text-sm); color: var(--color-text-muted);">3090 Monarch St., San Diego, CA 92123</p>
+          <p style="font-size: var(--text-sm); color: var(--color-text-muted);">San Diego, CA — by appointment</p>
         </div>
       </div>
       <p style="font-size: var(--text-sm); color: var(--color-text-muted); line-height: 1.7; margin-bottom: var(--space-6); max-width: 65ch;">Train in person with full velocity tracking on every session. Brad coaches you through every set — adjusting loads, managing fatigue, and building your program based on real-time data.</p>
@@ -406,7 +409,7 @@
 
       <div class="service-includes" style="margin-top: var(--space-6);">
         <p style="font-family: var(--font-display); font-size: var(--text-xs); font-weight: 600; color: var(--color-teal); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: var(--space-3);">Every Session Includes</p>
-        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: var(--space-3);">
+        <div class="session-includes-grid" style="display: grid; gap: var(--space-3);">
           <div style="background: rgba(239,50,149,0.06); border: 1px solid rgba(239,50,149,0.2); border-radius: var(--radius-md); padding: var(--space-3) var(--space-4); font-size: var(--text-sm); color: var(--color-text); transition: all 0.2s; cursor: default;" onmouseover="this.style.borderColor='var(--color-pink)';this.style.boxShadow='0 0 16px rgba(239,50,149,0.12)'" onmouseout="this.style.borderColor='rgba(239,50,149,0.2)';this.style.boxShadow='none'">Individualized programming built on velocity data</div>
           <div style="background: rgba(239,50,149,0.06); border: 1px solid rgba(239,50,149,0.2); border-radius: var(--radius-md); padding: var(--space-3) var(--space-4); font-size: var(--text-sm); color: var(--color-text); transition: all 0.2s; cursor: default;" onmouseover="this.style.borderColor='var(--color-pink)';this.style.boxShadow='0 0 16px rgba(239,50,149,0.12)'" onmouseout="this.style.borderColor='rgba(239,50,149,0.2)';this.style.boxShadow='none'">Real-time bar speed measurement</div>
           <div style="background: rgba(239,50,149,0.06); border: 1px solid rgba(239,50,149,0.2); border-radius: var(--radius-md); padding: var(--space-3) var(--space-4); font-size: var(--text-sm); color: var(--color-text); transition: all 0.2s; cursor: default;" onmouseover="this.style.borderColor='var(--color-pink)';this.style.boxShadow='0 0 16px rgba(239,50,149,0.12)'" onmouseout="this.style.borderColor='rgba(239,50,149,0.2)';this.style.boxShadow='none'">Block periodization matched to your goals</div>
@@ -466,17 +469,6 @@
 <!-- ═══════════════════════════════════════════
      CTA
      ═══════════════════════════════════════════ -->
-<div class="final-cta">
-  <p class="section-label" style="color: var(--color-pink); text-align: center; max-width: none;">Get Started</p>
-  <h2>Book Your FREE Session!</h2>
-  <p>Free 60-min session. No commitment. No credit card.</p>
-  <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="btn btn-primary">Book Your FREE Session!</a>
-</div>
-
-<!-- ═══════════════════════════════════════════
-     FOOTER
-     ═══════════════════════════════════════════ -->
-
 <!-- TESTIMONIAL SECTION -->
 
 <style>
@@ -514,6 +506,17 @@
   </div>
 </section>
 <!-- END TESTIMONIAL SECTION -->
+
+<div class="final-cta">
+  <p class="section-label" style="color: var(--color-pink); text-align: center; max-width: none;">Get Started</p>
+  <h2>Book Your FREE Session!</h2>
+  <p>Free 60-min session. No commitment. No credit card.</p>
+  <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="btn btn-primary">Book Your FREE Session!</a>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     FOOTER
+     ═══════════════════════════════════════════ -->
 
 <footer class="site-footer" role="contentinfo">
   <div class="container">
