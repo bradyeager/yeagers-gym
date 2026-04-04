@@ -46,14 +46,15 @@
   padding-bottom: var(--space-3);
   position: relative;
   overflow: hidden;
-  background: url('./assets/recovery-09.png') center center / contain no-repeat;
+  background: url('./assets/recovery-09.png') center 30% / cover no-repeat;
+  min-height: 450px;
 }
 
 .rec-hero::before {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(to bottom, rgba(5,7,11,0.55) 0%, rgba(5,7,11,0.75) 60%, var(--color-bg) 100%);
+  background: linear-gradient(to bottom, rgba(5,7,11,0.2) 0%, rgba(5,7,11,0.5) 50%, var(--color-bg) 100%);
   pointer-events: none;
 }
 
@@ -178,15 +179,23 @@
 }
 
 /* Card icon */
+.recovery-card-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-3);
+}
 .recovery-card-icon {
-  width: 44px;
-  height: 44px;
+  width: 36px;
+  height: 36px;
   border-radius: var(--radius-md);
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: var(--space-4);
   flex-shrink: 0;
+}
+.recovery-card h3, .link-card h3 {
+  margin: 0;
 }
 
 .recovery-card-icon svg {
@@ -544,17 +553,19 @@
 
       <!-- Cupping Therapy -->
       <div class="recovery-card fade-in">
-        <div class="recovery-card-icon recovery-card-icon--teal">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/>
-            <path d="M8 12c0-2.209 1.791-4 4-4s4 1.791 4 4-1.791 4-4 4-4-1.791-4-4z"/>
-            <path d="M12 8V6"/>
-            <path d="M12 18v-2"/>
-            <path d="M8 12H6"/>
-            <path d="M18 12h-2"/>
-          </svg>
+        <div class="recovery-card-header">
+          <div class="recovery-card-icon recovery-card-icon--teal">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/>
+              <path d="M8 12c0-2.209 1.791-4 4-4s4 1.791 4 4-1.791 4-4 4-4-1.791-4-4z"/>
+              <path d="M12 8V6"/>
+              <path d="M12 18v-2"/>
+              <path d="M8 12H6"/>
+              <path d="M18 12h-2"/>
+            </svg>
+          </div>
+          <h3>Cupping Therapy</h3>
         </div>
-        <h3>Cupping Therapy</h3>
         <img src="./assets/recovery-02.png" alt="Cupping therapy" class="rec-service-img" loading="lazy" width="60" height="60">
         <div class="recovery-pricing">
           <span class="recovery-price-pill">$20 <span class="price-duration">/ 15 min</span></span>
@@ -568,19 +579,21 @@
 
       <!-- Cold Plunge -->
       <div class="recovery-card fade-in">
-        <div class="recovery-card-icon recovery-card-icon--pink">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 2v6"/>
-            <path d="M12 22v-6"/>
-            <path d="M4.93 4.93l4.24 4.24"/>
-            <path d="M14.83 14.83l4.24 4.24"/>
-            <path d="M2 12h6"/>
-            <path d="M22 12h-6"/>
-            <path d="M4.93 19.07l4.24-4.24"/>
-            <path d="M14.83 9.17l4.24-4.24"/>
-          </svg>
+        <div class="recovery-card-header">
+          <div class="recovery-card-icon recovery-card-icon--pink">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2v6"/>
+              <path d="M12 22v-6"/>
+              <path d="M4.93 4.93l4.24 4.24"/>
+              <path d="M14.83 14.83l4.24 4.24"/>
+              <path d="M2 12h6"/>
+              <path d="M22 12h-6"/>
+              <path d="M4.93 19.07l4.24-4.24"/>
+              <path d="M14.83 9.17l4.24-4.24"/>
+            </svg>
+          </div>
+          <h3>Cold Plunge</h3>
         </div>
-        <h3>Cold Plunge</h3>
         <img src="./assets/recovery-01.png" alt="Cold plunge" class="rec-service-img" loading="lazy" width="60" height="60">
         <div class="recovery-pricing">
           <span class="recovery-price-pill">$15 <span class="price-duration">/ session</span></span>
@@ -597,15 +610,17 @@
           <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="10" height="10"><circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 1"/></svg>
           Coming Soon
         </div>
-        <div class="recovery-card-icon recovery-card-icon--teal">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/>
-            <path d="M8 12c0 2.21 1.79 4 4 4s4-1.79 4-4"/>
-            <path d="M8 8h.01"/>
-            <path d="M16 8h.01"/>
-          </svg>
+        <div class="recovery-card-header">
+          <div class="recovery-card-icon recovery-card-icon--teal">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/>
+              <path d="M8 12c0 2.21 1.79 4 4 4s4-1.79 4-4"/>
+              <path d="M8 8h.01"/>
+              <path d="M16 8h.01"/>
+            </svg>
+          </div>
+          <h3>Barrel Sauna</h3>
         </div>
-        <h3>Barrel Sauna</h3>
         <img src="./assets/recovery-07.png" alt="Barrel sauna" class="rec-service-img" loading="lazy" width="60" height="60">
         <p>Infrared barrel sauna for deep tissue recovery, improved sleep quality, and cardiovascular conditioning. Heat stress triggers powerful adaptations — from increased growth hormone to better stress tolerance. Coming to Yeager's Gym soon.</p>
         <!-- No CTA button for coming soon -->
@@ -613,13 +628,15 @@
 
       <!-- Peptide Therapy Consulting (Link Card) -->
       <div class="link-card fade-in">
-        <div class="recovery-card-icon recovery-card-icon--purple">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M9 3h6v11a6 6 0 0 1-6 0V3z"/>
-            <path d="M12 14v7"/>
-          </svg>
+        <div class="recovery-card-header">
+          <div class="recovery-card-icon recovery-card-icon--purple">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9 3h6v11a6 6 0 0 1-6 0V3z"/>
+              <path d="M12 14v7"/>
+            </svg>
+          </div>
+          <h3>Peptide Therapy Consulting</h3>
         </div>
-        <h3>Peptide Therapy Consulting</h3>
         <img src="./assets/peptide-07.png" alt="Peptide consulting" class="rec-service-img" loading="lazy" width="100" height="100">
         <div class="recovery-pricing">
           <span class="recovery-price-pill">$200 <span class="price-duration">/ one-time consultation</span></span>
