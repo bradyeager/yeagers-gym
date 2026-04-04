@@ -629,35 +629,33 @@
 }
 
 .how-step {
-  text-align: center;
-  padding: var(--space-4);
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  position: relative;
+  display: flex;
+  gap: var(--space-5);
+  align-items: flex-start;
+  text-align: left;
 }
 
-.how-step .how-num {
+.how-num {
   font-family: var(--font-display);
-  font-size: var(--text-xl);
+  font-size: clamp(2.5rem, 7vw, 3.5rem);
   font-weight: 700;
   color: var(--color-teal);
   line-height: 1;
+  min-width: 64px;
+  flex-shrink: 0;
+  opacity: 0.7;
+  padding-top: 4px;
+}
+
+.how-step-body {
+  flex: 1;
+}
+.how-step-body h3 {
   margin-bottom: var(--space-2);
 }
-
-.how-step h3 {
-  font-family: var(--font-body);
-  font-size: var(--text-sm);
-  font-weight: 700;
-  color: var(--color-text);
-  margin-bottom: var(--space-1);
-}
-
-.how-step p {
-  font-size: var(--text-xs);
+.how-step-body p {
+  margin: 0;
   color: var(--color-text-muted);
-  line-height: 1.55;
 }
 
 /* ── Email Capture ── */
@@ -1116,24 +1114,30 @@
          ═══════════════════════════════════════ -->
     <section class="how-section fade-in" aria-label="How it works">
       <p class="section-label" style="color: var(--color-teal); text-align: center;">HOW IT WORKS</p>
-      <h2 class="section-title" style="text-align: center;">Three Steps. That's It.</h2>
+      <h2 class="section-title" style="text-align: center;"><span style="color: var(--color-teal);">Three Steps.</span> <span style="color: var(--color-pink);">That's It.</span></h2>
       <p class="section-desc" style="text-align: center; margin-inline: auto;">No complicated onboarding. No 47-page questionnaire. Show up, lift, let the data do the rest.</p>
 
       <div class="how-steps">
         <div class="how-step">
           <div class="how-num">01</div>
-          <h3>Assessment</h3>
-          <p>Your first session is free. We test your six lifts, build your velocity profile, and establish your baseline. Takes 60 minutes.</p>
+          <div class="how-step-body">
+            <h3>Assessment</h3>
+            <p>Your first session is free. We test your six Lifts, build your velocity profile, and establish your baseline. Takes 60 minutes.</p>
+          </div>
         </div>
         <div class="how-step">
           <div class="how-num">02</div>
-          <h3>Program</h3>
-          <p>Brad builds your training plan around the six lifts with velocity targets, progressive overload, and accessories for your weak points.</p>
+          <div class="how-step-body">
+            <h3>Program</h3>
+            <p>Brad builds your training plan around the six Lifts with velocity targets, progressive overload, and accessories for your weak points.</p>
+          </div>
         </div>
         <div class="how-step">
           <div class="how-num">03</div>
-          <h3>Track & Adapt</h3>
-          <p>Every rep is tracked. Every session is reviewed. Your program adjusts weekly based on real performance data — not guesswork.</p>
+          <div class="how-step-body">
+            <h3>Track & Adapt</h3>
+            <p>Every rep is tracked. Every session is reviewed. Your program adjusts weekly based on real performance data — not guesswork.</p>
+          </div>
         </div>
       </div>
     </section>
