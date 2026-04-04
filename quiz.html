@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
 <!--
@@ -8,8 +8,6 @@
 / /___/ /_/ / / / / / / /_/ / /_/ / /_/  __/ /
 \____/\____/_/ /_/ /_/ .___/\__,_/\__/\___/_/
                     /_/
-        Created with Perplexity Computer
-        https://www.perplexity.ai/computer
 -->
 
 
@@ -33,7 +31,6 @@
   "applicationCategory": "HealthApplication",
   "operatingSystem": "Web",
   "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
-  "creator": { "@type": "SoftwareApplication", "name": "Perplexity Computer", "url": "https://www.perplexity.ai/computer" }
 }
 </script>
 
@@ -225,7 +222,7 @@
 
 .quiz-option.selected {
   border-color: var(--color-teal);
-  background: rgba(30, 200, 176, 0.06);
+  background: rgba(72, 196, 204, 0.06);
   box-shadow: 0 0 0 1px var(--color-teal);
   color: var(--color-text);
 }
@@ -244,7 +241,7 @@
 }
 
 .quiz-option.selected .quiz-option-icon {
-  background: rgba(30, 200, 176, 0.15);
+  background: rgba(72, 196, 204, 0.15);
 }
 
 .quiz-option-text {
@@ -345,8 +342,8 @@
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--color-teal);
-  background: rgba(30, 200, 176, 0.1);
-  border: 1px solid rgba(30, 200, 176, 0.2);
+  background: rgba(72, 196, 204, 0.1);
+  border: 1px solid rgba(72, 196, 204, 0.2);
   padding: var(--space-2) var(--space-4);
   border-radius: 100px;
   margin-bottom: var(--space-6);
@@ -418,8 +415,8 @@
   font-size: 1.5rem;
 }
 
-.result-card-icon.pdf { background: rgba(240, 68, 138, 0.12); }
-.result-card-icon.tool { background: rgba(30, 200, 176, 0.12); }
+.result-card-icon.pdf { background: rgba(239, 50, 149, 0.12); }
+.result-card-icon.tool { background: rgba(72, 196, 204, 0.12); }
 .result-card-icon.book { background: rgba(155, 111, 212, 0.12); }
 
 .result-card-content {
@@ -518,8 +515,8 @@
 }
 
 @keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(30, 200, 176, 0.3); }
-  50%      { box-shadow: 0 0 20px 4px rgba(30, 200, 176, 0.15); }
+  0%, 100% { box-shadow: 0 0 0 0 rgba(72, 196, 204, 0.3); }
+  50%      { box-shadow: 0 0 20px 4px rgba(72, 196, 204, 0.15); }
 }
 
 .result-badge { animation: pulse-glow 2s ease infinite; }
@@ -844,7 +841,6 @@
   <div class="container">
     <div class="footer-bottom" style="border-top: none; padding-top: 0;">
       <span>&copy; 2026 Yeager's Gym. San Diego, CA.</span>
-      <a href="https://www.perplexity.ai/computer" target="_blank" rel="noopener noreferrer">Created with Perplexity Computer</a>
     </div>
   </div>
 </footer>
@@ -852,6 +848,7 @@
 <!-- ═══════════════════════════════════════════
      SCRIPTS
      ═══════════════════════════════════════════ -->
+<script src="./brevo.js"></script>
 <script>
 (function() {
   'use strict';
@@ -1056,11 +1053,12 @@
     // Set hidden field
     document.getElementById('hidden-result').value = winner;
 
-    // Send to Kit (ConvertKit) — using their form endpoint
-    // Brad will replace this form ID with his actual Kit form ID
-    submitToKit(firstName, email, winner);
+    // Send to Brevo + show toast on success
+    submitToBrevo(firstName, email, winner).then(function(ok) {
+      if (ok) brevoToast();
+    });
 
-    // Show result
+    // Show result immediately (don't wait for API)
     showResult(winner);
   });
 
@@ -1069,39 +1067,19 @@
     showResult(winner);
   });
 
-  function submitToKit(firstName, email, quizResult) {
-    // Kit (ConvertKit) form submission
-    // Replace FORM_ID with your actual Kit form ID from:
-    // Kit dashboard → Forms → select form → grab the form ID from the URL
-    var KIT_FORM_ID = 'YOUR_KIT_FORM_ID';
-
-    // If form ID hasn't been set yet, just log and skip
-    if (KIT_FORM_ID === 'YOUR_KIT_FORM_ID') {
-      console.log('Kit form not configured yet. Would submit:', {
-        first_name: firstName,
-        email: email,
-        quiz_result: quizResult
-      });
-      return;
+  function submitToBrevo(firstName, email, quizResult) {
+    if (!brevoValidateEmail(email)) {
+      return Promise.resolve(false);
     }
 
-    // Kit API endpoint
-    var url = 'https://api.convertkit.com/v3/forms/' + KIT_FORM_ID + '/subscribe';
-
-    fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        api_key: 'YOUR_KIT_API_KEY', // Replace with your Kit public API key
-        email: email,
-        first_name: firstName,
-        fields: {
-          quiz_result: quizResult
-        },
-        tags: [quizResult] // Tag subscriber with their archetype
-      })
-    }).catch(function(err) {
-      console.log('Kit submission error (non-blocking):', err);
+    return brevoSubmit({
+      email: email,
+      firstName: firstName,
+      listIds: [BREVO_LISTS.ALL_LEADS, BREVO_LISTS.QUIZ_COMPLETIONS],
+      attributes: {
+        QUIZ_RESULT: quizResult,
+        LEAD_SOURCE: 'training-quiz'
+      }
     });
   }
 
@@ -1194,7 +1172,7 @@
 </script>
 
 <!-- Mobile Sticky CTA -->
-<div class="mobile-sticky-cta" id="stickyCta" style="display: none; position: fixed; bottom: 0; left: 0; right: 0; z-index: 999; padding: 12px 16px; background: rgba(10,14,23,0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-top: 1px solid rgba(30,200,176,0.2); text-align: center;">
+<div class="mobile-sticky-cta" id="stickyCta" style="display: none; position: fixed; bottom: 0; left: 0; right: 0; z-index: 999; padding: 12px 16px; background: rgba(10,14,23,0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-top: 1px solid rgba(72,196,204,0.2); text-align: center;">
   <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" style="display: inline-block; width: 100%; max-width: 320px; padding: 10px 20px; background: var(--color-teal); color: #0a0e17; font-family: var(--font-display); font-size: 0.8rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; text-decoration: none; border-radius: 6px;">Book a Free Session</a>
 </div>
 <script>
