@@ -147,6 +147,7 @@
   font-size: var(--text-lg);
   font-weight: 700;
   margin-bottom: var(--space-4);
+  text-align: center;
 }
 
 .rm-problem-box p {
@@ -266,7 +267,7 @@
   background: var(--color-surface-2);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
-  padding: var(--space-5);
+  padding: var(--space-4);
   transition: border-color var(--transition-interactive), box-shadow var(--transition-interactive);
 }
 
@@ -504,9 +505,13 @@
     </div>
     <div class="rm-problem-box fade-in" style="border: 1px solid rgba(239,50,149,0.25); transition: border-color 0.2s, box-shadow 0.2s;" onmouseover="this.style.borderColor='var(--color-pink)';this.style.boxShadow='0 0 16px rgba(239,50,149,0.12)'" onmouseout="this.style.borderColor='rgba(239,50,149,0.25)';this.style.boxShadow='none'">
       <h3>The problem with most remote coaching</h3>
-      <p>Most remote coaching works like this: you get a program. You train. You fill out a check-in form once a week. Your coach reads it, maybe adjusts a few things, sends next week's program.</p>
-      <p>The problem? The coach only sees what you report. And self-reported data is limited.</p>
-      <p class="rm-accent-quote">"How did the set feel?" is a useful question. But "How fast did the bar move?" is a better one.</p>
+      <ul class="rm-benefits-list" style="list-style: none; padding: 0; margin: 0;">
+        <li style="padding: var(--space-1) 0; color: var(--color-text-muted); font-size: var(--text-sm);">✕ PDF program with no real feedback loop</li>
+        <li style="padding: var(--space-1) 0; color: var(--color-text-muted); font-size: var(--text-sm);">✕ Coach never sees your actual bar speed or fatigue</li>
+        <li style="padding: var(--space-1) 0; color: var(--color-text-muted); font-size: var(--text-sm);">✕ Weekly check-in based on feel, not data</li>
+        <li style="padding: var(--space-1) 0; color: var(--color-text-muted); font-size: var(--text-sm);">✕ Load adjustments are reactive, not proactive</li>
+      </ul>
+      <p class="rm-accent-quote" style="margin-top: var(--space-3);">"How did the set feel?" is useful. "How fast did the bar move?" is better.</p>
     </div>
   </div>
 </section>
@@ -524,8 +529,12 @@
     </div>
     <div class="rm-problem-box fade-in" style="border-color: rgba(72,196,204,0.3); background: rgba(72,196,204,0.03); transition: border-color 0.2s, box-shadow 0.2s;" onmouseover="this.style.borderColor='var(--color-teal)';this.style.boxShadow='0 0 16px rgba(72,196,204,0.12)'" onmouseout="this.style.borderColor='rgba(72,196,204,0.3)';this.style.boxShadow='none'">
       <h3 style="color: var(--color-teal);">Velocity data bridges the gap</h3>
-      <p>What if your coach could see exactly how every set moved — how fast the bar traveled, when fatigue kicked in, and whether today was a push day or a pull-back day? That's what velocity-based remote coaching gives you. Instead of relying on subjective check-ins, your bar speed tells the whole story.</p>
-      <p>Your programming adjusts week to week based on real performance data — the same objective feedback Brad uses with in-person athletes. Distance doesn't dilute the coaching. Data closes the gap.</p>
+      <ul class="rm-benefits-list" style="list-style: none; padding: 0; margin: 0;">
+        <li style="padding: var(--space-1) 0; color: var(--color-text-muted); font-size: var(--text-sm);">✓ Brad sees how every set moved — speed, fatigue, readiness</li>
+        <li style="padding: var(--space-1) 0; color: var(--color-text-muted); font-size: var(--text-sm);">✓ Bar speed tells the whole story, not a check-in form</li>
+        <li style="padding: var(--space-1) 0; color: var(--color-text-muted); font-size: var(--text-sm);">✓ Programming adjusts weekly based on real performance data</li>
+        <li style="padding: var(--space-1) 0; color: var(--color-text-muted); font-size: var(--text-sm);">✓ Same objective feedback as in-person — distance doesn't dilute it</li>
+      </ul>
     </div>
   </div>
 </section>
@@ -615,6 +624,16 @@
         <p>Competitors preparing for meets, events, or seasons who need a coach in their corner.</p>
       </div>
 
+      <div class="rm-who-card fade-in">
+        <div style="display: flex; align-items: center; gap: var(--space-2); margin-bottom: var(--space-2);">
+          <div class="rm-who-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          </div>
+          <h4 style="font-family: var(--font-display); font-size: var(--text-sm); font-weight: 700;">General Population</h4>
+        </div>
+        <p>You lift consistently and want a program that's actually built for you — not a template. You don't need to compete to benefit from data-driven training.</p>
+      </div>
+
     </div>
   </div>
 </section>
@@ -631,29 +650,34 @@
       <h2 class="section-title">Simple, flat-rate coaching.</h2>
     </div>
 
-    <div class="rm-pricing-box fade-in">
+    <!-- Performance Tier -->
+    <div class="rm-pricing-box fade-in" style="margin-bottom: var(--space-4);">
       <div class="rm-pricing-inner">
         <div>
-          <h3>Remote Programming</h3>
-          <p class="rm-pricing-desc">Weekly programming, velocity data integration, and direct coaching communication. Train anywhere — your data travels with you.</p>
+          <h3>Performance</h3>
+          <p class="rm-pricing-desc">Weekly programming with VBT data integration. Brad sees your velocity data session-by-session and adjusts your program accordingly.</p>
         </div>
         <div style="text-align: center; flex-shrink: 0;">
-          <div class="rm-price-val">$149</div>
-          <div class="rm-price-period">per month</div>
-          <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="btn btn-primary">Try a Week Free!</a>
+          <div class="rm-price-val">$99</div>
+          <div class="rm-price-period">/ month</div>
+          <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="btn btn-secondary" style="font-size: var(--text-xs); padding: 0.5rem 1rem;">Start Today</a>
         </div>
       </div>
+    </div>
 
-      <div class="service-includes" style="margin-top: var(--space-5); border-top: 1px solid var(--color-divider); padding-top: var(--space-4);">
-        <p style="font-family: var(--font-display); font-size: var(--text-xs); font-weight: 600; color: var(--color-teal); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: var(--space-3);">Every Month Includes</p>
-        <ul class="includes-list">
-          <li>Weekly programming built around your velocity data</li>
-          <li>Session-by-session fatigue and load adjustments</li>
-          <li>Block periodization matched to your goals</li>
-          <li>Direct messaging with Brad for form checks and questions</li>
-          <li>VBT device integration (Vitruve, GymAware, Metric, and more)</li>
-          <li>Monthly progress review and program adjustments</li>
-        </ul>
+    <!-- Elite Tier -->
+    <div class="rm-pricing-box fade-in" style="border-color: var(--color-pink); background: linear-gradient(135deg, var(--color-surface), rgba(240,68,138,0.04)); position: relative; overflow: hidden;">
+      <div style="position: absolute; top: -1px; left: 0; right: 0; height: 3px; background: var(--color-pink);"></div>
+      <div class="rm-pricing-inner">
+        <div>
+          <h3>Elite <span style="color: var(--color-pink); font-size: var(--text-xs); font-weight: 500; display: inline-block; margin-left: var(--space-2); vertical-align: middle; background: rgba(240,68,138,0.1); border: 1px solid rgba(240,68,138,0.25); border-radius: var(--radius-full); padding: 2px 8px;">Most Popular</span></h3>
+          <p class="rm-pricing-desc">Full 1-on-1 coaching experience. Direct access to Brad, custom block periodization, velocity data review every session, and weekly programming calls.</p>
+        </div>
+        <div style="text-align: center; flex-shrink: 0;">
+          <div class="rm-price-val" style="color: var(--color-pink);">$249</div>
+          <div class="rm-price-period">/ month</div>
+          <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="btn btn-primary" style="font-size: var(--text-xs); padding: 0.5rem 1rem;">Get Elite</a>
+        </div>
       </div>
     </div>
   </div>
@@ -664,19 +688,7 @@
 <!-- ═══════════════════════════════════════════
      CTA
      ═══════════════════════════════════════════ -->
-<div class="final-cta">
-  <p class="section-label" style="color: var(--color-pink); text-align: center; max-width: none;">Get Started</p>
-  <h2>Try a Week Free!</h2>
-  <p>First week on Brad. No commitment, no credit card. See what data-driven remote coaching actually feels like.</p>
-  <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="btn btn-primary">Try a Week Free!</a>
-</div>
-
-<!-- ═══════════════════════════════════════════
-     FOOTER
-     ═══════════════════════════════════════════ -->
-
 <!-- TESTIMONIAL SECTION -->
-
 <style>
 .testimonial-section { padding: 80px 0; background: var(--color-bg-dark, #05070B); }
 .testimonial-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; max-width: 1200px; margin: 0 auto; padding: 0 24px; }
@@ -705,13 +717,24 @@
         <p class="testimonial-attribution">[Name] · Remote</p>
       </div>
       <div class="testimonial-card">
-        <p class="testimonial-quote">[Placeholder] $99/month for programming that adapts every week based on real data. Nothing else comes close.</p>
+        <p class="testimonial-quote">[Placeholder] Data-driven programming that adapts every week based on real performance. Nothing else comes close.</p>
         <span class="testimonial-result">[Result]</span>
         <p class="testimonial-attribution">[Name] · Remote</p>
       </div>
   </div>
 </section>
 <!-- END TESTIMONIAL SECTION -->
+
+<div class="final-cta">
+  <p class="section-label" style="color: var(--color-pink); text-align: center; max-width: none;">Get Started</p>
+  <h2>Try a Week Free!</h2>
+  <p>First week on Brad. No commitment, no credit card. See what data-driven remote coaching actually feels like.</p>
+  <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="btn btn-primary">Try a Week Free!</a>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     FOOTER
+     ═══════════════════════════════════════════ -->
 
 <footer class="site-footer" role="contentinfo">
   <div class="container">
