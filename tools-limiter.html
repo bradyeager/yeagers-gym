@@ -1,0 +1,2242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CrossFit Limiter Quiz — What's Holding You Back? | Yeager's Gym</title>
+<meta name="description" content="Identify your #1 CrossFit limiter. Engine, strength, gymnastics, pacing — find out where to focus your training with this free diagnostic quiz.">
+<meta property="og:title" content="CrossFit Limiter Quiz — Yeager's Gym">
+<meta property="og:description" content="Identify your #1 CrossFit limiter. Engine, strength, gymnastics, pacing — find out where to focus.">
+<meta property="og:type" content="website">
+<link rel="canonical" href="https://yeagersgym.com/tools-limiter.html">
+<link rel="stylesheet" href="./base.css">
+<link rel="stylesheet" href="./style.css">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "CrossFit Limiter Quiz",
+  "description": "Identify your primary CrossFit limiting factor — engine, strength, gymnastics, barbell cycling, pacing, skill, or recovery.",
+  "url": "https://yeagersgym.com/tools-limiter.html",
+  "applicationCategory": "HealthApplication"
+}
+</script>
+
+<style>
+/* ═══════════════════════════════════════════
+   LIMITER QUIZ — Widget Styles
+   ═══════════════════════════════════════════ */
+
+.tool-page {
+  padding-top: 100px;
+  padding-bottom: 0;
+  min-height: 100vh;
+}
+
+.tool-back {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  text-decoration: none;
+  margin-bottom: var(--space-8);
+  transition: color var(--transition-interactive);
+}
+.tool-back:hover { color: var(--color-teal); }
+.tool-back svg { width: 16px; height: 16px; }
+
+.tool-header {
+  text-align: center;
+  margin-bottom: var(--space-6);
+}
+
+.tool-header .section-label {
+  margin-bottom: var(--space-4);
+}
+
+.tool-header h1 {
+  font-family: var(--font-body);
+  font-size: var(--text-2xl);
+  font-weight: 700;
+  color: var(--color-text);
+  margin-bottom: var(--space-4);
+  line-height: 1.15;
+}
+
+.tool-header p {
+  font-size: var(--text-base);
+  color: var(--color-text-muted);
+  max-width: 56ch;
+  margin-inline: auto;
+  line-height: 1.7;
+}
+
+/* ── Calculator Card ── */
+.calc-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  padding: var(--space-8);
+  max-width: 700px;
+  margin-inline: auto;
+  margin-bottom: var(--space-10);
+}
+
+@media (max-width: 640px) {
+  .calc-card { padding: var(--space-6) var(--space-4); }
+}
+
+.calc-card h2 {
+  font-family: var(--font-display);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--color-teal);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: var(--space-6);
+}
+
+/* ── Form Fields ── */
+.field-group {
+  margin-bottom: var(--space-5);
+}
+
+.field-group label {
+  display: block;
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-2);
+}
+
+.field-group select,
+.field-group input[type="number"],
+.field-group input[type="text"] {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  color: var(--color-text);
+  font-size: var(--text-base);
+  font-family: var(--font-body);
+  transition: border-color var(--transition-interactive), box-shadow var(--transition-interactive);
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.field-group select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none'%3E%3Cpath d='M1 1.5l5 5 5-5' stroke='%238a8d93' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  padding-right: 2.5rem;
+  cursor: pointer;
+}
+
+.field-group select:focus,
+.field-group input[type="number"]:focus,
+.field-group input[type="text"]:focus {
+  outline: none;
+  border-color: var(--color-teal);
+  box-shadow: 0 0 0 3px var(--color-teal-glow);
+}
+
+.field-group input[type="number"]::placeholder,
+.field-group input[type="text"]::placeholder {
+  color: var(--color-text-faint);
+}
+
+.field-group input[type="number"]::-webkit-outer-spin-button,
+.field-group input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.field-group input[type="number"] { -moz-appearance: textfield; }
+
+/* ── Row layouts ── */
+.field-row-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4);
+}
+.field-row-3 {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: var(--space-4);
+}
+@media (max-width: 640px) {
+  .field-row-2 { grid-template-columns: 1fr; }
+  .field-row-3 { grid-template-columns: 1fr; }
+}
+
+/* ── Section Divider ── */
+.card-divider {
+  border: none;
+  border-top: 1px solid var(--color-border);
+  margin: var(--space-6) 0;
+}
+
+/* ── Collapsible Sections ── */
+.section-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-teal);
+  padding: var(--space-3) 0;
+  transition: color 0.2s ease;
+  width: 100%;
+}
+
+.section-toggle:hover { color: var(--color-text); }
+
+.section-toggle svg {
+  width: 14px;
+  height: 14px;
+  transition: transform 0.25s ease;
+  flex-shrink: 0;
+}
+
+.section-toggle.open svg {
+  transform: rotate(180deg);
+}
+
+.section-toggle .optional-badge {
+  font-size: 0.6rem;
+  color: var(--color-text-faint);
+  font-weight: 400;
+  letter-spacing: 0;
+  text-transform: none;
+  margin-left: var(--space-2);
+}
+
+.section-toggle .required-badge {
+  font-size: 0.6rem;
+  color: var(--color-pink);
+  font-weight: 400;
+  letter-spacing: 0;
+  text-transform: none;
+  margin-left: var(--space-2);
+}
+
+.section-content {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s ease;
+}
+
+.section-content.open {
+  max-height: 2000px;
+}
+
+/* ── Unit Toggle ── */
+.unit-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: 0.7rem;
+  color: var(--color-text-faint);
+  margin-left: var(--space-3);
+  cursor: pointer;
+  user-select: none;
+}
+.unit-toggle input { display: none; }
+.unit-toggle-pill {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  font-family: var(--font-display);
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  transition: all 0.2s ease;
+}
+.unit-toggle input:checked ~ .unit-toggle-pill {
+  background: rgba(30,200,176,0.15);
+  border-color: var(--color-teal);
+  color: var(--color-teal);
+}
+
+/* ── Calculate Button ── */
+.btn-calculate {
+  width: 100%;
+  padding: 0.875rem 1.5rem;
+  font-size: var(--text-base);
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-top: var(--space-4);
+}
+
+/* ── Slider Styles ── */
+.slider-group {
+  margin-bottom: var(--space-5);
+}
+
+.slider-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-2);
+}
+
+.slider-header label {
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  margin-bottom: 0;
+}
+
+.slider-value {
+  font-family: var(--font-display);
+  font-size: var(--text-sm);
+  font-weight: 700;
+  color: var(--color-teal);
+  min-width: 2ch;
+  text-align: right;
+}
+
+.slider-hint {
+  font-family: var(--font-body);
+  font-size: 0.65rem;
+  color: var(--color-text-faint);
+  letter-spacing: 0;
+  text-transform: none;
+  font-weight: 400;
+}
+
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 8px;
+  border-radius: 4px;
+  background: var(--color-surface-2);
+  outline: none;
+  cursor: pointer;
+  margin: 0;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--color-teal);
+  cursor: pointer;
+  border: 2px solid #0a0e17;
+  box-shadow: 0 0 8px rgba(30, 200, 176, 0.3);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+input[type="range"]::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+  box-shadow: 0 0 12px rgba(30, 200, 176, 0.5);
+}
+
+input[type="range"]::-moz-range-thumb {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--color-teal);
+  cursor: pointer;
+  border: 2px solid #0a0e17;
+  box-shadow: 0 0 8px rgba(30, 200, 176, 0.3);
+}
+
+input[type="range"]::-webkit-slider-runnable-track {
+  height: 8px;
+  border-radius: 4px;
+}
+
+input[type="range"]::-moz-range-track {
+  height: 8px;
+  border-radius: 4px;
+  background: var(--color-surface-2);
+}
+
+/* ── Toggle Switch ── */
+.toggle-group {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-3) 0;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+
+.toggle-group:last-child { border-bottom: none; }
+
+.toggle-label {
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.toggle-switch {
+  position: relative;
+  width: 48px;
+  height: 26px;
+  flex-shrink: 0;
+}
+
+.toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.toggle-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-radius: 26px;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.toggle-slider::before {
+  content: '';
+  position: absolute;
+  height: 20px;
+  width: 20px;
+  left: 2px;
+  bottom: 2px;
+  background: var(--color-text-muted);
+  border-radius: 50%;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.toggle-switch input:checked + .toggle-slider {
+  background: rgba(30, 200, 176, 0.2);
+  border-color: var(--color-teal);
+}
+
+.toggle-switch input:checked + .toggle-slider::before {
+  transform: translateX(22px);
+  background: var(--color-teal);
+}
+
+/* ── MU conditional ── */
+.mu-max-wrap {
+  display: none;
+  margin-top: var(--space-2);
+}
+.mu-max-wrap.visible {
+  display: block;
+}
+
+/* ═══════════════════════════════════════════
+   RESULTS
+   ═══════════════════════════════════════════ */
+.results-panel {
+  max-width: 700px;
+  margin-inline: auto;
+  display: none;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+  pointer-events: none;
+}
+
+.results-panel.visible {
+  display: block;
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+/* ── Primary Limiter Card ── */
+.primary-limiter-card {
+  background: var(--color-surface);
+  border: 2px solid var(--color-pink);
+  border-radius: var(--radius-xl);
+  padding: var(--space-8);
+  text-align: center;
+  margin-bottom: var(--space-6);
+  box-shadow: 0 0 30px rgba(239, 50, 149, 0.15);
+}
+
+.primary-limiter-card .label-small {
+  font-family: var(--font-display);
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-pink);
+  margin-bottom: var(--space-3);
+}
+
+.primary-limiter-card .limiter-name {
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  font-weight: 700;
+  color: var(--color-text);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: var(--space-3);
+}
+
+.primary-limiter-card .limiter-score {
+  font-family: var(--font-display);
+  font-size: var(--text-sm);
+  color: var(--color-pink);
+  font-weight: 600;
+}
+
+/* ── Secondary/Tertiary ── */
+.secondary-limiters {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4);
+  margin-bottom: var(--space-6);
+}
+@media (max-width: 500px) {
+  .secondary-limiters { grid-template-columns: 1fr; }
+}
+
+.secondary-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  text-align: center;
+}
+
+.secondary-card .label-small {
+  font-family: var(--font-display);
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-text-faint);
+  margin-bottom: var(--space-2);
+}
+
+.secondary-card .limiter-name {
+  font-family: var(--font-display);
+  font-size: var(--text-sm);
+  font-weight: 700;
+  color: var(--color-text);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: var(--space-2);
+}
+
+.secondary-card .limiter-score {
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+  font-weight: 600;
+}
+
+/* ── Strongest Category ── */
+.strongest-card {
+  background: var(--color-surface);
+  border: 2px solid var(--color-teal);
+  border-radius: var(--radius-xl);
+  padding: var(--space-6);
+  text-align: center;
+  margin-bottom: var(--space-6);
+  box-shadow: 0 0 30px rgba(72, 196, 204, 0.1);
+}
+
+.strongest-card .label-small {
+  font-family: var(--font-display);
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-teal);
+  margin-bottom: var(--space-2);
+}
+
+.strongest-card .limiter-name {
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: 700;
+  color: var(--color-text);
+  text-transform: uppercase;
+}
+
+/* ── Confidence Badge ── */
+.confidence-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-full);
+  font-family: var(--font-display);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: var(--space-6);
+}
+.confidence-high {
+  background: rgba(34, 197, 94, 0.15);
+  color: #22c55e;
+  border: 1px solid rgba(34, 197, 94, 0.3);
+}
+.confidence-moderate {
+  background: rgba(234, 179, 8, 0.15);
+  color: #eab308;
+  border: 1px solid rgba(234, 179, 8, 0.3);
+}
+.confidence-low {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.confidence-wrap {
+  text-align: center;
+  margin-bottom: var(--space-6);
+}
+
+/* ── Category Breakdown ── */
+.breakdown-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  padding: var(--space-6);
+  margin-bottom: var(--space-6);
+}
+
+.breakdown-card h3 {
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-teal);
+  margin-bottom: var(--space-4);
+}
+
+.breakdown-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2) 0;
+}
+
+.breakdown-label {
+  font-family: var(--font-display);
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  width: 120px;
+  flex-shrink: 0;
+}
+
+.breakdown-bar-wrap {
+  flex: 1;
+  height: 10px;
+  background: var(--color-surface-2);
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.breakdown-bar {
+  height: 100%;
+  border-radius: 5px;
+  transition: width 0.8s ease;
+  min-width: 2px;
+}
+
+.breakdown-score {
+  font-family: var(--font-display);
+  font-size: 0.7rem;
+  font-weight: 700;
+  width: 32px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+/* ── Interpretation ── */
+.interpretation-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  padding: var(--space-6);
+  margin-bottom: var(--space-6);
+  border-left: 3px solid var(--color-purple);
+}
+
+.interpretation-card h3 {
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-purple);
+  margin-bottom: var(--space-3);
+}
+
+.interpretation-card p {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+  line-height: 1.8;
+  font-style: italic;
+}
+
+/* ── Recommendations ── */
+.recs-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  padding: var(--space-6);
+  margin-bottom: var(--space-6);
+}
+
+.recs-card h3 {
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-teal);
+  margin-bottom: var(--space-4);
+}
+
+.recs-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.recs-list li {
+  display: flex;
+  gap: var(--space-3);
+  align-items: flex-start;
+  padding: var(--space-3) 0;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+  line-height: 1.6;
+}
+.recs-list li:last-child { border-bottom: none; }
+.rec-bullet {
+  flex-shrink: 0;
+  width: 6px;
+  height: 6px;
+  margin-top: 8px;
+  border-radius: 50%;
+  background: var(--color-teal);
+}
+
+/* ── Injury Disclaimer ── */
+.injury-disclaimer {
+  background: rgba(239, 50, 149, 0.08);
+  border: 1px solid rgba(239, 50, 149, 0.25);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4) var(--space-5);
+  margin-bottom: var(--space-6);
+  font-size: var(--text-xs);
+  color: var(--color-pink);
+  line-height: 1.7;
+  display: none;
+}
+
+/* ── Share Buttons ── */
+.share-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: var(--space-3);
+  margin-bottom: var(--space-6);
+}
+@media (max-width: 600px) {
+  .share-row { grid-template-columns: 1fr; }
+}
+
+.share-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-4) var(--space-3);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  color: var(--color-text);
+}
+.share-btn:hover {
+  border-color: var(--color-teal);
+  background: rgba(30,200,176,0.05);
+}
+.share-btn-title {
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.share-btn-sub {
+  font-size: 0.65rem;
+  color: var(--color-text-faint);
+}
+
+/* ── Citations ── */
+.citations {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  margin-bottom: var(--space-6);
+}
+.citations h3 {
+  font-family: var(--font-display);
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-text-faint);
+  margin-bottom: var(--space-3);
+}
+.citations p {
+  font-size: var(--text-xs);
+  color: var(--color-text-faint);
+  line-height: 1.7;
+}
+
+/* ── CTA Section ── */
+.tool-cta h2 {
+  font-family: var(--font-body);
+  font-size: var(--text-xl);
+  font-weight: 700;
+  color: var(--color-text);
+  margin-bottom: var(--space-4);
+}
+.tool-cta p {
+  font-size: var(--text-base);
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-6);
+  max-width: 45ch;
+  margin-inline: auto;
+}
+
+/* ── Mobile compacting ── */
+@media (max-width: 640px) {
+  .breakdown-card,
+  .interpretation-card,
+  .recs-card,
+  .primary-limiter-card,
+  .strongest-card {
+    padding: var(--space-5) var(--space-4);
+  }
+  .breakdown-label {
+    width: 85px;
+    font-size: 0.55rem;
+  }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════
+     HEADER
+     ═══════════════════════════════════════════ -->
+<header class="site-header" role="banner">
+  <div class="header-inner">
+    <a href="./index.html" class="logo-link" aria-label="Yeager's Gym Home">
+      <img src="./assets/logo.jpeg" alt="Yeager's Gym Logo" class="logo-mark-img" width="48" height="48">
+    </a>
+
+    <nav class="nav-desktop" role="navigation" aria-label="Main navigation">
+      <a href="./index.html" class="nav-link">Home</a>
+      <a href="./index.html#about" class="nav-link">About</a>
+      <div class="nav-dropdown">
+        <a href="./index.html#services" class="nav-link">Services &#9662;</a>
+        <div class="nav-dropdown-menu">
+          <a href="./in-person.html">In-Person Coaching</a>
+          <a href="./remote.html">Remote Coaching</a>
+          <a href="./nutrition.html">Nutrition Coaching</a>
+          <a href="./peptide-consulting.html">Peptide Consulting</a>
+          <a href="./recovery.html">Recovery</a>
+        </div>
+      </div>
+      <a href="./method.html" class="nav-link" style="color: var(--color-pink); font-weight: 700;">The Method</a>
+      <a href="./index.html#vbt" class="nav-link">What is VBT?</a>
+      <a href="./index.html#results" class="nav-link">Results</a>
+      <div class="nav-dropdown">
+        <a href="./tools.html" class="nav-link">Free Tools &#9662;</a>
+        <div class="nav-dropdown-menu">
+          <a href="./tools-vbt.html">VBT Calculator</a>
+          <a href="./tools-1rm.html">1RM Calculator</a>
+          <a href="./tools-warmup.html">Warmup Calculator</a>
+          <a href="./tools-lv-profile.html">LV Profile</a>
+          <a href="./tools-rpe.html">RPE Chart</a>
+          <a href="./tools-rpe-velocity.html">RPE-Velocity</a>
+          <a href="./tools-crossfit.html">Machine Converter</a>
+          <a href="./tools-hyrox.html">Hyrox Race Calculator</a>
+          <a href="./tools-strength.html">Strength Standards</a>
+          <a href="./tools-readiness.html">Daily Readiness</a>
+          <a href="./tools-limiter.html">CrossFit Limiter Quiz</a>
+          <a href="./tools-macro.html">Macro Calculator</a>
+          <a href="./tools-peptide.html">Peptide Calculator</a>
+          <a href="./velocity-trackers.html">Velocity Trackers Guide</a>
+        </div>
+      </div>
+      <a href="./quiz.html" class="nav-link">Quiz</a>
+      <div class="nav-utility">
+        <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="btn btn-nav-cta">Book Your FREE Session!</a>
+      </div>
+    </nav>
+
+    <button class="hamburger" aria-label="Toggle menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+
+  <div class="mobile-nav" role="navigation" aria-label="Mobile navigation">
+    <a href="./index.html">Home</a>
+    <a href="./index.html#about">About</a>
+    <a href="./index.html#services">Services</a>
+    <a href="./in-person.html" style="padding-left: 2rem;">In-Person Coaching</a>
+    <a href="./remote.html" style="padding-left: 2rem;">Remote Coaching</a>
+    <a href="./nutrition.html" style="padding-left: 2rem;">Nutrition Coaching</a>
+    <a href="./peptide-consulting.html" style="padding-left: 2rem; color: var(--color-teal);">Peptide Consulting</a>
+    <a href="./recovery.html" style="padding-left: 2rem;">Recovery</a>
+    <a href="./method.html" style="color: var(--color-pink); font-weight: 700;">The Velocity Method</a>
+    <a href="./index.html#vbt">What is VBT?</a>
+    <a href="./index.html#results">Results</a>
+    <a href="./tools.html" style="color: var(--color-teal); font-weight: 700;">Free Tools</a>
+    <a href="./quiz.html" style="color: var(--color-pink);">Training Type Quiz</a>
+    <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="btn btn-nav-cta" style="margin-top: var(--space-4);">Book Your FREE Session!</a>
+  </div>
+</header>
+
+<!-- ═══════════════════════════════════════════
+     MAIN CONTENT
+     ═══════════════════════════════════════════ -->
+<main class="tool-page">
+  <div class="container">
+
+    <a href="./tools.html" class="tool-back">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 12L6 8l4-4"/></svg>
+      All Tools
+    </a>
+
+    <!-- Tool Header -->
+    <div class="tool-header fade-in">
+      <p class="section-label" style="color: var(--color-teal); text-align: center; max-width: none;">Free Diagnostic Tool</p>
+      <h1>What's <span style="color: var(--color-pink);">Holding</span> You <span style="color: var(--color-teal);">Back</span>?</h1>
+      <p>Identify your #1 CrossFit limiter. Engine, strength, gymnastics, pacing &mdash; find out where to focus.</p>
+    </div>
+
+    <!-- Calculator Card -->
+    <div class="calc-card fade-in">
+
+      <!-- ══════════ SECTION 1: ABOUT YOU ══════════ -->
+      <button class="section-toggle open" type="button" data-target="sec-about">
+        <span>Section 1: About You <span class="required-badge">(required)</span></span>
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6l4 4 4-4"/></svg>
+      </button>
+      <div class="section-content open" id="sec-about" style="max-height: 2000px;">
+        <div style="padding-top: var(--space-3);">
+
+          <div class="field-row-2">
+            <div class="field-group">
+              <label for="sex">Sex</label>
+              <select id="sex">
+                <option value="" disabled selected>Select</option>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+              </select>
+            </div>
+            <div class="field-group">
+              <label for="age">Age</label>
+              <input type="number" id="age" placeholder="28" min="14" max="80" inputmode="numeric">
+            </div>
+          </div>
+
+          <div class="field-row-2">
+            <div class="field-group">
+              <label for="bodyweight">
+                Bodyweight
+                <label class="unit-toggle" style="display: inline-flex;">
+                  <input type="checkbox" id="kg-toggle">
+                  <span class="unit-toggle-pill" id="unit-label">lbs</span>
+                </label>
+              </label>
+              <input type="number" id="bodyweight" placeholder="185" min="70" max="500" step="0.1" inputmode="decimal">
+            </div>
+            <div class="field-group">
+              <label for="training-age">CrossFit Training Age</label>
+              <select id="training-age">
+                <option value="" disabled selected>Select</option>
+                <option value="0.5">&lt; 1 year</option>
+                <option value="1.5">1-2 years</option>
+                <option value="3">2-4 years</option>
+                <option value="5.5">4-7 years</option>
+                <option value="8">7+ years</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="field-group">
+            <label for="train-days">Training Days per Week</label>
+            <select id="train-days">
+              <option value="" disabled selected>Select</option>
+              <option value="2.5">2-3 days</option>
+              <option value="3.5">3-4 days</option>
+              <option value="4.5">4-5 days</option>
+              <option value="5.5">5-6 days</option>
+              <option value="6.5">6+ days</option>
+            </select>
+          </div>
+
+        </div>
+      </div>
+
+      <hr class="card-divider">
+
+      <!-- ══════════ SECTION 2: YOUR ENGINE ══════════ -->
+      <button class="section-toggle" type="button" data-target="sec-engine">
+        <span>Section 2: Your Engine <span class="optional-badge">(optional)</span></span>
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6l4 4 4-4"/></svg>
+      </button>
+      <div class="section-content" id="sec-engine">
+        <div style="padding-top: var(--space-3);">
+          <p style="font-size: var(--text-xs); color: var(--color-text-faint); margin-bottom: var(--space-4); line-height: 1.6;">Leave blank if unknown. Fill in what you know.</p>
+
+          <div class="field-row-3">
+            <div class="field-group">
+              <label for="row-2k">2K Row (mm:ss)</label>
+              <input type="text" id="row-2k" placeholder="7:30" pattern="[0-9]{1,2}:[0-5][0-9]">
+            </div>
+            <div class="field-group">
+              <label for="run-mile">1-Mile Run (mm:ss)</label>
+              <input type="text" id="run-mile" placeholder="7:00" pattern="[0-9]{1,2}:[0-5][0-9]">
+            </div>
+            <div class="field-group">
+              <label for="bike-10cal">Assault Bike 10-cal (sec)</label>
+              <input type="number" id="bike-10cal" placeholder="18" min="5" max="120" inputmode="numeric">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <hr class="card-divider">
+
+      <!-- ══════════ SECTION 3: YOUR STRENGTH ══════════ -->
+      <button class="section-toggle" type="button" data-target="sec-strength">
+        <span>Section 3: Your Strength <span class="optional-badge">(optional)</span></span>
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6l4 4 4-4"/></svg>
+      </button>
+      <div class="section-content" id="sec-strength">
+        <div style="padding-top: var(--space-3);">
+          <p style="font-size: var(--text-xs); color: var(--color-text-faint); margin-bottom: var(--space-4); line-height: 1.6;">Enter 1RM values. Leave blank if unknown.</p>
+
+          <div class="field-row-2">
+            <div class="field-group">
+              <label for="back-squat">Back Squat 1RM</label>
+              <input type="number" id="back-squat" placeholder="315" min="0" max="1000" inputmode="numeric">
+            </div>
+            <div class="field-group">
+              <label for="front-squat">Front Squat 1RM</label>
+              <input type="number" id="front-squat" placeholder="265" min="0" max="1000" inputmode="numeric">
+            </div>
+          </div>
+          <div class="field-row-2">
+            <div class="field-group">
+              <label for="deadlift">Deadlift 1RM</label>
+              <input type="number" id="deadlift" placeholder="405" min="0" max="1200" inputmode="numeric">
+            </div>
+            <div class="field-group">
+              <label for="strict-press">Strict Press 1RM</label>
+              <input type="number" id="strict-press" placeholder="155" min="0" max="500" inputmode="numeric">
+            </div>
+          </div>
+          <div class="field-row-2">
+            <div class="field-group">
+              <label for="squat-clean">Squat Clean 1RM</label>
+              <input type="number" id="squat-clean" placeholder="245" min="0" max="800" inputmode="numeric">
+            </div>
+            <div class="field-group">
+              <label for="squat-snatch">Squat Snatch 1RM</label>
+              <input type="number" id="squat-snatch" placeholder="185" min="0" max="600" inputmode="numeric">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <hr class="card-divider">
+
+      <!-- ══════════ SECTION 4: YOUR GYMNASTICS ══════════ -->
+      <button class="section-toggle" type="button" data-target="sec-gymnastics">
+        <span>Section 4: Your Gymnastics <span class="optional-badge">(optional)</span></span>
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6l4 4 4-4"/></svg>
+      </button>
+      <div class="section-content" id="sec-gymnastics">
+        <div style="padding-top: var(--space-3);">
+
+          <div class="field-row-2">
+            <div class="field-group">
+              <label for="strict-pullups">Max Strict Pull-ups</label>
+              <input type="number" id="strict-pullups" placeholder="12" min="0" max="100" inputmode="numeric">
+            </div>
+            <div class="field-group">
+              <label for="kipping-pullups">Max Kipping Pull-ups</label>
+              <input type="number" id="kipping-pullups" placeholder="25" min="0" max="200" inputmode="numeric">
+            </div>
+          </div>
+          <div class="field-row-2">
+            <div class="field-group">
+              <label for="ttb">Max Unbroken Toes-to-Bar</label>
+              <input type="number" id="ttb" placeholder="15" min="0" max="100" inputmode="numeric">
+            </div>
+            <div class="field-group">
+              <label for="dubs">Max Unbroken Double-Unders</label>
+              <input type="number" id="dubs" placeholder="50" min="0" max="500" inputmode="numeric">
+            </div>
+          </div>
+          <div class="field-row-2">
+            <div class="field-group">
+              <label for="hspu">Handstand Push-ups (max reps)</label>
+              <input type="number" id="hspu" placeholder="10" min="0" max="100" inputmode="numeric">
+            </div>
+            <div class="field-group">
+              <label>Ring Muscle-ups</label>
+              <div class="toggle-group" style="border-bottom: none; padding: var(--space-2) 0;">
+                <span class="toggle-label">Have muscle-ups?</span>
+                <label class="toggle-switch">
+                  <input type="checkbox" id="has-mu">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+              <div class="mu-max-wrap" id="mu-max-wrap">
+                <input type="number" id="mu-max" placeholder="Max reps" min="0" max="50" inputmode="numeric" style="width:100%;padding:0.75rem 1rem;background:var(--color-surface-2);border:1px solid var(--color-border);border-radius:var(--radius-md);color:var(--color-text);font-size:var(--text-base);font-family:var(--font-body);">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <hr class="card-divider">
+
+      <!-- ══════════ SECTION 5: BENCHMARK WODS ══════════ -->
+      <button class="section-toggle" type="button" data-target="sec-benchmarks">
+        <span>Section 5: Benchmark WODs <span class="optional-badge">(optional)</span></span>
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6l4 4 4-4"/></svg>
+      </button>
+      <div class="section-content" id="sec-benchmarks">
+        <div style="padding-top: var(--space-3);">
+          <div class="field-row-3">
+            <div class="field-group">
+              <label for="fran">Fran Time (mm:ss)</label>
+              <input type="text" id="fran" placeholder="4:30" pattern="[0-9]{1,2}:[0-5][0-9]">
+            </div>
+            <div class="field-group">
+              <label for="grace">Grace Time (mm:ss)</label>
+              <input type="text" id="grace" placeholder="3:00" pattern="[0-9]{1,2}:[0-5][0-9]">
+            </div>
+            <div class="field-group">
+              <label for="cindy">Cindy Rounds</label>
+              <input type="number" id="cindy" placeholder="18" min="1" max="40" inputmode="numeric">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <hr class="card-divider">
+
+      <!-- ══════════ SECTION 6: SELF-ASSESSMENT ══════════ -->
+      <button class="section-toggle open" type="button" data-target="sec-self">
+        <span>Section 6: Self-Assessment <span class="required-badge">(required)</span></span>
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6l4 4 4-4"/></svg>
+      </button>
+      <div class="section-content open" id="sec-self" style="max-height: 2000px;">
+        <div style="padding-top: var(--space-3);">
+
+          <div class="field-group">
+            <label for="biggest-struggle">My biggest struggle in WODs is:</label>
+            <select id="biggest-struggle">
+              <option value="" disabled selected>Select one</option>
+              <option value="gas-out">I gas out early</option>
+              <option value="gymnastics-slow">Gymnastics movements slow me down</option>
+              <option value="barbell-heavy">Barbell gets too heavy</option>
+              <option value="pace">I can't hold a consistent pace</option>
+              <option value="skill-fatigue">Skills break down when I'm tired</option>
+              <option value="transitions">Transitions between movements are messy</option>
+            </select>
+          </div>
+
+          <p style="font-family: var(--font-display); font-size: var(--text-xs); font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--color-text-muted); margin-bottom: var(--space-3); margin-top: var(--space-4);">Movement Confidence</p>
+
+          <div class="slider-group">
+            <div class="slider-header">
+              <label for="conf-overhead">Overhead <span class="slider-hint">(1 = no confidence, 10 = bulletproof)</span></label>
+              <span class="slider-value" id="conf-overhead-val">5</span>
+            </div>
+            <input type="range" id="conf-overhead" min="1" max="10" value="5">
+          </div>
+
+          <div class="slider-group">
+            <div class="slider-header">
+              <label for="conf-gymnastics">Gymnastics <span class="slider-hint">(1 = no confidence, 10 = bulletproof)</span></label>
+              <span class="slider-value" id="conf-gymnastics-val">5</span>
+            </div>
+            <input type="range" id="conf-gymnastics" min="1" max="10" value="5">
+          </div>
+
+          <div class="slider-group">
+            <div class="slider-header">
+              <label for="conf-squatting">Squatting <span class="slider-hint">(1 = no confidence, 10 = bulletproof)</span></label>
+              <span class="slider-value" id="conf-squatting-val">5</span>
+            </div>
+            <input type="range" id="conf-squatting" min="1" max="10" value="5">
+          </div>
+
+          <div class="slider-group">
+            <div class="slider-header">
+              <label for="conf-cyclical">Cyclical / Machines <span class="slider-hint">(1 = no confidence, 10 = bulletproof)</span></label>
+              <span class="slider-value" id="conf-cyclical-val">5</span>
+            </div>
+            <input type="range" id="conf-cyclical" min="1" max="10" value="5">
+          </div>
+
+          <div class="slider-group">
+            <div class="slider-header">
+              <label for="recovery-rating">Recovery Self-Rating <span class="slider-hint">(1 = always beat up, 10 = always fresh)</span></label>
+              <span class="slider-value" id="recovery-rating-val">5</span>
+            </div>
+            <input type="range" id="recovery-rating" min="1" max="10" value="5">
+          </div>
+
+          <div class="toggle-group">
+            <span class="toggle-label">Current injury limitations?</span>
+            <label class="toggle-switch">
+              <input type="checkbox" id="has-injury">
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+
+        </div>
+      </div>
+
+      <button class="btn btn-primary btn-calculate" id="analyze-btn" type="button">
+        Find My Limiter
+      </button>
+    </div>
+
+    <!-- ═══════════════════════════════════════════
+         RESULTS PANEL
+         ═══════════════════════════════════════════ -->
+    <div class="results-panel" id="results-panel">
+
+      <!-- Primary Limiter -->
+      <div class="primary-limiter-card">
+        <div class="label-small">You Are Primarily Limited By</div>
+        <div class="limiter-name" id="primary-limiter-name"></div>
+        <div class="limiter-score" id="primary-limiter-score"></div>
+      </div>
+
+      <!-- Secondary + Tertiary -->
+      <div class="secondary-limiters">
+        <div class="secondary-card">
+          <div class="label-small">Secondary Limiter</div>
+          <div class="limiter-name" id="secondary-name"></div>
+          <div class="limiter-score" id="secondary-score"></div>
+        </div>
+        <div class="secondary-card">
+          <div class="label-small">Tertiary Limiter</div>
+          <div class="limiter-name" id="tertiary-name"></div>
+          <div class="limiter-score" id="tertiary-score"></div>
+        </div>
+      </div>
+
+      <!-- Strongest -->
+      <div class="strongest-card">
+        <div class="label-small">Your Strongest Category</div>
+        <div class="limiter-name" id="strongest-name"></div>
+      </div>
+
+      <!-- Confidence -->
+      <div class="confidence-wrap">
+        <span class="confidence-badge" id="confidence-badge"></span>
+      </div>
+
+      <!-- Category Breakdown -->
+      <div class="breakdown-card">
+        <h3>All Categories Ranked</h3>
+        <div id="breakdown-rows"></div>
+      </div>
+
+      <!-- Interpretation -->
+      <div class="interpretation-card">
+        <h3>Interpretation</h3>
+        <p id="interpretation-text"></p>
+      </div>
+
+      <!-- Recommendations -->
+      <div class="recs-card">
+        <h3>Targeted Interventions</h3>
+        <ul class="recs-list" id="recs-list"></ul>
+      </div>
+
+      <!-- Injury Disclaimer -->
+      <div class="injury-disclaimer" id="injury-disclaimer">
+        <strong>Note:</strong> You indicated current injury limitations. Your results may be distorted by compensatory movement patterns or reduced capacity in categories affected by your injury. Address injury rehab first before aggressively targeting a limiter.
+      </div>
+
+      <!-- Share Buttons -->
+      <div class="share-row">
+        <button class="share-btn" id="share-social" type="button">
+          <span class="share-btn-title">Share on Social!</span>
+          <span class="share-btn-sub">Twitter/X &amp; Facebook</span>
+        </button>
+        <button class="share-btn" id="share-friend" type="button">
+          <span class="share-btn-title">Share With a Friend!</span>
+          <span class="share-btn-sub">Send via message or email</span>
+        </button>
+        <button class="share-btn" id="share-bookmark" type="button">
+          <span class="share-btn-title">Bookmark This!</span>
+          <span class="share-btn-sub">Save for later</span>
+        </button>
+      </div>
+
+      <!-- Citations -->
+      <div class="citations">
+        <h3>Assessment Methodology</h3>
+        <p>Assessment methodology informed by: CrossFit Games Open performance data (2019-2025), RP Strength capacity benchmarks, USAPL and USAW strength standards by bodyweight, and CompTrain/Mayhem athlete benchmarks. Supplemental data from BTWB aggregate performance statistics.</p>
+      </div>
+
+    </div><!-- end results-panel -->
+
+  </div><!-- end container -->
+
+  <!-- ── Bridge CTA ── -->
+  <hr class="glow-line">
+  <section style="padding: var(--space-8) 0 var(--space-6); text-align: center;">
+    <div class="container">
+      <p class="section-label" style="color: var(--color-pink); text-align: center; max-width: none;">Get Coached</p>
+      <h2 style="font-family: var(--font-body); font-size: var(--text-xl); font-weight: 700; color: var(--color-text); margin-bottom: var(--space-4);">Want a 6-week plan built around your biggest <span style="color: var(--color-teal);">limiter</span>?</h2>
+      <p style="font-size: var(--text-base); color: var(--color-text-muted); margin-bottom: var(--space-6); max-width: 50ch; margin-inline: auto;">Brad programs for CrossFit athletes using velocity data and structured periodization. Attack your weakness with a real plan.</p>
+      <a href="https://www.vagaro.com/tmoxgj" class="btn btn-primary">Book Your FREE Session!</a>
+    </div>
+  </section>
+  <hr class="glow-line">
+
+</main>
+
+<!-- ═══════════════════════════════════════════
+     FOOTER
+     ═══════════════════════════════════════════ -->
+<footer class="site-footer" role="contentinfo">
+  <div class="container">
+    <div class="footer-nav-columns">
+      <div class="footer-links">
+        <h4>Navigate</h4>
+        <a href="./index.html">Home</a>
+        <a href="./index.html#about">About Brad</a>
+        <a href="./index.html#services">Services &amp; Pricing</a>
+        <a href="./method.html" style="color: var(--color-pink); font-weight: 600;">The Velocity Method</a>
+        <a href="./index.html#vbt">VBT Explained</a>
+        <a href="./index.html#results">Results</a>
+        <a href="./index.html#contact">Contact</a>
+      </div>
+      <div class="footer-links">
+        <h4>Resources &amp; Free Tools</h4>
+        <a href="./tools.html">Calculators &amp; Converters</a>
+        <a href="./velocity-trackers.html">Velocity Trackers Guide</a>
+        <a href="./quiz.html">Training Type Quiz</a>
+      </div>
+      <div class="footer-links">
+        <h4>Connect</h4>
+        <a href="mailto:brad@yeagersgym.com" class="footer-contact-link">brad@yeagersgym.com</a>
+        <a href="https://www.instagram.com/YeagersGym" target="_blank" rel="noopener noreferrer" class="footer-contact-link">@YeagersGym</a>
+        <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="footer-vagaro-link">Book via Vagaro &rarr;</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>&copy; 2026 Yeager's Gym &middot; San Diego, CA</span>
+      <div class="footer-bottom-right">
+        <a href="./index.html" aria-label="Yeager's Gym Home">
+          <img src="assets/logo.jpeg" alt="Yeager's Gym" class="logo-mark-img" width="24" height="24">
+        </a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- Mobile Sticky CTA -->
+<div class="mobile-sticky-cta" id="stickyCta" style="display: none; position: fixed; bottom: 0; left: 0; right: 0; z-index: 999; padding: 12px 16px; background: rgba(10,14,23,0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-top: 1px solid rgba(72,196,204,0.2); text-align: center;">
+  <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" style="display: inline-block; width: 100%; max-width: 320px; padding: 10px 20px; background: var(--color-teal); color: #0a0e17; font-family: var(--font-display); font-size: 0.8rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; text-decoration: none; border-radius: 6px;">Book a Free Session</a>
+</div>
+
+<script>
+(function() {
+  'use strict';
+
+  // ══════════════════════════════════════════════════════════
+  // SLIDER VALUE DISPLAYS
+  // ══════════════════════════════════════════════════════════
+
+  var sliders = [
+    { id: 'conf-overhead', valId: 'conf-overhead-val' },
+    { id: 'conf-gymnastics', valId: 'conf-gymnastics-val' },
+    { id: 'conf-squatting', valId: 'conf-squatting-val' },
+    { id: 'conf-cyclical', valId: 'conf-cyclical-val' },
+    { id: 'recovery-rating', valId: 'recovery-rating-val' }
+  ];
+
+  sliders.forEach(function(s) {
+    var slider = document.getElementById(s.id);
+    var display = document.getElementById(s.valId);
+    slider.addEventListener('input', function() {
+      display.textContent = slider.value;
+    });
+  });
+
+  // ══════════════════════════════════════════════════════════
+  // COLLAPSIBLE SECTIONS
+  // ══════════════════════════════════════════════════════════
+
+  var sectionToggles = document.querySelectorAll('.section-toggle');
+  sectionToggles.forEach(function(toggle) {
+    toggle.addEventListener('click', function() {
+      var targetId = toggle.getAttribute('data-target');
+      var content = document.getElementById(targetId);
+      toggle.classList.toggle('open');
+      content.classList.toggle('open');
+    });
+  });
+
+  // ══════════════════════════════════════════════════════════
+  // UNIT TOGGLE (lbs / kg)
+  // ══════════════════════════════════════════════════════════
+
+  var kgToggle = document.getElementById('kg-toggle');
+  var unitLabel = document.getElementById('unit-label');
+
+  kgToggle.addEventListener('change', function() {
+    unitLabel.textContent = kgToggle.checked ? 'kg' : 'lbs';
+  });
+
+  function getBWinLbs() {
+    var bw = parseFloat(document.getElementById('bodyweight').value);
+    if (isNaN(bw)) return NaN;
+    return kgToggle.checked ? bw * 2.20462 : bw;
+  }
+
+  // ══════════════════════════════════════════════════════════
+  // MUSCLE-UP CONDITIONAL
+  // ══════════════════════════════════════════════════════════
+
+  var hasMU = document.getElementById('has-mu');
+  var muMaxWrap = document.getElementById('mu-max-wrap');
+  hasMU.addEventListener('change', function() {
+    muMaxWrap.classList.toggle('visible', hasMU.checked);
+  });
+
+  // ══════════════════════════════════════════════════════════
+  // HELPERS
+  // ══════════════════════════════════════════════════════════
+
+  function parseMMSS(val) {
+    if (!val || val.trim() === '') return NaN;
+    var parts = val.split(':');
+    if (parts.length !== 2) return NaN;
+    var mins = parseInt(parts[0], 10);
+    var secs = parseInt(parts[1], 10);
+    if (isNaN(mins) || isNaN(secs)) return NaN;
+    return mins * 60 + secs;
+  }
+
+  function numVal(id) {
+    var v = parseFloat(document.getElementById(id).value);
+    return isNaN(v) ? null : v;
+  }
+
+  function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
+
+  // Linear interpolation: maps value in [inLo, inHi] to [outLo, outHi], clamped
+  function lerp(value, inLo, inHi, outLo, outHi) {
+    if (inHi === inLo) return (outLo + outHi) / 2;
+    var t = (value - inLo) / (inHi - inLo);
+    t = clamp(t, 0, 1);
+    return outLo + t * (outHi - outLo);
+  }
+
+  var barColors = {
+    green: '#22c55e',
+    yellow: '#eab308',
+    red: '#ef4444'
+  };
+
+  function scoreColor(s) {
+    if (s >= 70) return barColors.green;
+    if (s >= 40) return barColors.yellow;
+    return barColors.red;
+  }
+
+  // ══════════════════════════════════════════════════════════
+  // SCORING ENGINE
+  // ══════════════════════════════════════════════════════════
+
+  function scoreEngine(bw, sex) {
+    var scores = [];
+    var row2k = parseMMSS(document.getElementById('row-2k').value);
+    var runMile = parseMMSS(document.getElementById('run-mile').value);
+    var bike10 = numVal('bike-10cal');
+
+    // Row 2K benchmarks (seconds) — good/elite ranges by sex
+    if (!isNaN(row2k)) {
+      if (sex === 'male') {
+        // Elite ~6:20 (380s), good ~7:30 (450s), average ~8:30 (510s), poor ~10:00 (600s)
+        scores.push(lerp(row2k, 380, 600, 100, 15));
+      } else {
+        // Elite ~7:20 (440s), good ~8:30 (510s), average ~9:30 (570s), poor ~11:00 (660s)
+        scores.push(lerp(row2k, 440, 660, 100, 15));
+      }
+    }
+
+    if (!isNaN(runMile)) {
+      if (sex === 'male') {
+        // Elite ~5:30 (330s), good ~6:30 (390s), average ~7:30 (450s), poor ~9:00 (540s)
+        scores.push(lerp(runMile, 330, 540, 100, 15));
+      } else {
+        scores.push(lerp(runMile, 390, 600, 100, 15));
+      }
+    }
+
+    if (bike10 !== null) {
+      if (sex === 'male') {
+        // Elite ~12s, good ~16s, average ~22s, poor ~35s
+        scores.push(lerp(bike10, 12, 35, 100, 15));
+      } else {
+        scores.push(lerp(bike10, 16, 45, 100, 15));
+      }
+    }
+
+    // Bodyweight penalty for heavier athletes on engine (slight)
+    if (scores.length > 0 && bw > 0) {
+      var bwAdj = sex === 'male' ? lerp(bw, 155, 225, 5, -5) : lerp(bw, 125, 175, 5, -5);
+      var avg = scores.reduce(function(a,b){return a+b;},0) / scores.length;
+      return { score: clamp(avg + bwAdj, 0, 100), filled: scores.length };
+    }
+
+    return { score: null, filled: 0 };
+  }
+
+  function scoreAbsoluteStrength(bw, sex) {
+    var lifts = [];
+    var bs = numVal('back-squat');
+    var fs = numVal('front-squat');
+    var dl = numVal('deadlift');
+    var sp = numVal('strict-press');
+    var sc = numVal('squat-clean');
+    var sn = numVal('squat-snatch');
+
+    if (bw <= 0) return { score: null, filled: 0 };
+
+    // Score each lift as ratio of bodyweight vs benchmarks
+    if (bs !== null) {
+      var ratio = bs / bw;
+      if (sex === 'male') {
+        lifts.push(lerp(ratio, 0.8, 2.2, 10, 100));
+      } else {
+        lifts.push(lerp(ratio, 0.6, 1.7, 10, 100));
+      }
+    }
+    if (fs !== null) {
+      var r = fs / bw;
+      lifts.push(sex === 'male' ? lerp(r, 0.65, 1.85, 10, 100) : lerp(r, 0.5, 1.4, 10, 100));
+    }
+    if (dl !== null) {
+      var r2 = dl / bw;
+      lifts.push(sex === 'male' ? lerp(r2, 1.0, 2.8, 10, 100) : lerp(r2, 0.8, 2.2, 10, 100));
+    }
+    if (sp !== null) {
+      var r3 = sp / bw;
+      lifts.push(sex === 'male' ? lerp(r3, 0.4, 1.0, 10, 100) : lerp(r3, 0.3, 0.75, 10, 100));
+    }
+    if (sc !== null) {
+      var r4 = sc / bw;
+      lifts.push(sex === 'male' ? lerp(r4, 0.6, 1.7, 10, 100) : lerp(r4, 0.45, 1.3, 10, 100));
+    }
+    if (sn !== null) {
+      var r5 = sn / bw;
+      lifts.push(sex === 'male' ? lerp(r5, 0.45, 1.35, 10, 100) : lerp(r5, 0.35, 1.05, 10, 100));
+    }
+
+    if (lifts.length > 0) {
+      var avg = lifts.reduce(function(a,b){return a+b;},0) / lifts.length;
+      return { score: clamp(avg, 0, 100), filled: lifts.length };
+    }
+    return { score: null, filled: 0 };
+  }
+
+  function scoreGymnastics(bw, sex) {
+    var scores = [];
+
+    var spu = numVal('strict-pullups');
+    var kpu = numVal('kipping-pullups');
+    var ttb = numVal('ttb');
+    var dubs = numVal('dubs');
+    var hspu = numVal('hspu');
+    var hasMUChecked = document.getElementById('has-mu').checked;
+    var muMax = hasMUChecked ? numVal('mu-max') : 0;
+
+    if (spu !== null) {
+      scores.push(sex === 'male' ? lerp(spu, 1, 25, 10, 100) : lerp(spu, 0, 15, 10, 100));
+    }
+    if (kpu !== null) {
+      scores.push(sex === 'male' ? lerp(kpu, 3, 40, 10, 100) : lerp(kpu, 1, 30, 10, 100));
+    }
+    if (ttb !== null) {
+      scores.push(sex === 'male' ? lerp(ttb, 1, 25, 10, 100) : lerp(ttb, 0, 20, 10, 100));
+    }
+    if (dubs !== null) {
+      scores.push(lerp(dubs, 5, 100, 10, 100));
+    }
+    if (hspu !== null) {
+      scores.push(sex === 'male' ? lerp(hspu, 0, 20, 10, 100) : lerp(hspu, 0, 12, 10, 100));
+    }
+
+    // Muscle-ups: binary + max
+    if (hasMUChecked) {
+      var muScore = 60; // base for having them
+      if (muMax !== null && muMax > 0) {
+        muScore = sex === 'male' ? lerp(muMax, 1, 10, 55, 100) : lerp(muMax, 1, 6, 55, 100);
+      }
+      scores.push(muScore);
+    } else if (document.getElementById('has-mu').parentElement) {
+      // No muscle-ups = significant gymnastics gap
+      scores.push(15);
+    }
+
+    // Heavier athletes get slight gymnastics handicap
+    if (scores.length > 0 && bw > 0) {
+      var bwAdj = sex === 'male' ? lerp(bw, 155, 230, 3, -6) : lerp(bw, 120, 180, 3, -6);
+      var avg = scores.reduce(function(a,b){return a+b;},0) / scores.length;
+      return { score: clamp(avg + bwAdj, 0, 100), filled: scores.length };
+    }
+
+    return { score: null, filled: 0 };
+  }
+
+  function scoreBarbellCycling(bw, sex, strengthScore) {
+    var graceTime = parseMMSS(document.getElementById('grace').value);
+    var dl = numVal('deadlift');
+    var sc = numVal('squat-clean');
+    var filled = 0;
+    var scores = [];
+
+    // Grace is 30 clean & jerks at 135/95. If you're strong but slow at Grace = cycling issue.
+    if (!isNaN(graceTime)) {
+      filled++;
+      if (sex === 'male') {
+        scores.push(lerp(graceTime, 90, 360, 100, 10)); // 1:30 elite, 6:00 poor
+      } else {
+        scores.push(lerp(graceTime, 110, 420, 100, 10));
+      }
+    }
+
+    // If strong (high strength score) but slow Grace, that specifically = cycling issue
+    if (!isNaN(graceTime) && strengthScore !== null && strengthScore > 60) {
+      var graceSec = graceTime;
+      var expectedGrace = sex === 'male' ? lerp(strengthScore, 60, 95, 240, 100) : lerp(strengthScore, 60, 95, 300, 130);
+      if (graceSec > expectedGrace * 1.3) {
+        // Grace is notably slower than strength would predict
+        scores.push(lerp(graceSec / expectedGrace, 1.0, 2.0, 80, 15));
+        filled++;
+      }
+    }
+
+    // Fran also tests cycling (thrusters)
+    var franTime = parseMMSS(document.getElementById('fran').value);
+    if (!isNaN(franTime)) {
+      filled++;
+      if (sex === 'male') {
+        scores.push(lerp(franTime, 120, 480, 100, 10));
+      } else {
+        scores.push(lerp(franTime, 150, 540, 100, 10));
+      }
+    }
+
+    if (scores.length > 0) {
+      var avg = scores.reduce(function(a,b){return a+b;},0) / scores.length;
+      return { score: clamp(avg, 0, 100), filled: filled };
+    }
+
+    return { score: null, filled: 0 };
+  }
+
+  function scorePacing(strengthScore, engineScore) {
+    var scores = [];
+    var filled = 0;
+
+    var struggle = document.getElementById('biggest-struggle').value;
+    if (struggle === 'pace' || struggle === 'transitions') {
+      scores.push(30);
+      filled++;
+    } else if (struggle === 'gas-out') {
+      scores.push(50);
+      filled++;
+    } else if (struggle) {
+      scores.push(65);
+      filled++;
+    }
+
+    // Cindy tests pacing — rounds in 20 min AMRAP
+    var cindy = numVal('cindy');
+    if (cindy !== null) {
+      scores.push(lerp(cindy, 8, 28, 10, 100));
+      filled++;
+    }
+
+    // Good component scores but poor benchmarks = pacing issue
+    if (strengthScore !== null && engineScore !== null) {
+      var componentAvg = (strengthScore + engineScore) / 2;
+      var franTime = parseMMSS(document.getElementById('fran').value);
+      if (!isNaN(franTime)) {
+        var expectedFran = lerp(componentAvg, 40, 90, 420, 150);
+        var ratio = franTime / expectedFran;
+        if (ratio > 1.2) {
+          scores.push(lerp(ratio, 1.0, 2.0, 80, 15));
+          filled++;
+        } else {
+          scores.push(lerp(ratio, 0.8, 1.2, 95, 70));
+          filled++;
+        }
+      }
+    }
+
+    if (scores.length > 0) {
+      var avg = scores.reduce(function(a,b){return a+b;},0) / scores.length;
+      return { score: clamp(avg, 0, 100), filled: filled };
+    }
+
+    return { score: null, filled: 0 };
+  }
+
+  function scoreSkillMobility() {
+    var scores = [];
+
+    var confOverhead = parseInt(document.getElementById('conf-overhead').value);
+    var confGym = parseInt(document.getElementById('conf-gymnastics').value);
+    var confSquat = parseInt(document.getElementById('conf-squatting').value);
+    var confCyclical = parseInt(document.getElementById('conf-cyclical').value);
+
+    // Map 1-10 to 0-100
+    var avgConf = (confOverhead + confGym + confSquat + confCyclical) / 4;
+    scores.push(((avgConf - 1) / 9) * 100);
+
+    var struggle = document.getElementById('biggest-struggle').value;
+    if (struggle === 'skill-fatigue') {
+      scores.push(25);
+    } else if (struggle === 'transitions') {
+      scores.push(40);
+    } else {
+      scores.push(70);
+    }
+
+    // Low overhead + low gymnastics confidence = strong skill/mobility signal
+    if (confOverhead <= 4 || confGym <= 3) {
+      scores.push(20);
+    }
+
+    var avg = scores.reduce(function(a,b){return a+b;},0) / scores.length;
+    return { score: clamp(avg, 0, 100), filled: 4 }; // always has slider data
+  }
+
+  function scoreRecoveryFatigue() {
+    var scores = [];
+
+    var recoveryRating = parseInt(document.getElementById('recovery-rating').value);
+    scores.push(((recoveryRating - 1) / 9) * 100);
+
+    var trainDays = parseFloat(document.getElementById('train-days').value);
+    if (!isNaN(trainDays)) {
+      // More training days = more fatigue risk, especially with low recovery
+      if (trainDays >= 5.5 && recoveryRating <= 5) {
+        scores.push(20); // high frequency + low recovery = fatigue issue
+      } else if (trainDays >= 5.5) {
+        scores.push(50);
+      } else {
+        scores.push(75);
+      }
+    }
+
+    var hasInjury = document.getElementById('has-injury').checked;
+    if (hasInjury) {
+      scores.push(25);
+    } else {
+      scores.push(80);
+    }
+
+    var avg = scores.reduce(function(a,b){return a+b;},0) / scores.length;
+    return { score: clamp(avg, 0, 100), filled: scores.length };
+  }
+
+  // ══════════════════════════════════════════════════════════
+  // INTERPRETATION GENERATOR
+  // ══════════════════════════════════════════════════════════
+
+  function generateInterpretation(ranked, strongest) {
+    var primary = ranked[0];
+    var secondary = ranked[1];
+    var strongName = strongest.name;
+
+    var text = '';
+
+    // Lead with strength
+    text += 'Your ' + strongName.toLowerCase() + ' is your strongest asset. ';
+
+    // Primary limiter commentary
+    switch (primary.key) {
+      case 'engine':
+        text += 'Your aerobic capacity is the clearest bottleneck. ';
+        if (secondary.key === 'pacing') {
+          text += 'Combined with pacing issues, this suggests you redline early and never recover during workouts.';
+        } else if (secondary.key === 'strength') {
+          text += 'You may be compensating for a weak engine by muscling through workouts, which is not sustainable in longer metcons.';
+        } else {
+          text += 'Building a bigger aerobic base will improve your ability to sustain work across longer time domains.';
+        }
+        break;
+      case 'strength':
+        text += 'Your absolute strength is lagging behind your other capacities. ';
+        if (secondary.key === 'cycling') {
+          text += 'Weak lifts compound barbell cycling issues because submaximal loads feel relatively heavier for you.';
+        } else {
+          text += 'Investing in a focused strength cycle will raise the floor on everything else in your training.';
+        }
+        break;
+      case 'gymnastics':
+        text += 'Gymnastics movements are your clearest bottleneck. ';
+        if (secondary.key === 'skill') {
+          text += 'This is likely a combination of raw capacity and movement proficiency that improves with dedicated practice.';
+        } else {
+          text += 'Your absolute strength may be ahead of your ability to move your own bodyweight efficiently under fatigue.';
+        }
+        break;
+      case 'cycling':
+        text += 'Your ability to cycle a barbell efficiently under fatigue is limiting your metcon performance. ';
+        text += 'You may have solid 1RMs but struggle to repeat submaximal efforts at speed. This is a technique and local muscular endurance issue more than a strength issue.';
+        break;
+      case 'pacing':
+        text += 'Your individual capacities are better than your workout results suggest. ';
+        text += 'The gap between component fitness and benchmark performance points to a pacing and race strategy issue. Learning to distribute effort across a workout will unlock performance you already have.';
+        break;
+      case 'skill':
+        text += 'Movement confidence and technical consistency are limiting your output. ';
+        text += 'You may have the raw capacity for harder movements but lose efficiency when fatigue sets in. Dedicated skill sessions when fresh will transfer to competition.';
+        break;
+      case 'recovery':
+        text += 'Fatigue management is holding you back more than any single physical capacity. ';
+        text += 'You may be training at a volume or frequency your recovery cannot support. Better results often come from doing less, better, and recovering harder.';
+        break;
+      default:
+        text += 'Focus training time on your weakest link to see the biggest returns.';
+    }
+
+    return text;
+  }
+
+  // ══════════════════════════════════════════════════════════
+  // RECOMMENDATION GENERATOR
+  // ══════════════════════════════════════════════════════════
+
+  function getRecommendations(primaryKey) {
+    var recs = {
+      engine: [
+        'Add 2-3 dedicated aerobic sessions per week: 20-40 min sustained effort at conversational pace (Zone 2) on rower, bike, or run.',
+        'Practice negative splits on longer workouts — start slower than you think, finish faster.',
+        'Incorporate interval work (e.g., 8x500m row with 1:1 rest) once per week to build VO2max.',
+        'Track your 2K row and mile run monthly to measure progress objectively.'
+      ],
+      strength: [
+        'Follow a structured strength cycle (5/3/1, linear progression, or conjugate) for 8-12 weeks.',
+        'Prioritize back squat, deadlift, and strict press — these have the highest transfer to CrossFit.',
+        'Reduce metcon volume temporarily to create recovery capacity for strength gains.',
+        'Test 1RMs every 6-8 weeks to track progress and adjust programming.'
+      ],
+      gymnastics: [
+        'Dedicate 15-20 min before each session to gymnastics skill work while fresh.',
+        'Build strict capacity first (strict pull-ups, strict HSPU) before chasing kipping volume.',
+        'Practice unbroken sets at 50-60% of your max to build muscular endurance in gymnastics movements.',
+        'If bodyweight is a factor, a modest body composition shift can dramatically improve relative strength.'
+      ],
+      cycling: [
+        'Practice touch-and-go barbell complexes at 50-65% of 1RM for sets of 10-15 reps.',
+        'Work on cycling cadence — consistent rhythm beats fast singles on metcon barbells.',
+        'Video your barbell cycling form and compare to elite athletes. Small technique fixes yield big returns.',
+        'Include EMOMs with moderate-load barbell work (e.g., 5 power cleans EMOM x 10 at 60%) weekly.'
+      ],
+      pacing: [
+        'Use a clock or heart rate monitor during workouts — learn what "sustainable" feels like.',
+        'Practice benchmark workouts with a planned split strategy instead of going by feel.',
+        'Review your workout data: if first-round pace is more than 20% faster than last round, you went out too hot.',
+        'Train time-domain awareness: know what pace a 7-min workout vs. a 20-min workout demands.'
+      ],
+      skill: [
+        'Spend 10-15 minutes daily on targeted mobility work for your weakest positions (overhead, hip, ankle).',
+        'Practice complex movements at low fatigue — beginning of session, light loads, focus on positions.',
+        'Film yourself on technical lifts and gymnastics. Self-assessment is often inaccurate without video.',
+        'Consider 1-on-1 coaching sessions specifically for your weakest movement patterns.'
+      ],
+      recovery: [
+        'Audit your sleep: 7-9 hours is non-negotiable for adaptation. Track it for 2 weeks.',
+        'Reduce training frequency by 1 day per week for 4 weeks and monitor performance changes.',
+        'Add structured deload weeks every 4th or 5th week — reduce volume by 40%, maintain intensity.',
+        'Address your injury with a qualified professional before pushing through training around it.'
+      ]
+    };
+
+    return recs[primaryKey] || recs.engine;
+  }
+
+  // ══════════════════════════════════════════════════════════
+  // MAIN CALCULATION
+  // ══════════════════════════════════════════════════════════
+
+  var analyzeBtn = document.getElementById('analyze-btn');
+  var resultsPanel = document.getElementById('results-panel');
+
+  analyzeBtn.addEventListener('click', function() {
+    // Validate required fields
+    var sex = document.getElementById('sex').value;
+    var age = numVal('age');
+    var bw = getBWinLbs();
+    var trainingAge = document.getElementById('training-age').value;
+    var trainDays = document.getElementById('train-days').value;
+    var struggle = document.getElementById('biggest-struggle').value;
+
+    if (!sex) { shakeField(document.getElementById('sex')); return; }
+    if (age === null || age < 14) { shakeField(document.getElementById('age')); return; }
+    if (isNaN(bw) || bw < 70) { shakeField(document.getElementById('bodyweight')); return; }
+    if (!trainingAge) { shakeField(document.getElementById('training-age')); return; }
+    if (!trainDays) { shakeField(document.getElementById('train-days')); return; }
+    if (!struggle) { shakeField(document.getElementById('biggest-struggle')); return; }
+
+    // Calculate all 7 categories
+    var engineResult = scoreEngine(bw, sex);
+    var strengthResult = scoreAbsoluteStrength(bw, sex);
+    var gymResult = scoreGymnastics(bw, sex);
+    var cyclingResult = scoreBarbellCycling(bw, sex, strengthResult.score);
+    var pacingResult = scorePacing(strengthResult.score, engineResult.score);
+    var skillResult = scoreSkillMobility();
+    var recoveryResult = scoreRecoveryFatigue();
+
+    // Count filled inputs for confidence
+    var totalFilled = engineResult.filled + strengthResult.filled + gymResult.filled
+                    + cyclingResult.filled + pacingResult.filled + skillResult.filled + recoveryResult.filled;
+
+    // For categories with no data, infer from self-assessment
+    var confOverhead = parseInt(document.getElementById('conf-overhead').value);
+    var confGym = parseInt(document.getElementById('conf-gymnastics').value);
+    var confSquat = parseInt(document.getElementById('conf-squatting').value);
+    var confCyclical = parseInt(document.getElementById('conf-cyclical').value);
+
+    // Fallback estimates from self-assessment when no data
+    if (engineResult.score === null) {
+      // Infer from cyclical confidence + struggle
+      var engineEst = ((confCyclical - 1) / 9) * 100;
+      if (struggle === 'gas-out') engineEst = Math.min(engineEst, 35);
+      engineResult = { score: engineEst, filled: 0 };
+    }
+    if (strengthResult.score === null) {
+      var strEst = ((confSquat - 1) / 9) * 80 + 10;
+      if (struggle === 'barbell-heavy') strEst = Math.min(strEst, 35);
+      strengthResult = { score: strEst, filled: 0 };
+    }
+    if (gymResult.score === null) {
+      var gymEst = ((confGym - 1) / 9) * 80 + 10;
+      if (struggle === 'gymnastics-slow') gymEst = Math.min(gymEst, 35);
+      gymResult = { score: gymEst, filled: 0 };
+    }
+    if (cyclingResult.score === null) {
+      // Infer cycling from confidence + struggle
+      var cycEst = ((confSquat + confOverhead) / 2 - 1) / 9 * 80 + 10;
+      if (struggle === 'barbell-heavy') cycEst = Math.min(cycEst, 40);
+      cyclingResult = { score: cycEst, filled: 0 };
+    }
+    if (pacingResult.score === null) {
+      var paceEst = 55;
+      if (struggle === 'pace') paceEst = 30;
+      else if (struggle === 'gas-out') paceEst = 40;
+      else if (struggle === 'transitions') paceEst = 35;
+      pacingResult = { score: paceEst, filled: 0 };
+    }
+
+    // Apply self-assessment struggle as a modifier
+    var categories = {
+      engine:     { name: 'Engine',              key: 'engine',     score: Math.round(engineResult.score),     filled: engineResult.filled },
+      strength:   { name: 'Absolute Strength',   key: 'strength',   score: Math.round(strengthResult.score),   filled: strengthResult.filled },
+      gymnastics: { name: 'Gymnastics Capacity',  key: 'gymnastics', score: Math.round(gymResult.score),         filled: gymResult.filled },
+      cycling:    { name: 'Barbell Cycling',      key: 'cycling',    score: Math.round(cyclingResult.score),     filled: cyclingResult.filled },
+      pacing:     { name: 'Pacing Strategy',      key: 'pacing',     score: Math.round(pacingResult.score),      filled: pacingResult.filled },
+      skill:      { name: 'Skill / Mobility',     key: 'skill',      score: Math.round(skillResult.score),       filled: skillResult.filled },
+      recovery:   { name: 'Recovery / Fatigue',    key: 'recovery',   score: Math.round(recoveryResult.score),    filled: recoveryResult.filled }
+    };
+
+    // Apply struggle-based penalties
+    switch (struggle) {
+      case 'gas-out':
+        categories.engine.score = Math.round(categories.engine.score * 0.85);
+        break;
+      case 'gymnastics-slow':
+        categories.gymnastics.score = Math.round(categories.gymnastics.score * 0.85);
+        break;
+      case 'barbell-heavy':
+        categories.strength.score = Math.round(categories.strength.score * 0.9);
+        categories.cycling.score = Math.round(categories.cycling.score * 0.9);
+        break;
+      case 'pace':
+        categories.pacing.score = Math.round(categories.pacing.score * 0.8);
+        break;
+      case 'skill-fatigue':
+        categories.skill.score = Math.round(categories.skill.score * 0.8);
+        break;
+      case 'transitions':
+        categories.pacing.score = Math.round(categories.pacing.score * 0.85);
+        categories.skill.score = Math.round(categories.skill.score * 0.9);
+        break;
+    }
+
+    // Clamp all scores
+    var keys = Object.keys(categories);
+    keys.forEach(function(k) {
+      categories[k].score = clamp(categories[k].score, 0, 100);
+    });
+
+    // Sort by score ascending (lowest = biggest limiter)
+    var ranked = keys.map(function(k) { return categories[k]; });
+    ranked.sort(function(a, b) { return a.score - b.score; });
+
+    // Strongest = highest score
+    var strongest = ranked[ranked.length - 1];
+
+    // Confidence level
+    var confidenceLevel, confidenceClass;
+    if (totalFilled >= 12) {
+      confidenceLevel = 'High Confidence';
+      confidenceClass = 'confidence-high';
+    } else if (totalFilled >= 5) {
+      confidenceLevel = 'Moderate Confidence';
+      confidenceClass = 'confidence-moderate';
+    } else {
+      confidenceLevel = 'Low Confidence';
+      confidenceClass = 'confidence-low';
+    }
+
+    // ── Render Primary Limiter ──
+    document.getElementById('primary-limiter-name').textContent = ranked[0].name;
+    document.getElementById('primary-limiter-score').textContent = 'Score: ' + ranked[0].score + ' / 100';
+
+    // ── Render Secondary + Tertiary ──
+    document.getElementById('secondary-name').textContent = ranked[1].name;
+    document.getElementById('secondary-score').textContent = 'Score: ' + ranked[1].score + ' / 100';
+    document.getElementById('tertiary-name').textContent = ranked[2].name;
+    document.getElementById('tertiary-score').textContent = 'Score: ' + ranked[2].score + ' / 100';
+
+    // ── Render Strongest ──
+    document.getElementById('strongest-name').textContent = strongest.name;
+
+    // ── Render Confidence ──
+    var badge = document.getElementById('confidence-badge');
+    badge.textContent = confidenceLevel;
+    badge.className = 'confidence-badge ' + confidenceClass;
+    if (totalFilled < 5) {
+      badge.textContent += ' — fill in more data for better accuracy';
+    }
+
+    // ── Render Breakdown ──
+    var breakdownContainer = document.getElementById('breakdown-rows');
+    breakdownContainer.innerHTML = '';
+
+    ranked.forEach(function(cat) {
+      var color = scoreColor(cat.score);
+      var row = document.createElement('div');
+      row.className = 'breakdown-row';
+      row.innerHTML =
+        '<span class="breakdown-label">' + cat.name + '</span>' +
+        '<div class="breakdown-bar-wrap"><div class="breakdown-bar" style="width: ' + Math.max(2, cat.score) + '%; background: ' + color + ';"></div></div>' +
+        '<span class="breakdown-score" style="color: ' + color + ';">' + cat.score + '</span>';
+      breakdownContainer.appendChild(row);
+    });
+
+    // ── Render Interpretation ──
+    document.getElementById('interpretation-text').textContent = generateInterpretation(ranked, strongest);
+
+    // ── Render Recommendations ──
+    var recs = getRecommendations(ranked[0].key);
+    var recsList = document.getElementById('recs-list');
+    recsList.innerHTML = '';
+    recs.forEach(function(rec) {
+      var li = document.createElement('li');
+      li.innerHTML = '<span class="rec-bullet"></span>' + rec;
+      recsList.appendChild(li);
+    });
+
+    // ── Injury Disclaimer ──
+    var injuryDisclaimer = document.getElementById('injury-disclaimer');
+    injuryDisclaimer.style.display = document.getElementById('has-injury').checked ? 'block' : 'none';
+
+    // ── Show Results ──
+    resultsPanel.style.display = 'block';
+    requestAnimationFrame(function() {
+      resultsPanel.classList.add('visible');
+    });
+
+    setTimeout(function() {
+      resultsPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
+  });
+
+  // ══════════════════════════════════════════════════════════
+  // SHARE BUTTONS
+  // ══════════════════════════════════════════════════════════
+
+  document.getElementById('share-social').addEventListener('click', function() {
+    var limiter = document.getElementById('primary-limiter-name').textContent;
+    var text = 'My biggest CrossFit limiter is ' + limiter + '! Find yours:';
+    var url = 'https://yeagersgym.com/tools-limiter.html';
+
+    var twitterUrl = 'https://twitter.com/intent/tweet?text=' + encodeURIComponent(text) + '&url=' + encodeURIComponent(url);
+    window.open(twitterUrl, '_blank', 'width=550,height=420');
+
+    setTimeout(function() {
+      var fbUrl = 'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(url) + '&quote=' + encodeURIComponent(text);
+      if (confirm('Also share on Facebook?')) {
+        window.open(fbUrl, '_blank', 'width=550,height=420');
+      }
+    }, 500);
+  });
+
+  document.getElementById('share-friend').addEventListener('click', function() {
+    var limiter = document.getElementById('primary-limiter-name').textContent;
+    var text = 'My biggest CrossFit limiter is ' + limiter + '! Take the quiz and find yours: ';
+    var url = 'https://yeagersgym.com/tools-limiter.html';
+
+    if (navigator.share) {
+      navigator.share({
+        title: 'CrossFit Limiter Quiz',
+        text: text,
+        url: url
+      }).catch(function() {});
+    } else {
+      var mailUrl = 'mailto:?subject=' + encodeURIComponent('CrossFit Limiter Quiz') + '&body=' + encodeURIComponent(text + url);
+      window.location.href = mailUrl;
+    }
+  });
+
+  document.getElementById('share-bookmark').addEventListener('click', function() {
+    var url = 'https://yeagersgym.com/tools-limiter.html';
+    if (window.sidebar && window.sidebar.addPanel) {
+      window.sidebar.addPanel('CrossFit Limiter Quiz', url, '');
+    } else {
+      alert('Press ' + (navigator.userAgent.indexOf('Mac') !== -1 ? 'Cmd' : 'Ctrl') + '+D to bookmark this page!');
+    }
+  });
+
+  // ══════════════════════════════════════════════════════════
+  // UTILITIES
+  // ══════════════════════════════════════════════════════════
+
+  function shakeField(el) {
+    el.style.animation = 'shake 0.4s ease';
+    el.style.borderColor = '#F0448A';
+    el.focus();
+    setTimeout(function() {
+      el.style.animation = '';
+      el.style.borderColor = '';
+    }, 500);
+  }
+
+  var shakeStyle = document.createElement('style');
+  shakeStyle.textContent = '@keyframes shake { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-6px)} 40%{transform:translateX(6px)} 60%{transform:translateX(-4px)} 80%{transform:translateX(4px)} }';
+  document.head.appendChild(shakeStyle);
+
+  // Scroll reveal
+  var fadeEls = document.querySelectorAll('.fade-in');
+  if ('IntersectionObserver' in window) {
+    var observer = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+    fadeEls.forEach(function(el) { observer.observe(el); });
+  } else {
+    fadeEls.forEach(function(el) { el.classList.add('visible'); });
+  }
+
+  // Mobile Menu
+  var hamburger = document.querySelector('.hamburger');
+  var mobileNav = document.querySelector('.mobile-nav');
+  if (hamburger && mobileNav) {
+    hamburger.addEventListener('click', function() {
+      var isOpen = mobileNav.classList.toggle('open');
+      hamburger.classList.toggle('open');
+      hamburger.setAttribute('aria-expanded', isOpen);
+    });
+  }
+
+  // Header scroll shadow
+  var header = document.querySelector('.site-header');
+  window.addEventListener('scroll', function() {
+    if (window.scrollY > 60) {
+      header.style.boxShadow = 'var(--shadow-md)';
+    } else {
+      header.style.boxShadow = 'none';
+    }
+  }, { passive: true });
+
+  // Enter key triggers analyze
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' && document.activeElement && document.activeElement.closest('.calc-card')) {
+      analyzeBtn.click();
+    }
+  });
+
+  // Mobile sticky CTA
+  var cta = document.getElementById('stickyCta');
+  if (cta && window.innerWidth <= 768) {
+    window.addEventListener('scroll', function() {
+      cta.style.display = window.scrollY > 300 ? 'block' : 'none';
+    }, { passive: true });
+  }
+
+})();
+</script>
+
+</body>
+</html>
