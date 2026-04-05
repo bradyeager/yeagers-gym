@@ -3320,11 +3320,23 @@
   .svc-subsection-card img { width: 75px !important; height: 75px !important; }
 }
 
-/* Services hero — shift image up on mobile so face isn't behind text */
+/* Services hero — position image so face isn't behind text on mobile */
 @media (max-width: 768px) {
   [aria-label="Services Hero"] {
-    background-position: center 20% !important;
-    padding-top: var(--space-6) !important;
-    padding-bottom: var(--space-12) !important;
+    background-position: 70% 30% !important;
+    padding-top: var(--space-4) !important;
+    padding-bottom: var(--space-6) !important;
+    min-height: 500px !important;
+  }
+  [aria-label="Services Hero"] .section-header {
+    text-align: left !important;
+    max-width: 65% !important;
+  }
+  [aria-label="Services Hero"] .section-label {
+    text-align: left !important;
+  }
+  [aria-label="Services Hero"] .section-desc {
+    text-align: left !important;
+    margin-inline: 0 !important;
   }
 }
