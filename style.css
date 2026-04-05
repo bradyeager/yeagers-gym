@@ -3315,9 +3315,17 @@
   }
 }
 
-/* Services recovery cards — sized for mobile */
-@media (max-width: 480px) {
-  .svc-subsection-card img { width: 100px !important; height: 100px !important; border-radius: 8px !important; }
+/* Services recovery cards — stack image below text on mobile */
+@media (max-width: 640px) {
+  .svc-subsection-card {
+    flex-direction: column !important;
+  }
+  .svc-subsection-card img {
+    width: 100% !important;
+    height: 140px !important;
+    border-radius: 8px !important;
+    order: -1;
+  }
 }
 
 /* Services hero — position image so face isn't behind text on mobile */
