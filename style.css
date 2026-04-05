@@ -3323,20 +3323,19 @@
 /* Services hero — position image so face isn't behind text on mobile */
 @media (max-width: 768px) {
   [aria-label="Services Hero"] {
-    background-position: 70% 30% !important;
+    background-position: 80% 30% !important;
     padding-top: var(--space-4) !important;
     padding-bottom: var(--space-6) !important;
     min-height: 500px !important;
   }
   [aria-label="Services Hero"] .section-header {
-    text-align: left !important;
-    max-width: 65% !important;
+    text-align: center !important;
   }
   [aria-label="Services Hero"] .section-label {
-    text-align: left !important;
+    text-align: center !important;
   }
   [aria-label="Services Hero"] .section-desc {
-    text-align: left !important;
-    margin-inline: 0 !important;
+    text-align: center !important;
+    margin-inline: auto !important;
   }
 }
