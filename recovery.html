@@ -59,16 +59,17 @@
 }
 
 .rec-service-img {
-  width: 100px;
-  height: 100px;
+  width: 80px;
+  height: 80px;
   object-fit: cover;
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-md);
   border: 1px solid var(--color-border);
-  position: absolute;
-  top: var(--space-3);
-  right: var(--space-3);
+  float: right;
+  margin: 0 0 var(--space-2) var(--space-3);
 }
-.recovery-card, .link-card { position: relative; }
+@media (max-width: 480px) {
+  .rec-service-img { width: 60px; height: 60px; }
+}
 
 .rec-hero-inner {
   text-align: center;
@@ -613,7 +614,7 @@
         <div class="recovery-pricing">
           <span class="recovery-price-pill">$200 <span class="price-duration">/ one-time consultation</span></span>
         </div>
-        <p>Performance peptide strategy for recovery, body composition, and longevity. A personalized 60-minute protocol design session built around your training, goals, and health metrics.</p>
+        <p>Performance peptide strategy for recovery, body composition, and longevity. A personalized 90-minute protocol design session built around your training, goals, and health metrics.</p>
         <div class="link-card-ctas">
           <a href="./peptide-consulting.html" class="link-card-learn">
             Learn More →
