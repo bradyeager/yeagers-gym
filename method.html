@@ -172,9 +172,16 @@
   background: linear-gradient(90deg, var(--color-pink), transparent);
 }
 
+.problem-card-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-2);
+}
+
 .problem-card .problem-icon {
   font-size: 1.3rem;
-  margin-bottom: var(--space-2);
+  flex-shrink: 0;
 }
 
 .problem-card h3 {
@@ -182,7 +189,7 @@
   font-size: var(--text-sm);
   font-weight: 700;
   color: var(--color-text);
-  margin-bottom: var(--space-1);
+  margin: 0;
   letter-spacing: 0.02em;
 }
 
@@ -932,23 +939,19 @@
 
       <div class="problem-grid">
         <div class="problem-card fade-in">
-          <div class="problem-icon">🔁</div>
-          <h3>Program Hopping</h3>
+          <div class="problem-card-header"><div class="problem-icon">🔁</div><h3>Program Hopping</h3></div>
           <p>New program every 4 weeks. Nothing sticks long enough to drive real adaptation. You're restarting, not progressing.</p>
         </div>
         <div class="problem-card fade-in fade-in-d1">
-          <div class="problem-icon">🎲</div>
-          <h3>Random Exercise Selection</h3>
+          <div class="problem-card-header"><div class="problem-icon">🎲</div><h3>Random Exercise Selection</h3></div>
           <p>15 exercises per session, half of them redundant. You're doing cable kickbacks and leg extensions when six compound lifts would cover everything.</p>
         </div>
         <div class="problem-card fade-in fade-in-d2">
-          <div class="problem-icon">📉</div>
-          <h3>No Way to Measure Progress</h3>
+          <div class="problem-card-header"><div class="problem-icon">📉</div><h3>No Way to Measure Progress</h3></div>
           <p>You "feel" stronger but can't prove it. No velocity data, no load-tracking system, no objective feedback. Just vibes.</p>
         </div>
         <div class="problem-card fade-in fade-in-d3">
-          <div class="problem-icon">🤷</div>
-          <h3>Guessing at Weights</h3>
+          <div class="problem-card-header"><div class="problem-icon">🤷</div><h3>Guessing at Weights</h3></div>
           <p>Your 1RM was tested three months ago. You're still using those percentages even though your strength has changed. The program can't see what your body is telling it.</p>
         </div>
       </div>
