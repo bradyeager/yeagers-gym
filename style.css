@@ -3300,3 +3300,12 @@
     max-width: 100px !important;
   }
 }
+
+/* Services hero — shift image up on mobile so face isn't behind text */
+@media (max-width: 768px) {
+  [aria-label="Services Hero"] {
+    background-position: center 20% !important;
+    padding-top: var(--space-6) !important;
+    padding-bottom: var(--space-12) !important;
+  }
+}
