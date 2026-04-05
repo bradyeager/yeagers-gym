@@ -109,12 +109,13 @@
   border-radius: var(--radius-full);
   margin-bottom: var(--space-1);
 }
-.tool-tag--vbt { background: rgba(30, 200, 176, 0.1); color: var(--color-teal); }
-.tool-tag--strength { background: rgba(155, 111, 212, 0.1); color: var(--color-purple); }
-.tool-tag--hyrox { background: rgba(240, 68, 138, 0.1); color: var(--color-pink); }
-.tool-tag--recovery { background: rgba(155, 111, 212, 0.1); color: var(--color-purple); }
-.tool-tag--nutrition { background: rgba(155, 111, 212, 0.1); color: var(--color-purple); }
+.tool-tag--strength { background: rgba(30, 200, 176, 0.1); color: var(--color-teal); }
+.tool-tag--vbt { background: rgba(240, 68, 138, 0.1); color: var(--color-pink); }
 .tool-tag--crossfit { background: rgba(30, 200, 176, 0.1); color: var(--color-teal); }
+.tool-tag--hyrox { background: rgba(240, 68, 138, 0.1); color: var(--color-pink); }
+.tool-tag--recovery { background: rgba(30, 200, 176, 0.1); color: var(--color-teal); }
+.tool-tag--nutrition { background: rgba(30, 200, 176, 0.1); color: var(--color-teal); }
+.tool-tag--peptide { background: rgba(240, 68, 138, 0.1); color: var(--color-pink); }
 </style>
 </head>
 <body>
@@ -190,7 +191,29 @@
 
   <div class="container">
     <div class="tools-grid">
-      <!-- Velocity Based Training (teal) -->
+      <!-- Strength (teal) -->
+      <a href="./tools-warmup.html" class="tool-card fade-in">
+        <span class="tool-tag tool-tag--strength">Strength</span>
+        <h3>Warmup Generator</h3>
+        <p>Progressive warmup sets calculated from your working weight. No more winging it.</p>
+      </a>
+      <a href="./tools-1rm.html" class="tool-card fade-in">
+        <span class="tool-tag tool-tag--strength">Strength</span>
+        <h3>1RM Calculator</h3>
+        <p>Classic 1RM estimation from reps and weight. Epley, Brzycki, and Lombardi formulas.</p>
+      </a>
+      <a href="./tools-strength.html" class="tool-card fade-in">
+        <span class="tool-tag tool-tag--strength">Strength</span>
+        <h3>Strength Standards</h3>
+        <p>Compare your lifts to real standards by sex and bodyweight. Find your tier and your weakest link.</p>
+      </a>
+      <a href="./tools-rpe.html" class="tool-card fade-in">
+        <span class="tool-tag tool-tag--strength">Strength</span>
+        <h3>RPE Chart</h3>
+        <p>Interactive RPE-to-percentage chart. Find your target load from RPE and rep count.</p>
+      </a>
+
+      <!-- Velocity Based Training (pink) -->
       <a href="./tools-vbt.html" class="tool-card fade-in">
         <span class="tool-tag tool-tag--vbt">Velocity Based Training</span>
         <h3>VBT Calculator</h3>
@@ -207,26 +230,11 @@
         <p>Map RPE values to velocity ranges. Bridge subjective effort with bar speed data.</p>
       </a>
 
-      <!-- Strength (pink) -->
-      <a href="./tools-1rm.html" class="tool-card fade-in">
-        <span class="tool-tag tool-tag--strength">Strength</span>
-        <h3>1RM Calculator</h3>
-        <p>Classic 1RM estimation from reps and weight. Epley, Brzycki, and Lombardi formulas.</p>
-      </a>
-      <a href="./tools-warmup.html" class="tool-card fade-in">
-        <span class="tool-tag tool-tag--strength">Strength</span>
-        <h3>Warmup Generator</h3>
-        <p>Progressive warmup sets calculated from your working weight. No more winging it.</p>
-      </a>
-      <a href="./tools-rpe.html" class="tool-card fade-in">
-        <span class="tool-tag tool-tag--strength">Strength</span>
-        <h3>RPE Chart</h3>
-        <p>Interactive RPE-to-percentage chart. Find your target load from RPE and rep count.</p>
-      </a>
-      <a href="./tools-strength.html" class="tool-card fade-in">
-        <span class="tool-tag tool-tag--strength">Strength</span>
-        <h3>Strength Standards</h3>
-        <p>Compare your lifts to real standards by sex and bodyweight. Find your tier and your weakest link.</p>
+      <!-- CrossFit (teal) -->
+      <a href="./tools-crossfit.html" class="tool-card fade-in">
+        <span class="tool-tag tool-tag--crossfit">CrossFit</span>
+        <h3>Machine Converter</h3>
+        <p>Convert calories and distances between rower, bike, ski erg, and echo bike.</p>
       </a>
       <a href="./tools-limiter.html" class="tool-card fade-in">
         <span class="tool-tag tool-tag--crossfit">CrossFit</span>
@@ -234,12 +242,7 @@
         <p>Engine, strength, gymnastics, pacing — find out what’s holding you back.</p>
       </a>
 
-      <!-- Hyrox (purple) -->
-      <a href="./tools-crossfit.html" class="tool-card fade-in">
-        <span class="tool-tag tool-tag--crossfit">CrossFit</span>
-        <h3>Machine Converter</h3>
-        <p>Convert calories and distances between rower, bike, ski erg, and echo bike.</p>
-      </a>
+      <!-- Hyrox (pink) -->
       <a href="./tools-hyrox.html" class="tool-card fade-in">
         <span class="tool-tag tool-tag--hyrox">Hyrox</span>
         <h3>Hyrox Race Predictor</h3>
@@ -258,7 +261,7 @@
         <p>30-second check-in. Push day, maintain day, or recovery day?</p>
       </a>
 
-      <!-- Body Comp / Nutrition / Peptide (purple) -->
+      <!-- Body Comp + Nutrition (teal) -->
       <a href="./tools-recomp.html" class="tool-card fade-in">
         <span class="tool-tag tool-tag--nutrition">Body Comp</span>
         <h3>Body Recomp Estimator</h3>
@@ -269,8 +272,10 @@
         <h3>Macro Calculator</h3>
         <p>TDEE, protein, carbs, and fat targets based on your body stats and training goals.</p>
       </a>
+
+      <!-- Peptide (pink) -->
       <a href="./tools-peptide.html" class="tool-card fade-in">
-        <span class="tool-tag tool-tag--nutrition">Peptide</span>
+        <span class="tool-tag tool-tag--peptide">Peptide</span>
         <h3>Peptide Dosing Calculator</h3>
         <p>Reconstitution math, syringe units, draw volume, and vial duration.</p>
       </a>
