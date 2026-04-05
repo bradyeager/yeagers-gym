@@ -3301,6 +3301,11 @@
   }
 }
 
+/* Services recovery cards — smaller images on mobile to prevent text overlap */
+@media (max-width: 480px) {
+  .svc-subsection-card img { width: 50px !important; height: 50px !important; }
+}
+
 /* Services hero — shift image up on mobile so face isn't behind text */
 @media (max-width: 768px) {
   [aria-label="Services Hero"] {
