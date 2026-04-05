@@ -1044,7 +1044,7 @@
   var pressInput = document.getElementById('press');
   var pullupTypeSelect = document.getElementById('pullup-type');
   var pullupsInput = document.getElementById('pullups');
-  var estimatedCheck = document.getElementById('estimated');
+  // estimated checkbox removed
   var analyzeBtn = document.getElementById('analyze-btn');
   var resultsPanel = document.getElementById('results-panel');
 
@@ -1163,7 +1163,7 @@
     var press = parseFloat(pressInput.value);
     var pullupVal = parseFloat(pullupsInput.value);
     var pullupType = pullupTypeSelect.value;
-    var isEstimated = estimatedCheck.checked;
+    var isEstimated = false;
 
     // Validation
     if (!bwRaw || bwRaw <= 0) { shakeField(bwInput); return; }
