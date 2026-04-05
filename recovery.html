@@ -58,17 +58,23 @@
   pointer-events: none;
 }
 
+.recovery-card, .link-card {
+  position: relative;
+  padding-right: 100px;
+}
 .rec-service-img {
   width: 80px;
   height: 80px;
   object-fit: cover;
   border-radius: var(--radius-md);
   border: 1px solid var(--color-border);
-  float: right;
-  margin: 0 0 var(--space-2) var(--space-3);
+  position: absolute;
+  top: var(--space-4);
+  right: var(--space-4);
 }
 @media (max-width: 480px) {
-  .rec-service-img { width: 60px; height: 60px; }
+  .recovery-card, .link-card { padding-right: 80px; }
+  .rec-service-img { width: 60px; height: 60px; top: var(--space-3); right: var(--space-3); }
 }
 
 .rec-hero-inner {
