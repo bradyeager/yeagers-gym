@@ -2290,6 +2290,19 @@
   grid-template-columns: 1fr 1fr;
   gap: var(--space-3);
 }
+.vbt-showcase-grid > * {
+  min-width: 0;
+  overflow: hidden;
+}
+@media (max-width: 480px) {
+  .vbt-showcase-card { padding: var(--space-3) !important; }
+  .vbt-showcase-metric { font-size: 0.85rem !important; }
+  .vbt-showcase-from, .vbt-showcase-to { font-size: 1rem !important; }
+  .vbt-showcase-label { font-size: 0.6rem !important; }
+  .vbt-showcase-desc { font-size: 0.7rem !important; }
+  .result-highlight-grid { gap: var(--space-2) !important; }
+  .result-highlight .stat-val { font-size: var(--text-lg) !important; }
+}
 
 .vbt-showcase-card {
   background: var(--color-surface);
