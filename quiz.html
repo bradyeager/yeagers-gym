@@ -372,8 +372,10 @@
   color: var(--color-text-muted);
   line-height: 1.8;
   margin-bottom: var(--space-8);
-  max-width: 50ch;
+  max-width: 100%;
   margin-inline: auto;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
 }
 
 /* ── Result cards (PDF + Tool + CTA) ── */
@@ -574,6 +576,61 @@
   </a>
   <span class="quiz-step-count" id="step-count"></span>
 </div>
+
+<!-- ═══════════════════════════════════════════
+     HEADER / NAV
+     ═══════════════════════════════════════════ -->
+<header class="site-header" role="banner">
+  <div class="header-inner">
+    <a href="./index.html" class="logo-link" aria-label="Yeager's Gym Home">
+      <img src="assets/logo.jpeg" alt="Yeager's Gym Logo" class="logo-mark-img" width="48" height="48">
+    </a>
+
+    <nav class="nav-desktop" role="navigation" aria-label="Main navigation">
+      <a href="./index.html" class="nav-link">Home</a>
+      <a href="./index.html#about" class="nav-link">About</a>
+      <div class="nav-dropdown">
+        <a href="./index.html#services" class="nav-link">Services ▾</a>
+        <div class="nav-dropdown-menu">
+          <a href="./in-person.html">In-Person Coaching</a>
+          <a href="./remote.html">Remote Coaching</a>
+          <a href="./nutrition.html">Nutrition Coaching</a>
+          <a href="./peptide-consulting.html">Peptide Consulting</a>
+          <a href="./recovery.html">Recovery</a>
+        </div>
+      </div>
+      <a href="./method.html" class="nav-link" style="color: var(--color-pink); font-weight: 700;">The Method</a>
+      <a href="./index.html#vbt" class="nav-link">What is VBT?</a>
+      <a href="./index.html#results" class="nav-link">Results</a>
+      <a href="./tools.html" class="nav-link" style="color: var(--color-teal);">Free Tools</a>
+      <a href="./quiz.html" class="nav-link">Quiz</a>
+      <div class="nav-utility">
+        <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="btn btn-nav-cta">Book Your FREE Session!</a>
+      </div>
+    </nav>
+
+    <button class="hamburger" aria-label="Toggle menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+
+  <div class="mobile-nav" role="navigation" aria-label="Mobile navigation">
+    <a href="./index.html">Home</a>
+    <a href="./index.html#about">About</a>
+    <a href="./index.html#services">Services</a>
+    <a href="./in-person.html" style="padding-left: 2rem;">In-Person Coaching</a>
+    <a href="./remote.html" style="padding-left: 2rem;">Remote Coaching</a>
+    <a href="./nutrition.html" style="padding-left: 2rem;">Nutrition Coaching</a>
+    <a href="./peptide-consulting.html" style="padding-left: 2rem; color: var(--color-teal);">Peptide Consulting</a>
+    <a href="./recovery.html" style="padding-left: 2rem;">Recovery</a>
+    <a href="./method.html" style="color: var(--color-pink); font-weight: 700;">The Velocity Method</a>
+    <a href="./index.html#vbt">What is VBT?</a>
+    <a href="./index.html#results">Results</a>
+    <a href="./tools.html" style="color: var(--color-teal); font-weight: 700;">Free Tools</a>
+    <a href="./quiz.html" style="color: var(--color-pink);">Training Type Quiz</a>
+    <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="btn btn-nav-cta" style="margin-top: var(--space-4);">Book Your FREE Session!</a>
+  </div>
+</header>
 
 <!-- ═══════════════════════════════════════════
      QUIZ CONTENT
@@ -852,6 +909,18 @@
      SCRIPTS
      ═══════════════════════════════════════════ -->
 <script src="./brevo.js"></script>
+<script>
+  /* ── Hamburger / Mobile Nav ── */
+  const hamburger = document.querySelector('.hamburger');
+  const mobileNav = document.querySelector('.mobile-nav');
+  if (hamburger && mobileNav) {
+    hamburger.addEventListener('click', () => {
+      const isOpen = hamburger.classList.toggle('open');
+      mobileNav.classList.toggle('open', isOpen);
+      hamburger.setAttribute('aria-expanded', isOpen);
+    });
+  }
+</script>
 <script>
 (function() {
   'use strict';
