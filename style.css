@@ -3280,13 +3280,13 @@
   .about-inline-headshot {
     float: right;
     margin: 0 0 var(--space-3) var(--space-4);
-    width: 100px !important;
-    height: 100px !important;
+    width: 150px !important;
+    height: 150px !important;
     flex-shrink: 0;
   }
   .about-inline-headshot img {
-    width: 100px !important;
-    height: 100px !important;
+    width: 150px !important;
+    height: 150px !important;
     object-fit: cover;
     border-radius: var(--radius-lg);
   }
@@ -3296,15 +3296,15 @@
     clear: both;
   }
   .about-headshot-lg {
-    width: 100px !important;
-    height: 100px !important;
-    max-width: 100px !important;
+    width: 150px !important;
+    height: 150px !important;
+    max-width: 150px !important;
   }
 }
 
-/* Services recovery cards — smaller images on mobile to prevent text overlap */
+/* Services recovery cards — sized for mobile */
 @media (max-width: 480px) {
-  .svc-subsection-card img { width: 50px !important; height: 50px !important; }
+  .svc-subsection-card img { width: 75px !important; height: 75px !important; }
 }
 
 /* Services hero — shift image up on mobile so face isn't behind text */
