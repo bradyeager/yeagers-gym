@@ -822,11 +822,14 @@
         </a>
       </div>
 
-      <div class="result-cta-section">
-        <p id="result-credential-text"></p>
-        <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="btn btn-primary" style="padding: 0.875rem 2rem; font-size: var(--text-sm);">Book Your FREE Session!</a>
-        <div class="result-credential" id="result-cred-badges"></div>
-      </div>
+      <section style="padding: var(--space-8) 0 var(--space-6); text-align: center;">
+        <div class="container">
+          <p class="section-label" style="color: var(--color-pink); text-align: center; max-width: none;">Get Started</p>
+          <h2 style="font-family: var(--font-body); font-size: var(--text-lg); font-weight: 700; color: var(--color-text); margin-bottom: var(--space-3);">Train with a Coach Who <span style="color: var(--color-teal);">Uses Your Data</span></h2>
+          <p id="result-credential-text" style="font-size: var(--text-sm); color: var(--color-text-muted); margin-bottom: var(--space-5); max-width: 45ch; margin-inline: auto;"></p>
+          <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="btn btn-primary">Book Your FREE Session!</a>
+        </div>
+      </section>
 
       <button class="result-retake" id="retake-quiz" type="button">← Retake Quiz</button>
     </div>
@@ -1128,21 +1131,7 @@
     document.getElementById('result-cta-desc').textContent = r.ctaDesc;
     document.getElementById('result-credential-text').textContent = r.credentialText;
 
-    // Credential badges
-    var badgeContainer = document.getElementById('result-cred-badges');
-    badgeContainer.innerHTML = '';
-    r.credBadges.forEach(function(badge) {
-      var img = document.createElement('img');
-      img.src = badge.img;
-      img.alt = badge.name;
-      img.width = 20;
-      img.height = 20;
-      badgeContainer.appendChild(img);
-
-      var span = document.createElement('span');
-      span.textContent = badge.name;
-      badgeContainer.appendChild(span);
-    });
+    // Credential text is set above, badges removed
 
     // Navigate to result screen
     showScreen(screenOrder.indexOf('result'));
