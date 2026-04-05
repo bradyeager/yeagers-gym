@@ -3251,8 +3251,8 @@
 /* ── Footer responsive ── */
 @media (max-width: 768px) {
   .footer-nav-columns {
-    grid-template-columns: 1fr;
-    gap: var(--space-6);
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: var(--space-3);
   }
 }
 
