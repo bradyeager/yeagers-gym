@@ -2930,7 +2930,8 @@
   background: var(--color-surface);
   border-top: 1px solid rgba(72,196,204,0.2);
   border-bottom: 1px solid rgba(72,196,204,0.2);
-  padding: var(--space-8) var(--space-6);
+  padding: var(--space-10) var(--space-6);
+  margin-top: var(--space-4);
   text-align: center;
   position: relative;
   overflow: hidden;
