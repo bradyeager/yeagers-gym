@@ -3317,7 +3317,7 @@
 
 /* Services recovery cards — sized for mobile */
 @media (max-width: 480px) {
-  .svc-subsection-card img { width: 75px !important; height: 75px !important; }
+  .svc-subsection-card img { width: 100px !important; height: 100px !important; border-radius: 8px !important; }
 }
 
 /* Services hero — position image so face isn't behind text on mobile */
