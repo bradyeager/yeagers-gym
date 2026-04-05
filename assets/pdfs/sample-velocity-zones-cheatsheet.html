@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Velocity Zones Cheat Sheet — Yeager's Gym</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@500;600;700;800&display=swap');
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+@page {
+  size: letter;
+  margin: 0;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: #0a0e17;
+  color: #e2e8f0;
+  width: 8.5in;
+  min-height: 11in;
+  margin: 0 auto;
+  padding: 0.5in 0.55in;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.3in;
+  padding-bottom: 0.15in;
+  border-bottom: 2px solid #48C4CC;
+}
+.header-left h1 {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 18pt;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  color: #fff;
+}
+.header-left h1 .teal { color: #48C4CC; }
+.header-left h1 .pink { color: #EF3295; }
+.header-left p {
+  font-size: 8pt;
+  color: #8492a6;
+  margin-top: 2px;
+  font-family: 'JetBrains Mono', monospace;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.header-right {
+  text-align: right;
+  font-family: 'JetBrains Mono', monospace;
+}
+.header-right .brand {
+  font-size: 10pt;
+  font-weight: 700;
+  color: #48C4CC;
+  letter-spacing: 0.06em;
+}
+.header-right .url {
+  font-size: 7pt;
+  color: #8492a6;
+  margin-top: 2px;
+}
+
+/* Zone Table */
+.zone-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin-bottom: 0.25in;
+  font-size: 9pt;
+}
+.zone-table th {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 7pt;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #8492a6;
+  text-align: left;
+  padding: 6px 10px;
+  border-bottom: 1px solid rgba(72, 196, 204, 0.3);
+}
+.zone-table td {
+  padding: 10px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  vertical-align: top;
+  line-height: 1.4;
+}
+.zone-table tr:last-child td {
+  border-bottom: none;
+}
+.zone-name {
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 700;
+  font-size: 10pt;
+}
+.zone-name.z1 { color: #48C4CC; }
+.zone-name.z2 { color: #7dd3fc; }
+.zone-name.z3 { color: #fbbf24; }
+.zone-name.z4 { color: #fb923c; }
+.zone-name.z5 { color: #EF3295; }
+
+.zone-velocity {
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 700;
+  font-size: 11pt;
+  color: #fff;
+}
+.zone-unit {
+  font-size: 7pt;
+  color: #8492a6;
+  font-weight: 500;
+}
+.zone-rpe {
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 600;
+  color: #cbd5e1;
+}
+.zone-use {
+  color: #94a3b8;
+  font-size: 8.5pt;
+}
+.zone-cue {
+  color: #e2e8f0;
+  font-style: italic;
+  font-size: 8.5pt;
+}
+
+/* Two-column section */
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.2in;
+  margin-bottom: 0.2in;
+}
+
+.info-box {
+  background: rgba(72, 196, 204, 0.04);
+  border: 1px solid rgba(72, 196, 204, 0.15);
+  border-radius: 6px;
+  padding: 12px 14px;
+}
+.info-box.pink {
+  background: rgba(239, 50, 149, 0.04);
+  border-color: rgba(239, 50, 149, 0.15);
+}
+.info-box h3 {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 8pt;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #48C4CC;
+  margin-bottom: 8px;
+}
+.info-box.pink h3 { color: #EF3295; }
+.info-box ul {
+  list-style: none;
+  padding: 0;
+}
+.info-box li {
+  font-size: 8pt;
+  color: #94a3b8;
+  padding: 2px 0;
+  padding-left: 14px;
+  position: relative;
+  line-height: 1.5;
+}
+.info-box li::before {
+  content: "→";
+  position: absolute;
+  left: 0;
+  color: #48C4CC;
+  font-size: 8pt;
+}
+.info-box.pink li::before { color: #EF3295; }
+
+/* Decision flow */
+.decision-box {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 6px;
+  padding: 12px 14px;
+  margin-bottom: 0.2in;
+}
+.decision-box h3 {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 8pt;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #fbbf24;
+  margin-bottom: 8px;
+}
+.decision-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 4px;
+  font-size: 8pt;
+}
+.decision-if {
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 600;
+  color: #48C4CC;
+  min-width: 130px;
+}
+.decision-then {
+  color: #e2e8f0;
+}
+
+/* Footer */
+.footer {
+  margin-top: auto;
+  padding-top: 0.12in;
+  border-top: 1px solid rgba(255,255,255,0.08);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 7pt;
+  color: #4a5568;
+}
+.footer .cta {
+  font-family: 'JetBrains Mono', monospace;
+  color: #48C4CC;
+  font-weight: 600;
+  font-size: 7.5pt;
+}
+
+@media print {
+  body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-left">
+    <h1><span class="teal">Velocity</span> <span class="pink">Zones</span> Cheat Sheet</h1>
+    <p>Mean Concentric Velocity Reference &bull; Compound Lifts</p>
+  </div>
+  <div class="header-right">
+    <div class="brand">YEAGER'S GYM</div>
+    <div class="url">yeagersgym.com</div>
+  </div>
+</div>
+
+<table class="zone-table">
+  <thead>
+    <tr>
+      <th>Zone</th>
+      <th>Velocity Range</th>
+      <th>~RPE</th>
+      <th>Training Use</th>
+      <th>Coaching Cue</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><span class="zone-name z1">Speed-Strength</span></td>
+      <td><span class="zone-velocity">&gt; 0.75</span> <span class="zone-unit">m/s</span></td>
+      <td class="zone-rpe">5 - 6</td>
+      <td class="zone-use">Warm-ups, speed work, power development, technique drilling</td>
+      <td class="zone-cue">"Fast and explosive — this should feel light."</td>
+    </tr>
+    <tr>
+      <td><span class="zone-name z2">Strength-Speed</span></td>
+      <td><span class="zone-velocity">0.55 – 0.75</span> <span class="zone-unit">m/s</span></td>
+      <td class="zone-rpe">6.5 - 7.5</td>
+      <td class="zone-use">Working sets, volume accumulation, hypertrophy with intent</td>
+      <td class="zone-cue">"Controlled but aggressive. Every rep should look the same."</td>
+    </tr>
+    <tr>
+      <td><span class="zone-name z3">Strength</span></td>
+      <td><span class="zone-velocity">0.40 – 0.55</span> <span class="zone-unit">m/s</span></td>
+      <td class="zone-rpe">8 - 8.5</td>
+      <td class="zone-use">Heavy working sets, strength blocks, top singles/doubles</td>
+      <td class="zone-cue">"This is real weight. Stay tight and push through."</td>
+    </tr>
+    <tr>
+      <td><span class="zone-name z4">Absolute Strength</span></td>
+      <td><span class="zone-velocity">0.25 – 0.40</span> <span class="zone-unit">m/s</span></td>
+      <td class="zone-rpe">9 - 9.5</td>
+      <td class="zone-use">Near-max efforts, peaking, competition prep, 1-3RM territory</td>
+      <td class="zone-cue">"Grind zone. If it moves, you've got it."</td>
+    </tr>
+    <tr>
+      <td><span class="zone-name z5">1RM / Max Effort</span></td>
+      <td><span class="zone-velocity">&lt; 0.25</span> <span class="zone-unit">m/s</span></td>
+      <td class="zone-rpe">10</td>
+      <td class="zone-use">True max attempts, competition lifts, testing days only</td>
+      <td class="zone-cue">"All or nothing. Full send."</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="two-col">
+  <div class="info-box">
+    <h3>When to Push Harder</h3>
+    <ul>
+      <li>Bar speed faster than expected at working load</li>
+      <li>Velocity trending UP across warm-up sets</li>
+      <li>RPE feels lower than the velocity zone suggests</li>
+      <li>Readiness score is high (sleep, soreness, energy)</li>
+    </ul>
+  </div>
+  <div class="info-box pink">
+    <h3>When to Pull Back</h3>
+    <ul>
+      <li>Velocity drops &gt;10% from set 1 to set 3</li>
+      <li>Bar speed in warm-ups slower than usual</li>
+      <li>Grinding reps at loads that normally move well</li>
+      <li>Poor sleep, high soreness, or low energy</li>
+    </ul>
+  </div>
+</div>
+
+<div class="decision-box">
+  <h3>Mid-Session Decision Tree</h3>
+  <div class="decision-row">
+    <span class="decision-if">Velocity &gt; target zone</span>
+    <span class="decision-then">→ Add 5-10 lbs or add a set. You're stronger today.</span>
+  </div>
+  <div class="decision-row">
+    <span class="decision-if">Velocity in target zone</span>
+    <span class="decision-then">→ Stay the course. Execute the program as written.</span>
+  </div>
+  <div class="decision-row">
+    <span class="decision-if">Velocity below target zone</span>
+    <span class="decision-then">→ Drop 5-10% load or cut volume. Protect recovery.</span>
+  </div>
+  <div class="decision-row">
+    <span class="decision-if">Velocity drops &gt;20% in set</span>
+    <span class="decision-then">→ Stop the set. Fatigue has exceeded productive training stimulus.</span>
+  </div>
+</div>
+
+<div class="info-box" style="margin-bottom: 0.15in;">
+  <h3>Important Notes</h3>
+  <ul>
+    <li>Velocity zones are lift-specific — squat zones differ from bench zones by ~0.05-0.10 m/s</li>
+    <li>These ranges are for mean concentric velocity on compound barbell lifts</li>
+    <li>Build your personal load-velocity profile to calibrate these zones to YOUR body</li>
+    <li>Use the VBT-to-1RM Calculator at yeagersgym.com/tools-vbt.html to estimate maxes from velocity</li>
+  </ul>
+</div>
+
+<div class="footer">
+  <span>&copy; 2026 Yeager's Gym &middot; San Diego, CA &middot; brad@yeagersgym.com</span>
+  <span class="cta">Book a free session: yeagersgym.com</span>
+</div>
+
+</body>
+</html>
