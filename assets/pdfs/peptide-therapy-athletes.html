@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Peptide Therapy for Athletes — Yeager's Gym</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@500;600;700;800&display=swap');
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+@page {
+  size: letter;
+  margin: 0;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: #0a0e17;
+  color: #e2e8f0;
+  width: 8.5in;
+  min-height: 11in;
+  margin: 0 auto;
+  padding: 0.45in 0.55in;
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.2in;
+  padding-bottom: 0.1in;
+  border-bottom: 2px solid #48C4CC;
+}
+.header-left h1 {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 16pt;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  color: #fff;
+}
+.header-left h1 .teal { color: #48C4CC; }
+.header-left h1 .pink { color: #EF3295; }
+.header-left p {
+  font-size: 8pt;
+  color: #8492a6;
+  margin-top: 2px;
+  font-family: 'JetBrains Mono', monospace;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.header-right {
+  text-align: right;
+  font-family: 'JetBrains Mono', monospace;
+}
+.header-right .brand {
+  font-size: 10pt;
+  font-weight: 700;
+  color: #48C4CC;
+  letter-spacing: 0.06em;
+}
+.header-right .url {
+  font-size: 7pt;
+  color: #8492a6;
+  margin-top: 2px;
+}
+
+h2 {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9pt;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #48C4CC;
+  margin-bottom: 6px;
+  margin-top: 0.15in;
+}
+h2.pink { color: #EF3295; }
+h2.purple { color: #9B6FD4; }
+
+.intro {
+  font-size: 8pt;
+  color: #94a3b8;
+  line-height: 1.5;
+  margin-bottom: 0.12in;
+}
+.intro strong { color: #e2e8f0; }
+
+.peptide-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin-bottom: 0.12in;
+  font-size: 7.5pt;
+}
+.peptide-table th {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 6.5pt;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #8492a6;
+  text-align: left;
+  padding: 4px 7px;
+  border-bottom: 1px solid rgba(72, 196, 204, 0.3);
+}
+.peptide-table td {
+  padding: 5px 7px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  vertical-align: top;
+  line-height: 1.4;
+}
+.peptide-table tr:last-child td { border-bottom: none; }
+.peptide-name {
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 700;
+  font-size: 8pt;
+  color: #9B6FD4;
+}
+.peptide-cat {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 6pt;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 1px 5px;
+  border-radius: 3px;
+  display: inline-block;
+}
+.cat-recovery { background: rgba(72,196,204,0.15); color: #48C4CC; }
+.cat-body { background: rgba(239,50,149,0.15); color: #EF3295; }
+.cat-longevity { background: rgba(251,191,36,0.15); color: #fbbf24; }
+
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.12in;
+  margin-bottom: 0.12in;
+}
+
+.info-box {
+  background: rgba(72, 196, 204, 0.04);
+  border: 1px solid rgba(72, 196, 204, 0.15);
+  border-radius: 6px;
+  padding: 8px 10px;
+}
+.info-box.pink {
+  background: rgba(239, 50, 149, 0.04);
+  border-color: rgba(239, 50, 149, 0.15);
+}
+.info-box.purple {
+  background: rgba(155, 111, 212, 0.04);
+  border-color: rgba(155, 111, 212, 0.15);
+}
+.info-box h3 {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 7pt;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #48C4CC;
+  margin-bottom: 5px;
+}
+.info-box.pink h3 { color: #EF3295; }
+.info-box.purple h3 { color: #9B6FD4; }
+.info-box ul { list-style: none; padding: 0; }
+.info-box li {
+  font-size: 7pt;
+  color: #94a3b8;
+  padding: 1.5px 0;
+  padding-left: 13px;
+  position: relative;
+  line-height: 1.4;
+}
+.info-box li::before {
+  content: "→";
+  position: absolute;
+  left: 0;
+  color: #48C4CC;
+  font-size: 7pt;
+}
+.info-box.pink li::before { color: #EF3295; }
+.info-box.purple li::before { color: #9B6FD4; }
+
+.disclaimer {
+  background: rgba(251, 191, 36, 0.06);
+  border: 1px solid rgba(251, 191, 36, 0.2);
+  border-radius: 6px;
+  padding: 8px 10px;
+  margin-bottom: 0.1in;
+  font-size: 7pt;
+  color: #fbbf24;
+  line-height: 1.4;
+}
+.disclaimer strong {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 7pt;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.footer {
+  margin-top: auto;
+  padding-top: 0.08in;
+  border-top: 1px solid rgba(255,255,255,0.08);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 7pt;
+  color: #4a5568;
+}
+.footer .cta {
+  font-family: 'JetBrains Mono', monospace;
+  color: #48C4CC;
+  font-weight: 600;
+  font-size: 7.5pt;
+}
+
+@media print {
+  body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-left">
+    <h1><span class="teal">Peptide Therapy</span> for <span class="pink">Athletes</span></h1>
+    <p>Science-Backed Recovery &bull; What You Need to Know</p>
+  </div>
+  <div class="header-right">
+    <div class="brand">YEAGER'S GYM</div>
+    <div class="url">yeagersgym.com</div>
+  </div>
+</div>
+
+<p class="intro">Peptides are short chains of amino acids that signal specific biological processes — recovery, tissue repair, fat metabolism, and sleep quality. <strong>They're not steroids, and they're not magic.</strong> But when combined with proper training, nutrition, and sleep, they can meaningfully accelerate recovery and support longevity goals. Here's what athletes should actually know.</p>
+
+<h2 class="purple">Common Peptides for Athletes</h2>
+<table class="peptide-table">
+  <thead>
+    <tr><th>Peptide</th><th>Category</th><th>Primary Benefit</th><th>How It Works</th><th>Typical Protocol</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><span class="peptide-name">BPC-157</span></td>
+      <td><span class="peptide-cat cat-recovery">Recovery</span></td>
+      <td>Tissue repair, gut healing, tendon/ligament recovery</td>
+      <td>Upregulates growth factor expression, promotes angiogenesis at injury sites</td>
+      <td>250-500 mcg 1-2x/day, 4-6 weeks</td>
+    </tr>
+    <tr>
+      <td><span class="peptide-name">TB-500</span></td>
+      <td><span class="peptide-cat cat-recovery">Recovery</span></td>
+      <td>Systemic tissue repair, reduced inflammation</td>
+      <td>Promotes cell migration and building of new blood vessel pathways</td>
+      <td>2.5-5 mg 2x/week loading, then 2x/month</td>
+    </tr>
+    <tr>
+      <td><span class="peptide-name">CJC-1295/Ipamorelin</span></td>
+      <td><span class="peptide-cat cat-longevity">Longevity</span></td>
+      <td>GH release, improved sleep, recovery, body composition</td>
+      <td>Stimulates pituitary to release growth hormone in natural pulsatile pattern</td>
+      <td>100-300 mcg each, nightly before bed</td>
+    </tr>
+    <tr>
+      <td><span class="peptide-name">Semaglutide</span></td>
+      <td><span class="peptide-cat cat-body">Body Comp</span></td>
+      <td>Appetite regulation, fat loss, metabolic health</td>
+      <td>GLP-1 receptor agonist — slows gastric emptying, reduces appetite signals</td>
+      <td>0.25 mg/week escalating over 4-8 weeks</td>
+    </tr>
+    <tr>
+      <td><span class="peptide-name">Tirzepatide</span></td>
+      <td><span class="peptide-cat cat-body">Body Comp</span></td>
+      <td>Fat loss, blood sugar regulation</td>
+      <td>Dual GIP/GLP-1 agonist — more potent metabolic effect than semaglutide alone</td>
+      <td>2.5 mg/week escalating, physician-guided</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="two-col">
+  <div class="info-box">
+    <h3>Who Benefits Most</h3>
+    <ul>
+      <li>Athletes 35+ dealing with slower recovery</li>
+      <li>Nagging tendon/ligament injuries that won't resolve</li>
+      <li>Lifters in caloric deficit losing sleep quality</li>
+      <li>Anyone prioritizing longevity alongside performance</li>
+      <li>Post-surgery recovery (with physician clearance)</li>
+    </ul>
+  </div>
+  <div class="info-box pink">
+    <h3>What Peptides Won't Do</h3>
+    <ul>
+      <li>Replace training, nutrition, or sleep</li>
+      <li>Build muscle on their own (they're not anabolic steroids)</li>
+      <li>Fix problems caused by overtraining or under-eating</li>
+      <li>Work without consistency — protocols require weeks</li>
+      <li>Compensate for poor programming or garbage volume</li>
+    </ul>
+  </div>
+</div>
+
+<h2 class="pink">Safety & Sourcing</h2>
+<div class="two-col">
+  <div class="info-box purple">
+    <h3>Sourcing Guidelines</h3>
+    <ul>
+      <li>Only use compounding pharmacies or licensed providers</li>
+      <li>Avoid "research chemical" peptides — no quality control</li>
+      <li>Third-party COA (Certificate of Analysis) is mandatory</li>
+      <li>Peptides should arrive lyophilized (freeze-dried powder)</li>
+      <li>Store reconstituted peptides refrigerated, use within 30 days</li>
+      <li>Brad consults with clients on vetted sourcing options</li>
+    </ul>
+  </div>
+  <div class="info-box">
+    <h3>Reconstitution Basics</h3>
+    <ul>
+      <li>Use bacteriostatic water (BAC) — never sterile water</li>
+      <li>Inject BAC slowly along vial wall — don't spray the powder</li>
+      <li>Swirl gently — never shake reconstituted peptides</li>
+      <li>Use insulin syringes (29-31 gauge) for subcutaneous injection</li>
+      <li>Rotate injection sites: abdomen, thigh, love handles</li>
+      <li>Use the calculator at yeagersgym.com/tools-peptide.html</li>
+    </ul>
+  </div>
+</div>
+
+<h2>Stacking with Training</h2>
+<div class="two-col">
+  <div class="info-box">
+    <h3>Recovery Stack Example</h3>
+    <ul>
+      <li>BPC-157 + TB-500 for injury rehab (synergistic)</li>
+      <li>CJC/Ipamorelin nightly for systemic recovery + sleep</li>
+      <li>Time GH-releasing peptides 30+ min after last meal</li>
+      <li>Don't inject GH peptides near high-sugar meals</li>
+      <li>Track readiness scores — peptides should improve trends</li>
+    </ul>
+  </div>
+  <div class="info-box pink">
+    <h3>Body Comp Stack Example</h3>
+    <ul>
+      <li>Semaglutide or tirzepatide for appetite management</li>
+      <li>Pair with adequate protein (1g/lb minimum)</li>
+      <li>Strength training is non-negotiable — preserve muscle</li>
+      <li>Monitor for GI side effects — dose escalation matters</li>
+      <li>Regular lab work every 8-12 weeks</li>
+    </ul>
+  </div>
+</div>
+
+<div class="disclaimer">
+  <strong>Disclaimer:</strong> This guide is for educational purposes only and is not medical advice. Peptide therapy should be supervised by a licensed healthcare provider. Brad Yeager is a Certified Peptide Therapist (SSRP) who consults on evidence-based protocols alongside physician oversight. Always discuss new protocols with your doctor before starting.
+</div>
+
+<div class="footer">
+  <span>&copy; 2026 Yeager's Gym &middot; San Diego, CA &middot; brad@yeagersgym.com</span>
+  <span class="cta">Book a consultation: yeagersgym.com</span>
+</div>
+
+</body>
+</html>

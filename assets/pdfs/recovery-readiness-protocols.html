@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Recovery & Readiness Protocols — Yeager's Gym</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@500;600;700;800&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+@page{size:letter;margin:0}
+body{font-family:'Inter',sans-serif;background:#0a0e17;color:#e2e8f0;width:8.5in;min-height:11in;margin:0 auto;padding:0.45in 0.55in;display:flex;flex-direction:column}
+.header{display:flex;justify-content:space-between;align-items:center;margin-bottom:0.2in;padding-bottom:0.1in;border-bottom:2px solid #48C4CC}
+.header-left h1{font-family:'JetBrains Mono',monospace;font-size:16pt;font-weight:800;letter-spacing:0.02em;color:#fff}
+.header-left h1 .teal{color:#48C4CC}.header-left h1 .pink{color:#EF3295}
+.header-left p{font-size:8pt;color:#8492a6;margin-top:2px;font-family:'JetBrains Mono',monospace;letter-spacing:0.04em;text-transform:uppercase}
+.header-right{text-align:right;font-family:'JetBrains Mono',monospace}
+.header-right .brand{font-size:10pt;font-weight:700;color:#48C4CC;letter-spacing:0.06em}
+.header-right .url{font-size:7pt;color:#8492a6;margin-top:2px}
+h2{font-family:'JetBrains Mono',monospace;font-size:9pt;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:#48C4CC;margin-bottom:6px;margin-top:0.15in}
+h2.pink{color:#EF3295}
+.intro{font-size:8pt;color:#94a3b8;line-height:1.5;margin-bottom:0.12in}.intro strong{color:#e2e8f0}
+.tbl{width:100%;border-collapse:separate;border-spacing:0;margin-bottom:0.12in;font-size:8pt}
+.tbl th{font-family:'JetBrains Mono',monospace;font-size:6.5pt;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#8492a6;text-align:left;padding:4px 8px;border-bottom:1px solid rgba(72,196,204,0.3)}
+.tbl td{padding:5px 8px;border-bottom:1px solid rgba(255,255,255,0.06);vertical-align:top;line-height:1.4}
+.tbl tr:last-child td{border-bottom:none}
+.mono{font-family:'JetBrains Mono',monospace;font-weight:700}
+.score{font-family:'JetBrains Mono',monospace;font-weight:800;font-size:10pt}
+.score.green{color:#48C4CC}.score.yellow{color:#fbbf24}.score.red{color:#EF3295}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:0.12in;margin-bottom:0.12in}
+.three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.12in;margin-bottom:0.12in}
+.info-box{background:rgba(72,196,204,0.04);border:1px solid rgba(72,196,204,0.15);border-radius:6px;padding:8px 10px}
+.info-box.pink{background:rgba(239,50,149,0.04);border-color:rgba(239,50,149,0.15)}
+.info-box.yellow{background:rgba(251,191,36,0.04);border-color:rgba(251,191,36,0.15)}
+.info-box h3{font-family:'JetBrains Mono',monospace;font-size:7pt;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#48C4CC;margin-bottom:5px}
+.info-box.pink h3{color:#EF3295}.info-box.yellow h3{color:#fbbf24}
+.info-box ul{list-style:none;padding:0}
+.info-box li{font-size:7pt;color:#94a3b8;padding:1.5px 0;padding-left:13px;position:relative;line-height:1.4}
+.info-box li::before{content:"→";position:absolute;left:0;color:#48C4CC;font-size:7pt}
+.info-box.pink li::before{color:#EF3295}.info-box.yellow li::before{color:#fbbf24}
+.tier-box{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:6px;padding:8px 10px;margin-bottom:0.12in}
+.tier-box h3{font-family:'JetBrains Mono',monospace;font-size:7pt;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#9B6FD4;margin-bottom:5px}
+.tier-row{display:flex;gap:8px;align-items:baseline;margin-bottom:3px;font-size:7pt}
+.tier-label{font-family:'JetBrains Mono',monospace;font-weight:700;min-width:70px}
+.tier-label.t1{color:#48C4CC}.tier-label.t2{color:#fbbf24}.tier-label.t3{color:#EF3295}
+.tier-desc{color:#e2e8f0}
+.footer{margin-top:auto;padding-top:0.08in;border-top:1px solid rgba(255,255,255,0.08);display:flex;justify-content:space-between;align-items:center;font-size:7pt;color:#4a5568}
+.footer .cta{font-family:'JetBrains Mono',monospace;color:#48C4CC;font-weight:600;font-size:7.5pt}
+@media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-left">
+    <h1><span class="teal">Recovery</span> &amp; <span class="pink">Readiness</span> Protocols</h1>
+    <p>Sleep, Nutrition, Active Recovery &bull; The Science of Bouncing Back</p>
+  </div>
+  <div class="header-right">
+    <div class="brand">YEAGER'S GYM</div>
+    <div class="url">yeagersgym.com</div>
+  </div>
+</div>
+
+<p class="intro">Training is the stimulus. <strong>Recovery is where adaptation happens.</strong> If you're not recovering well, more training makes you worse, not better. This guide covers the readiness scoring system, the recovery hierarchy, and exactly what to do on green, yellow, and red days.</p>
+
+<h2>Daily Readiness — The 5 Signals</h2>
+<table class="tbl">
+  <thead>
+    <tr><th>Signal</th><th>Green (2 pts)</th><th>Yellow (1 pt)</th><th>Red (0 pts)</th></tr>
+  </thead>
+  <tbody>
+    <tr><td class="mono" style="color:#48C4CC">Sleep Quality</td><td>7+ hours, woke rested</td><td>5-7 hours or restless</td><td>&lt;5 hours or awful quality</td></tr>
+    <tr><td class="mono" style="color:#48C4CC">Muscle Soreness</td><td>None or mild</td><td>Moderate, specific areas</td><td>Full-body, hard to move</td></tr>
+    <tr><td class="mono" style="color:#48C4CC">Energy Level</td><td>Alert, motivated</td><td>Okay, could go either way</td><td>Dragging, brain fog</td></tr>
+    <tr><td class="mono" style="color:#48C4CC">Stress / Mood</td><td>Calm, positive</td><td>Slightly elevated stress</td><td>High stress, irritable, anxious</td></tr>
+    <tr><td class="mono" style="color:#48C4CC">Appetite</td><td>Normal, hungry on schedule</td><td>Slightly off</td><td>No appetite or overeating</td></tr>
+  </tbody>
+</table>
+
+<div class="tier-box">
+  <h3>Score Interpretation — What to Do Today</h3>
+  <div class="tier-row"><span class="tier-label t1"><span class="score green">8-10</span> Green</span><span class="tier-desc">Push day. Train as programmed. Consider adding weight or a set if warm-ups feel fast. This is your strongest training day.</span></div>
+  <div class="tier-row"><span class="tier-label t2"><span class="score yellow">5-7</span> Yellow</span><span class="tier-desc">Maintain day. Train at 85-90% of programmed intensity. Keep volume the same but reduce load 5-10%. Don't skip — just adjust.</span></div>
+  <div class="tier-row"><span class="tier-label t3"><span class="score red">0-4</span> Red</span><span class="tier-desc">Recovery day. Light movement only — walk, mobility, foam roll. No heavy lifting. Extra sleep and nutrition focus. Come back stronger tomorrow.</span></div>
+</div>
+
+<h2 class="pink">The Recovery Hierarchy</h2>
+<div class="three-col">
+  <div class="info-box">
+    <h3>Tier 1 — Non-Negotiable</h3>
+    <ul>
+      <li><strong style="color:#fff">Sleep:</strong> 7-9 hrs. This is #1. Everything else is secondary.</li>
+      <li><strong style="color:#fff">Nutrition:</strong> Adequate protein (0.8-1g/lb) and calories</li>
+      <li><strong style="color:#fff">Hydration:</strong> Half your bodyweight in oz, minimum</li>
+      <li>These three account for 80% of your recovery capacity</li>
+      <li>No supplement, gadget, or protocol replaces these</li>
+    </ul>
+  </div>
+  <div class="info-box yellow">
+    <h3>Tier 2 — High Impact</h3>
+    <ul>
+      <li><strong style="color:#fff">Stress management:</strong> 10 min daily breathwork or meditation</li>
+      <li><strong style="color:#fff">Active recovery:</strong> 20-30 min easy walk or light movement</li>
+      <li><strong style="color:#fff">Training load management:</strong> Don't exceed MRV</li>
+      <li><strong style="color:#fff">Deload weeks:</strong> Every 4-6 weeks, reduce volume 40-50%</li>
+      <li>These amplify Tier 1. Useless without it.</li>
+    </ul>
+  </div>
+  <div class="info-box pink">
+    <h3>Tier 3 — Nice to Have</h3>
+    <ul>
+      <li><strong style="color:#fff">Cold exposure:</strong> 2-5 min cold plunge post-training</li>
+      <li><strong style="color:#fff">Sauna:</strong> 15-20 min, 3-4x/week for circulatory benefits</li>
+      <li><strong style="color:#fff">Massage / soft tissue:</strong> Weekly or as needed</li>
+      <li><strong style="color:#fff">Compression boots:</strong> Convenient, marginal effect</li>
+      <li>These are cherry-on-top. Fix Tier 1 and 2 first.</li>
+    </ul>
+  </div>
+</div>
+
+<h2>Sleep Optimization Checklist</h2>
+<div class="two-col">
+  <div class="info-box">
+    <h3>Environment</h3>
+    <ul>
+      <li>Room temp 65-68°F (18-20°C)</li>
+      <li>Pitch black — blackout curtains or eye mask</li>
+      <li>No screens 30-60 min before bed</li>
+      <li>Consistent bedtime ±30 min, even weekends</li>
+      <li>White noise or earplugs if needed</li>
+    </ul>
+  </div>
+  <div class="info-box pink">
+    <h3>Nutrition for Sleep</h3>
+    <ul>
+      <li>Last meal 2-3 hours before bed</li>
+      <li>Include carbs at dinner — they help serotonin production</li>
+      <li>Caffeine cutoff: 8-10 hours before bedtime</li>
+      <li>Magnesium glycinate (200-400mg) before bed if needed</li>
+      <li>Alcohol destroys sleep quality — even 1-2 drinks</li>
+    </ul>
+  </div>
+</div>
+
+<div class="info-box" style="margin-bottom:0.1in">
+  <h3>Tracking Your Readiness Over Time</h3>
+  <ul>
+    <li>Log your daily readiness score for 4+ weeks — patterns emerge</li>
+    <li>If you're yellow/red more than 3x in a week, your training load or lifestyle needs adjustment</li>
+    <li>Pair readiness scores with warm-up velocity data for the most complete picture</li>
+    <li>Correlate readiness trends with training performance — you'll learn YOUR recovery timeline</li>
+    <li>Use yeagersgym.com/tools-readiness.html for a quick daily check-in</li>
+  </ul>
+</div>
+
+<div class="footer">
+  <span>&copy; 2026 Yeager's Gym &middot; San Diego, CA &middot; brad@yeagersgym.com</span>
+  <span class="cta">Book a free session: yeagersgym.com</span>
+</div>
+
+</body>
+</html>

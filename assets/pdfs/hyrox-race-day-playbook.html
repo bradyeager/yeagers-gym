@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hyrox Race Day Playbook — Yeager's Gym</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@500;600;700;800&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+@page{size:letter;margin:0}
+body{font-family:'Inter',sans-serif;background:#0a0e17;color:#e2e8f0;width:8.5in;min-height:11in;margin:0 auto;padding:0.42in 0.55in;display:flex;flex-direction:column}
+.header{display:flex;justify-content:space-between;align-items:center;margin-bottom:0.18in;padding-bottom:0.1in;border-bottom:2px solid #48C4CC}
+.header-left h1{font-family:'JetBrains Mono',monospace;font-size:17pt;font-weight:800;letter-spacing:0.02em;color:#fff}
+.header-left h1 .teal{color:#48C4CC}.header-left h1 .pink{color:#EF3295}
+.header-left p{font-size:8pt;color:#8492a6;margin-top:2px;font-family:'JetBrains Mono',monospace;letter-spacing:0.04em;text-transform:uppercase}
+.header-right{text-align:right;font-family:'JetBrains Mono',monospace}
+.header-right .brand{font-size:10pt;font-weight:700;color:#48C4CC;letter-spacing:0.06em}
+.header-right .url{font-size:7pt;color:#8492a6;margin-top:2px}
+h2{font-family:'JetBrains Mono',monospace;font-size:9pt;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:#48C4CC;margin-bottom:5px;margin-top:0.12in}
+h2.pink{color:#EF3295}
+.intro{font-size:8pt;color:#94a3b8;line-height:1.5;margin-bottom:0.1in}.intro strong{color:#e2e8f0}
+.tbl{width:100%;border-collapse:separate;border-spacing:0;margin-bottom:0.1in;font-size:7.5pt}
+.tbl th{font-family:'JetBrains Mono',monospace;font-size:6pt;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#8492a6;text-align:left;padding:3px 6px;border-bottom:1px solid rgba(72,196,204,0.3)}
+.tbl td{padding:4px 6px;border-bottom:1px solid rgba(255,255,255,0.06);vertical-align:top;line-height:1.35}
+.tbl tr:last-child td{border-bottom:none}
+.mono{font-family:'JetBrains Mono',monospace;font-weight:700}
+.station{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:8pt;color:#EF3295}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:0.1in;margin-bottom:0.1in}
+.info-box{background:rgba(72,196,204,0.04);border:1px solid rgba(72,196,204,0.15);border-radius:6px;padding:7px 9px}
+.info-box.pink{background:rgba(239,50,149,0.04);border-color:rgba(239,50,149,0.15)}
+.info-box.yellow{background:rgba(251,191,36,0.04);border-color:rgba(251,191,36,0.15)}
+.info-box h3{font-family:'JetBrains Mono',monospace;font-size:6.5pt;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#48C4CC;margin-bottom:4px}
+.info-box.pink h3{color:#EF3295}.info-box.yellow h3{color:#fbbf24}
+.info-box ul{list-style:none;padding:0}
+.info-box li{font-size:6.5pt;color:#94a3b8;padding:1px 0;padding-left:12px;position:relative;line-height:1.35}
+.info-box li::before{content:"→";position:absolute;left:0;color:#48C4CC;font-size:6.5pt}
+.info-box.pink li::before{color:#EF3295}.info-box.yellow li::before{color:#fbbf24}
+.checklist{columns:2;column-gap:0.15in;margin-bottom:0.1in}
+.checklist li{font-size:7pt;color:#94a3b8;padding:1.5px 0 1.5px 15px;position:relative;line-height:1.35;break-inside:avoid;list-style:none}
+.checklist li::before{content:"☐";position:absolute;left:0;color:#48C4CC;font-size:7.5pt}
+.footer{margin-top:auto;padding-top:0.08in;border-top:1px solid rgba(255,255,255,0.08);display:flex;justify-content:space-between;align-items:center;font-size:7pt;color:#4a5568}
+.footer .cta{font-family:'JetBrains Mono',monospace;color:#48C4CC;font-weight:600;font-size:7.5pt}
+@media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-left">
+    <h1><span class="teal">Hyrox</span> Race Day <span class="pink">Playbook</span></h1>
+    <p>Station-by-Station Pacing &bull; Transitions &bull; Race Strategy</p>
+  </div>
+  <div class="header-right">
+    <div class="brand">YEAGER'S GYM</div>
+    <div class="url">yeagersgym.com</div>
+  </div>
+</div>
+
+<p class="intro">Hyrox is won in transitions and lost in pacing. <strong>The fastest athletes aren't always the fittest — they're the best at managing effort across 8 stations and 8 km of running.</strong> This playbook gives you station-specific strategy, transition tips, and a pacing framework to race smarter.</p>
+
+<h2>The 8 Stations — Strategy & Pacing</h2>
+<table class="tbl">
+  <thead>
+    <tr><th>#</th><th>Station</th><th>Rx</th><th>Target Time</th><th>Strategy</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>1</td><td><span class="station">SkiErg</span></td><td>1000m</td><td>3:30-4:30</td><td>Long pulls, controlled pace. Don't sprint — you have 7 stations left. Arms-only temptation kills you later.</td></tr>
+    <tr><td>2</td><td><span class="station">Sled Push</span></td><td>50m</td><td>1:30-3:00</td><td>Low body angle, drive with legs. Short choppy steps. Don't stop — walking pace is faster than stop-start.</td></tr>
+    <tr><td>3</td><td><span class="station">Sled Pull</span></td><td>50m</td><td>1:30-3:00</td><td>Hand-over-hand, seated position. Keep tension on the rope at all times. Gloves help grip.</td></tr>
+    <tr><td>4</td><td><span class="station">Burpee Broad Jump</span></td><td>80m</td><td>3:00-5:00</td><td>Biggest time sink. Consistent rhythm beats speed. Jump 4-5 ft each time. Don't sprint the jumps.</td></tr>
+    <tr><td>5</td><td><span class="station">Rowing</span></td><td>1000m</td><td>3:30-4:30</td><td>Rate 24-28 spm. This is active recovery if paced right. Don't go below 2:00/500m split.</td></tr>
+    <tr><td>6</td><td><span class="station">Farmers Carry</span></td><td>200m</td><td>1:30-2:30</td><td>Grip is the limiter. If you have to set down, you went out too fast. Steady walk, tight core.</td></tr>
+    <tr><td>7</td><td><span class="station">Sandbag Lunges</span></td><td>100m</td><td>2:30-4:00</td><td>Quads will be destroyed by now. Short steps, upright torso. This is a mental station — just keep moving.</td></tr>
+    <tr><td>8</td><td><span class="station">Wall Balls</span></td><td>75/100</td><td>3:00-5:00</td><td>Break early: sets of 15-20. Don't go unbroken. 5-breath rest max between sets. Finish strong.</td></tr>
+  </tbody>
+</table>
+
+<h2 class="pink">Running Pacing — The 1km Segments</h2>
+<div class="two-col">
+  <div class="info-box">
+    <h3>Pacing Strategy</h3>
+    <ul>
+      <li>Run 1 (before SkiErg): 85% effort — settle in, don't race</li>
+      <li>Runs 2-4: Even pace at 80% — these are recovery between stations</li>
+      <li>Runs 5-6: Maintain pace — fatigue creeps in, stay disciplined</li>
+      <li>Run 7: Allow 5-10% pace drop — lungs are on fire, that's normal</li>
+      <li>Run 8: Leave it all on the course. Sprint the last 200m.</li>
+    </ul>
+  </div>
+  <div class="info-box pink">
+    <h3>Transition Tips (Free Time)</h3>
+    <ul>
+      <li>Transitions average 15-45 seconds — pros do them in 5-10s</li>
+      <li>Know the venue layout — walk the course during check-in</li>
+      <li>Have nutrition ready: gel or chews at station 4 and 6</li>
+      <li>Gloves on for sled pull, off for everything else — practice this</li>
+      <li>Mental cue at each station entrance: "What's my break plan?"</li>
+    </ul>
+  </div>
+</div>
+
+<h2>Race Day Gear Checklist</h2>
+<ul class="checklist">
+  <li>Running shoes (not metcons — you're running 8 km)</li>
+  <li>Grip gloves or tape for sled pull</li>
+  <li>Race bib + timing chip (check placement rules)</li>
+  <li>2-3 gels or chews (tape to shorts or bib)</li>
+  <li>Electrolyte bottle for pre-race hydration</li>
+  <li>Compression socks (optional — comfort on runs)</li>
+  <li>Sweatband or hat (indoor venues get hot)</li>
+  <li>Change of clothes + towel for post-race</li>
+  <li>Phone/watch for split tracking (if allowed)</li>
+  <li>Foam roller for post-race (venues are crowded — bring your own)</li>
+</ul>
+
+<div class="two-col">
+  <div class="info-box yellow">
+    <h3>Race Day Nutrition Timeline</h3>
+    <ul>
+      <li><strong style="color:#fff">3 hrs before:</strong> Full meal — rice, chicken, banana. Nothing new.</li>
+      <li><strong style="color:#fff">1 hr before:</strong> Small snack — rice cake + honey, or a banana</li>
+      <li><strong style="color:#fff">15 min before:</strong> Sip electrolytes, caffeine if you use it (100-200mg)</li>
+      <li><strong style="color:#fff">Mid-race:</strong> Gel at station 4 (burpee broad jumps) and station 6 (farmers carry)</li>
+      <li><strong style="color:#fff">Post-race:</strong> Protein + carbs within 30 min. Hydrate aggressively.</li>
+    </ul>
+  </div>
+  <div class="info-box">
+    <h3>Time Targets by Division</h3>
+    <ul>
+      <li><strong style="color:#fff">Podium (Open):</strong> Sub 1:05:00 (M) / Sub 1:15:00 (F)</li>
+      <li><strong style="color:#fff">Competitive:</strong> 1:10-1:25:00 (M) / 1:20-1:35:00 (F)</li>
+      <li><strong style="color:#fff">Solid finish:</strong> 1:25-1:40:00 (M) / 1:35-1:50:00 (F)</li>
+      <li><strong style="color:#fff">First race goal:</strong> Finish. Don't stop. Beat your prediction.</li>
+      <li>Use yeagersgym.com/tools-hyrox.html to predict your time</li>
+    </ul>
+  </div>
+</div>
+
+<div class="footer">
+  <span>&copy; 2026 Yeager's Gym &middot; San Diego, CA &middot; brad@yeagersgym.com</span>
+  <span class="cta">Book a free session: yeagersgym.com</span>
+</div>
+
+</body>
+</html>

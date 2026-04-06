@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Decision Tree Method — Yeager's Gym</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@500;600;700;800&display=swap');
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+@page {
+  size: letter;
+  margin: 0;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: #0a0e17;
+  color: #e2e8f0;
+  width: 8.5in;
+  min-height: 11in;
+  margin: 0 auto;
+  padding: 0.45in 0.55in;
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.2in;
+  padding-bottom: 0.1in;
+  border-bottom: 2px solid #48C4CC;
+}
+.header-left h1 {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 17pt;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  color: #fff;
+}
+.header-left h1 .teal { color: #48C4CC; }
+.header-left h1 .pink { color: #EF3295; }
+.header-left p {
+  font-size: 8pt;
+  color: #8492a6;
+  margin-top: 2px;
+  font-family: 'JetBrains Mono', monospace;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.header-right {
+  text-align: right;
+  font-family: 'JetBrains Mono', monospace;
+}
+.header-right .brand {
+  font-size: 10pt;
+  font-weight: 700;
+  color: #48C4CC;
+  letter-spacing: 0.06em;
+}
+.header-right .url {
+  font-size: 7pt;
+  color: #8492a6;
+  margin-top: 2px;
+}
+
+h2 {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9pt;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #48C4CC;
+  margin-bottom: 6px;
+  margin-top: 0.15in;
+}
+h2.pink { color: #EF3295; }
+
+.intro {
+  font-size: 8pt;
+  color: #94a3b8;
+  line-height: 1.5;
+  margin-bottom: 0.12in;
+}
+.intro strong { color: #e2e8f0; }
+
+/* Flow chart style */
+.flow {
+  margin-bottom: 0.15in;
+}
+.flow-step {
+  display: flex;
+  align-items: stretch;
+  margin-bottom: 4px;
+}
+.flow-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 800;
+  font-size: 11pt;
+  color: #48C4CC;
+  min-width: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.flow-arrow {
+  display: flex;
+  align-items: center;
+  color: #4a5568;
+  padding: 0 6px;
+  font-size: 10pt;
+}
+.flow-content {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 6px;
+  padding: 7px 10px;
+  flex: 1;
+}
+.flow-content h4 {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 8pt;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 2px;
+}
+.flow-content p {
+  font-size: 7pt;
+  color: #94a3b8;
+  line-height: 1.4;
+}
+.flow-content p strong { color: #48C4CC; }
+.flow-content p em { color: #EF3295; font-style: normal; font-weight: 600; }
+
+.decision-box {
+  background: rgba(251, 191, 36, 0.04);
+  border: 1px solid rgba(251, 191, 36, 0.15);
+  border-radius: 6px;
+  padding: 8px 10px;
+  margin-bottom: 0.12in;
+}
+.decision-box h3 {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 7pt;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #fbbf24;
+  margin-bottom: 5px;
+}
+.decision-row {
+  display: flex;
+  gap: 6px;
+  align-items: baseline;
+  margin-bottom: 3px;
+  font-size: 7pt;
+}
+.decision-if {
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 600;
+  color: #48C4CC;
+  min-width: 140px;
+}
+.decision-then { color: #e2e8f0; }
+
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.12in;
+  margin-bottom: 0.12in;
+}
+
+.info-box {
+  background: rgba(72, 196, 204, 0.04);
+  border: 1px solid rgba(72, 196, 204, 0.15);
+  border-radius: 6px;
+  padding: 8px 10px;
+}
+.info-box.pink {
+  background: rgba(239, 50, 149, 0.04);
+  border-color: rgba(239, 50, 149, 0.15);
+}
+.info-box h3 {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 7pt;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #48C4CC;
+  margin-bottom: 5px;
+}
+.info-box.pink h3 { color: #EF3295; }
+.info-box ul { list-style: none; padding: 0; }
+.info-box li {
+  font-size: 7pt;
+  color: #94a3b8;
+  padding: 1.5px 0;
+  padding-left: 13px;
+  position: relative;
+  line-height: 1.4;
+}
+.info-box li::before {
+  content: "→";
+  position: absolute;
+  left: 0;
+  color: #48C4CC;
+  font-size: 7pt;
+}
+.info-box.pink li::before { color: #EF3295; }
+
+.case-study {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 6px;
+  padding: 8px 10px;
+  margin-bottom: 0.1in;
+}
+.case-study h3 {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 7pt;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #9B6FD4;
+  margin-bottom: 4px;
+}
+.case-study p {
+  font-size: 7pt;
+  color: #94a3b8;
+  line-height: 1.4;
+}
+.case-study strong { color: #e2e8f0; }
+.case-study .result { color: #48C4CC; font-weight: 600; }
+
+.footer {
+  margin-top: auto;
+  padding-top: 0.08in;
+  border-top: 1px solid rgba(255,255,255,0.08);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 7pt;
+  color: #4a5568;
+}
+.footer .cta {
+  font-family: 'JetBrains Mono', monospace;
+  color: #48C4CC;
+  font-weight: 600;
+  font-size: 7.5pt;
+}
+
+@media print {
+  body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-left">
+    <h1>The <span class="teal">Decision Tree</span> <span class="pink">Method</span></h1>
+    <p>How Brad Programs VBT for Real Athletes &bull; The Full System</p>
+  </div>
+  <div class="header-right">
+    <div class="brand">YEAGER'S GYM</div>
+    <div class="url">yeagersgym.com</div>
+  </div>
+</div>
+
+<p class="intro">Most programs are written in advance and followed regardless of how the athlete feels that day. <strong>The Decision Tree Method flips that</strong> — the program adapts in real time based on velocity data. Every set answers a question, and the answer determines what happens next. No guessing. No wasted volume. No missed opportunities.</p>
+
+<h2>The 5-Step Decision Flow</h2>
+<div class="flow">
+  <div class="flow-step">
+    <span class="flow-num">1</span>
+    <span class="flow-arrow">→</span>
+    <div class="flow-content">
+      <h4>Readiness Check — Warm-Up Velocity</h4>
+      <p>Athlete works up to a standard load (e.g., 70% of last known max). Compare today's velocity to their baseline. <strong>Faster than baseline = green light.</strong> <em>Slower than baseline = adjust the plan.</em></p>
+    </div>
+  </div>
+  <div class="flow-step">
+    <span class="flow-num">2</span>
+    <span class="flow-arrow">→</span>
+    <div class="flow-content">
+      <h4>Load Selection — Velocity Target</h4>
+      <p>Instead of prescribing a fixed weight, prescribe a <strong>velocity zone</strong>. The athlete loads the bar until they hit the target range. Some days that's 315. Some days it's 295. Both are right.</p>
+    </div>
+  </div>
+  <div class="flow-step">
+    <span class="flow-num">3</span>
+    <span class="flow-arrow">→</span>
+    <div class="flow-content">
+      <h4>Volume Regulation — Velocity Loss Cutoff</h4>
+      <p>Each set is monitored. When mean velocity drops by the prescribed percentage (e.g., 20%), <strong>the set is over</strong>. No more arbitrary rep targets — fatigue tells you when to stop.</p>
+    </div>
+  </div>
+  <div class="flow-step">
+    <span class="flow-num">4</span>
+    <span class="flow-arrow">→</span>
+    <div class="flow-content">
+      <h4>Inter-Set Decision — Continue or Adjust</h4>
+      <p>Between sets: did first-rep velocity recover to within 5% of set 1? <strong>Yes → keep going.</strong> <em>No → drop load 5% or end the exercise.</em> The data makes the call.</p>
+    </div>
+  </div>
+  <div class="flow-step">
+    <span class="flow-num">5</span>
+    <span class="flow-arrow">→</span>
+    <div class="flow-content">
+      <h4>Session Review — Trend Analysis</h4>
+      <p>After the session: log peak velocity, average velocity, total volume. Compare to last 4 sessions. <strong>Trending up = progressing.</strong> <em>Trending down = recovery issue or programming pivot needed.</em></p>
+    </div>
+  </div>
+</div>
+
+<h2 class="pink">In-Session Decision Tree</h2>
+<div class="decision-box">
+  <h3>After Every Set — Ask These Questions</h3>
+  <div class="decision-row">
+    <span class="decision-if">First-rep velocity &gt; target</span>
+    <span class="decision-then">→ Add 2.5-5% load. You're underloaded today. Capture the strength.</span>
+  </div>
+  <div class="decision-row">
+    <span class="decision-if">First-rep velocity in target</span>
+    <span class="decision-then">→ Perfect. Execute the prescribed velocity loss cutoff.</span>
+  </div>
+  <div class="decision-row">
+    <span class="decision-if">First-rep velocity &lt; target</span>
+    <span class="decision-then">→ Drop 5% or reduce volume. Don't force what isn't there today.</span>
+  </div>
+  <div class="decision-row">
+    <span class="decision-if">Set-to-set velocity declining</span>
+    <span class="decision-then">→ You've passed the point of productive stimulus. Move to the next exercise.</span>
+  </div>
+</div>
+
+<div class="two-col">
+  <div class="info-box">
+    <h3>Why This Works</h3>
+    <ul>
+      <li>No more "bad days" — the program adapts to you</li>
+      <li>No more junk volume — every rep has a purpose</li>
+      <li>Fatigue is measured, not guessed</li>
+      <li>PRs happen when the data says you're ready</li>
+      <li>Long-term progress is built on accumulated quality, not quantity</li>
+      <li>Injury risk drops when load matches daily capacity</li>
+    </ul>
+  </div>
+  <div class="info-box pink">
+    <h3>What You Need</h3>
+    <ul>
+      <li>A velocity tracker (Vitruve, GymAware, RepOne, etc.)</li>
+      <li>A baseline load-velocity profile (3-4 sessions)</li>
+      <li>Willingness to trust the data over your ego</li>
+      <li>A coach who knows how to read the numbers</li>
+      <li>Consistency — the system improves as data accumulates</li>
+      <li>See yeagersgym.com/velocity-trackers.html for device guide</li>
+    </ul>
+  </div>
+</div>
+
+<h2>Real Example</h2>
+<div class="case-study">
+  <h3>Back Squat Session — Intermediate Athlete</h3>
+  <p><strong>Prescribed:</strong> Velocity target 0.50-0.60 m/s. Velocity loss cutoff: 20%. Sets: up to 5.</p>
+  <p><strong>Warm-up at 225 lbs:</strong> 0.72 m/s (baseline: 0.68). <span class="result">→ Green light. Strong day.</span></p>
+  <p><strong>Working load found:</strong> 295 lbs at 0.55 m/s (normal day this would be 280).</p>
+  <p><strong>Set 1:</strong> 6 reps before 20% velocity loss. <strong>Set 2:</strong> 5 reps. <strong>Set 3:</strong> 5 reps. <strong>Set 4:</strong> First-rep velocity dropped 8% from Set 1. <span class="result">→ Session complete. 4 quality sets at a load 15 lbs above normal.</span></p>
+</div>
+
+<div class="footer">
+  <span>&copy; 2026 Yeager's Gym &middot; San Diego, CA &middot; brad@yeagersgym.com</span>
+  <span class="cta">Book a free session: yeagersgym.com</span>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bridging RPE & Velocity — Yeager's Gym</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@500;600;700;800&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+@page{size:letter;margin:0}
+body{font-family:'Inter',sans-serif;background:#0a0e17;color:#e2e8f0;width:8.5in;min-height:11in;margin:0 auto;padding:0.45in 0.55in;display:flex;flex-direction:column}
+.header{display:flex;justify-content:space-between;align-items:center;margin-bottom:0.2in;padding-bottom:0.1in;border-bottom:2px solid #48C4CC}
+.header-left h1{font-family:'JetBrains Mono',monospace;font-size:16pt;font-weight:800;letter-spacing:0.02em;color:#fff}
+.header-left h1 .teal{color:#48C4CC}.header-left h1 .pink{color:#EF3295}
+.header-left p{font-size:8pt;color:#8492a6;margin-top:2px;font-family:'JetBrains Mono',monospace;letter-spacing:0.04em;text-transform:uppercase}
+.header-right{text-align:right;font-family:'JetBrains Mono',monospace}
+.header-right .brand{font-size:10pt;font-weight:700;color:#48C4CC;letter-spacing:0.06em}
+.header-right .url{font-size:7pt;color:#8492a6;margin-top:2px}
+h2{font-family:'JetBrains Mono',monospace;font-size:9pt;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:#48C4CC;margin-bottom:6px;margin-top:0.15in}
+h2.pink{color:#EF3295}
+.intro{font-size:8pt;color:#94a3b8;line-height:1.5;margin-bottom:0.12in}.intro strong{color:#e2e8f0}
+.tbl{width:100%;border-collapse:separate;border-spacing:0;margin-bottom:0.12in;font-size:8pt}
+.tbl th{font-family:'JetBrains Mono',monospace;font-size:6.5pt;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#8492a6;text-align:left;padding:4px 8px;border-bottom:1px solid rgba(72,196,204,0.3)}
+.tbl td{padding:5px 8px;border-bottom:1px solid rgba(255,255,255,0.06);vertical-align:top;line-height:1.4}
+.tbl tr:last-child td{border-bottom:none}
+.mono{font-family:'JetBrains Mono',monospace;font-weight:700}
+.rpe-col{font-family:'JetBrains Mono',monospace;font-weight:800;font-size:10pt}
+.vel-col{font-family:'JetBrains Mono',monospace;font-weight:700;color:#fff}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:0.12in;margin-bottom:0.12in}
+.info-box{background:rgba(72,196,204,0.04);border:1px solid rgba(72,196,204,0.15);border-radius:6px;padding:8px 10px}
+.info-box.pink{background:rgba(239,50,149,0.04);border-color:rgba(239,50,149,0.15)}
+.info-box.yellow{background:rgba(251,191,36,0.04);border-color:rgba(251,191,36,0.15)}
+.info-box h3{font-family:'JetBrains Mono',monospace;font-size:7pt;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#48C4CC;margin-bottom:5px}
+.info-box.pink h3{color:#EF3295}.info-box.yellow h3{color:#fbbf24}
+.info-box ul{list-style:none;padding:0}
+.info-box li{font-size:7pt;color:#94a3b8;padding:1.5px 0;padding-left:13px;position:relative;line-height:1.4}
+.info-box li::before{content:"→";position:absolute;left:0;color:#48C4CC;font-size:7pt}
+.info-box.pink li::before{color:#EF3295}.info-box.yellow li::before{color:#fbbf24}
+.scenario-box{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:6px;padding:8px 10px;margin-bottom:0.12in}
+.scenario-box h3{font-family:'JetBrains Mono',monospace;font-size:7pt;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#9B6FD4;margin-bottom:5px}
+.sc-row{display:flex;gap:8px;align-items:baseline;margin-bottom:4px;font-size:7pt}
+.sc-label{font-family:'JetBrains Mono',monospace;font-weight:700;min-width:130px}
+.sc-label.agree{color:#48C4CC}.sc-label.disagree{color:#EF3295}
+.sc-desc{color:#e2e8f0}
+.footer{margin-top:auto;padding-top:0.08in;border-top:1px solid rgba(255,255,255,0.08);display:flex;justify-content:space-between;align-items:center;font-size:7pt;color:#4a5568}
+.footer .cta{font-family:'JetBrains Mono',monospace;color:#48C4CC;font-weight:600;font-size:7.5pt}
+@media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-left">
+    <h1>Bridging <span class="teal">RPE</span> &amp; <span class="pink">Velocity</span></h1>
+    <p>Subjective Effort Meets Objective Data &bull; The Complete Map</p>
+  </div>
+  <div class="header-right">
+    <div class="brand">YEAGER'S GYM</div>
+    <div class="url">yeagersgym.com</div>
+  </div>
+</div>
+
+<p class="intro">RPE tells you how hard it felt. Velocity tells you how hard it actually was. <strong>When they agree, you're calibrated. When they disagree, the data reveals something important</strong> — fatigue you didn't notice, strength you didn't expect, or a rating habit that needs fixing. This guide maps the two systems together.</p>
+
+<h2>The RPE-Velocity Correlation Table</h2>
+<table class="tbl">
+  <thead>
+    <tr><th>RPE</th><th>RIR</th><th>Squat Velocity</th><th>Bench Velocity</th><th>Deadlift Velocity</th><th>What It Means</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><span class="rpe-col" style="color:#48C4CC">6</span></td><td>4+</td><td><span class="vel-col">&gt;0.75</span></td><td><span class="vel-col">&gt;0.60</span></td><td><span class="vel-col">&gt;0.70</span></td><td>Warm-up territory. Light and fast.</td></tr>
+    <tr><td><span class="rpe-col" style="color:#48C4CC">7</span></td><td>3</td><td><span class="vel-col">0.62-0.75</span></td><td><span class="vel-col">0.47-0.60</span></td><td><span class="vel-col">0.57-0.70</span></td><td>Working range. Moderate effort, clean reps.</td></tr>
+    <tr><td><span class="rpe-col" style="color:#fbbf24">8</span></td><td>2</td><td><span class="vel-col">0.50-0.62</span></td><td><span class="vel-col">0.35-0.47</span></td><td><span class="vel-col">0.45-0.57</span></td><td>Hard work. Most training should live here.</td></tr>
+    <tr><td><span class="rpe-col" style="color:#fb923c">9</span></td><td>1</td><td><span class="vel-col">0.38-0.50</span></td><td><span class="vel-col">0.22-0.35</span></td><td><span class="vel-col">0.33-0.45</span></td><td>Heavy. One more rep would be a fight.</td></tr>
+    <tr><td><span class="rpe-col" style="color:#EF3295">10</span></td><td>0</td><td><span class="vel-col">&lt;0.38</span></td><td><span class="vel-col">&lt;0.22</span></td><td><span class="vel-col">&lt;0.33</span></td><td>Max effort. Nothing left in the tank.</td></tr>
+  </tbody>
+</table>
+<p style="font-size:6.5pt;color:#4a5568;margin-bottom:0.1in;font-style:italic">Note: Velocity ranges are for mean concentric velocity on barbell compounds. Individual variation of ±0.05 m/s is normal. Build your personal map over 4-6 weeks.</p>
+
+<h2 class="pink">When RPE and Velocity Disagree</h2>
+<div class="scenario-box">
+  <h3>4 Scenarios and What They Mean</h3>
+  <div class="sc-row">
+    <span class="sc-label agree">RPE 8 + Fast bar</span>
+    <span class="sc-desc">You're stronger than you think today. Add weight. Your body is sandbagging your brain.</span>
+  </div>
+  <div class="sc-row">
+    <span class="sc-label disagree">RPE 8 + Slow bar</span>
+    <span class="sc-desc">You're more fatigued than you realize. Don't add weight. Trust the data, not the feeling.</span>
+  </div>
+  <div class="sc-row">
+    <span class="sc-label disagree">RPE 6 + Slow bar</span>
+    <span class="sc-desc">CNS fatigue masking as "feeling fine." Common after high-stress weeks. Reduce volume today.</span>
+  </div>
+  <div class="sc-row">
+    <span class="sc-label agree">RPE 6 + Fast bar</span>
+    <span class="sc-desc">Genuine easy day. Your perception matches reality. Warm-up or speed work — proceed as planned.</span>
+  </div>
+</div>
+
+<div class="two-col">
+  <div class="info-box">
+    <h3>Building Your Personal Map</h3>
+    <ul>
+      <li>Log RPE and velocity on every working set for 4 weeks</li>
+      <li>Plot them: X-axis = velocity, Y-axis = RPE</li>
+      <li>Over time, you'll see YOUR correlation pattern emerge</li>
+      <li>Some athletes' RPE 8 is always at 0.50 m/s. Others: 0.55</li>
+      <li>Your personal map is more accurate than any generic table</li>
+      <li>The table above is a starting point — YOUR data replaces it</li>
+    </ul>
+  </div>
+  <div class="info-box pink">
+    <h3>Why Lift-Specific Ranges Matter</h3>
+    <ul>
+      <li>Bench is inherently slower than squat at the same %1RM</li>
+      <li>Deadlift velocity varies hugely by technique (conventional vs. sumo)</li>
+      <li>Press is the slowest lift — RPE 8 might be 0.25-0.35 m/s</li>
+      <li>Never compare squat velocity to bench velocity — different lifts, different ranges</li>
+      <li>Build separate profiles for each lift</li>
+    </ul>
+  </div>
+</div>
+
+<div class="two-col">
+  <div class="info-box yellow">
+    <h3>Practical Application</h3>
+    <ul>
+      <li>Program prescribes "RPE 8 x 5" → load up until velocity hits YOUR RPE 8 zone</li>
+      <li>If velocity says RPE 8 but you feel RPE 7 → do the prescribed sets, no more</li>
+      <li>If velocity says RPE 9 but you feel RPE 8 → reduce load or cut a set</li>
+      <li>Use velocity as the tiebreaker when RPE is ambiguous</li>
+      <li>After 4 weeks, you'll rarely disagree with the tracker</li>
+    </ul>
+  </div>
+  <div class="info-box">
+    <h3>The Long Game</h3>
+    <ul>
+      <li>Athletes who track both RPE and velocity improve RPE accuracy by ~40%</li>
+      <li>Better RPE calibration = better autoregulation = better results</li>
+      <li>Velocity is the teacher. RPE is the student. Eventually the student graduates.</li>
+      <li>Even without a tracker, a well-calibrated RPE athlete trains effectively</li>
+      <li>Use yeagersgym.com/tools-rpe-velocity.html to map your data</li>
+    </ul>
+  </div>
+</div>
+
+<div class="footer">
+  <span>&copy; 2026 Yeager's Gym &middot; San Diego, CA &middot; brad@yeagersgym.com</span>
+  <span class="cta">Book a free session: yeagersgym.com</span>
+</div>
+
+</body>
+</html>

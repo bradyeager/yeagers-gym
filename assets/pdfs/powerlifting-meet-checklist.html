@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Your First Powerlifting Meet — Yeager's Gym</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@500;600;700;800&display=swap');
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+@page {
+  size: letter;
+  margin: 0;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: #0a0e17;
+  color: #e2e8f0;
+  width: 8.5in;
+  min-height: 11in;
+  margin: 0 auto;
+  padding: 0.5in 0.55in;
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.25in;
+  padding-bottom: 0.12in;
+  border-bottom: 2px solid #48C4CC;
+}
+.header-left h1 {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 17pt;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  color: #fff;
+}
+.header-left h1 .teal { color: #48C4CC; }
+.header-left h1 .pink { color: #EF3295; }
+.header-left p {
+  font-size: 8pt;
+  color: #8492a6;
+  margin-top: 2px;
+  font-family: 'JetBrains Mono', monospace;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.header-right {
+  text-align: right;
+  font-family: 'JetBrains Mono', monospace;
+}
+.header-right .brand {
+  font-size: 10pt;
+  font-weight: 700;
+  color: #48C4CC;
+  letter-spacing: 0.06em;
+}
+.header-right .url {
+  font-size: 7pt;
+  color: #8492a6;
+  margin-top: 2px;
+}
+
+h2 {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10pt;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #48C4CC;
+  margin-bottom: 6px;
+  margin-top: 0.18in;
+}
+h2.pink { color: #EF3295; }
+
+.timeline-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin-bottom: 0.15in;
+  font-size: 8.5pt;
+}
+.timeline-table th {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 7pt;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #8492a6;
+  text-align: left;
+  padding: 5px 8px;
+  border-bottom: 1px solid rgba(72, 196, 204, 0.3);
+}
+.timeline-table td {
+  padding: 5px 8px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  vertical-align: top;
+  line-height: 1.4;
+}
+.timeline-table tr:last-child td { border-bottom: none; }
+.time-col {
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 700;
+  color: #48C4CC;
+  white-space: nowrap;
+  width: 90px;
+}
+
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.15in;
+  margin-bottom: 0.15in;
+}
+
+.info-box {
+  background: rgba(72, 196, 204, 0.04);
+  border: 1px solid rgba(72, 196, 204, 0.15);
+  border-radius: 6px;
+  padding: 10px 12px;
+}
+.info-box.pink {
+  background: rgba(239, 50, 149, 0.04);
+  border-color: rgba(239, 50, 149, 0.15);
+}
+.info-box h3 {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 7.5pt;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #48C4CC;
+  margin-bottom: 6px;
+}
+.info-box.pink h3 { color: #EF3295; }
+.info-box ul { list-style: none; padding: 0; }
+.info-box li {
+  font-size: 7.5pt;
+  color: #94a3b8;
+  padding: 1.5px 0;
+  padding-left: 14px;
+  position: relative;
+  line-height: 1.45;
+}
+.info-box li::before {
+  content: "→";
+  position: absolute;
+  left: 0;
+  color: #48C4CC;
+  font-size: 7.5pt;
+}
+.info-box.pink li::before { color: #EF3295; }
+
+.checklist {
+  columns: 2;
+  column-gap: 0.2in;
+  margin-bottom: 0.12in;
+}
+.checklist li {
+  font-size: 7.5pt;
+  color: #94a3b8;
+  padding: 2px 0 2px 16px;
+  position: relative;
+  line-height: 1.45;
+  break-inside: avoid;
+  list-style: none;
+}
+.checklist li::before {
+  content: "☐";
+  position: absolute;
+  left: 0;
+  color: #48C4CC;
+  font-size: 8pt;
+}
+
+.attempt-box {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 6px;
+  padding: 10px 12px;
+  margin-bottom: 0.12in;
+}
+.attempt-box h3 {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 7.5pt;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #fbbf24;
+  margin-bottom: 6px;
+}
+.attempt-row {
+  display: flex;
+  gap: 6px;
+  align-items: baseline;
+  margin-bottom: 3px;
+  font-size: 7.5pt;
+}
+.attempt-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 700;
+  min-width: 70px;
+}
+.attempt-label.a1 { color: #48C4CC; }
+.attempt-label.a2 { color: #fbbf24; }
+.attempt-label.a3 { color: #EF3295; }
+.attempt-desc { color: #e2e8f0; }
+
+.footer {
+  margin-top: auto;
+  padding-top: 0.1in;
+  border-top: 1px solid rgba(255,255,255,0.08);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 7pt;
+  color: #4a5568;
+}
+.footer .cta {
+  font-family: 'JetBrains Mono', monospace;
+  color: #48C4CC;
+  font-weight: 600;
+  font-size: 7.5pt;
+}
+
+@media print {
+  body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-left">
+    <h1>Your First <span class="teal">Powerlifting</span> <span class="pink">Meet</span></h1>
+    <p>The Complete Checklist &bull; USAPL / USPA / IPF Format</p>
+  </div>
+  <div class="header-right">
+    <div class="brand">YEAGER'S GYM</div>
+    <div class="url">yeagersgym.com</div>
+  </div>
+</div>
+
+<h2>Meet Day Timeline</h2>
+<table class="timeline-table">
+  <thead>
+    <tr><th>When</th><th>What to Do</th></tr>
+  </thead>
+  <tbody>
+    <tr><td class="time-col">Night Before</td><td>Pack gear bag, prep meals, set two alarms. Lay out singlet + t-shirt. Confirm weigh-in time.</td></tr>
+    <tr><td class="time-col">3 hrs before</td><td>Eat a familiar meal — nothing new. Carbs + moderate protein. Hydrate with electrolytes.</td></tr>
+    <tr><td class="time-col">Weigh-in</td><td>Bring federation card/ID. Step on scale, confirm weight class. Rack height cards if applicable.</td></tr>
+    <tr><td class="time-col">Post weigh-in</td><td>Eat immediately — banana, rice cakes, PB, Gatorade. Sip fluids. Relax, don't pace.</td></tr>
+    <tr><td class="time-col">45 min out</td><td>Begin general warm-up: 5 min cardio, hip circles, band pull-aparts, goblet squats.</td></tr>
+    <tr><td class="time-col">20 min out</td><td>Start barbell warm-up for your first lift. Build to ~85-90% of opener over 4-5 sets.</td></tr>
+    <tr><td class="time-col">2 lifters out</td><td>Take your final warm-up (heaviest). Stay loose. Chalk up. Wait for your name.</td></tr>
+  </tbody>
+</table>
+
+<h2 class="pink">Attempt Selection Strategy</h2>
+<div class="attempt-box">
+  <h3>Squat / Bench / Deadlift — Same Logic</h3>
+  <div class="attempt-row">
+    <span class="attempt-label a1">Attempt 1</span>
+    <span class="attempt-desc">Something you can triple any day. ~88-90% of gym max. Goal: go 1-for-1. Build confidence. Get on the board.</span>
+  </div>
+  <div class="attempt-row">
+    <span class="attempt-label a2">Attempt 2</span>
+    <span class="attempt-desc">A solid single — challenging but certain. ~95-97%. This is your real working attempt. Most of your total is built here.</span>
+  </div>
+  <div class="attempt-row">
+    <span class="attempt-label a3">Attempt 3</span>
+    <span class="attempt-desc">A PR attempt or a smart jump based on how 2nd moved. ~100-103%. Only go big if attempt 2 was smooth.</span>
+  </div>
+</div>
+
+<div class="two-col">
+  <div class="info-box">
+    <h3>If Your Opener Felt Heavy</h3>
+    <ul>
+      <li>Take a conservative 2nd — repeat or add only 2.5 kg</li>
+      <li>Don't chase numbers that aren't there today</li>
+      <li>A 7/9 or 8/9 day beats a 4/9 hero attempt day</li>
+      <li>Protect your total — going 9-for-9 on first meet is ideal</li>
+    </ul>
+  </div>
+  <div class="info-box pink">
+    <h3>Velocity Cue for Attempt Selection</h3>
+    <ul>
+      <li>If opener velocity &gt; 0.35 m/s — you're strong today, jump normally</li>
+      <li>If opener velocity 0.25-0.35 m/s — moderate day, conservative 2nd</li>
+      <li>If opener velocity &lt; 0.25 m/s — grinder. Repeat or small jump only</li>
+      <li>Use warm-up velocity to predict opener difficulty before you're on platform</li>
+    </ul>
+  </div>
+</div>
+
+<h2>Equipment Checklist</h2>
+<ul class="checklist">
+  <li>Singlet (federation-approved)</li>
+  <li>T-shirt (no logos/graphics on some feds)</li>
+  <li>Long socks for deadlift</li>
+  <li>Belt (10mm or 13mm, IPF-approved if needed)</li>
+  <li>Wrist wraps</li>
+  <li>Knee sleeves (check thickness rules)</li>
+  <li>Flat shoes (Converse, wrestling shoes, or deadlift slippers)</li>
+  <li>Chalk (loose or liquid — check venue)</li>
+  <li>Federation membership card</li>
+  <li>Government-issued ID</li>
+  <li>Snacks: rice cakes, bananas, gummy bears, PB packets</li>
+  <li>Electrolyte drink (Gatorade, LMNT, Pedialyte)</li>
+  <li>Foam roller or lacrosse ball</li>
+  <li>Resistance bands for warm-up</li>
+  <li>Headphones + charger</li>
+  <li>Cash (some venues are cash-only for spectators/merch)</li>
+</ul>
+
+<div class="two-col">
+  <div class="info-box">
+    <h3>Warm-Up Protocol</h3>
+    <ul>
+      <li>General: 5 min low-intensity + mobility</li>
+      <li>Empty bar x 5, 40% x 3, 55% x 2, 70% x 1, 80% x 1</li>
+      <li>Final warm-up: 85-90% of opener x 1</li>
+      <li>Time your last warm-up to finish ~5 min before you lift</li>
+      <li>Keep warm between flights — band work, light movement</li>
+    </ul>
+  </div>
+  <div class="info-box pink">
+    <h3>Post-Meet Recovery</h3>
+    <ul>
+      <li>Day of: eat a big meal, hydrate, celebrate</li>
+      <li>Days 1-3: light walking only, lots of sleep</li>
+      <li>Days 4-7: easy movement — 50% loads, no grinders</li>
+      <li>Week 2: return to normal training volume at reduced intensity</li>
+      <li>Write down what went well and what you'd change</li>
+    </ul>
+  </div>
+</div>
+
+<div class="footer">
+  <span>&copy; 2026 Yeager's Gym &middot; San Diego, CA &middot; brad@yeagersgym.com</span>
+  <span class="cta">Book a free session: yeagersgym.com</span>
+</div>
+
+</body>
+</html>

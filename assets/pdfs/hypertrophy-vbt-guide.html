@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hypertrophy Programming with VBT — Yeager's Gym</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@500;600;700;800&display=swap');
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+@page {
+  size: letter;
+  margin: 0;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: #0a0e17;
+  color: #e2e8f0;
+  width: 8.5in;
+  min-height: 11in;
+  margin: 0 auto;
+  padding: 0.45in 0.55in;
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.2in;
+  padding-bottom: 0.1in;
+  border-bottom: 2px solid #48C4CC;
+}
+.header-left h1 {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 17pt;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  color: #fff;
+}
+.header-left h1 .teal { color: #48C4CC; }
+.header-left h1 .pink { color: #EF3295; }
+.header-left p {
+  font-size: 8pt;
+  color: #8492a6;
+  margin-top: 2px;
+  font-family: 'JetBrains Mono', monospace;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.header-right {
+  text-align: right;
+  font-family: 'JetBrains Mono', monospace;
+}
+.header-right .brand {
+  font-size: 10pt;
+  font-weight: 700;
+  color: #48C4CC;
+  letter-spacing: 0.06em;
+}
+.header-right .url {
+  font-size: 7pt;
+  color: #8492a6;
+  margin-top: 2px;
+}
+
+h2 {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9pt;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #48C4CC;
+  margin-bottom: 6px;
+  margin-top: 0.15in;
+}
+h2.pink { color: #EF3295; }
+
+.zone-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin-bottom: 0.12in;
+  font-size: 8pt;
+}
+.zone-table th {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 6.5pt;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #8492a6;
+  text-align: left;
+  padding: 4px 8px;
+  border-bottom: 1px solid rgba(72, 196, 204, 0.3);
+}
+.zone-table td {
+  padding: 5px 8px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  vertical-align: top;
+  line-height: 1.4;
+}
+.zone-table tr:last-child td { border-bottom: none; }
+.zone-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 700;
+  font-size: 8.5pt;
+}
+.zone-label.hyp { color: #7dd3fc; }
+.zone-label.str { color: #fbbf24; }
+.zone-label.pow { color: #48C4CC; }
+.vel {
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 700;
+  color: #fff;
+}
+.vel-unit { font-size: 6.5pt; color: #8492a6; }
+
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.12in;
+  margin-bottom: 0.12in;
+}
+.three-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 0.12in;
+  margin-bottom: 0.12in;
+}
+
+.info-box {
+  background: rgba(72, 196, 204, 0.04);
+  border: 1px solid rgba(72, 196, 204, 0.15);
+  border-radius: 6px;
+  padding: 8px 10px;
+}
+.info-box.pink {
+  background: rgba(239, 50, 149, 0.04);
+  border-color: rgba(239, 50, 149, 0.15);
+}
+.info-box.yellow {
+  background: rgba(251, 191, 36, 0.04);
+  border-color: rgba(251, 191, 36, 0.15);
+}
+.info-box h3 {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 7pt;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #48C4CC;
+  margin-bottom: 5px;
+}
+.info-box.pink h3 { color: #EF3295; }
+.info-box.yellow h3 { color: #fbbf24; }
+.info-box ul { list-style: none; padding: 0; }
+.info-box li {
+  font-size: 7pt;
+  color: #94a3b8;
+  padding: 1.5px 0;
+  padding-left: 13px;
+  position: relative;
+  line-height: 1.4;
+}
+.info-box li::before {
+  content: "→";
+  position: absolute;
+  left: 0;
+  color: #48C4CC;
+  font-size: 7pt;
+}
+.info-box.pink li::before { color: #EF3295; }
+.info-box.yellow li::before { color: #fbbf24; }
+
+.decision-box {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 6px;
+  padding: 8px 10px;
+  margin-bottom: 0.12in;
+}
+.decision-box h3 {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 7pt;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #fbbf24;
+  margin-bottom: 5px;
+}
+.decision-row {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  margin-bottom: 3px;
+  font-size: 7pt;
+}
+.decision-if {
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 600;
+  color: #48C4CC;
+  min-width: 140px;
+}
+.decision-then { color: #e2e8f0; }
+
+.intro {
+  font-size: 8pt;
+  color: #94a3b8;
+  line-height: 1.5;
+  margin-bottom: 0.12in;
+  max-width: 100%;
+}
+.intro strong { color: #e2e8f0; }
+
+.footer {
+  margin-top: auto;
+  padding-top: 0.08in;
+  border-top: 1px solid rgba(255,255,255,0.08);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 7pt;
+  color: #4a5568;
+}
+.footer .cta {
+  font-family: 'JetBrains Mono', monospace;
+  color: #48C4CC;
+  font-weight: 600;
+  font-size: 7.5pt;
+}
+
+@media print {
+  body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-left">
+    <h1><span class="teal">Hypertrophy</span> Programming with <span class="pink">VBT</span></h1>
+    <p>Velocity-Guided Muscle Growth &bull; Train Smarter, Grow Faster</p>
+  </div>
+  <div class="header-right">
+    <div class="brand">YEAGER'S GYM</div>
+    <div class="url">yeagersgym.com</div>
+  </div>
+</div>
+
+<p class="intro">Traditional hypertrophy programming uses fixed percentages and RPE. <strong>Velocity-based training adds an objective layer</strong> — you can see exactly when you've accumulated enough fatigue to stimulate growth, and when to stop before you dig a recovery hole. This guide shows you how to use bar speed to optimize muscle-building sets.</p>
+
+<h2>Hypertrophy Velocity Zones</h2>
+<table class="zone-table">
+  <thead>
+    <tr><th>Phase</th><th>Velocity Range</th><th>%1RM</th><th>Reps</th><th>Application</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><span class="zone-label hyp">Hypertrophy</span></td>
+      <td><span class="vel">0.50 – 0.70</span> <span class="vel-unit">m/s</span></td>
+      <td>65-80%</td>
+      <td>8-12</td>
+      <td>Primary growth zone. Moderate load, controlled eccentrics, high mechanical tension.</td>
+    </tr>
+    <tr>
+      <td><span class="zone-label str">Metabolic Stress</span></td>
+      <td><span class="vel">0.35 – 0.50</span> <span class="vel-unit">m/s</span></td>
+      <td>75-85%</td>
+      <td>5-8</td>
+      <td>Heavy hypertrophy. Higher tension, lower reps. Great for compound lifts.</td>
+    </tr>
+    <tr>
+      <td><span class="zone-label pow">Speed-Hypertrophy</span></td>
+      <td><span class="vel">0.70 – 0.85</span> <span class="vel-unit">m/s</span></td>
+      <td>55-65%</td>
+      <td>12-20</td>
+      <td>High-rep pump work. Fast eccentrics, short rest. Accessories and isolation work.</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 class="pink">Velocity Loss Thresholds for Hypertrophy</h2>
+<div class="decision-box">
+  <h3>When to Stop the Set</h3>
+  <div class="decision-row">
+    <span class="decision-if">Velocity loss 20-25%</span>
+    <span class="decision-then">→ Moderate fatigue. Ideal for strength-biased hypertrophy. Preserves quality reps.</span>
+  </div>
+  <div class="decision-row">
+    <span class="decision-if">Velocity loss 25-35%</span>
+    <span class="decision-then">→ High fatigue. Primary hypertrophy zone. Maximum mechanical tension with growth stimulus.</span>
+  </div>
+  <div class="decision-row">
+    <span class="decision-if">Velocity loss 35-50%</span>
+    <span class="decision-then">→ Extreme fatigue. Metabolic stress zone. Use sparingly — 1-2 sets max per exercise.</span>
+  </div>
+  <div class="decision-row">
+    <span class="decision-if">Velocity loss &gt;50%</span>
+    <span class="decision-then">→ Junk volume. Injury risk increases, recovery cost outweighs stimulus. Stop the set.</span>
+  </div>
+</div>
+
+<div class="three-col">
+  <div class="info-box">
+    <h3>Volume Landmarks</h3>
+    <ul>
+      <li>MV (Maintenance): 6-8 sets/muscle/week</li>
+      <li>MEV (Min Effective): 10-12 sets/muscle/week</li>
+      <li>MAV (Max Adaptive): 14-20 sets/muscle/week</li>
+      <li>MRV (Max Recoverable): 20-25+ sets/muscle/week</li>
+      <li>Use velocity loss to auto-regulate within MAV</li>
+    </ul>
+  </div>
+  <div class="info-box pink">
+    <h3>Rest Periods by Goal</h3>
+    <ul>
+      <li>Mechanical tension: 2-3 min (compounds)</li>
+      <li>Metabolic stress: 60-90 sec (isolation)</li>
+      <li>Pump work: 30-60 sec (accessories)</li>
+      <li>If velocity hasn't recovered by rest end, extend 30s</li>
+      <li>Short rest + heavy load = diminishing returns</li>
+    </ul>
+  </div>
+  <div class="info-box yellow">
+    <h3>VBT Advantage</h3>
+    <ul>
+      <li>Objective fatigue tracking — no guessing RIR</li>
+      <li>Auto-regulate load: fast today? Add weight</li>
+      <li>Prevent junk volume that kills recovery</li>
+      <li>Track progress: same load, faster = stronger</li>
+      <li>Optimize stimulus-to-fatigue ratio per set</li>
+    </ul>
+  </div>
+</div>
+
+<h2>Sample Hypertrophy Day — Upper Body</h2>
+<table class="zone-table">
+  <thead>
+    <tr><th>Exercise</th><th>Sets x Reps</th><th>Velocity Target</th><th>Loss Cutoff</th><th>Notes</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Bench Press</td>
+      <td>4 x 8-10</td>
+      <td><span class="vel">0.50-0.65</span> <span class="vel-unit">m/s</span></td>
+      <td>30%</td>
+      <td>Primary compound. Controlled eccentric, explosive concentric.</td>
+    </tr>
+    <tr>
+      <td>Barbell Row</td>
+      <td>4 x 8-10</td>
+      <td><span class="vel">0.55-0.70</span> <span class="vel-unit">m/s</span></td>
+      <td>30%</td>
+      <td>Match bench volume. Pause at chest for full ROM.</td>
+    </tr>
+    <tr>
+      <td>Incline DB Press</td>
+      <td>3 x 10-12</td>
+      <td><span class="vel">0.55-0.75</span> <span class="vel-unit">m/s</span></td>
+      <td>35%</td>
+      <td>Secondary push. Higher velocity loss OK for pump.</td>
+    </tr>
+    <tr>
+      <td>Lat Pulldown</td>
+      <td>3 x 10-12</td>
+      <td>N/A</td>
+      <td>RPE 8-9</td>
+      <td>Cables — use RPE. Full stretch at top, squeeze at bottom.</td>
+    </tr>
+    <tr>
+      <td>Lateral Raises</td>
+      <td>3 x 15-20</td>
+      <td>N/A</td>
+      <td>RPE 9-10</td>
+      <td>Isolation pump. Take last set close to failure.</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="two-col">
+  <div class="info-box">
+    <h3>Progressive Overload with VBT</h3>
+    <ul>
+      <li>Track mean velocity at the same load week-to-week</li>
+      <li>Faster bar speed at same weight = strength gain</li>
+      <li>When velocity exceeds zone ceiling, add 5 lbs</li>
+      <li>Don't chase load — chase velocity consistency</li>
+      <li>Deload when first-set velocity drops below baseline</li>
+    </ul>
+  </div>
+  <div class="info-box pink">
+    <h3>Recovery Signals</h3>
+    <ul>
+      <li>Warm-up velocity 10%+ below normal → reduce volume</li>
+      <li>Can't hit target zone at usual load → deload week</li>
+      <li>Velocity loss &gt;40% on set 1 → you're under-recovered</li>
+      <li>Track trends over 3+ weeks, not single sessions</li>
+      <li>Sleep and nutrition drive adaptation more than volume</li>
+    </ul>
+  </div>
+</div>
+
+<div class="footer">
+  <span>&copy; 2026 Yeager's Gym &middot; San Diego, CA &middot; brad@yeagersgym.com</span>
+  <span class="cta">Book a free session: yeagersgym.com</span>
+</div>
+
+</body>
+</html>
