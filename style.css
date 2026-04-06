@@ -3073,6 +3073,9 @@
   .ps-grid, .svc-grid, .faq-grid {
     grid-template-columns: 1fr;
   }
+  .faq-item h4 {
+    font-size: 0.65rem;
+  }
   .method-grid {
     grid-template-columns: 1fr 1fr;
   }
