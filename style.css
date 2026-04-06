@@ -3070,6 +3070,7 @@
   }
 }
 @media (max-width: 560px) {
+  .hide-mobile { display: none !important; }
   .ps-grid, .svc-grid, .faq-grid {
     grid-template-columns: 1fr;
   }
