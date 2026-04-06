@@ -404,7 +404,7 @@
   display: inline-block;
   margin-top: 1.5rem;
   padding: 0.9rem 2.2rem;
-  background: #1EC8B0;
+  background: var(--color-pink);
   color: #fff;
   text-decoration: none;
   border-radius: 8px;
@@ -416,9 +416,9 @@
   box-shadow: 0 0 20px rgba(30, 200, 176, 0.3);
 }
 .btn-hero-cta:hover {
-  background: #17a594;
+  background: #d63a7a;
   transform: translateY(-2px);
-  box-shadow: 0 0 30px rgba(30, 200, 176, 0.5);
+  box-shadow: 0 0 30px rgba(240, 68, 138, 0.5);
 }
 
 .hero-tagline {
