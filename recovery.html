@@ -60,26 +60,19 @@
 
 .recovery-card, .link-card {
   position: relative;
-  padding-right: 140px;
 }
 .rec-service-img {
-  width: 120px;
-  height: 120px;
+  width: 100px;
+  height: 100px;
   object-fit: cover;
   border-radius: var(--radius-md);
   border: 1px solid var(--color-border);
-  position: absolute;
-  top: var(--space-4);
-  right: var(--space-4);
-}
-.recovery-card--coming-soon .rec-service-img {
-  top: var(--space-8);
+  float: right;
+  margin: 0 0 var(--space-2) var(--space-3);
 }
 @media (max-width: 480px) {
-  .link-card { padding-right: var(--space-4); }
   .link-card .rec-service-img { display: none; }
-  .recovery-card { padding-right: 110px; }
-  .rec-service-img { width: 90px; height: 90px; top: var(--space-3); right: var(--space-3); }
+  .rec-service-img { width: 80px; height: 80px; }
 }
 
 .rec-hero-inner {
