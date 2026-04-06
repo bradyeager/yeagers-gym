@@ -2536,7 +2536,7 @@
 .hero-bg img {
   opacity: 0.9 !important;
   object-fit: cover !important;
-  object-position: right top !important;
+  object-position: 85% 25% !important;
   background-color: transparent !important;
 }
 .hero-bg picture {
