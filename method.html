@@ -92,6 +92,18 @@
   min-height: 100vh;
 }
 
+/* Break testimonial carousel out of container on desktop */
+@media (min-width: 769px) {
+  .method-page .hero-testimonial-carousel {
+    width: 100vw;
+    position: relative;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+  }
+}
+
 /* ── Hero ── */
 .method-hero {
   text-align: center;
