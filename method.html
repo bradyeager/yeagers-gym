@@ -445,6 +445,18 @@
   padding: var(--space-8) 0;
   text-align: center;
   position: relative;
+  background: url('./assets/vbt-opt-04.png_preview.jpeg') center center / cover no-repeat;
+}
+.velocity-transition::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(10, 14, 23, 0.82);
+  z-index: 0;
+}
+.velocity-transition > * {
+  position: relative;
+  z-index: 1;
 }
 
 .velocity-transition::before {
