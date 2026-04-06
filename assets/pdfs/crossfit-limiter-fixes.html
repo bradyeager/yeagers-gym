@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CrossFit Limiter Fixes — Yeager's Gym</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@500;600;700;800&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+@page{size:letter;margin:0}
+body{font-family:'Inter',sans-serif;background:#0a0e17;color:#e2e8f0;width:8.5in;min-height:11in;margin:0 auto;padding:0.45in 0.55in;display:flex;flex-direction:column}
+.header{display:flex;justify-content:space-between;align-items:center;margin-bottom:0.2in;padding-bottom:0.1in;border-bottom:2px solid #48C4CC}
+.header-left h1{font-family:'JetBrains Mono',monospace;font-size:17pt;font-weight:800;letter-spacing:0.02em;color:#fff}
+.header-left h1 .teal{color:#48C4CC}.header-left h1 .pink{color:#EF3295}
+.header-left p{font-size:8pt;color:#8492a6;margin-top:2px;font-family:'JetBrains Mono',monospace;letter-spacing:0.04em;text-transform:uppercase}
+.header-right{text-align:right;font-family:'JetBrains Mono',monospace}
+.header-right .brand{font-size:10pt;font-weight:700;color:#48C4CC;letter-spacing:0.06em}
+.header-right .url{font-size:7pt;color:#8492a6;margin-top:2px}
+h2{font-family:'JetBrains Mono',monospace;font-size:9pt;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:#48C4CC;margin-bottom:6px;margin-top:0.12in}
+h2.pink{color:#EF3295}
+.intro{font-size:8pt;color:#94a3b8;line-height:1.5;margin-bottom:0.1in}.intro strong{color:#e2e8f0}
+.limiter-grid{display:grid;grid-template-columns:1fr 1fr;gap:0.12in;margin-bottom:0.12in}
+.limiter-card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:6px;padding:9px 10px}
+.limiter-card h3{font-family:'JetBrains Mono',monospace;font-size:9pt;font-weight:800;margin-bottom:2px}
+.limiter-card h3.engine{color:#48C4CC}.limiter-card h3.strength{color:#EF3295}.limiter-card h3.gymnastics{color:#fbbf24}.limiter-card h3.pacing{color:#9B6FD4}
+.limiter-card .tag{font-family:'JetBrains Mono',monospace;font-size:6pt;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:5px;display:block}
+.limiter-card .tag.engine{color:#48C4CC}.limiter-card .tag.strength{color:#EF3295}.limiter-card .tag.gymnastics{color:#fbbf24}.limiter-card .tag.pacing{color:#9B6FD4}
+.limiter-card .symptoms{font-size:7pt;color:#8492a6;margin-bottom:5px;line-height:1.3;font-style:italic}
+.limiter-card ul{list-style:none;padding:0}
+.limiter-card li{font-size:7pt;color:#94a3b8;padding:1.5px 0;padding-left:12px;position:relative;line-height:1.35}
+.limiter-card li::before{content:"→";position:absolute;left:0;font-size:7pt}
+.limiter-card.engine-card li::before{color:#48C4CC}
+.limiter-card.strength-card li::before{color:#EF3295}
+.limiter-card.gymnastics-card li::before{color:#fbbf24}
+.limiter-card.pacing-card li::before{color:#9B6FD4}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:0.12in;margin-bottom:0.1in}
+.info-box{background:rgba(72,196,204,0.04);border:1px solid rgba(72,196,204,0.15);border-radius:6px;padding:8px 10px}
+.info-box.pink{background:rgba(239,50,149,0.04);border-color:rgba(239,50,149,0.15)}
+.info-box h3{font-family:'JetBrains Mono',monospace;font-size:7pt;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#48C4CC;margin-bottom:5px}
+.info-box.pink h3{color:#EF3295}
+.info-box ul{list-style:none;padding:0}
+.info-box li{font-size:7pt;color:#94a3b8;padding:1.5px 0;padding-left:13px;position:relative;line-height:1.4}
+.info-box li::before{content:"→";position:absolute;left:0;color:#48C4CC;font-size:7pt}
+.info-box.pink li::before{color:#EF3295}
+.priority-box{background:rgba(251,191,36,0.04);border:1px solid rgba(251,191,36,0.15);border-radius:6px;padding:8px 10px;margin-bottom:0.1in}
+.priority-box h3{font-family:'JetBrains Mono',monospace;font-size:7pt;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#fbbf24;margin-bottom:5px}
+.priority-box p{font-size:7pt;color:#94a3b8;line-height:1.4}
+.priority-box strong{color:#e2e8f0}
+.footer{margin-top:auto;padding-top:0.08in;border-top:1px solid rgba(255,255,255,0.08);display:flex;justify-content:space-between;align-items:center;font-size:7pt;color:#4a5568}
+.footer .cta{font-family:'JetBrains Mono',monospace;color:#48C4CC;font-weight:600;font-size:7.5pt}
+@media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-left">
+    <h1><span class="teal">CrossFit</span> Limiter <span class="pink">Fixes</span></h1>
+    <p>Identify Your Weakness &bull; Fix It With Targeted Programming</p>
+  </div>
+  <div class="header-right">
+    <div class="brand">YEAGER'S GYM</div>
+    <div class="url">yeagersgym.com</div>
+  </div>
+</div>
+
+<p class="intro">Every CrossFit athlete has a limiter — the thing that shows up in WODs and forces you to slow down or break. <strong>The fastest path to improvement is fixing your weakest link</strong>, not grinding more of what you're already good at. Take the quiz at yeagersgym.com/tools-limiter.html, then use this guide to build your fix.</p>
+
+<div class="limiter-grid">
+  <div class="limiter-card engine-card">
+    <h3 class="engine">Engine Limited</h3>
+    <span class="tag engine">Aerobic Capacity &bull; Anaerobic Threshold</span>
+    <p class="symptoms">"I'm strong enough but I can't breathe. I have to stop and rest even when my muscles aren't done."</p>
+    <ul>
+      <li><strong style="color:#fff">Fix 1:</strong> 3x/week steady-state cardio — 30-40 min at conversational pace (Zone 2)</li>
+      <li><strong style="color:#fff">Fix 2:</strong> 2x/week interval work — 8-12 rounds of 30s on / 30s off (assault bike or row)</li>
+      <li><strong style="color:#fff">Fix 3:</strong> Practice nasal-only breathing during warm-ups and easy sets</li>
+      <li><strong style="color:#fff">Fix 4:</strong> Add an EMOM finisher to your strength days — 10 min, alternating movements</li>
+      <li><strong style="color:#fff">Timeline:</strong> 6-8 weeks for noticeable improvement in WOD recovery</li>
+    </ul>
+  </div>
+
+  <div class="limiter-card strength-card">
+    <h3 class="strength">Strength Limited</h3>
+    <span class="tag strength">Max Strength &bull; Barbell Cycling</span>
+    <p class="symptoms">"I can run and row all day but every time a barbell shows up heavy, I'm stuck doing singles."</p>
+    <ul>
+      <li><strong style="color:#fff">Fix 1:</strong> 3x/week dedicated strength work — squat, press, deadlift at 75-85%</li>
+      <li><strong style="color:#fff">Fix 2:</strong> Practice barbell cycling at moderate loads (not just heavy singles)</li>
+      <li><strong style="color:#fff">Fix 3:</strong> Build a strength base before worrying about metcon performance</li>
+      <li><strong style="color:#fff">Fix 4:</strong> Add accessory work: strict press, front squat, Romanian deadlift</li>
+      <li><strong style="color:#fff">Timeline:</strong> 8-12 weeks with consistent progressive overload</li>
+    </ul>
+  </div>
+
+  <div class="limiter-card gymnastics-card">
+    <h3 class="gymnastics">Gymnastics Limited</h3>
+    <span class="tag gymnastics">Bodyweight Skills &bull; Movement Efficiency</span>
+    <p class="symptoms">"I can lift heavy and run fast but pull-ups, HSPUs, and muscle-ups eat my soul."</p>
+    <ul>
+      <li><strong style="color:#fff">Fix 1:</strong> Daily skill work — 10-15 min before or after class, separate from WODs</li>
+      <li><strong style="color:#fff">Fix 2:</strong> Build strict strength first: strict pull-ups, strict HSPU, strict dips</li>
+      <li><strong style="color:#fff">Fix 3:</strong> Kipping is a skill — drill the kip swing 3x/week until rhythm is automatic</li>
+      <li><strong style="color:#fff">Fix 4:</strong> Reduce bodyweight if needed — gymnastics punishes extra mass</li>
+      <li><strong style="color:#fff">Timeline:</strong> Skill acquisition takes 4-8 weeks of daily practice</li>
+    </ul>
+  </div>
+
+  <div class="limiter-card pacing-card">
+    <h3 class="pacing">Pacing Limited</h3>
+    <span class="tag pacing">Strategy &bull; Energy Management</span>
+    <p class="symptoms">"I go out hot, die at round 3, and finish slower than people I'm fitter than."</p>
+    <ul>
+      <li><strong style="color:#fff">Fix 1:</strong> Pre-plan break points before the WOD starts — write them down</li>
+      <li><strong style="color:#fff">Fix 2:</strong> Practice negative-split workouts: start at 80%, finish at 100%</li>
+      <li><strong style="color:#fff">Fix 3:</strong> Use a heart rate monitor in training to learn your thresholds</li>
+      <li><strong style="color:#fff">Fix 4:</strong> Repeat the same benchmark WODs with different pacing strategies</li>
+      <li><strong style="color:#fff">Timeline:</strong> 3-4 weeks to develop pacing awareness</li>
+    </ul>
+  </div>
+</div>
+
+<div class="priority-box">
+  <h3>Priority Rule — Fix One Thing at a Time</h3>
+  <p><strong>Don't try to fix everything at once.</strong> Pick your #1 limiter and dedicate 6-8 weeks to it. Maintain your strengths with minimal dose training (2x/week) while you hammer the weakness. After the block, re-test and re-assess. Your new limiter might be different — that's progress.</p>
+</div>
+
+<div class="two-col">
+  <div class="info-box">
+    <h3>Weekly Template — Limiter-Focused</h3>
+    <ul>
+      <li><strong style="color:#fff">Mon:</strong> Limiter work (primary) + short WOD</li>
+      <li><strong style="color:#fff">Tue:</strong> Strength maintenance + skill practice</li>
+      <li><strong style="color:#fff">Wed:</strong> Limiter work (secondary) + conditioning</li>
+      <li><strong style="color:#fff">Thu:</strong> Active recovery or Zone 2 cardio</li>
+      <li><strong style="color:#fff">Fri:</strong> Full class WOD — apply your work</li>
+      <li><strong style="color:#fff">Sat:</strong> Long mixed-modal session or partner WOD</li>
+    </ul>
+  </div>
+  <div class="info-box pink">
+    <h3>How to Know It's Working</h3>
+    <ul>
+      <li>Benchmark WOD times improve by 5-15% in 6 weeks</li>
+      <li>You break less often on your weak movements</li>
+      <li>Heart rate recovers faster between efforts</li>
+      <li>You don't dread specific movement patterns in WODs</li>
+      <li>Retake the limiter quiz — your scores should shift</li>
+      <li>Use yeagersgym.com/tools-limiter.html to re-assess</li>
+    </ul>
+  </div>
+</div>
+
+<div class="footer">
+  <span>&copy; 2026 Yeager's Gym &middot; San Diego, CA &middot; brad@yeagersgym.com</span>
+  <span class="cta">Book a free session: yeagersgym.com</span>
+</div>
+
+</body>
+</html>

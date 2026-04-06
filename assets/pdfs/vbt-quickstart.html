@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VBT Quick-Start Guide — Yeager's Gym</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@500;600;700;800&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+@page{size:letter;margin:0}
+body{font-family:'Inter',sans-serif;background:#0a0e17;color:#e2e8f0;width:8.5in;min-height:11in;margin:0 auto;padding:0.45in 0.55in;display:flex;flex-direction:column}
+.header{display:flex;justify-content:space-between;align-items:center;margin-bottom:0.2in;padding-bottom:0.1in;border-bottom:2px solid #48C4CC}
+.header-left h1{font-family:'JetBrains Mono',monospace;font-size:17pt;font-weight:800;letter-spacing:0.02em;color:#fff}
+.header-left h1 .teal{color:#48C4CC}.header-left h1 .pink{color:#EF3295}
+.header-left p{font-size:8pt;color:#8492a6;margin-top:2px;font-family:'JetBrains Mono',monospace;letter-spacing:0.04em;text-transform:uppercase}
+.header-right{text-align:right;font-family:'JetBrains Mono',monospace}
+.header-right .brand{font-size:10pt;font-weight:700;color:#48C4CC;letter-spacing:0.06em}
+.header-right .url{font-size:7pt;color:#8492a6;margin-top:2px}
+h2{font-family:'JetBrains Mono',monospace;font-size:9pt;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:#48C4CC;margin-bottom:6px;margin-top:0.15in}
+h2.pink{color:#EF3295}
+.intro{font-size:8pt;color:#94a3b8;line-height:1.5;margin-bottom:0.12in}.intro strong{color:#e2e8f0}
+.tbl{width:100%;border-collapse:separate;border-spacing:0;margin-bottom:0.12in;font-size:8pt}
+.tbl th{font-family:'JetBrains Mono',monospace;font-size:6.5pt;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#8492a6;text-align:left;padding:4px 8px;border-bottom:1px solid rgba(72,196,204,0.3)}
+.tbl td{padding:5px 8px;border-bottom:1px solid rgba(255,255,255,0.06);vertical-align:top;line-height:1.4}
+.tbl tr:last-child td{border-bottom:none}
+.mono{font-family:'JetBrains Mono',monospace;font-weight:700}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:0.12in;margin-bottom:0.12in}
+.info-box{background:rgba(72,196,204,0.04);border:1px solid rgba(72,196,204,0.15);border-radius:6px;padding:8px 10px}
+.info-box.pink{background:rgba(239,50,149,0.04);border-color:rgba(239,50,149,0.15)}
+.info-box h3{font-family:'JetBrains Mono',monospace;font-size:7pt;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#48C4CC;margin-bottom:5px}
+.info-box.pink h3{color:#EF3295}
+.info-box ul{list-style:none;padding:0}
+.info-box li{font-size:7pt;color:#94a3b8;padding:1.5px 0;padding-left:13px;position:relative;line-height:1.4}
+.info-box li::before{content:"→";position:absolute;left:0;color:#48C4CC;font-size:7pt}
+.info-box.pink li::before{color:#EF3295}
+.flow-step{display:flex;align-items:stretch;margin-bottom:4px}
+.flow-num{font-family:'JetBrains Mono',monospace;font-weight:800;font-size:11pt;color:#48C4CC;min-width:28px;display:flex;align-items:center;justify-content:center}
+.flow-arrow{display:flex;align-items:center;color:#4a5568;padding:0 6px;font-size:10pt}
+.flow-content{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:6px;padding:7px 10px;flex:1}
+.flow-content h4{font-family:'JetBrains Mono',monospace;font-size:8pt;font-weight:700;color:#fff;margin-bottom:2px}
+.flow-content p{font-size:7pt;color:#94a3b8;line-height:1.4}
+.flow-content p strong{color:#48C4CC}
+.device-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.1in;margin-bottom:0.12in}
+.device-card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:6px;padding:7px 9px;text-align:center}
+.device-card h4{font-family:'JetBrains Mono',monospace;font-size:8pt;font-weight:700;color:#EF3295;margin-bottom:3px}
+.device-card p{font-size:6.5pt;color:#94a3b8;line-height:1.3}
+.device-card .price{font-family:'JetBrains Mono',monospace;font-size:7pt;font-weight:700;color:#48C4CC;margin-top:3px}
+.footer{margin-top:auto;padding-top:0.08in;border-top:1px solid rgba(255,255,255,0.08);display:flex;justify-content:space-between;align-items:center;font-size:7pt;color:#4a5568}
+.footer .cta{font-family:'JetBrains Mono',monospace;color:#48C4CC;font-weight:600;font-size:7.5pt}
+@media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-left">
+    <h1><span class="teal">VBT</span> Quick-Start <span class="pink">Guide</span></h1>
+    <p>Velocity-Based Training &bull; Your First 30 Days</p>
+  </div>
+  <div class="header-right">
+    <div class="brand">YEAGER'S GYM</div>
+    <div class="url">yeagersgym.com</div>
+  </div>
+</div>
+
+<p class="intro">VBT replaces guesswork with data. Instead of asking "how did that feel?" you ask <strong>"how fast did that move?"</strong> Bar speed tells you how strong you are today, when to add weight, when to stop a set, and when to go home. This guide gets you from zero to tracking in your first session.</p>
+
+<h2>What You Need</h2>
+<div class="device-grid">
+  <div class="device-card">
+    <h4>Vitruve</h4>
+    <p>Linear encoder. Attaches to the bar via cord. Gold standard accuracy. App with auto-logging.</p>
+    <div class="price">~$350</div>
+  </div>
+  <div class="device-card">
+    <h4>RepOne</h4>
+    <p>Linear encoder. Magnetic attachment. Great for squats and bench. Solid app.</p>
+    <div class="price">~$250</div>
+  </div>
+  <div class="device-card">
+    <h4>Metric VBT</h4>
+    <p>Camera-based phone app. No hardware needed. Good entry point. Less accurate at high speeds.</p>
+    <div class="price">Free-$10/mo</div>
+  </div>
+</div>
+
+<h2 class="pink">Your First VBT Session — Step by Step</h2>
+<div class="flow-step">
+  <span class="flow-num">1</span>
+  <span class="flow-arrow">→</span>
+  <div class="flow-content">
+    <h4>Pick One Lift</h4>
+    <p>Start with squat, bench, or deadlift. One lift. Don't try to track everything on day one. <strong>Master the process before expanding.</strong></p>
+  </div>
+</div>
+<div class="flow-step">
+  <span class="flow-num">2</span>
+  <span class="flow-arrow">→</span>
+  <div class="flow-content">
+    <h4>Build Your Baseline</h4>
+    <p>Work up from 50% to 90% in 5-6 sets. Record velocity at each load. This creates your <strong>load-velocity profile</strong> — your personal strength fingerprint.</p>
+  </div>
+</div>
+<div class="flow-step">
+  <span class="flow-num">3</span>
+  <span class="flow-arrow">→</span>
+  <div class="flow-content">
+    <h4>Learn the Zones</h4>
+    <p><strong>&gt;0.75 m/s</strong> = speed work. <strong>0.55-0.75</strong> = working sets. <strong>0.40-0.55</strong> = strength zone. <strong>&lt;0.40</strong> = near-max. These are your training guardrails.</p>
+  </div>
+</div>
+<div class="flow-step">
+  <span class="flow-num">4</span>
+  <span class="flow-arrow">→</span>
+  <div class="flow-content">
+    <h4>Track One Metric: First-Rep Velocity</h4>
+    <p>Every session, note the velocity of your first rep at your working weight. <strong>If it trends up over weeks, you're getting stronger.</strong> That's it. Start simple.</p>
+  </div>
+</div>
+<div class="flow-step" style="margin-bottom:0.12in">
+  <span class="flow-num">5</span>
+  <span class="flow-arrow">→</span>
+  <div class="flow-content">
+    <h4>Add Velocity Loss After 2 Weeks</h4>
+    <p>Once you're comfortable: set a velocity loss cutoff (e.g., 20%). When your bar speed drops 20% from rep 1, <strong>stop the set</strong>. This auto-regulates your volume.</p>
+  </div>
+</div>
+
+<h2>The Core Concepts — Cheat Sheet</h2>
+<table class="tbl">
+  <thead>
+    <tr><th>Concept</th><th>What It Means</th><th>Why It Matters</th></tr>
+  </thead>
+  <tbody>
+    <tr><td class="mono" style="color:#48C4CC">Mean Velocity</td><td>Average speed across the full concentric phase</td><td>Primary metric for load selection and zone targeting</td></tr>
+    <tr><td class="mono" style="color:#7dd3fc">Peak Velocity</td><td>Fastest instantaneous speed during the lift</td><td>Useful for power/explosive training, less for strength</td></tr>
+    <tr><td class="mono" style="color:#fbbf24">Velocity Loss %</td><td>How much slower the last rep is vs. the first</td><td>Measures fatigue — your automatic stop signal</td></tr>
+    <tr><td class="mono" style="color:#EF3295">e1RM</td><td>Estimated 1RM calculated from velocity + load</td><td>Know your max every session without testing it</td></tr>
+    <tr><td class="mono" style="color:#9B6FD4">MVT</td><td>Minimum velocity threshold — your slowest possible successful rep</td><td>The speed at which you'd fail. Individual to each lift.</td></tr>
+  </tbody>
+</table>
+
+<div class="two-col">
+  <div class="info-box">
+    <h3>30-Day Milestones</h3>
+    <ul>
+      <li><strong style="color:#fff">Week 1:</strong> Set up device, track velocity on warm-ups and working sets</li>
+      <li><strong style="color:#fff">Week 2:</strong> Build load-velocity profiles for your main lifts</li>
+      <li><strong style="color:#fff">Week 3:</strong> Start using velocity zones to select working loads</li>
+      <li><strong style="color:#fff">Week 4:</strong> Add velocity loss cutoffs to auto-regulate volume</li>
+      <li>By day 30 you'll have enough data to estimate your 1RM from any set</li>
+    </ul>
+  </div>
+  <div class="info-box pink">
+    <h3>Mistakes to Avoid</h3>
+    <ul>
+      <li>Tracking every exercise — start with 1-2 barbell compounds</li>
+      <li>Obsessing over peak velocity — mean velocity is your primary metric</li>
+      <li>Ignoring slow days — the data is telling you something, listen</li>
+      <li>Not recording data — velocity without a log is a wasted data point</li>
+      <li>Using VBT on machines or cables — it's designed for free weights</li>
+    </ul>
+  </div>
+</div>
+
+<div class="footer">
+  <span>&copy; 2026 Yeager's Gym &middot; San Diego, CA &middot; brad@yeagersgym.com</span>
+  <span class="cta">Book a free session: yeagersgym.com</span>
+</div>
+
+</body>
+</html>

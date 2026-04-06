@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Benchmark WOD Strategy Guide — Yeager's Gym</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@500;600;700;800&display=swap');
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+@page {
+  size: letter;
+  margin: 0;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: #0a0e17;
+  color: #e2e8f0;
+  width: 8.5in;
+  min-height: 11in;
+  margin: 0 auto;
+  padding: 0.45in 0.55in;
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.2in;
+  padding-bottom: 0.1in;
+  border-bottom: 2px solid #48C4CC;
+}
+.header-left h1 {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 17pt;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  color: #fff;
+}
+.header-left h1 .teal { color: #48C4CC; }
+.header-left h1 .pink { color: #EF3295; }
+.header-left p {
+  font-size: 8pt;
+  color: #8492a6;
+  margin-top: 2px;
+  font-family: 'JetBrains Mono', monospace;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.header-right {
+  text-align: right;
+  font-family: 'JetBrains Mono', monospace;
+}
+.header-right .brand {
+  font-size: 10pt;
+  font-weight: 700;
+  color: #48C4CC;
+  letter-spacing: 0.06em;
+}
+.header-right .url {
+  font-size: 7pt;
+  color: #8492a6;
+  margin-top: 2px;
+}
+
+.wod-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.12in;
+  margin-bottom: 0.12in;
+}
+
+.wod-card {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 6px;
+  padding: 8px 10px;
+}
+.wod-card h3 {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9pt;
+  font-weight: 800;
+  color: #fff;
+  margin-bottom: 2px;
+}
+.wod-card .wod-type {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 6.5pt;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #EF3295;
+  margin-bottom: 4px;
+}
+.wod-card .wod-rx {
+  font-size: 7pt;
+  color: #8492a6;
+  margin-bottom: 4px;
+  line-height: 1.3;
+}
+.wod-card .wod-strategy {
+  font-size: 7.5pt;
+  color: #cbd5e1;
+  line-height: 1.4;
+}
+.wod-card .wod-strategy strong {
+  color: #48C4CC;
+  font-weight: 700;
+}
+
+.section-title {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9pt;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #48C4CC;
+  margin-bottom: 6px;
+  margin-top: 0.1in;
+}
+.section-title.pink { color: #EF3295; }
+
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.12in;
+  margin-bottom: 0.1in;
+}
+
+.info-box {
+  background: rgba(72, 196, 204, 0.04);
+  border: 1px solid rgba(72, 196, 204, 0.15);
+  border-radius: 6px;
+  padding: 8px 10px;
+}
+.info-box.pink {
+  background: rgba(239, 50, 149, 0.04);
+  border-color: rgba(239, 50, 149, 0.15);
+}
+.info-box h3 {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 7pt;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #48C4CC;
+  margin-bottom: 5px;
+}
+.info-box.pink h3 { color: #EF3295; }
+.info-box ul { list-style: none; padding: 0; }
+.info-box li {
+  font-size: 7pt;
+  color: #94a3b8;
+  padding: 1.5px 0;
+  padding-left: 13px;
+  position: relative;
+  line-height: 1.4;
+}
+.info-box li::before {
+  content: "→";
+  position: absolute;
+  left: 0;
+  color: #48C4CC;
+  font-size: 7pt;
+}
+.info-box.pink li::before { color: #EF3295; }
+
+.footer {
+  margin-top: auto;
+  padding-top: 0.08in;
+  border-top: 1px solid rgba(255,255,255,0.08);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 7pt;
+  color: #4a5568;
+}
+.footer .cta {
+  font-family: 'JetBrains Mono', monospace;
+  color: #48C4CC;
+  font-weight: 600;
+  font-size: 7.5pt;
+}
+
+@media print {
+  body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-left">
+    <h1><span class="teal">Benchmark</span> <span class="pink">WOD</span> Strategy Guide</h1>
+    <p>Beat Your PR on the 10 Most Popular Workouts</p>
+  </div>
+  <div class="header-right">
+    <div class="brand">YEAGER'S GYM</div>
+    <div class="url">yeagersgym.com</div>
+  </div>
+</div>
+
+<div class="wod-grid">
+  <div class="wod-card">
+    <h3>Fran</h3>
+    <div class="wod-type">21-15-9 &bull; For Time</div>
+    <div class="wod-rx">Thrusters (95/65) + Pull-ups</div>
+    <div class="wod-strategy"><strong>Key:</strong> Unbroken 21 thrusters if sub-4 min goal. Break at 12-9 if needed. Butterfly pull-ups are non-negotiable for competitive times. Sprint the 9s — it's only 18 reps.</div>
+  </div>
+  <div class="wod-card">
+    <h3>Grace</h3>
+    <div class="wod-type">30 Reps &bull; For Time</div>
+    <div class="wod-rx">Clean & Jerk (135/95)</div>
+    <div class="wod-strategy"><strong>Key:</strong> Singles from the start. Touch-and-go only if sub-2:00 is your target. Consistent cycle time beats fast starts. Breathe between reps, not during.</div>
+  </div>
+  <div class="wod-card">
+    <h3>Murph</h3>
+    <div class="wod-type">For Time &bull; With Vest</div>
+    <div class="wod-rx">1mi Run, 100 Pull-ups, 200 Push-ups, 300 Squats, 1mi Run</div>
+    <div class="wod-strategy"><strong>Key:</strong> Partition 20 rounds of 5-10-15. Pace first mile at 80%. Push-ups are the bottleneck — break early. Sub-40 needs sub-7:30 miles + consistent partitions.</div>
+  </div>
+  <div class="wod-card">
+    <h3>Diane</h3>
+    <div class="wod-type">21-15-9 &bull; For Time</div>
+    <div class="wod-rx">Deadlifts (225/155) + HSPU</div>
+    <div class="wod-strategy"><strong>Key:</strong> Deadlifts should be touch-and-go. HSPUs are the limiter — if you can't do 15+ unbroken, practice kipping efficiency. Break HSPUs at 12-9, 8-7, 5-4.</div>
+  </div>
+  <div class="wod-card">
+    <h3>Helen</h3>
+    <div class="wod-type">3 Rounds &bull; For Time</div>
+    <div class="wod-rx">400m Run, 21 KB Swings (53/35), 12 Pull-ups</div>
+    <div class="wod-strategy"><strong>Key:</strong> Negative split the runs — Rd 1 at 85%, Rd 3 all-out. Swings unbroken every round. Pull-ups unbroken or 7-5 max. Transitions kill times — move fast between stations.</div>
+  </div>
+  <div class="wod-card">
+    <h3>Isabel</h3>
+    <div class="wod-type">30 Reps &bull; For Time</div>
+    <div class="wod-rx">Snatch (135/95)</div>
+    <div class="wod-strategy"><strong>Key:</strong> Power snatch for speed. Singles with a quick reset rhythm. Don't muscle snatch — it fries your shoulders by rep 15. Grip it and rip it — overthinking kills cycle time.</div>
+  </div>
+  <div class="wod-card">
+    <h3>Jackie</h3>
+    <div class="wod-type">For Time</div>
+    <div class="wod-rx">1000m Row, 50 Thrusters (45/35), 30 Pull-ups</div>
+    <div class="wod-strategy"><strong>Key:</strong> Row at 85% — don't blow up. Thrusters are light — go unbroken or 25-25. Pull-ups are the sprint finish. If you can butterfly, this is where you win.</div>
+  </div>
+  <div class="wod-card">
+    <h3>Karen</h3>
+    <div class="wod-type">150 Reps &bull; For Time</div>
+    <div class="wod-rx">Wall Balls (20/14)</div>
+    <div class="wod-strategy"><strong>Key:</strong> Sets of 25 with 5-breath breaks until rep 100. Then sets of 10-15 to finish. Squat depth is where you save energy — don't over-squat. Target stays the same height every rep.</div>
+  </div>
+  <div class="wod-card">
+    <h3>DT</h3>
+    <div class="wod-type">5 Rounds &bull; For Time</div>
+    <div class="wod-rx">12 DL, 9 Hang Power Clean, 6 Push Jerk (155/105)</div>
+    <div class="wod-strategy"><strong>Key:</strong> Unbroken rounds if sub-8 is the goal. DL to hang clean transition is free — use it. Push jerks should be quick singles or doubles if fatigued. Breathe at the top of the jerk.</div>
+  </div>
+  <div class="wod-card">
+    <h3>Cindy</h3>
+    <div class="wod-type">20 min AMRAP</div>
+    <div class="wod-rx">5 Pull-ups, 10 Push-ups, 15 Squats</div>
+    <div class="wod-strategy"><strong>Key:</strong> Target 1 round per minute. Unbroken everything until round 12+. Push-ups fail first — modify to hand-release if needed. 20+ rounds is competitive. Don't rest — just slow the pace.</div>
+  </div>
+</div>
+
+<div class="two-col">
+  <div class="info-box">
+    <h3>General Pacing Rules</h3>
+    <ul>
+      <li>Short WODs (&lt;5 min): Sprint from the start, manage the pain</li>
+      <li>Medium WODs (5-15 min): Negative split — build into it</li>
+      <li>Long WODs (15+ min): Even pace with planned break points</li>
+      <li>Transition time is hidden time — move between stations fast</li>
+      <li>Know your break points BEFORE the clock starts</li>
+    </ul>
+  </div>
+  <div class="info-box pink">
+    <h3>Common Mistakes</h3>
+    <ul>
+      <li>Going out too hot on round 1 — you pay for it in rounds 3+</li>
+      <li>Resting too long between sets — 3 breaths max, then go</li>
+      <li>Not practicing the specific movement pattern at race pace</li>
+      <li>Ignoring machine pacing (row/bike splits matter)</li>
+      <li>No strategy at all — "just go fast" is not a plan</li>
+    </ul>
+  </div>
+</div>
+
+<div class="footer">
+  <span>&copy; 2026 Yeager's Gym &middot; San Diego, CA &middot; brad@yeagersgym.com</span>
+  <span class="cta">Book a free session: yeagersgym.com</span>
+</div>
+
+</body>
+</html>

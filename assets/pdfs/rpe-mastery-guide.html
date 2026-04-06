@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RPE Mastery Guide — Yeager's Gym</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@500;600;700;800&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+@page{size:letter;margin:0}
+body{font-family:'Inter',sans-serif;background:#0a0e17;color:#e2e8f0;width:8.5in;min-height:11in;margin:0 auto;padding:0.45in 0.55in;display:flex;flex-direction:column}
+.header{display:flex;justify-content:space-between;align-items:center;margin-bottom:0.2in;padding-bottom:0.1in;border-bottom:2px solid #48C4CC}
+.header-left h1{font-family:'JetBrains Mono',monospace;font-size:17pt;font-weight:800;letter-spacing:0.02em;color:#fff}
+.header-left h1 .teal{color:#48C4CC}.header-left h1 .pink{color:#EF3295}
+.header-left p{font-size:8pt;color:#8492a6;margin-top:2px;font-family:'JetBrains Mono',monospace;letter-spacing:0.04em;text-transform:uppercase}
+.header-right{text-align:right;font-family:'JetBrains Mono',monospace}
+.header-right .brand{font-size:10pt;font-weight:700;color:#48C4CC;letter-spacing:0.06em}
+.header-right .url{font-size:7pt;color:#8492a6;margin-top:2px}
+h2{font-family:'JetBrains Mono',monospace;font-size:9pt;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:#48C4CC;margin-bottom:6px;margin-top:0.15in}
+h2.pink{color:#EF3295}
+.intro{font-size:8pt;color:#94a3b8;line-height:1.5;margin-bottom:0.12in}.intro strong{color:#e2e8f0}
+.rpe-table{width:100%;border-collapse:separate;border-spacing:0;margin-bottom:0.12in;font-size:8pt}
+.rpe-table th{font-family:'JetBrains Mono',monospace;font-size:6.5pt;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#8492a6;text-align:left;padding:4px 8px;border-bottom:1px solid rgba(72,196,204,0.3)}
+.rpe-table td{padding:4px 8px;border-bottom:1px solid rgba(255,255,255,0.06);vertical-align:top;line-height:1.4}
+.rpe-table tr:last-child td{border-bottom:none}
+.rpe-num{font-family:'JetBrains Mono',monospace;font-weight:800;font-size:10pt}
+.rpe-num.low{color:#48C4CC}.rpe-num.med{color:#fbbf24}.rpe-num.high{color:#fb923c}.rpe-num.max{color:#EF3295}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:0.12in;margin-bottom:0.12in}
+.info-box{background:rgba(72,196,204,0.04);border:1px solid rgba(72,196,204,0.15);border-radius:6px;padding:8px 10px}
+.info-box.pink{background:rgba(239,50,149,0.04);border-color:rgba(239,50,149,0.15)}
+.info-box.yellow{background:rgba(251,191,36,0.04);border-color:rgba(251,191,36,0.15)}
+.info-box h3{font-family:'JetBrains Mono',monospace;font-size:7pt;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#48C4CC;margin-bottom:5px}
+.info-box.pink h3{color:#EF3295}.info-box.yellow h3{color:#fbbf24}
+.info-box ul{list-style:none;padding:0}
+.info-box li{font-size:7pt;color:#94a3b8;padding:1.5px 0;padding-left:13px;position:relative;line-height:1.4}
+.info-box li::before{content:"→";position:absolute;left:0;color:#48C4CC;font-size:7pt}
+.info-box.pink li::before{color:#EF3295}.info-box.yellow li::before{color:#fbbf24}
+.calibration{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:6px;padding:8px 10px;margin-bottom:0.12in}
+.calibration h3{font-family:'JetBrains Mono',monospace;font-size:7pt;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#9B6FD4;margin-bottom:5px}
+.cal-row{display:flex;gap:6px;align-items:baseline;margin-bottom:3px;font-size:7pt}
+.cal-label{font-family:'JetBrains Mono',monospace;font-weight:600;color:#48C4CC;min-width:60px}
+.cal-desc{color:#e2e8f0}
+.footer{margin-top:auto;padding-top:0.08in;border-top:1px solid rgba(255,255,255,0.08);display:flex;justify-content:space-between;align-items:center;font-size:7pt;color:#4a5568}
+.footer .cta{font-family:'JetBrains Mono',monospace;color:#48C4CC;font-weight:600;font-size:7.5pt}
+@media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-left">
+    <h1><span class="teal">RPE</span> Mastery <span class="pink">Guide</span></h1>
+    <p>Rate of Perceived Exertion &bull; Learn to Self-Regulate</p>
+  </div>
+  <div class="header-right">
+    <div class="brand">YEAGER'S GYM</div>
+    <div class="url">yeagersgym.com</div>
+  </div>
+</div>
+
+<p class="intro">RPE (Rate of Perceived Exertion) is the most widely used autoregulation tool in strength sports. It tells you <strong>how hard a set was relative to failure</strong>. Learning to rate your effort accurately takes practice — but once calibrated, it lets you train at the right intensity every session, regardless of how you feel that day.</p>
+
+<h2>The RPE Scale for Strength Training</h2>
+<table class="rpe-table">
+  <thead>
+    <tr><th>RPE</th><th>Reps in Reserve (RIR)</th><th>What It Feels Like</th><th>When to Use</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><span class="rpe-num low">6</span></td><td>4+ reps left</td><td>Warm-up speed. Could do many more reps. Almost no effort.</td><td>Speed work, technique drilling, deload sets</td></tr>
+    <tr><td><span class="rpe-num low">7</span></td><td>3 reps left</td><td>Working weight, but not challenging. Bar moves fast on every rep.</td><td>Volume accumulation, early-block training</td></tr>
+    <tr><td><span class="rpe-num med">8</span></td><td>2 reps left</td><td>Solid effort. Last 1-2 reps require focus. Could do more, but wouldn't be clean.</td><td>Primary working sets, most of your training</td></tr>
+    <tr><td><span class="rpe-num med">8.5</span></td><td>1-2 reps left</td><td>Hard. Definitely could get 1 more, maybe 2 on a good day.</td><td>Heavy singles/doubles, strength blocks</td></tr>
+    <tr><td><span class="rpe-num high">9</span></td><td>1 rep left</td><td>Very hard. You could get 1 more rep but it would be a fight.</td><td>Top sets, heavy days, overreach weeks</td></tr>
+    <tr><td><span class="rpe-num high">9.5</span></td><td>Maybe 1 left</td><td>Borderline. You might get another rep. You might not. Coin flip.</td><td>PR attempts, testing, peaking</td></tr>
+    <tr><td><span class="rpe-num max">10</span></td><td>0 reps left</td><td>Max effort. True failure or absolute grind. Nothing left.</td><td>1RM testing only. Rarely needed in training.</td></tr>
+  </tbody>
+</table>
+
+<h2 class="pink">How to Calibrate Your RPE</h2>
+<div class="calibration">
+  <h3>The 4-Week Calibration Protocol</h3>
+  <div class="cal-row"><span class="cal-label">Week 1</span><span class="cal-desc">After each set, guess your RPE. Then do an AMRAP set at the same weight. Count actual reps left vs. what you predicted.</span></div>
+  <div class="cal-row"><span class="cal-label">Week 2</span><span class="cal-desc">Rate RPE after every working set. Record it. Video your sets and review — does bar speed match your rating?</span></div>
+  <div class="cal-row"><span class="cal-label">Week 3</span><span class="cal-desc">Start prescribing RPE targets: "Work up to an RPE 8 triple." Practice stopping at the right point.</span></div>
+  <div class="cal-row"><span class="cal-label">Week 4</span><span class="cal-desc">Cross-check RPE with velocity data if available. RPE 8 should correlate to ~0.40-0.55 m/s on compounds.</span></div>
+</div>
+
+<div class="two-col">
+  <div class="info-box">
+    <h3>Signs You're Rating Accurately</h3>
+    <ul>
+      <li>RPE 8 sets leave you confident you had 2 more</li>
+      <li>RPE 9 sets feel heavy but never turn into grinders</li>
+      <li>Your ratings are consistent across sessions at similar loads</li>
+      <li>Video review confirms your bar speed matches your RPE</li>
+      <li>When you do AMRAP checks, you're within 1 rep of your prediction</li>
+    </ul>
+  </div>
+  <div class="info-box pink">
+    <h3>Common Calibration Errors</h3>
+    <ul>
+      <li><strong style="color:#fff">Ego rating:</strong> Calling RPE 8 when it was really a 9.5</li>
+      <li><strong style="color:#fff">Sandbagging:</strong> Calling RPE 9 when the bar was flying — afraid to add weight</li>
+      <li><strong style="color:#fff">Ignoring fatigue:</strong> Same RPE rating set 1 and set 5 — fatigue accumulates</li>
+      <li><strong style="color:#fff">Isolation confusion:</strong> RPE is harder to rate on curls than squats — stick to compounds</li>
+      <li><strong style="color:#fff">Confusing pain with effort:</strong> Joint pain ≠ muscular effort</li>
+    </ul>
+  </div>
+</div>
+
+<div class="two-col">
+  <div class="info-box yellow">
+    <h3>RPE-Based Programming Rules</h3>
+    <ul>
+      <li>Most training should live at RPE 7-8.5</li>
+      <li>RPE 9+ should be reserved for top sets and testing</li>
+      <li>If RPE 8 loads are dropping week-to-week, you need a deload</li>
+      <li>Rate RPE on the last rep of the set — not the first</li>
+      <li>Half-points (7.5, 8.5) are useful and valid</li>
+    </ul>
+  </div>
+  <div class="info-box">
+    <h3>RPE + Velocity = Gold Standard</h3>
+    <ul>
+      <li>RPE is subjective. Velocity is objective. Together they're unbeatable.</li>
+      <li>If RPE says 8 but velocity says "too fast" — you're sandbagging</li>
+      <li>If RPE says 8 but velocity says "grinding" — your rating is off</li>
+      <li>Over time, you'll learn what RPE 8 feels like AND what it looks like on the tracker</li>
+      <li>Use yeagersgym.com/tools-rpe.html to find target loads from RPE + reps</li>
+    </ul>
+  </div>
+</div>
+
+<div class="footer">
+  <span>&copy; 2026 Yeager's Gym &middot; San Diego, CA &middot; brad@yeagersgym.com</span>
+  <span class="cta">Book a free session: yeagersgym.com</span>
+</div>
+
+</body>
+</html>

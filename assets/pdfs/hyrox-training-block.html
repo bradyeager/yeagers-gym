@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hyrox 8-Week Training Block — Yeager's Gym</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@500;600;700;800&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+@page{size:letter;margin:0}
+body{font-family:'Inter',sans-serif;background:#0a0e17;color:#e2e8f0;width:8.5in;min-height:11in;margin:0 auto;padding:0.42in 0.55in;display:flex;flex-direction:column}
+.header{display:flex;justify-content:space-between;align-items:center;margin-bottom:0.18in;padding-bottom:0.1in;border-bottom:2px solid #48C4CC}
+.header-left h1{font-family:'JetBrains Mono',monospace;font-size:16pt;font-weight:800;letter-spacing:0.02em;color:#fff}
+.header-left h1 .teal{color:#48C4CC}.header-left h1 .pink{color:#EF3295}
+.header-left p{font-size:8pt;color:#8492a6;margin-top:2px;font-family:'JetBrains Mono',monospace;letter-spacing:0.04em;text-transform:uppercase}
+.header-right{text-align:right;font-family:'JetBrains Mono',monospace}
+.header-right .brand{font-size:10pt;font-weight:700;color:#48C4CC;letter-spacing:0.06em}
+.header-right .url{font-size:7pt;color:#8492a6;margin-top:2px}
+h2{font-family:'JetBrains Mono',monospace;font-size:9pt;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:#48C4CC;margin-bottom:5px;margin-top:0.12in}
+h2.pink{color:#EF3295}
+.intro{font-size:8pt;color:#94a3b8;line-height:1.5;margin-bottom:0.1in}.intro strong{color:#e2e8f0}
+.tbl{width:100%;border-collapse:separate;border-spacing:0;margin-bottom:0.1in;font-size:7pt}
+.tbl th{font-family:'JetBrains Mono',monospace;font-size:6pt;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#8492a6;text-align:left;padding:3px 5px;border-bottom:1px solid rgba(72,196,204,0.3)}
+.tbl td{padding:4px 5px;border-bottom:1px solid rgba(255,255,255,0.06);vertical-align:top;line-height:1.3}
+.tbl tr:last-child td{border-bottom:none}
+.wk{font-family:'JetBrains Mono',monospace;font-weight:700;white-space:nowrap}
+.wk.build{color:#48C4CC}.wk.peak{color:#fbbf24}.wk.taper{color:#EF3295}.wk.race{color:#9B6FD4}
+.phase-tag{font-family:'JetBrains Mono',monospace;font-size:5.5pt;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;padding:1px 4px;border-radius:3px;display:inline-block}
+.phase-tag.build{background:rgba(72,196,204,0.15);color:#48C4CC}
+.phase-tag.peak{background:rgba(251,191,36,0.15);color:#fbbf24}
+.phase-tag.taper{background:rgba(239,50,149,0.15);color:#EF3295}
+.phase-tag.race{background:rgba(155,111,212,0.15);color:#9B6FD4}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:0.1in;margin-bottom:0.1in}
+.three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.1in;margin-bottom:0.1in}
+.info-box{background:rgba(72,196,204,0.04);border:1px solid rgba(72,196,204,0.15);border-radius:6px;padding:7px 9px}
+.info-box.pink{background:rgba(239,50,149,0.04);border-color:rgba(239,50,149,0.15)}
+.info-box.yellow{background:rgba(251,191,36,0.04);border-color:rgba(251,191,36,0.15)}
+.info-box h3{font-family:'JetBrains Mono',monospace;font-size:6.5pt;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#48C4CC;margin-bottom:4px}
+.info-box.pink h3{color:#EF3295}.info-box.yellow h3{color:#fbbf24}
+.info-box ul{list-style:none;padding:0}
+.info-box li{font-size:6.5pt;color:#94a3b8;padding:1px 0;padding-left:12px;position:relative;line-height:1.35}
+.info-box li::before{content:"→";position:absolute;left:0;color:#48C4CC;font-size:6.5pt}
+.info-box.pink li::before{color:#EF3295}.info-box.yellow li::before{color:#fbbf24}
+.day-box{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:6px;padding:7px 9px;margin-bottom:0.08in}
+.day-box h3{font-family:'JetBrains Mono',monospace;font-size:7pt;font-weight:700;color:#fff;margin-bottom:4px}
+.day-box h3 span{font-weight:400;color:#8492a6;font-size:6pt;text-transform:uppercase;letter-spacing:0.06em}
+.day-box p{font-size:6.5pt;color:#94a3b8;line-height:1.35;margin-bottom:2px}
+.day-box strong{color:#e2e8f0}
+.footer{margin-top:auto;padding-top:0.08in;border-top:1px solid rgba(255,255,255,0.08);display:flex;justify-content:space-between;align-items:center;font-size:7pt;color:#4a5568}
+.footer .cta{font-family:'JetBrains Mono',monospace;color:#48C4CC;font-weight:600;font-size:7.5pt}
+@media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-left">
+    <h1><span class="teal">Hyrox</span> 8-Week <span class="pink">Training Block</span></h1>
+    <p>From Base Building to Race Day &bull; The Complete Prep Plan</p>
+  </div>
+  <div class="header-right">
+    <div class="brand">YEAGER'S GYM</div>
+    <div class="url">yeagersgym.com</div>
+  </div>
+</div>
+
+<p class="intro">This 8-week block takes you from general fitness to race-ready. <strong>Three phases: Build (weeks 1-4), Peak (weeks 5-6), and Taper (weeks 7-8).</strong> Each week trains the 5 pillars of Hyrox: running, upper body stations, lower body stations, grip endurance, and race simulation.</p>
+
+<h2>The 8-Week Overview</h2>
+<table class="tbl">
+  <thead>
+    <tr><th>Week</th><th>Phase</th><th>Running</th><th>Stations</th><th>Strength</th><th>Focus</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><span class="wk build">1</span></td><td><span class="phase-tag build">Build</span></td><td>3x runs, easy pace</td><td>2x station practice (light)</td><td>3x compound lifts</td><td>Base aerobic fitness, learn station technique</td></tr>
+    <tr><td><span class="wk build">2</span></td><td><span class="phase-tag build">Build</span></td><td>3x runs + 1x intervals</td><td>2x station combos</td><td>3x compound lifts</td><td>Add run-to-station transitions</td></tr>
+    <tr><td><span class="wk build">3</span></td><td><span class="phase-tag build">Build</span></td><td>3x runs + 1x tempo</td><td>3x station practice (race weight)</td><td>2x strength</td><td>Station work at race-weight loads</td></tr>
+    <tr><td><span class="wk build">4</span></td><td><span class="phase-tag build">Build</span></td><td>3x runs + 1x long run</td><td>3x station combos (race weight)</td><td>2x strength</td><td>Build volume, test grip endurance</td></tr>
+    <tr><td><span class="wk peak">5</span></td><td><span class="phase-tag peak">Peak</span></td><td>3x runs (race pace)</td><td>2x full simulations (4 stations)</td><td>1x maintenance</td><td>Race-pace running between stations</td></tr>
+    <tr><td><span class="wk peak">6</span></td><td><span class="phase-tag peak">Peak</span></td><td>2x runs + 1x race sim</td><td>1x full 8-station simulation</td><td>1x maintenance</td><td>Full race simulation — practice pacing</td></tr>
+    <tr><td><span class="wk taper">7</span></td><td><span class="phase-tag taper">Taper</span></td><td>2x easy runs</td><td>1x light station touch</td><td>None</td><td>Volume drops 50%. Intensity stays. Rest.</td></tr>
+    <tr><td><span class="wk race">8</span></td><td><span class="phase-tag race">Race</span></td><td>1x shakeout run</td><td>Light movement only</td><td>None</td><td>Race week. Sleep, eat, hydrate. Trust training.</td></tr>
+  </tbody>
+</table>
+
+<h2 class="pink">Sample Training Week — Peak Phase (Week 5)</h2>
+<div class="day-box">
+  <h3>Monday <span>— Run + Upper Stations</span></h3>
+  <p><strong>Run:</strong> 4x 1km at race pace, 90s rest between. <strong>Then:</strong> 1000m SkiErg + 75 wall balls (break 15-15-15-15-15). Focus on pacing the SkiErg at target split.</p>
+</div>
+<div class="day-box">
+  <h3>Tuesday <span>— Strength Maintenance</span></h3>
+  <p><strong>Squat</strong> 3x5 at 75%, <strong>RDL</strong> 3x8, <strong>Farmers hold</strong> 3x 45s (race weight), <strong>Strict press</strong> 3x8. Low volume, maintain strength base without fatigue.</p>
+</div>
+<div class="day-box">
+  <h3>Wednesday <span>— Run + Lower Stations</span></h3>
+  <p><strong>Run:</strong> 2km easy + 2km tempo. <strong>Then:</strong> 50m sled push + 50m sled pull + 100m sandbag lunges (race weight). Full rest between. Focus on technique under fatigue.</p>
+</div>
+<div class="day-box">
+  <h3>Thursday <span>— Active Recovery</span></h3>
+  <p>30 min easy row or bike. Mobility work. Foam rolling. This is a rest day that moves.</p>
+</div>
+<div class="day-box">
+  <h3>Friday <span>— Half Race Simulation</span></h3>
+  <p><strong>4 rounds:</strong> 1km run → station (SkiErg, sled push, burpee broad jump, rowing). Race pace. Time everything. Review splits after.</p>
+</div>
+<div class="day-box" style="margin-bottom:0.1in">
+  <h3>Saturday <span>— Long Run</span></h3>
+  <p>8-10 km at easy pace (Zone 2). Build the aerobic base that carries you through the back half of the race.</p>
+</div>
+
+<div class="three-col">
+  <div class="info-box">
+    <h3>Station-Specific Training</h3>
+    <ul>
+      <li><strong style="color:#fff">SkiErg:</strong> Practice at race split 2x/week</li>
+      <li><strong style="color:#fff">Sled:</strong> Find your pace — don't stop moving</li>
+      <li><strong style="color:#fff">Burpees:</strong> Rhythm > speed. Practice 80m.</li>
+      <li><strong style="color:#fff">Row:</strong> Rate 24-28 spm, not higher</li>
+      <li><strong style="color:#fff">Wall balls:</strong> Break sets early, breathe</li>
+    </ul>
+  </div>
+  <div class="info-box yellow">
+    <h3>Key Metrics to Track</h3>
+    <ul>
+      <li>1km run pace (should be consistent 4:30-6:00)</li>
+      <li>SkiErg + Row 1000m split times</li>
+      <li>Sled push/pull total time</li>
+      <li>Wall ball break strategy (reps before rest)</li>
+      <li>Transition time between run → station</li>
+    </ul>
+  </div>
+  <div class="info-box pink">
+    <h3>Taper Week Rules</h3>
+    <ul>
+      <li>Volume drops 50%, intensity stays the same</li>
+      <li>No new movements or training stimuli</li>
+      <li>Sleep 8+ hours every night</li>
+      <li>Carb-load 2 days before race (don't overdo it)</li>
+      <li>Last hard session: 5 days before race</li>
+    </ul>
+  </div>
+</div>
+
+<div class="footer">
+  <span>&copy; 2026 Yeager's Gym &middot; San Diego, CA &middot; brad@yeagersgym.com</span>
+  <span class="cta">Book a free session: yeagersgym.com</span>
+</div>
+
+</body>
+</html>
