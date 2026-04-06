@@ -3325,9 +3325,10 @@
   }
   .svc-subsection-card img {
     width: 100% !important;
-    height: 140px !important;
+    height: 180px !important;
     border-radius: 8px !important;
     order: -1;
+    object-position: center 20% !important;
   }
 }
 
