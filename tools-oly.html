@@ -1,0 +1,1556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Olympic Weightlifting Standards — Rate Your Lifts | Yeager's Gym</title>
+<meta name="description" content="Compare your snatch, clean & jerk, and supporting lifts to real weightlifting standards by sex and bodyweight. Free calculator from Yeager's Gym.">
+<meta property="og:title" content="Olympic Weightlifting Standards — Yeager's Gym">
+<meta property="og:description" content="Compare your Olympic lifts to real weightlifting standards by sex and bodyweight.">
+<meta property="og:type" content="website">
+<link rel="canonical" href="https://yeagersgym.com/tools-oly.html">
+<link rel="stylesheet" href="./base.css">
+<link rel="stylesheet" href="./style.css?v=2">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Olympic Weightlifting Standards Calculator",
+  "description": "Compare your snatch, clean & jerk, and supporting lifts to real weightlifting standards by sex and bodyweight.",
+  "url": "https://yeagersgym.com/tools-oly.html",
+  "applicationCategory": "HealthApplication"
+}
+</script>
+
+<style>
+/* ═══════════════════════════════════════════
+   OLYMPIC WEIGHTLIFTING STANDARDS — Widget Styles
+   ═══════════════════════════════════════════ */
+
+.tool-page {
+  padding-top: 70px;
+  padding-bottom: 0;
+
+}
+
+.tool-back {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  text-decoration: none;
+  margin-bottom: var(--space-8);
+  transition: color var(--transition-interactive);
+}
+.tool-back:hover { color: var(--color-teal); }
+.tool-back svg { width: 16px; height: 16px; }
+
+.tool-header {
+  text-align: center;
+  margin-bottom: var(--space-6);
+}
+
+.tool-header .section-label {
+  margin-bottom: var(--space-4);
+}
+
+.tool-header h1 {
+  font-family: var(--font-body);
+  font-size: var(--text-2xl);
+  font-weight: 700;
+  color: var(--color-text);
+  margin-bottom: var(--space-4);
+  line-height: 1.15;
+}
+
+.tool-header h1 .highlight-teal { color: var(--color-teal); }
+.tool-header h1 .highlight-pink { color: var(--color-pink); }
+
+.tool-header p {
+  font-size: var(--text-base);
+  color: var(--color-text-muted);
+  max-width: 56ch;
+  margin-inline: auto;
+  line-height: 1.7;
+}
+
+/* ── Calculator Card ── */
+.calc-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  padding: var(--space-8);
+  max-width: 700px;
+  margin-inline: auto;
+  margin-bottom: var(--space-10);
+}
+
+@media (max-width: 640px) {
+  .calc-card { padding: var(--space-6) var(--space-4); }
+}
+
+.calc-card h2 {
+  font-family: var(--font-display);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--color-teal);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: var(--space-6);
+}
+
+/* ── Form Fields ── */
+.field-group {
+  margin-bottom: var(--space-5);
+}
+
+.field-group label {
+  display: block;
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-2);
+}
+
+.field-group select,
+.field-group input[type="number"] {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  color: var(--color-text);
+  font-size: var(--text-base);
+  font-family: var(--font-body);
+  transition: border-color var(--transition-interactive), box-shadow var(--transition-interactive);
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.field-group select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none'%3E%3Cpath d='M1 1.5l5 5 5-5' stroke='%238a8d93' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  padding-right: 2.5rem;
+  cursor: pointer;
+}
+
+.field-group select:focus,
+.field-group input[type="number"]:focus {
+  outline: none;
+  border-color: var(--color-teal);
+  box-shadow: 0 0 0 3px var(--color-teal-glow);
+}
+
+.field-group input[type="number"]::placeholder {
+  color: var(--color-text-faint);
+}
+
+.field-group input[type="number"]::-webkit-outer-spin-button,
+.field-group input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.field-group input[type="number"] { -moz-appearance: textfield; }
+
+/* ── Row layouts ── */
+.field-row-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4);
+}
+.field-row-3 {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: var(--space-4);
+  align-items: end;
+}
+@media (max-width: 640px) {
+  .field-row-3 { grid-template-columns: 1fr; }
+  .field-row-2 { grid-template-columns: 1fr; }
+}
+
+/* ── Unit Toggle ── */
+.unit-toggle {
+  display: inline-flex;
+  background: var(--color-surface-2);
+  border-radius: var(--radius-full);
+  padding: 3px;
+  margin-bottom: var(--space-3);
+  border: 1px solid var(--color-border);
+}
+
+.unit-toggle button {
+  padding: 0.375rem 1rem;
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  border-radius: var(--radius-full);
+  transition: all var(--transition-interactive);
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.unit-toggle button.active {
+  background: var(--color-teal);
+  color: #0a0e17;
+}
+
+/* ── Input with Unit ── */
+.input-with-unit {
+  position: relative;
+}
+.input-with-unit input {
+  padding-right: 3.5rem !important;
+}
+.input-unit-label {
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--color-text-faint);
+  pointer-events: none;
+}
+
+/* ── Section Divider in Card ── */
+.card-divider {
+  border: none;
+  border-top: 1px solid var(--color-border);
+  margin: var(--space-6) 0;
+}
+
+/* ── Calculate Button ── */
+.btn-calculate {
+  width: 100%;
+  padding: 0.875rem 1.5rem;
+  font-size: var(--text-base);
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-top: var(--space-4);
+}
+
+/* ═══════════════════════════════════════════
+   RESULTS
+   ═══════════════════════════════════════════ */
+.results-panel {
+  max-width: 700px;
+  margin-inline: auto;
+  display: none;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+  pointer-events: none;
+}
+
+.results-panel.visible {
+  display: block;
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+/* ── Overall Tier Hero ── */
+.result-hero {
+  text-align: center;
+  padding: var(--space-8) var(--space-6);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  margin-bottom: var(--space-6);
+  position: relative;
+  overflow: hidden;
+}
+.result-hero::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--color-teal), var(--color-pink), var(--color-purple));
+}
+.result-label {
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-3);
+}
+.result-tier {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 6vw, 3.5rem);
+  font-weight: 700;
+  line-height: 1;
+  margin-bottom: var(--space-3);
+}
+.result-subtext {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+  line-height: 1.6;
+}
+
+.confidence-badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-full);
+  font-family: var(--font-display);
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text-faint);
+  margin-top: var(--space-3);
+}
+
+/* ── Per-Lift Cards ── */
+.lift-results {
+  display: grid;
+  gap: var(--space-4);
+  margin-bottom: var(--space-6);
+}
+
+.lift-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  position: relative;
+  transition: border-color 0.3s ease;
+}
+.lift-card.strongest {
+  border-color: var(--color-teal);
+}
+.lift-card.weakest {
+  border-color: var(--color-pink);
+}
+
+.lift-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-3);
+}
+.lift-name {
+  font-family: var(--font-display);
+  font-size: var(--text-sm);
+  font-weight: 700;
+  color: var(--color-text);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.lift-tag {
+  font-family: var(--font-display);
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.2rem 0.5rem;
+  border-radius: var(--radius-full);
+}
+.lift-tag.strongest-tag {
+  color: var(--color-teal);
+  background: rgba(30, 200, 176, 0.12);
+}
+.lift-tag.weakest-tag {
+  color: var(--color-pink);
+  background: rgba(240, 68, 138, 0.12);
+}
+
+.lift-meta {
+  display: flex;
+  gap: var(--space-4);
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-3);
+  font-family: var(--font-display);
+}
+.lift-meta span {
+  letter-spacing: 0.02em;
+}
+
+.lift-tier-label {
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: var(--space-2);
+}
+
+/* ── Progress Bar ── */
+.tier-bar-wrap {
+  position: relative;
+  height: 28px;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  display: flex;
+}
+.tier-segment {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: 0.55rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.35);
+  border-right: 1px solid rgba(0,0,0,0.3);
+  transition: all 0.3s ease;
+}
+.tier-segment:last-child { border-right: none; }
+
+.tier-segment.seg-untrained { background: rgba(255,255,255,0.06); }
+.tier-segment.seg-novice { background: rgba(255,255,255,0.12); }
+.tier-segment.seg-intermediate { background: rgba(30,200,176,0.15); }
+.tier-segment.seg-advanced { background: rgba(240,68,138,0.15); }
+.tier-segment.seg-elite { background: rgba(155,111,212,0.15); }
+
+.tier-segment.active-tier {
+  color: #fff;
+  font-weight: 700;
+}
+.tier-segment.seg-untrained.active-tier { background: rgba(255,255,255,0.2); }
+.tier-segment.seg-novice.active-tier { background: rgba(255,255,255,0.3); color: #fff; }
+.tier-segment.seg-intermediate.active-tier { background: var(--color-teal); color: #0a0e17; }
+.tier-segment.seg-advanced.active-tier { background: var(--color-pink); color: #fff; }
+.tier-segment.seg-elite.active-tier { background: var(--color-purple); color: #fff; }
+
+/* ── Marker on bar ── */
+.tier-bar-container {
+  position: relative;
+}
+.tier-marker {
+  position: absolute;
+  top: -6px;
+  width: 2px;
+  height: 40px;
+  background: #fff;
+  border-radius: 1px;
+  z-index: 2;
+  transition: left 0.4s ease;
+}
+
+/* ── Stats Section ── */
+.stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4);
+  margin-bottom: var(--space-6);
+}
+@media (max-width: 480px) {
+  .stats-grid { grid-template-columns: 1fr; }
+}
+
+.stat-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  text-align: center;
+}
+.stat-label {
+  font-family: var(--font-display);
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-text-faint);
+  margin-bottom: var(--space-2);
+}
+.stat-value {
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  font-weight: 700;
+  color: var(--color-teal);
+  line-height: 1;
+  margin-bottom: var(--space-1);
+}
+.stat-sub {
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+}
+
+/* ── Interpretation ── */
+.interpretation-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  padding: var(--space-6);
+  margin-bottom: var(--space-6);
+}
+.interpretation-card h3 {
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-teal);
+  margin-bottom: var(--space-4);
+}
+.interpretation-card p {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+  line-height: 1.8;
+  margin-bottom: var(--space-4);
+}
+.interpretation-card p:last-child { margin-bottom: 0; }
+
+/* ── Recommendations ── */
+.recs-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.recs-list li {
+  display: flex;
+  gap: var(--space-3);
+  align-items: flex-start;
+  padding: var(--space-3) 0;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+  line-height: 1.6;
+}
+.recs-list li:last-child { border-bottom: none; }
+.rec-num {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(30,200,176,0.12);
+  color: var(--color-teal);
+  font-family: var(--font-display);
+  font-size: 0.65rem;
+  font-weight: 700;
+  border-radius: 50%;
+}
+
+/* ── Share Buttons ── */
+.share-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: var(--space-3);
+  margin-bottom: var(--space-6);
+}
+@media (max-width: 600px) {
+  .share-row { grid-template-columns: 1fr; }
+}
+
+.share-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-4) var(--space-3);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  color: var(--color-text);
+}
+.share-btn:hover {
+  border-color: var(--color-teal);
+  background: rgba(30,200,176,0.05);
+}
+.share-btn-title {
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.share-btn-sub {
+  font-size: 0.65rem;
+  color: var(--color-text-faint);
+}
+
+/* ── Citations ── */
+.citations {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  margin-bottom: var(--space-6);
+}
+.citations h3 {
+  font-family: var(--font-display);
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-text-faint);
+  margin-bottom: var(--space-3);
+}
+.citations p {
+  font-size: var(--text-xs);
+  color: var(--color-text-faint);
+  line-height: 1.7;
+}
+
+/* ── CTA Section ── */
+.tool-cta h2 {
+  font-family: var(--font-body);
+  font-size: var(--text-xl);
+  font-weight: 700;
+  color: var(--color-text);
+  margin-bottom: var(--space-4);
+}
+.tool-cta p {
+  font-size: var(--text-base);
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-6);
+  max-width: 45ch;
+  margin-inline: auto;
+}
+
+/* ── Mobile compacting ── */
+@media (max-width: 640px) {
+  .result-hero {
+    padding: var(--space-5) var(--space-4);
+  }
+  .result-tier {
+    font-size: clamp(1.5rem, 5vw, 2.5rem);
+  }
+  .lift-card {
+    padding: var(--space-4);
+  }
+  .tier-segment {
+    font-size: 0.45rem;
+  }
+  .stat-card {
+    padding: var(--space-4);
+  }
+  .interpretation-card {
+    padding: var(--space-5) var(--space-4);
+  }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════
+     HEADER
+     ═══════════════════════════════════════════ -->
+<header class="site-header" role="banner">
+  <div class="header-inner">
+    <a href="./index.html" class="logo-link" aria-label="Yeager's Gym Home">
+      <img src="./assets/logo.jpeg" alt="Yeager's Gym Logo" class="logo-mark-img" width="48" height="48">
+    </a>
+
+    <nav class="nav-desktop" role="navigation" aria-label="Main navigation">
+      <a href="./index.html" class="nav-link">Home</a>
+      <a href="./index.html#about" class="nav-link">About</a>
+      <div class="nav-dropdown">
+        <a href="./index.html#services" class="nav-link">Services &#9662;</a>
+        <div class="nav-dropdown-menu">
+          <a href="./in-person.html">In-Person Coaching</a>
+          <a href="./remote.html">Remote Coaching</a>
+          <a href="./nutrition.html">Nutrition Coaching</a>
+          <a href="./peptide-consulting.html">Peptide Consulting</a>
+          <a href="./recovery.html">Recovery</a>
+        </div>
+      </div>
+      <a href="./method.html" class="nav-link" style="color: var(--color-pink); font-weight: 700;">The Velocity Method</a>
+      <a href="./index.html#vbt" class="nav-link">What is VBT?</a>
+      <a href="./index.html#results" class="nav-link">Results</a>
+      <a href="./tools.html" class="nav-link" style="color: var(--color-teal);">Free Tools</a>
+      <div class="nav-utility">
+        <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="btn btn-nav-cta">Book Your FREE Session!</a>
+      </div>
+    </nav>
+
+    <button class="hamburger" aria-label="Toggle menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+
+  <div class="mobile-nav" role="navigation" aria-label="Mobile navigation">
+    <a href="./index.html">Home</a>
+    <a href="./index.html#about">About</a>
+    <a href="./index.html#services">Services</a>
+    <a href="./in-person.html" style="padding-left: 2rem;">In-Person Coaching</a>
+    <a href="./remote.html" style="padding-left: 2rem;">Remote Coaching</a>
+    <a href="./nutrition.html" style="padding-left: 2rem;">Nutrition Coaching</a>
+    <a href="./peptide-consulting.html" style="padding-left: 2rem; color: var(--color-teal);">Peptide Consulting</a>
+    <a href="./recovery.html" style="padding-left: 2rem;">Recovery</a>
+    <a href="./method.html" style="color: var(--color-pink); font-weight: 700;">The Velocity Method</a>
+    <a href="./index.html#vbt">What is VBT?</a>
+    <a href="./index.html#results">Results</a>
+    <a href="./tools.html" style="color: var(--color-teal); font-weight: 700;">Free Tools</a>
+    <a href="./quiz.html" style="color: var(--color-pink);">Training Type Quiz</a>
+    <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="btn btn-nav-cta" style="margin-top: var(--space-4);">Book Your FREE Session!</a>
+  </div>
+</header>
+
+<!-- ═══════════════════════════════════════════
+     MAIN CONTENT
+     ═══════════════════════════════════════════ -->
+<main class="tool-page">
+  <div class="container">
+
+    <a href="./tools.html" class="tool-back">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 12L6 8l4-4"/></svg>
+      All Tools
+    </a>
+
+    <!-- Tool Header -->
+    <div class="tool-header fade-in">
+      <p class="section-label" style="color: var(--color-teal); text-align: center; max-width: none;">Free Weightlifting Tool</p>
+      <h1>How Strong Are Your <span class="highlight-teal">Olympic</span> <span class="highlight-pink">Lifts</span>?</h1>
+      <p>Compare your snatch, clean &amp; jerk, and supporting lifts to real weightlifting standards by sex and bodyweight.</p>
+    </div>
+
+    <!-- Calculator Card -->
+    <div class="calc-card fade-in">
+      <h2>Your Info</h2>
+
+      <div class="field-row-2">
+        <div class="field-group">
+          <label for="sex">Sex</label>
+          <select id="sex">
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label for="experience">Training Experience</label>
+          <select id="experience">
+            <option value="<1">&lt; 1 year</option>
+            <option value="1-3" selected>1 - 3 years</option>
+            <option value="3-5">3 - 5 years</option>
+            <option value="5-10">5 - 10 years</option>
+            <option value="10+">10+ years</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field-row-3">
+        <div class="field-group">
+          <label>Bodyweight</label>
+          <div class="unit-toggle" id="unit-toggle">
+            <button class="active" data-unit="lbs" type="button">LBS</button>
+            <button data-unit="kg" type="button">KG</button>
+          </div>
+          <div class="input-with-unit">
+            <input type="number" id="bodyweight" placeholder="185" min="50" max="500" inputmode="decimal">
+            <span class="input-unit-label" id="bw-unit">lbs</span>
+          </div>
+        </div>
+        <div class="field-group">
+          <label for="age">Age <span style="font-weight:400; text-transform:none; letter-spacing:0; color:var(--color-text-faint);">(optional)</span></label>
+          <input type="number" id="age" placeholder="30" min="13" max="99" inputmode="numeric">
+        </div>
+        <div class="field-group" style="display:flex; align-items:flex-end;">
+          <!-- spacer on desktop -->
+        </div>
+      </div>
+
+      <hr class="card-divider">
+      <h2>Your Lifts</h2>
+
+      <div class="field-row-2">
+        <div class="field-group">
+          <label for="snatch">Snatch 1RM</label>
+          <div class="input-with-unit">
+            <input type="number" id="snatch" placeholder="185" min="0" max="2000" inputmode="decimal">
+            <span class="input-unit-label lift-unit">lbs</span>
+          </div>
+        </div>
+        <div class="field-group">
+          <label for="cleanJerk">Clean &amp; Jerk 1RM</label>
+          <div class="input-with-unit">
+            <input type="number" id="cleanJerk" placeholder="225" min="0" max="2000" inputmode="decimal">
+            <span class="input-unit-label lift-unit">lbs</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="field-row-2">
+        <div class="field-group">
+          <label for="clean">Clean 1RM</label>
+          <div class="input-with-unit">
+            <input type="number" id="clean" placeholder="235" min="0" max="2000" inputmode="decimal">
+            <span class="input-unit-label lift-unit">lbs</span>
+          </div>
+        </div>
+        <div class="field-group">
+          <label for="jerk">Jerk (from rack) 1RM</label>
+          <div class="input-with-unit">
+            <input type="number" id="jerk" placeholder="230" min="0" max="2000" inputmode="decimal">
+            <span class="input-unit-label lift-unit">lbs</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="field-row-2">
+        <div class="field-group">
+          <label for="frontSquat">Front Squat 1RM</label>
+          <div class="input-with-unit">
+            <input type="number" id="frontSquat" placeholder="275" min="0" max="2000" inputmode="decimal">
+            <span class="input-unit-label lift-unit">lbs</span>
+          </div>
+        </div>
+        <div class="field-group">
+          <label for="overheadSquat">Overhead Squat 1RM</label>
+          <div class="input-with-unit">
+            <input type="number" id="overheadSquat" placeholder="185" min="0" max="2000" inputmode="decimal">
+            <span class="input-unit-label lift-unit">lbs</span>
+          </div>
+        </div>
+      </div>
+
+      <button class="btn btn-primary btn-calculate" id="analyze-btn" type="button">
+        Analyze My Lifts
+      </button>
+    </div>
+
+    <!-- Results Panel -->
+    <div class="results-panel" id="results-panel">
+
+      <!-- Overall Tier -->
+      <div class="result-hero" id="result-hero">
+        <p class="result-label">Overall Weightlifting Profile</p>
+        <p class="result-tier" id="overall-tier">Intermediate</p>
+        <p class="result-subtext" id="overall-sub"></p>
+      </div>
+
+      <!-- Per-Lift Results -->
+      <div class="lift-results" id="lift-results"></div>
+
+      <!-- Stats Grid -->
+      <div class="stats-grid" id="stats-grid">
+        <div class="stat-card">
+          <p class="stat-label">Total (Snatch + C&amp;J)</p>
+          <p class="stat-value" id="oly-total">410</p>
+          <p class="stat-sub" id="oly-total-unit">lbs</p>
+        </div>
+        <div class="stat-card">
+          <p class="stat-label">Sinclair-Style Score</p>
+          <p class="stat-value" id="sinclair-score">280</p>
+          <p class="stat-sub">Bodyweight-adjusted total</p>
+        </div>
+        <div class="stat-card">
+          <p class="stat-label">Snatch : C&amp;J Ratio</p>
+          <p class="stat-value" id="sn-cj-ratio">82%</p>
+          <p class="stat-sub" id="sn-cj-note">Ideal: 80-82%</p>
+        </div>
+        <div class="stat-card">
+          <p class="stat-label">Clean : Front Squat Ratio</p>
+          <p class="stat-value" id="cl-fs-ratio">87%</p>
+          <p class="stat-sub" id="cl-fs-note">Ideal: 85-90%</p>
+        </div>
+      </div>
+
+      <!-- Interpretation -->
+      <div class="interpretation-card" id="interpretation-card">
+        <h3>Your Weightlifting Profile</h3>
+        <p id="interpretation-text"></p>
+        <h3 style="margin-top: var(--space-5);">Recommendations</h3>
+        <ol class="recs-list" id="recs-list"></ol>
+      </div>
+
+      <!-- Share Buttons -->
+      <div class="share-row">
+        <button class="share-btn" id="share-social" type="button">
+          <span class="share-btn-title">Share on Social!</span>
+          <span class="share-btn-sub">Twitter/X &amp; Facebook</span>
+        </button>
+        <button class="share-btn" id="share-friend" type="button">
+          <span class="share-btn-title">Share With a Friend!</span>
+          <span class="share-btn-sub">Send via message or email</span>
+        </button>
+        <button class="share-btn" id="share-bookmark" type="button">
+          <span class="share-btn-title">Bookmark This!</span>
+          <span class="share-btn-sub">Save for later</span>
+        </button>
+      </div>
+
+      <!-- Citations -->
+      <div class="citations">
+        <h3>Sources</h3>
+        <p>Standards derived from: IWF competition data, USAW development benchmarks, Catalyst Athletics strength standards, and Greg Everett's <em>Olympic Weightlifting</em> programming guidelines.</p>
+      </div>
+
+    </div><!-- end results-panel -->
+
+  </div><!-- end container -->
+
+  <!-- ── Free Download ── -->
+  <hr class="glow-line">
+  <section style="padding: var(--space-6) 0; text-align: center;">
+    <div class="container" style="max-width: 540px;">
+      <p class="section-label" style="color: var(--color-teal); text-align: center; max-width: none;">Free Download</p>
+      <h2 style="font-family: var(--font-body); font-size: var(--text-lg); font-weight: 700; color: var(--color-text); margin-bottom: var(--space-2);">Olympic Weightlifting <span style="color: var(--color-pink);">Competition Prep</span> Guide</h2>
+      <p style="font-size: var(--text-sm); color: var(--color-text-muted); margin-bottom: var(--space-4); max-width: 45ch; margin-inline: auto;">Peaking protocol, attempt selection strategy, warm-up room timeline, weight cut guidelines, and meet-day nutrition — all in one guide.</p>
+      <a href="./assets/pdfs/oly-competition-prep.html" target="_blank" rel="noopener noreferrer" class="btn btn-primary" style="display: inline-flex; gap: 6px; align-items: center;">Download the Guide &rarr;</a>
+    </div>
+  </section>
+
+  <!-- ── Bridge CTA ── -->
+  <hr class="glow-line">
+  <section style="padding: var(--space-8) 0 var(--space-6); text-align: center;">
+    <div class="container">
+      <p class="section-label" style="color: var(--color-pink); text-align: center; max-width: none;">Get Coached</p>
+      <h2 style="font-family: var(--font-body); font-size: var(--text-xl); font-weight: 700; color: var(--color-text); margin-bottom: var(--space-4);">Want a coach who programs for <span style="color: var(--color-pink);">weightlifters</span>?</h2>
+      <p style="font-size: var(--text-base); color: var(--color-text-muted); margin-bottom: var(--space-6); max-width: 45ch; margin-inline: auto;">Brad builds programs around your actual numbers &mdash; not a template.</p>
+      <a href="https://www.vagaro.com/tmoxgj" class="btn btn-primary">Book Your FREE Session!</a>
+    </div>
+  </section>
+  <hr class="glow-line">
+
+</main>
+
+<!-- ═══════════════════════════════════════════
+     FOOTER
+     ═══════════════════════════════════════════ -->
+<footer class="site-footer" role="contentinfo">
+  <div class="container">
+    <div class="footer-nav-columns">
+      <div class="footer-links">
+        <h4>Navigate</h4>
+        <a href="./index.html">Home</a>
+        <a href="./index.html#about">About Brad</a>
+        <a href="./index.html#services">Services &amp; Pricing</a>
+        <a href="./method.html" style="color: var(--color-pink); font-weight: 600;">The Velocity Method</a>
+        <a href="./index.html#vbt">What is VBT?</a>
+        <a href="./index.html#results">Results</a>
+        <a href="./index.html#contact">Contact</a>
+      </div>
+      <div class="footer-links">
+        <h4>Resources &amp; Free Tools</h4>
+        <a href="./tools.html">Calculators &amp; Converters</a>
+        <a href="./velocity-trackers.html">Velocity Trackers Guide</a>
+        <a href="./quiz.html">Training Type Quiz</a>
+      </div>
+      <div class="footer-links">
+        <h4>Connect</h4>
+        <a href="mailto:brad@yeagersgym.com" class="footer-contact-link">brad@yeagersgym.com</a>
+        <a href="https://www.instagram.com/YeagersGym" target="_blank" rel="noopener noreferrer" class="footer-contact-link">@YeagersGym</a>
+        <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="footer-vagaro-link">Book via Vagaro &rarr;</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>&copy; 2026 Yeager's Gym &middot; San Diego, CA</span>
+      <div class="footer-bottom-right">
+        <a href="./index.html" aria-label="Yeager's Gym Home">
+          <img src="assets/logo.jpeg" alt="Yeager's Gym" class="logo-mark-img" width="24" height="24">
+        </a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- Mobile Sticky CTA -->
+<div class="mobile-sticky-cta" id="stickyCta" style="display: none; position: fixed; bottom: 0; left: 0; right: 0; z-index: 999; padding: 12px 16px; background: rgba(10,14,23,0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-top: 1px solid rgba(72,196,204,0.2); text-align: center;">
+  <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" style="display: inline-block; width: 100%; max-width: 320px; padding: 10px 20px; background: var(--color-teal); color: #0a0e17; font-family: var(--font-display); font-size: 0.8rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; text-decoration: none; border-radius: 6px;">Book a Free Session</a>
+</div>
+
+<script>
+(function() {
+  'use strict';
+
+  // ══════════════════════════════════════════════════════════
+  // OLYMPIC WEIGHTLIFTING STANDARDS DATA
+  // ══════════════════════════════════════════════════════════
+
+  var standards = {
+    male: {
+      snatch:       { untrained: 0.40, novice: 0.70, intermediate: 1.00, advanced: 1.30 },
+      cleanJerk:    { untrained: 0.50, novice: 0.85, intermediate: 1.20, advanced: 1.55 },
+      clean:        { untrained: 0.55, novice: 0.90, intermediate: 1.25, advanced: 1.60 },
+      jerk:         { untrained: 0.50, novice: 0.85, intermediate: 1.20, advanced: 1.55 },
+      frontSquat:   { untrained: 0.65, novice: 1.10, intermediate: 1.55, advanced: 2.00 },
+      overheadSquat:{ untrained: 0.35, novice: 0.60, intermediate: 0.90, advanced: 1.20 }
+    },
+    female: {
+      snatch:       { untrained: 0.25, novice: 0.50, intermediate: 0.75, advanced: 1.00 },
+      cleanJerk:    { untrained: 0.35, novice: 0.65, intermediate: 0.95, advanced: 1.25 },
+      clean:        { untrained: 0.40, novice: 0.70, intermediate: 1.00, advanced: 1.30 },
+      jerk:         { untrained: 0.35, novice: 0.65, intermediate: 0.95, advanced: 1.25 },
+      frontSquat:   { untrained: 0.50, novice: 0.85, intermediate: 1.25, advanced: 1.65 },
+      overheadSquat:{ untrained: 0.20, novice: 0.45, intermediate: 0.70, advanced: 0.95 }
+    }
+  };
+
+  var tierNames = ['Untrained', 'Novice', 'Intermediate', 'Advanced', 'Elite'];
+  var tierColors = {
+    'Untrained': 'rgba(255,255,255,0.5)',
+    'Novice': '#e8e6e3',
+    'Intermediate': '#1EC8B0',
+    'Advanced': '#F0448A',
+    'Elite': '#9B6FD4'
+  };
+
+  var liftLabels = {
+    snatch: 'Snatch',
+    cleanJerk: 'Clean & Jerk',
+    clean: 'Clean',
+    jerk: 'Jerk (Rack)',
+    frontSquat: 'Front Squat',
+    overheadSquat: 'Overhead Squat'
+  };
+
+  var liftKeys = ['snatch', 'cleanJerk', 'clean', 'jerk', 'frontSquat', 'overheadSquat'];
+
+  // ══════════════════════════════════════════════════════════
+  // DOM REFS
+  // ══════════════════════════════════════════════════════════
+
+  var sexSelect = document.getElementById('sex');
+  var bwInput = document.getElementById('bodyweight');
+  var ageInput = document.getElementById('age');
+  var expSelect = document.getElementById('experience');
+  var snatchInput = document.getElementById('snatch');
+  var cleanJerkInput = document.getElementById('cleanJerk');
+  var cleanInput = document.getElementById('clean');
+  var jerkInput = document.getElementById('jerk');
+  var frontSquatInput = document.getElementById('frontSquat');
+  var overheadSquatInput = document.getElementById('overheadSquat');
+  var analyzeBtn = document.getElementById('analyze-btn');
+  var resultsPanel = document.getElementById('results-panel');
+
+  var liftInputs = {
+    snatch: snatchInput,
+    cleanJerk: cleanJerkInput,
+    clean: cleanInput,
+    jerk: jerkInput,
+    frontSquat: frontSquatInput,
+    overheadSquat: overheadSquatInput
+  };
+
+  var isKg = false;
+
+  // ══════════════════════════════════════════════════════════
+  // UNIT TOGGLE
+  // ══════════════════════════════════════════════════════════
+
+  var unitToggle = document.getElementById('unit-toggle');
+  var unitBtns = unitToggle.querySelectorAll('button');
+  var bwUnitLabel = document.getElementById('bw-unit');
+  var liftUnits = document.querySelectorAll('.lift-unit');
+
+  unitBtns.forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      unitBtns.forEach(function(b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      var unit = btn.getAttribute('data-unit');
+      isKg = (unit === 'kg');
+      var label = isKg ? 'kg' : 'lbs';
+      bwUnitLabel.textContent = label;
+      liftUnits.forEach(function(el) { el.textContent = label; });
+    });
+  });
+
+  // ══════════════════════════════════════════════════════════
+  // TIER CLASSIFICATION
+  // ══════════════════════════════════════════════════════════
+
+  function classifyLift(lift, value, bw, sex) {
+    var std = standards[sex][lift];
+    var mult = value / bw;
+    if (mult < std.untrained) return { tier: 'Untrained', index: 0, pct: Math.min(1, mult / std.untrained) };
+    if (mult < std.novice) return { tier: 'Novice', index: 1, pct: (mult - std.untrained) / (std.novice - std.untrained) };
+    if (mult < std.intermediate) return { tier: 'Intermediate', index: 2, pct: (mult - std.novice) / (std.intermediate - std.novice) };
+    if (mult < std.advanced) return { tier: 'Advanced', index: 3, pct: (mult - std.intermediate) / (std.advanced - std.intermediate) };
+    return { tier: 'Elite', index: 4, pct: 1 };
+  }
+
+  // ══════════════════════════════════════════════════════════
+  // SINCLAIR-STYLE SCORE
+  // ══════════════════════════════════════════════════════════
+
+  function sinclairScore(total, bw, sex) {
+    var bMax = sex === 'male' ? 175.508 : 153.655;
+    if (bw >= bMax) return Math.round(total);
+    var A = sex === 'male' ? 0.751945030 : 0.783497476;
+    var x = Math.log10(bw / bMax);
+    var coeff = Math.pow(10, A * x * x);
+    return Math.round(total * coeff);
+  }
+
+  // ══════════════════════════════════════════════════════════
+  // ANALYSIS
+  // ══════════════════════════════════════════════════════════
+
+  analyzeBtn.addEventListener('click', function() {
+    var sex = sexSelect.value;
+    var bwRaw = parseFloat(bwInput.value);
+
+    var rawValues = {};
+    var hasError = false;
+
+    // Validation
+    if (!bwRaw || bwRaw <= 0) { shakeField(bwInput); return; }
+
+    liftKeys.forEach(function(key) {
+      var val = parseFloat(liftInputs[key].value);
+      if (isNaN(val) || (!val && val !== 0)) {
+        if (!hasError) { shakeField(liftInputs[key]); hasError = true; }
+      }
+      rawValues[key] = val;
+    });
+    if (hasError) return;
+
+    // Convert to lbs for calculations if needed
+    var bw = isKg ? bwRaw * 2.20462 : bwRaw;
+    var bwKg = isKg ? bwRaw : bwRaw / 2.20462;
+    var lbsValues = {};
+    liftKeys.forEach(function(key) {
+      lbsValues[key] = isKg ? rawValues[key] * 2.20462 : rawValues[key];
+    });
+
+    // Classify each lift
+    var results = {};
+    liftKeys.forEach(function(key) {
+      results[key] = classifyLift(key, lbsValues[key], bw, sex);
+    });
+
+    // Multipliers
+    var mults = {};
+    liftKeys.forEach(function(key) {
+      mults[key] = lbsValues[key] / bw;
+    });
+
+    // Find strongest and weakest
+    var strongest = liftKeys[0];
+    var weakest = liftKeys[0];
+    liftKeys.forEach(function(k) {
+      var r = results[k];
+      var s = results[strongest];
+      var w = results[weakest];
+      if (r.index > s.index || (r.index === s.index && r.pct > s.pct)) strongest = k;
+      if (r.index < w.index || (r.index === w.index && r.pct < w.pct)) weakest = k;
+    });
+
+    // Overall tier (average index)
+    var avgIndex = 0;
+    liftKeys.forEach(function(k) { avgIndex += results[k].index + results[k].pct * 0.5; });
+    avgIndex /= liftKeys.length;
+    var overallIndex = Math.round(avgIndex);
+    if (overallIndex > 4) overallIndex = 4;
+    var overallTier = tierNames[overallIndex];
+
+    // Total (Snatch + C&J)
+    var totalLbs = lbsValues.snatch + lbsValues.cleanJerk;
+    var totalDisplay = isKg ? Math.round(totalLbs / 2.20462) : Math.round(totalLbs);
+
+    // Sinclair score (uses kg)
+    var totalKg = totalLbs / 2.20462;
+    var ss = sinclairScore(totalKg, bwKg, sex);
+
+    // Snatch : C&J ratio
+    var snCjRatio = lbsValues.cleanJerk > 0 ? (lbsValues.snatch / lbsValues.cleanJerk) * 100 : 0;
+
+    // Clean : Front Squat ratio
+    var clFsRatio = lbsValues.frontSquat > 0 ? (lbsValues.clean / lbsValues.frontSquat) * 100 : 0;
+
+    var bwDisplay = isKg ? bwRaw : bw;
+
+    // ── Render Results ──
+
+    // Overall tier
+    document.getElementById('overall-tier').textContent = overallTier;
+    document.getElementById('overall-tier').style.color = tierColors[overallTier];
+    document.getElementById('overall-sub').textContent =
+      'Based on ' + (sex === 'male' ? 'male' : 'female') + ' standards at ' +
+      Math.round(bwDisplay) + (isKg ? ' kg' : ' lbs') + ' bodyweight.';
+
+    // Per-lift cards
+    var liftResultsEl = document.getElementById('lift-results');
+    liftResultsEl.innerHTML = '';
+
+    liftKeys.forEach(function(key) {
+      var r = results[key];
+      var card = document.createElement('div');
+      card.className = 'lift-card';
+      if (key === strongest) card.classList.add('strongest');
+      if (key === weakest) card.classList.add('weakest');
+
+      var tagHTML = '';
+      if (key === strongest) tagHTML = '<span class="lift-tag strongest-tag">Strongest</span>';
+      if (key === weakest) tagHTML = '<span class="lift-tag weakest-tag">Weakest</span>';
+
+      var metaHTML = '';
+      metaHTML = '<span>' + Math.round(rawValues[key]) + (isKg ? ' kg' : ' lbs') + '</span>';
+      metaHTML += '<span>' + mults[key].toFixed(2) + 'x BW</span>';
+
+      // Progress bar position (0-100%)
+      var barPct = ((r.index + r.pct) / 5) * 100;
+      barPct = Math.max(2, Math.min(98, barPct));
+
+      card.innerHTML =
+        '<div class="lift-card-header">' +
+          '<span class="lift-name">' + liftLabels[key] + '</span>' +
+          tagHTML +
+        '</div>' +
+        '<div class="lift-meta">' + metaHTML + '</div>' +
+        '<p class="lift-tier-label" style="color:' + tierColors[r.tier] + ';">' + r.tier + '</p>' +
+        '<div class="tier-bar-container">' +
+          '<div class="tier-bar-wrap">' +
+            '<div class="tier-segment seg-untrained' + (r.tier === 'Untrained' ? ' active-tier' : '') + '">UT</div>' +
+            '<div class="tier-segment seg-novice' + (r.tier === 'Novice' ? ' active-tier' : '') + '">NOV</div>' +
+            '<div class="tier-segment seg-intermediate' + (r.tier === 'Intermediate' ? ' active-tier' : '') + '">INT</div>' +
+            '<div class="tier-segment seg-advanced' + (r.tier === 'Advanced' ? ' active-tier' : '') + '">ADV</div>' +
+            '<div class="tier-segment seg-elite' + (r.tier === 'Elite' ? ' active-tier' : '') + '">ELT</div>' +
+          '</div>' +
+          '<div class="tier-marker" style="left:' + barPct + '%;"></div>' +
+        '</div>';
+
+      liftResultsEl.appendChild(card);
+    });
+
+    // Stats
+    document.getElementById('oly-total').textContent = totalDisplay;
+    document.getElementById('oly-total-unit').textContent = isKg ? 'kg' : 'lbs';
+    document.getElementById('sinclair-score').textContent = ss;
+    document.getElementById('sn-cj-ratio').textContent = Math.round(snCjRatio) + '%';
+    document.getElementById('cl-fs-ratio').textContent = Math.round(clFsRatio) + '%';
+
+    // Ratio notes
+    if (snCjRatio >= 80 && snCjRatio <= 82) {
+      document.getElementById('sn-cj-note').textContent = 'Right in the ideal range';
+    } else if (snCjRatio < 78) {
+      document.getElementById('sn-cj-note').textContent = 'Snatch may be lagging';
+    } else if (snCjRatio > 84) {
+      document.getElementById('sn-cj-note').textContent = 'C&J may be lagging';
+    } else {
+      document.getElementById('sn-cj-note').textContent = 'Ideal: 80-82%';
+    }
+
+    if (clFsRatio >= 85 && clFsRatio <= 90) {
+      document.getElementById('cl-fs-note').textContent = 'Right in the ideal range';
+    } else if (clFsRatio < 83) {
+      document.getElementById('cl-fs-note').textContent = 'Clean technique may be limiting';
+    } else if (clFsRatio > 92) {
+      document.getElementById('cl-fs-note').textContent = 'Front squat strength may be limiting';
+    } else {
+      document.getElementById('cl-fs-note').textContent = 'Ideal: 85-90%';
+    }
+
+    // Interpretation
+    var interpText = buildInterpretation(results, overallTier, strongest, weakest, sex, mults, snCjRatio, clFsRatio, lbsValues, expSelect.value);
+    document.getElementById('interpretation-text').textContent = interpText;
+
+    // Recommendations
+    var recs = buildRecommendations(results, weakest, strongest, sex, mults, snCjRatio, clFsRatio, lbsValues);
+    var recsList = document.getElementById('recs-list');
+    recsList.innerHTML = '';
+    recs.forEach(function(rec, i) {
+      var li = document.createElement('li');
+      li.innerHTML = '<span class="rec-num">' + (i + 1) + '</span><span>' + rec + '</span>';
+      recsList.appendChild(li);
+    });
+
+    // Show results
+    resultsPanel.style.display = 'block';
+    requestAnimationFrame(function() {
+      requestAnimationFrame(function() {
+        resultsPanel.classList.add('visible');
+      });
+    });
+
+    // Scroll to results
+    setTimeout(function() {
+      resultsPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
+  });
+
+  // ══════════════════════════════════════════════════════════
+  // INTERPRETATION
+  // ══════════════════════════════════════════════════════════
+
+  function buildInterpretation(results, overallTier, strongest, weakest, sex, mults, snCjRatio, clFsRatio, lbsValues, exp) {
+    var text = '';
+
+    // Opening
+    if (overallTier === 'Elite') {
+      text += 'Your numbers put you in elite territory across the Olympic lifts. ';
+    } else if (overallTier === 'Advanced') {
+      text += 'You are well above average across the board for a weightlifter. ';
+    } else if (overallTier === 'Intermediate') {
+      text += 'You have a solid base in Olympic weightlifting with clear room to grow. ';
+    } else if (overallTier === 'Novice') {
+      text += 'You are building your weightlifting foundation. Consistent technique work and progressive loading will yield rapid gains. ';
+    } else {
+      text += 'You are early in your weightlifting journey. The good news: technique improvements alone will drive big jumps from here. ';
+    }
+
+    // Strongest
+    text += 'Your ' + liftLabels[strongest].toLowerCase() + ' is your standout lift at ' + mults[strongest].toFixed(2) + 'x bodyweight, classified as ' + results[strongest].tier + '. ';
+
+    // Weakest
+    text += 'Your ' + liftLabels[weakest].toLowerCase() + ' is your biggest opportunity for improvement at ' + mults[weakest].toFixed(2) + 'x bodyweight, currently at the ' + results[weakest].tier + ' level. ';
+
+    // Gap analysis
+    var gap = results[strongest].index - results[weakest].index;
+    if (gap >= 2) {
+      text += 'The gap between your strongest and weakest lift is significant, which suggests a technical or programming imbalance worth addressing. ';
+    } else if (gap === 0) {
+      text += 'Your lifts are well-balanced across the board, which is a sign of good technical development. ';
+    }
+
+    // Ratio analysis
+    if (snCjRatio < 78) {
+      text += 'Your snatch-to-clean-and-jerk ratio of ' + Math.round(snCjRatio) + '% is below the ideal 80-82%, suggesting your snatch technique or overhead strength may need attention. ';
+    } else if (snCjRatio > 84) {
+      text += 'Your snatch-to-clean-and-jerk ratio of ' + Math.round(snCjRatio) + '% is above the ideal 80-82%, which may indicate a lagging clean or jerk. ';
+    }
+
+    if (clFsRatio < 83) {
+      text += 'Your clean-to-front-squat ratio of ' + Math.round(clFsRatio) + '% suggests your clean technique may be limiting your pull or receiving position rather than pure leg strength. ';
+    } else if (clFsRatio > 92) {
+      text += 'Your clean-to-front-squat ratio of ' + Math.round(clFsRatio) + '% is high, which means building front squat strength would likely increase your clean. ';
+    }
+
+    // Jerk : Clean ratio
+    var jerkCleanRatio = lbsValues.clean > 0 ? (lbsValues.jerk / lbsValues.clean) * 100 : 0;
+    if (jerkCleanRatio < 95) {
+      text += 'Your jerk is lagging behind your clean, which may be costing you kilos on your total. ';
+    }
+
+    // OHS : Snatch ratio
+    var ohsSnRatio = lbsValues.snatch > 0 ? (lbsValues.overheadSquat / lbsValues.snatch) * 100 : 0;
+    if (ohsSnRatio < 105) {
+      text += 'Your overhead squat is close to your snatch, meaning overhead stability in the bottom position may be a limiter. ';
+    }
+
+    // Experience context
+    if (exp === '10+' && overallTier === 'Intermediate') {
+      text += 'Given 10+ years of training, there may be technique, programming, or recovery factors limiting further progress.';
+    } else if (exp === '<1' && (overallTier === 'Intermediate' || overallTier === 'Advanced')) {
+      text += 'These numbers after less than a year of weightlifting are impressive and suggest strong athletic potential.';
+    }
+
+    return text;
+  }
+
+  // ══════════════════════════════════════════════════════════
+  // RECOMMENDATIONS
+  // ══════════════════════════════════════════════════════════
+
+  function buildRecommendations(results, weakest, strongest, sex, mults, snCjRatio, clFsRatio, lbsValues) {
+    var recs = [];
+
+    // Rec 1: Weakest lift specific protocol
+    var weakTier = results[weakest].tier;
+    if (weakest === 'snatch') {
+      if (weakTier === 'Untrained' || weakTier === 'Novice') {
+        recs.push('Focus on snatch technique with high-hang snatches, snatch balances, and overhead squats 3-4x per week. Use lighter loads (60-75%) to groove the movement pattern before chasing weight.');
+      } else {
+        recs.push('To push your snatch higher, add snatch pulls from deficit, snatch grip push press, and hang snatch variations to address your specific sticking point. Consider positional work at 80-90%.');
+      }
+    } else if (weakest === 'cleanJerk') {
+      if (weakTier === 'Untrained' || weakTier === 'Novice') {
+        recs.push('Drill the clean and jerk as two separate movements first. Use hang cleans, front squats, and push jerks to build the positions. Focus on consistent front rack and dip-drive timing.');
+      } else {
+        recs.push('Break the clean and jerk into components to find the weak link: clean pulls, jerk recoveries, and pause cleans. Increase C&J frequency to 3-4x per week with varied intensities.');
+      }
+    } else if (weakest === 'clean') {
+      if (weakTier === 'Untrained' || weakTier === 'Novice') {
+        recs.push('Build your clean with hang cleans, clean pulls, and front squats. Focus on receiving the bar in a solid front rack position with fast elbows. Start from the hang before adding full cleans.');
+      } else {
+        recs.push('Add clean complexes (clean pull + clean + front squat), pause cleans at the knee, and deficit clean pulls to address your sticking point. Increase pulling volume for posterior chain strength.');
+      }
+    } else if (weakest === 'jerk') {
+      if (weakTier === 'Untrained' || weakTier === 'Novice') {
+        recs.push('Build your jerk with push press for overhead strength, jerk dips for timing, and behind-the-neck jerks for footwork. Focus on a consistent dip-drive and aggressive lockout.');
+      } else {
+        recs.push('Address jerk footwork with jerk balances and tall jerks. Add pause jerks in the dip and jerk recoveries with heavy loads. Consider whether split, power, or squat jerk suits your build.');
+      }
+    } else if (weakest === 'frontSquat') {
+      if (weakTier === 'Untrained' || weakTier === 'Novice') {
+        recs.push('Front squat 2-3x per week with linear progression. Focus on maintaining an upright torso and solid front rack. Add pause front squats and tempo work to build positional strength.');
+      } else {
+        recs.push('Introduce front squat variations: pause front squats at 2-3 seconds, 1-1/4 front squats, and Anderson front squats from pins. Prioritize front squat strength as it directly transfers to your clean.');
+      }
+    } else if (weakest === 'overheadSquat') {
+      if (weakTier === 'Untrained' || weakTier === 'Novice') {
+        recs.push('Add overhead squats 2-3x per week with a snatch grip. Use pause overhead squats and snatch balances to build stability and mobility. This directly transfers to a stronger snatch receiving position.');
+      } else {
+        recs.push('Build overhead squat strength with heavy snatch balances, pause overhead squats, and snatch grip behind-the-neck press in the squat. Address any mobility restrictions in ankles, hips, or thoracic spine.');
+      }
+    }
+
+    // Rec 2: Ratio imbalances
+    if (snCjRatio < 78) {
+      recs.push('Your snatch is lagging relative to your clean and jerk. Increase snatch frequency and add snatch-specific strength work like snatch pulls, overhead squats, and snatch grip deadlifts to close the gap.');
+    } else if (snCjRatio > 84) {
+      recs.push('Your clean and jerk is lagging relative to your snatch. Prioritize clean and jerk volume, front squat strength, and jerk technique work to bring your total up.');
+    } else if (clFsRatio > 92) {
+      recs.push('Your clean is very close to your front squat, meaning leg strength is likely your limiter. Prioritize front squat and back squat strength to give your clean room to grow.');
+    } else if (clFsRatio < 83) {
+      recs.push('Your clean is well below your front squat potential. Focus on clean technique — pulling mechanics, turnover speed, and receiving position — rather than more leg strength.');
+    } else {
+      var gap = results[strongest].index - results[weakest].index;
+      if (gap >= 2) {
+        recs.push('Address your lift imbalance by temporarily increasing training volume for ' + liftLabels[weakest].toLowerCase() + ' while maintaining your ' + liftLabels[strongest].toLowerCase() + ' with reduced volume.');
+      } else {
+        recs.push('Your lifts and ratios are well-balanced. Continue following a well-rounded weightlifting program with progressive overload on the competition lifts and supporting strength work.');
+      }
+    }
+
+    // Rec 3: Programming level
+    var avgIdx = 0;
+    liftKeys.forEach(function(k) { avgIdx += results[k].index; });
+    avgIdx /= liftKeys.length;
+
+    if (avgIdx < 1.5) {
+      recs.push('At your level, a simple 3-day program focused on the classic lifts and squats will drive the fastest progress. Programs like Catalyst Athletics Starter or USAW Learn to Lift progressions are ideal. Focus on technique over load.');
+    } else if (avgIdx < 3) {
+      recs.push('Consider a structured 4-5 day program with periodized volume and intensity like Catalyst Athletics or Greg Everett\'s intermediate cycles. Weekly progression with planned heavy days and technique days will match your development.');
+    } else {
+      recs.push('At your level, work with a weightlifting coach who can individualize programming, manage training loads around competition, and address your specific technical weaknesses with targeted complexes.');
+    }
+
+    return recs;
+  }
+
+  // ══════════════════════════════════════════════════════════
+  // SHARE BUTTONS
+  // ══════════════════════════════════════════════════════════
+
+  document.getElementById('share-social').addEventListener('click', function() {
+    var tier = document.getElementById('overall-tier').textContent;
+    var text = 'I just scored ' + tier + ' on the Yeager\'s Gym Olympic Weightlifting Standards Calculator!';
+    var url = 'https://yeagersgym.com/tools-oly.html';
+
+    var twitterUrl = 'https://twitter.com/intent/tweet?text=' + encodeURIComponent(text) + '&url=' + encodeURIComponent(url);
+    window.open(twitterUrl, '_blank', 'width=550,height=420');
+
+    setTimeout(function() {
+      var fbUrl = 'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(url) + '&quote=' + encodeURIComponent(text);
+      if (confirm('Also share on Facebook?')) {
+        window.open(fbUrl, '_blank', 'width=550,height=420');
+      }
+    }, 500);
+  });
+
+  document.getElementById('share-friend').addEventListener('click', function() {
+    var tier = document.getElementById('overall-tier').textContent;
+    var text = 'I just scored ' + tier + ' on the Yeager\'s Gym Olympic Weightlifting Standards Calculator! Try it: ';
+    var url = 'https://yeagersgym.com/tools-oly.html';
+
+    if (navigator.share) {
+      navigator.share({
+        title: 'Olympic Weightlifting Standards Calculator',
+        text: text,
+        url: url
+      }).catch(function() {});
+    } else {
+      var mailUrl = 'mailto:?subject=' + encodeURIComponent('Check out my Olympic Weightlifting Standards results') + '&body=' + encodeURIComponent(text + url);
+      window.location.href = mailUrl;
+    }
+  });
+
+  document.getElementById('share-bookmark').addEventListener('click', function() {
+    var url = 'https://yeagersgym.com/tools-oly.html';
+    if (window.sidebar && window.sidebar.addPanel) {
+      window.sidebar.addPanel('Olympic Weightlifting Standards Calculator', url, '');
+    } else {
+      alert('Press ' + (navigator.userAgent.indexOf('Mac') !== -1 ? 'Cmd' : 'Ctrl') + '+D to bookmark this page!');
+    }
+  });
+
+  // ══════════════════════════════════════════════════════════
+  // UTILITIES
+  // ══════════════════════════════════════════════════════════
+
+  function shakeField(el) {
+    el.style.animation = 'shake 0.4s ease';
+    el.style.borderColor = '#F0448A';
+    el.focus();
+    setTimeout(function() {
+      el.style.animation = '';
+      el.style.borderColor = '';
+    }, 500);
+  }
+
+  // Shake animation
+  var shakeStyle = document.createElement('style');
+  shakeStyle.textContent = '@keyframes shake { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-6px)} 40%{transform:translateX(6px)} 60%{transform:translateX(-4px)} 80%{transform:translateX(4px)} }';
+  document.head.appendChild(shakeStyle);
+
+  // Scroll reveal
+  var fadeEls = document.querySelectorAll('.fade-in');
+  if ('IntersectionObserver' in window) {
+    var observer = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+    fadeEls.forEach(function(el) { observer.observe(el); });
+  } else {
+    fadeEls.forEach(function(el) { el.classList.add('visible'); });
+  }
+
+  // Mobile Menu
+  var hamburger = document.querySelector('.hamburger');
+  var mobileNav = document.querySelector('.mobile-nav');
+  if (hamburger && mobileNav) {
+    hamburger.addEventListener('click', function() {
+      var isOpen = mobileNav.classList.toggle('open');
+      hamburger.classList.toggle('open');
+      hamburger.setAttribute('aria-expanded', isOpen);
+    });
+  }
+
+  // Header scroll shadow
+  var header = document.querySelector('.site-header');
+  window.addEventListener('scroll', function() {
+    if (window.scrollY > 60) {
+      header.style.boxShadow = 'var(--shadow-md)';
+    } else {
+      header.style.boxShadow = 'none';
+    }
+  }, { passive: true });
+
+  // Enter key triggers analyze
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' && document.activeElement && document.activeElement.closest('.calc-card')) {
+      analyzeBtn.click();
+    }
+  });
+
+  // Mobile sticky CTA
+  var cta = document.getElementById('stickyCta');
+  if (cta && window.innerWidth <= 768) {
+    window.addEventListener('scroll', function() {
+      cta.style.display = window.scrollY > 300 ? 'block' : 'none';
+    }, { passive: true });
+  }
+
+})();
+</script>
+
+</body>
+</html>
