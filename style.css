@@ -1171,6 +1171,11 @@
 .about-content-block {
   margin-bottom: var(--space-10);
 }
+.about-content-block::after {
+  content: '';
+  display: table;
+  clear: both;
+}
 
 .about-text-with-photo p {
   font-size: var(--text-sm);
