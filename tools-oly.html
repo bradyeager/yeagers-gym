@@ -437,6 +437,21 @@
 .tier-segment.seg-advanced.active-tier { background: var(--color-pink); color: #fff; }
 .tier-segment.seg-elite.active-tier { background: var(--color-purple); color: #fff; }
 
+/* ── Weight Range Labels ── */
+.tier-ranges {
+  display: flex;
+  margin-top: 4px;
+}
+.tier-range-label {
+  flex: 1;
+  text-align: center;
+  font-family: var(--font-display);
+  font-size: 0.5rem;
+  font-weight: 500;
+  color: var(--color-text-faint);
+  letter-spacing: 0.02em;
+}
+
 /* ── Marker on bar ── */
 .tier-bar-container {
   position: relative;
@@ -643,6 +658,9 @@
   }
   .tier-segment {
     font-size: 0.45rem;
+  }
+  .tier-range-label {
+    font-size: 0.4rem;
   }
   .stat-card {
     padding: var(--space-4);
@@ -1205,6 +1223,17 @@
       var barPct = ((r.index + r.pct) / 5) * 100;
       barPct = Math.max(2, Math.min(98, barPct));
 
+      // Calculate weight ranges for each tier
+      var std = standards[sex][key];
+      var displayBw = bwRaw;
+      var rangeHTML = '<div class="tier-ranges">' +
+        '<span class="tier-range-label">0-' + Math.round(std.untrained * displayBw) + '</span>' +
+        '<span class="tier-range-label">' + Math.round(std.untrained * displayBw) + '-' + Math.round(std.novice * displayBw) + '</span>' +
+        '<span class="tier-range-label">' + Math.round(std.novice * displayBw) + '-' + Math.round(std.intermediate * displayBw) + '</span>' +
+        '<span class="tier-range-label">' + Math.round(std.intermediate * displayBw) + '-' + Math.round(std.advanced * displayBw) + '</span>' +
+        '<span class="tier-range-label">' + Math.round(std.advanced * displayBw) + '+</span>' +
+        '</div>';
+
       card.innerHTML =
         '<div class="lift-card-header">' +
           '<span class="lift-name">' + liftLabels[key] + '</span>' +
@@ -1220,6 +1249,7 @@
             '<div class="tier-segment seg-advanced' + (r.tier === 'Advanced' ? ' active-tier' : '') + '">ADV</div>' +
             '<div class="tier-segment seg-elite' + (r.tier === 'Elite' ? ' active-tier' : '') + '">ELT</div>' +
           '</div>' +
+          rangeHTML +
           '<div class="tier-marker" style="left:' + barPct + '%;"></div>' +
         '</div>';
 
