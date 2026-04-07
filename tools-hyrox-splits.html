@@ -1112,7 +1112,7 @@ input[type="range"]::-moz-range-thumb {
       <div class="share-row">
         <button class="share-btn" id="shareOnSocial">
           <span class="share-btn-title">Share on Social!</span>
-          <span class="share-btn-sub">Post your race grade</span>
+          <span class="share-btn-sub">Share to Instagram</span>
         </button>
         <button class="share-btn" id="shareWithFriend">
           <span class="share-btn-title">Share With a Friend!</span>
@@ -1704,13 +1704,10 @@ input[type="range"]::-moz-range-thumb {
   document.getElementById('shareOnSocial').addEventListener('click', function() {
     var grade = window._raceGrade || '?';
     var text = 'My Hyrox race grade: ' + grade + '! Analyze yours: ' + window.location.href;
-    if (navigator.share) {
-      navigator.share({ title: 'Hyrox Split Analyzer', text: text, url: window.location.href });
-    } else {
-      navigator.clipboard.writeText(text).then(function() {
-        alert('Copied to clipboard! Paste it on your socials.');
-      });
-    }
+    navigator.clipboard.writeText(text).then(function() {
+      window.open('https://www.instagram.com/YeagersGym', '_blank');
+      alert('Copied to clipboard! Paste it in your Instagram story or post.');
+    });
   });
 
   document.getElementById('shareWithFriend').addEventListener('click', function() {
