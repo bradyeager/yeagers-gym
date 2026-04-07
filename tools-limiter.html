@@ -1297,7 +1297,7 @@ input[type="range"]::-moz-range-track {
       <div class="share-row">
         <button class="share-btn" id="share-social" type="button">
           <span class="share-btn-title">Share on Social!</span>
-          <span class="share-btn-sub">Twitter/X &amp; Facebook</span>
+          <span class="share-btn-sub">Share to Instagram</span>
         </button>
         <button class="share-btn" id="share-friend" type="button">
           <span class="share-btn-title">Share With a Friend!</span>
@@ -2120,15 +2120,10 @@ input[type="range"]::-moz-range-track {
     var text = 'My biggest CrossFit limiter is ' + limiter + '! Find yours:';
     var url = 'https://yeagersgym.com/tools-limiter.html';
 
-    var twitterUrl = 'https://twitter.com/intent/tweet?text=' + encodeURIComponent(text) + '&url=' + encodeURIComponent(url);
-    window.open(twitterUrl, '_blank', 'width=550,height=420');
-
-    setTimeout(function() {
-      var fbUrl = 'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(url) + '&quote=' + encodeURIComponent(text);
-      if (confirm('Also share on Facebook?')) {
-        window.open(fbUrl, '_blank', 'width=550,height=420');
-      }
-    }, 500);
+    navigator.clipboard.writeText(text + ' ' + url).then(function() {
+      window.open('https://www.instagram.com/YeagersGym', '_blank');
+      alert('Copied to clipboard! Paste it in your Instagram story or post.');
+    });
   });
 
   document.getElementById('share-friend').addEventListener('click', function() {

@@ -1302,7 +1302,7 @@ input[type="range"]::-moz-range-track {
       <div class="share-row">
         <button class="share-btn" id="share-social" type="button">
           <span class="share-btn-title">Share on Social!</span>
-          <span class="share-btn-sub">Twitter/X &amp; Facebook</span>
+          <span class="share-btn-sub">Share to Instagram</span>
         </button>
         <button class="share-btn" id="share-friend" type="button">
           <span class="share-btn-title">Share With a Friend!</span>
@@ -2025,8 +2025,10 @@ input[type="range"]::-moz-range-track {
     var text = 'Body Recomp Estimator says: "' + verdict + '" — find out what\'s realistic for you: ';
     var url = 'https://yeagersgym.com/tools-recomp.html';
 
-    var twitterUrl = 'https://twitter.com/intent/tweet?text=' + encodeURIComponent(text) + '&url=' + encodeURIComponent(url);
-    window.open(twitterUrl, '_blank', 'width=600,height=400');
+    navigator.clipboard.writeText(text + ' ' + url).then(function() {
+      window.open('https://www.instagram.com/YeagersGym', '_blank');
+      alert('Copied to clipboard! Paste it in your Instagram story or post.');
+    });
   });
 
   document.getElementById('share-friend').addEventListener('click', function() {
