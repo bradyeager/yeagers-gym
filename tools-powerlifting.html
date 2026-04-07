@@ -1,0 +1,1561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Powerlifting Standards — Rate Your SBD Total | Yeager's Gym</title>
+<meta name="description" content="Compare your squat, bench, and deadlift to competition-level powerlifting standards. Get your DOTS score and see where you rank. Free calculator from Yeager's Gym.">
+<meta property="og:title" content="Powerlifting Standards — Yeager's Gym">
+<meta property="og:description" content="Compare your squat, bench, and deadlift to competition-level powerlifting standards. Get your DOTS score.">
+<meta property="og:type" content="website">
+<link rel="canonical" href="https://yeagersgym.com/tools-powerlifting.html">
+<link rel="stylesheet" href="./base.css">
+<link rel="stylesheet" href="./style.css?v=2">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Powerlifting Standards Calculator",
+  "description": "Compare your squat, bench, and deadlift to competition-level powerlifting standards. Get your DOTS score and see where you rank.",
+  "url": "https://yeagersgym.com/tools-powerlifting.html",
+  "applicationCategory": "HealthApplication"
+}
+</script>
+
+<style>
+/* ═══════════════════════════════════════════
+   POWERLIFTING STANDARDS — Widget Styles
+   ═══════════════════════════════════════════ */
+
+.tool-page {
+  padding-top: 70px;
+  padding-bottom: 0;
+
+}
+
+.tool-back {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  text-decoration: none;
+  margin-bottom: var(--space-8);
+  transition: color var(--transition-interactive);
+}
+.tool-back:hover { color: var(--color-teal); }
+.tool-back svg { width: 16px; height: 16px; }
+
+.tool-header {
+  text-align: center;
+  margin-bottom: var(--space-6);
+}
+
+.tool-header .section-label {
+  margin-bottom: var(--space-4);
+}
+
+.tool-header h1 {
+  font-family: var(--font-body);
+  font-size: var(--text-2xl);
+  font-weight: 700;
+  color: var(--color-text);
+  margin-bottom: var(--space-4);
+  line-height: 1.15;
+}
+
+.tool-header h1 .highlight-teal { color: var(--color-teal); }
+.tool-header h1 .highlight-pink { color: var(--color-pink); }
+
+.tool-header p {
+  font-size: var(--text-base);
+  color: var(--color-text-muted);
+  max-width: 56ch;
+  margin-inline: auto;
+  line-height: 1.7;
+}
+
+/* ── Calculator Card ── */
+.calc-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  padding: var(--space-8);
+  max-width: 700px;
+  margin-inline: auto;
+  margin-bottom: var(--space-10);
+}
+
+@media (max-width: 640px) {
+  .calc-card { padding: var(--space-6) var(--space-4); }
+}
+
+.calc-card h2 {
+  font-family: var(--font-display);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--color-teal);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: var(--space-6);
+}
+
+/* ── Form Fields ── */
+.field-group {
+  margin-bottom: var(--space-5);
+}
+
+.field-group label {
+  display: block;
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-2);
+}
+
+.field-group select,
+.field-group input[type="number"] {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  color: var(--color-text);
+  font-size: var(--text-base);
+  font-family: var(--font-body);
+  transition: border-color var(--transition-interactive), box-shadow var(--transition-interactive);
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.field-group select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none'%3E%3Cpath d='M1 1.5l5 5 5-5' stroke='%238a8d93' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  padding-right: 2.5rem;
+  cursor: pointer;
+}
+
+.field-group select:focus,
+.field-group input[type="number"]:focus {
+  outline: none;
+  border-color: var(--color-teal);
+  box-shadow: 0 0 0 3px var(--color-teal-glow);
+}
+
+.field-group input[type="number"]::placeholder {
+  color: var(--color-text-faint);
+}
+
+.field-group input[type="number"]::-webkit-outer-spin-button,
+.field-group input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.field-group input[type="number"] { -moz-appearance: textfield; }
+
+/* ── Row layouts ── */
+.field-row-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4);
+}
+.field-row-3 {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: var(--space-4);
+  align-items: end;
+}
+@media (max-width: 640px) {
+  .field-row-3 { grid-template-columns: 1fr; }
+  .field-row-2 { grid-template-columns: 1fr; }
+}
+
+/* ── Unit Toggle ── */
+.unit-toggle {
+  display: inline-flex;
+  background: var(--color-surface-2);
+  border-radius: var(--radius-full);
+  padding: 3px;
+  margin-bottom: var(--space-3);
+  border: 1px solid var(--color-border);
+}
+
+.unit-toggle button {
+  padding: 0.375rem 1rem;
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  border-radius: var(--radius-full);
+  transition: all var(--transition-interactive);
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.unit-toggle button.active {
+  background: var(--color-teal);
+  color: #0a0e17;
+}
+
+/* ── Input with Unit ── */
+.input-with-unit {
+  position: relative;
+}
+.input-with-unit input {
+  padding-right: 3.5rem !important;
+}
+.input-unit-label {
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--color-text-faint);
+  pointer-events: none;
+}
+
+/* ── Section Divider in Card ── */
+.card-divider {
+  border: none;
+  border-top: 1px solid var(--color-border);
+  margin: var(--space-6) 0;
+}
+
+/* ── Calculate Button ── */
+.btn-calculate {
+  width: 100%;
+  padding: 0.875rem 1.5rem;
+  font-size: var(--text-base);
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-top: var(--space-4);
+}
+
+/* ═══════════════════════════════════════════
+   RESULTS
+   ═══════════════════════════════════════════ */
+.results-panel {
+  max-width: 700px;
+  margin-inline: auto;
+  display: none;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+  pointer-events: none;
+}
+
+.results-panel.visible {
+  display: block;
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+/* ── Overall Tier Hero ── */
+.result-hero {
+  text-align: center;
+  padding: var(--space-8) var(--space-6);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  margin-bottom: var(--space-6);
+  position: relative;
+  overflow: hidden;
+}
+.result-hero::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--color-teal), var(--color-pink), var(--color-purple));
+}
+.result-label {
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-3);
+}
+.result-tier {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 6vw, 3.5rem);
+  font-weight: 700;
+  line-height: 1;
+  margin-bottom: var(--space-3);
+}
+.result-subtext {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+  line-height: 1.6;
+}
+
+.confidence-badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-full);
+  font-family: var(--font-display);
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text-faint);
+  margin-top: var(--space-3);
+}
+
+/* ── Per-Lift Cards ── */
+.lift-results {
+  display: grid;
+  gap: var(--space-4);
+  margin-bottom: var(--space-6);
+}
+
+.lift-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  position: relative;
+  transition: border-color 0.3s ease;
+}
+.lift-card.strongest {
+  border-color: var(--color-teal);
+}
+.lift-card.weakest {
+  border-color: var(--color-pink);
+}
+
+.lift-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-3);
+}
+.lift-name {
+  font-family: var(--font-display);
+  font-size: var(--text-sm);
+  font-weight: 700;
+  color: var(--color-text);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.lift-tag {
+  font-family: var(--font-display);
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.2rem 0.5rem;
+  border-radius: var(--radius-full);
+}
+.lift-tag.strongest-tag {
+  color: var(--color-teal);
+  background: rgba(30, 200, 176, 0.12);
+}
+.lift-tag.weakest-tag {
+  color: var(--color-pink);
+  background: rgba(240, 68, 138, 0.12);
+}
+
+.lift-meta {
+  display: flex;
+  gap: var(--space-4);
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-3);
+  font-family: var(--font-display);
+}
+.lift-meta span {
+  letter-spacing: 0.02em;
+}
+
+.lift-tier-label {
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: var(--space-2);
+}
+
+/* ── Progress Bar ── */
+.tier-bar-wrap {
+  position: relative;
+  height: 28px;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  display: flex;
+}
+.tier-segment {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: 0.55rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.35);
+  border-right: 1px solid rgba(0,0,0,0.3);
+  transition: all 0.3s ease;
+}
+.tier-segment:last-child { border-right: none; }
+
+.tier-segment.seg-untrained { background: rgba(255,255,255,0.06); }
+.tier-segment.seg-novice { background: rgba(255,255,255,0.12); }
+.tier-segment.seg-intermediate { background: rgba(30,200,176,0.15); }
+.tier-segment.seg-advanced { background: rgba(240,68,138,0.15); }
+.tier-segment.seg-elite { background: rgba(155,111,212,0.15); }
+
+.tier-segment.active-tier {
+  color: #fff;
+  font-weight: 700;
+}
+.tier-segment.seg-untrained.active-tier { background: rgba(255,255,255,0.2); }
+.tier-segment.seg-novice.active-tier { background: rgba(255,255,255,0.3); color: #fff; }
+.tier-segment.seg-intermediate.active-tier { background: var(--color-teal); color: #0a0e17; }
+.tier-segment.seg-advanced.active-tier { background: var(--color-pink); color: #fff; }
+.tier-segment.seg-elite.active-tier { background: var(--color-purple); color: #fff; }
+
+/* ── Marker on bar ── */
+.tier-bar-container {
+  position: relative;
+}
+.tier-marker {
+  position: absolute;
+  top: -6px;
+  width: 2px;
+  height: 40px;
+  background: #fff;
+  border-radius: 1px;
+  z-index: 2;
+  transition: left 0.4s ease;
+}
+
+/* ── Stats Section ── */
+.stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4);
+  margin-bottom: var(--space-6);
+}
+@media (max-width: 480px) {
+  .stats-grid { grid-template-columns: 1fr; }
+}
+
+.stat-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  text-align: center;
+}
+.stat-label {
+  font-family: var(--font-display);
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-text-faint);
+  margin-bottom: var(--space-2);
+}
+.stat-value {
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  font-weight: 700;
+  color: var(--color-teal);
+  line-height: 1;
+  margin-bottom: var(--space-1);
+}
+.stat-sub {
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+}
+
+/* ── Interpretation ── */
+.interpretation-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  padding: var(--space-6);
+  margin-bottom: var(--space-6);
+}
+.interpretation-card h3 {
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-teal);
+  margin-bottom: var(--space-4);
+}
+.interpretation-card p {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+  line-height: 1.8;
+  margin-bottom: var(--space-4);
+}
+.interpretation-card p:last-child { margin-bottom: 0; }
+
+/* ── Recommendations ── */
+.recs-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.recs-list li {
+  display: flex;
+  gap: var(--space-3);
+  align-items: flex-start;
+  padding: var(--space-3) 0;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+  line-height: 1.6;
+}
+.recs-list li:last-child { border-bottom: none; }
+.rec-num {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(30,200,176,0.12);
+  color: var(--color-teal);
+  font-family: var(--font-display);
+  font-size: 0.65rem;
+  font-weight: 700;
+  border-radius: 50%;
+}
+
+/* ── Share Buttons ── */
+.share-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: var(--space-3);
+  margin-bottom: var(--space-6);
+}
+@media (max-width: 600px) {
+  .share-row { grid-template-columns: 1fr; }
+}
+
+.share-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-4) var(--space-3);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  color: var(--color-text);
+}
+.share-btn:hover {
+  border-color: var(--color-teal);
+  background: rgba(30,200,176,0.05);
+}
+.share-btn-title {
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.share-btn-sub {
+  font-size: 0.65rem;
+  color: var(--color-text-faint);
+}
+
+/* ── Citations ── */
+.citations {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  margin-bottom: var(--space-6);
+}
+.citations h3 {
+  font-family: var(--font-display);
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-text-faint);
+  margin-bottom: var(--space-3);
+}
+.citations p {
+  font-size: var(--text-xs);
+  color: var(--color-text-faint);
+  line-height: 1.7;
+}
+
+/* ── CTA Section ── */
+.tool-cta h2 {
+  font-family: var(--font-body);
+  font-size: var(--text-xl);
+  font-weight: 700;
+  color: var(--color-text);
+  margin-bottom: var(--space-4);
+}
+.tool-cta p {
+  font-size: var(--text-base);
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-6);
+  max-width: 45ch;
+  margin-inline: auto;
+}
+
+/* ── Mobile compacting ── */
+@media (max-width: 640px) {
+  .result-hero {
+    padding: var(--space-5) var(--space-4);
+  }
+  .result-tier {
+    font-size: clamp(1.5rem, 5vw, 2.5rem);
+  }
+  .lift-card {
+    padding: var(--space-4);
+  }
+  .tier-segment {
+    font-size: 0.45rem;
+  }
+  .stat-card {
+    padding: var(--space-4);
+  }
+  .interpretation-card {
+    padding: var(--space-5) var(--space-4);
+  }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════
+     HEADER
+     ═══════════════════════════════════════════ -->
+<header class="site-header" role="banner">
+  <div class="header-inner">
+    <a href="./index.html" class="logo-link" aria-label="Yeager's Gym Home">
+      <img src="./assets/logo.jpeg" alt="Yeager's Gym Logo" class="logo-mark-img" width="48" height="48">
+    </a>
+
+    <nav class="nav-desktop" role="navigation" aria-label="Main navigation">
+      <a href="./index.html" class="nav-link">Home</a>
+      <a href="./index.html#about" class="nav-link">About</a>
+      <div class="nav-dropdown">
+        <a href="./index.html#services" class="nav-link">Services &#9662;</a>
+        <div class="nav-dropdown-menu">
+          <a href="./in-person.html">In-Person Coaching</a>
+          <a href="./remote.html">Remote Coaching</a>
+          <a href="./nutrition.html">Nutrition Coaching</a>
+          <a href="./peptide-consulting.html">Peptide Consulting</a>
+          <a href="./recovery.html">Recovery</a>
+        </div>
+      </div>
+      <a href="./method.html" class="nav-link" style="color: var(--color-pink); font-weight: 700;">The Velocity Method</a>
+      <a href="./index.html#vbt" class="nav-link">What is VBT?</a>
+      <a href="./index.html#results" class="nav-link">Results</a>
+      <a href="./tools.html" class="nav-link" style="color: var(--color-teal);">Free Tools</a>
+      <div class="nav-utility">
+        <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="btn btn-nav-cta">Book Your FREE Session!</a>
+      </div>
+    </nav>
+
+    <button class="hamburger" aria-label="Toggle menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+
+  <div class="mobile-nav" role="navigation" aria-label="Mobile navigation">
+    <a href="./index.html">Home</a>
+    <a href="./index.html#about">About</a>
+    <a href="./index.html#services">Services</a>
+    <a href="./in-person.html" style="padding-left: 2rem;">In-Person Coaching</a>
+    <a href="./remote.html" style="padding-left: 2rem;">Remote Coaching</a>
+    <a href="./nutrition.html" style="padding-left: 2rem;">Nutrition Coaching</a>
+    <a href="./peptide-consulting.html" style="padding-left: 2rem; color: var(--color-teal);">Peptide Consulting</a>
+    <a href="./recovery.html" style="padding-left: 2rem;">Recovery</a>
+    <a href="./method.html" style="color: var(--color-pink); font-weight: 700;">The Velocity Method</a>
+    <a href="./index.html#vbt">What is VBT?</a>
+    <a href="./index.html#results">Results</a>
+    <a href="./tools.html" style="color: var(--color-teal); font-weight: 700;">Free Tools</a>
+    <a href="./quiz.html" style="color: var(--color-pink);">Training Type Quiz</a>
+    <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="btn btn-nav-cta" style="margin-top: var(--space-4);">Book Your FREE Session!</a>
+  </div>
+</header>
+
+<!-- ═══════════════════════════════════════════
+     MAIN CONTENT
+     ═══════════════════════════════════════════ -->
+<main class="tool-page">
+  <div class="container">
+
+    <a href="./tools.html" class="tool-back">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 12L6 8l4-4"/></svg>
+      All Tools
+    </a>
+
+    <!-- Tool Header -->
+    <div class="tool-header fade-in">
+      <p class="section-label" style="color: var(--color-teal); text-align: center; max-width: none;">Free Powerlifting Tool</p>
+      <h1>How Strong Is Your <span class="highlight-teal">Powerlifting</span> <span class="highlight-pink">Total</span>?</h1>
+      <p>Compare your squat, bench, and deadlift to competition-level standards. Get your DOTS score and see where you rank.</p>
+    </div>
+
+    <!-- Calculator Card -->
+    <div class="calc-card fade-in">
+      <h2>Your Info</h2>
+
+      <div class="field-row-2">
+        <div class="field-group">
+          <label for="sex">Sex</label>
+          <select id="sex">
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label for="experience">Training Experience</label>
+          <select id="experience">
+            <option value="<1">&lt; 1 year</option>
+            <option value="1-3" selected>1 - 3 years</option>
+            <option value="3-5">3 - 5 years</option>
+            <option value="5-10">5 - 10 years</option>
+            <option value="10+">10+ years</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field-row-3">
+        <div class="field-group">
+          <label>Bodyweight</label>
+          <div class="unit-toggle" id="unit-toggle">
+            <button class="active" data-unit="lbs" type="button">LBS</button>
+            <button data-unit="kg" type="button">KG</button>
+          </div>
+          <div class="input-with-unit">
+            <input type="number" id="bodyweight" placeholder="185" min="50" max="500" inputmode="decimal">
+            <span class="input-unit-label" id="bw-unit">lbs</span>
+          </div>
+        </div>
+        <div class="field-group">
+          <label for="age">Age <span style="font-weight:400; text-transform:none; letter-spacing:0; color:var(--color-text-faint);">(optional)</span></label>
+          <input type="number" id="age" placeholder="30" min="13" max="99" inputmode="numeric">
+        </div>
+        <div class="field-group" style="display:flex; align-items:flex-end;">
+          <!-- spacer on desktop -->
+        </div>
+      </div>
+
+      <div class="field-row-2">
+        <div class="field-group">
+          <label for="federation">Federation</label>
+          <select id="federation">
+            <option value="usapl" selected>USAPL / IPF (tested)</option>
+            <option value="uspa">USPA</option>
+            <option value="untested">Untested</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label for="deadlift-stance">Deadlift Stance</label>
+          <select id="deadlift-stance">
+            <option value="conventional" selected>Conventional</option>
+            <option value="sumo">Sumo</option>
+          </select>
+        </div>
+      </div>
+
+      <hr class="card-divider">
+      <h2>Your Lifts</h2>
+
+      <div class="field-row-2">
+        <div class="field-group">
+          <label for="squat">Back Squat 1RM <span style="font-weight:400; text-transform:none; letter-spacing:0; color:var(--color-text-faint);">(comp. depth)</span></label>
+          <div class="input-with-unit">
+            <input type="number" id="squat" placeholder="315" min="0" max="2000" inputmode="decimal">
+            <span class="input-unit-label lift-unit">lbs</span>
+          </div>
+        </div>
+        <div class="field-group">
+          <label for="bench">Bench Press 1RM <span style="font-weight:400; text-transform:none; letter-spacing:0; color:var(--color-text-faint);">(comp. pause)</span></label>
+          <div class="input-with-unit">
+            <input type="number" id="bench" placeholder="225" min="0" max="2000" inputmode="decimal">
+            <span class="input-unit-label lift-unit">lbs</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="field-row-2">
+        <div class="field-group">
+          <label for="deadlift">Deadlift 1RM</label>
+          <div class="input-with-unit">
+            <input type="number" id="deadlift" placeholder="405" min="0" max="2000" inputmode="decimal">
+            <span class="input-unit-label lift-unit">lbs</span>
+          </div>
+        </div>
+        <div class="field-group" style="display:flex; align-items:flex-end;">
+          <!-- spacer -->
+        </div>
+      </div>
+
+      <button class="btn btn-primary btn-calculate" id="analyze-btn" type="button">
+        Analyze My Total
+      </button>
+    </div>
+
+    <!-- Results Panel -->
+    <div class="results-panel" id="results-panel">
+
+      <!-- Overall Tier -->
+      <div class="result-hero" id="result-hero">
+        <p class="result-label">Overall Powerlifting Profile</p>
+        <p class="result-tier" id="overall-tier">Intermediate</p>
+        <p class="result-subtext" id="overall-sub"></p>
+      </div>
+
+      <!-- Per-Lift Results -->
+      <div class="lift-results" id="lift-results"></div>
+
+      <!-- Stats Grid -->
+      <div class="stats-grid" id="stats-grid">
+        <div class="stat-card">
+          <p class="stat-label">SBD Total</p>
+          <p class="stat-value" id="sbd-total">945</p>
+          <p class="stat-sub" id="sbd-unit">lbs</p>
+        </div>
+        <div class="stat-card">
+          <p class="stat-label">DOTS Score</p>
+          <p class="stat-value" id="dots-score">320</p>
+          <p class="stat-sub" id="dots-class">Class II</p>
+        </div>
+        <div class="stat-card">
+          <p class="stat-label">Squat : Deadlift Ratio</p>
+          <p class="stat-value" id="sq-dl-ratio">78%</p>
+          <p class="stat-sub" id="sq-dl-note">Ideal: 75-85%</p>
+        </div>
+        <div class="stat-card">
+          <p class="stat-label">Bench : Squat Ratio</p>
+          <p class="stat-value" id="bn-sq-ratio">65%</p>
+          <p class="stat-sub" id="bn-sq-note">Ideal: 60-70%</p>
+        </div>
+      </div>
+
+      <!-- Interpretation -->
+      <div class="interpretation-card" id="interpretation-card">
+        <h3>Your Powerlifting Profile</h3>
+        <p id="interpretation-text"></p>
+        <h3 style="margin-top: var(--space-5);">Recommendations</h3>
+        <ol class="recs-list" id="recs-list"></ol>
+      </div>
+
+      <!-- Share Buttons -->
+      <div class="share-row">
+        <button class="share-btn" id="share-social" type="button">
+          <span class="share-btn-title">Share on Social!</span>
+          <span class="share-btn-sub">Twitter/X &amp; Facebook</span>
+        </button>
+        <button class="share-btn" id="share-friend" type="button">
+          <span class="share-btn-title">Share With a Friend!</span>
+          <span class="share-btn-sub">Send via message or email</span>
+        </button>
+        <button class="share-btn" id="share-bookmark" type="button">
+          <span class="share-btn-title">Bookmark This!</span>
+          <span class="share-btn-sub">Save for later</span>
+        </button>
+      </div>
+
+      <!-- Citations -->
+      <div class="citations">
+        <h3>Sources</h3>
+        <p>Standards derived from: USAPL/IPF classification tables, OpenPowerlifting database, RP Strength competition benchmarks, and Lon Kilgore et al. <em>Practical Programming</em> strength classification tables.</p>
+      </div>
+
+    </div><!-- end results-panel -->
+
+  </div><!-- end container -->
+
+  <!-- ── Free Download ── -->
+  <hr class="glow-line">
+  <section style="padding: var(--space-6) 0; text-align: center;">
+    <div class="container" style="max-width: 540px;">
+      <p class="section-label" style="color: var(--color-teal); text-align: center; max-width: none;">Free Download</p>
+      <h2 style="font-family: var(--font-body); font-size: var(--text-lg); font-weight: 700; color: var(--color-text); margin-bottom: var(--space-2);">Your First <span style="color: var(--color-pink);">Powerlifting Meet</span> Checklist</h2>
+      <p style="font-size: var(--text-sm); color: var(--color-text-muted); margin-bottom: var(--space-4); max-width: 45ch; margin-inline: auto;">Meet-day timeline, attempt selection strategy, equipment list, warm-up protocol, and post-meet recovery — all on one page.</p>
+      <a href="./assets/pdfs/powerlifting-meet-checklist.html" target="_blank" rel="noopener noreferrer" class="btn btn-primary" style="display: inline-flex; gap: 6px; align-items: center;">Download the Checklist &rarr;</a>
+    </div>
+  </section>
+
+  <!-- ── Bridge CTA ── -->
+  <hr class="glow-line">
+  <section style="padding: var(--space-8) 0 var(--space-6); text-align: center;">
+    <div class="container">
+      <p class="section-label" style="color: var(--color-pink); text-align: center; max-width: none;">Get Coached</p>
+      <h2 style="font-family: var(--font-body); font-size: var(--text-xl); font-weight: 700; color: var(--color-text); margin-bottom: var(--space-4);">Ready to build a <span style="color: var(--color-teal);">competition</span> <span style="color: var(--color-pink);">total</span>?</h2>
+      <p style="font-size: var(--text-base); color: var(--color-text-muted); margin-bottom: var(--space-6); max-width: 45ch; margin-inline: auto;">Brad coaches USAPL athletes through structured peaking protocols. Your first session is free.</p>
+      <a href="https://www.vagaro.com/tmoxgj" class="btn btn-primary">Book Your FREE Session!</a>
+    </div>
+  </section>
+  <hr class="glow-line">
+
+</main>
+
+<!-- ═══════════════════════════════════════════
+     FOOTER
+     ═══════════════════════════════════════════ -->
+<footer class="site-footer" role="contentinfo">
+  <div class="container">
+    <div class="footer-nav-columns">
+      <div class="footer-links">
+        <h4>Navigate</h4>
+        <a href="./index.html">Home</a>
+        <a href="./index.html#about">About Brad</a>
+        <a href="./index.html#services">Services &amp; Pricing</a>
+        <a href="./method.html" style="color: var(--color-pink); font-weight: 600;">The Velocity Method</a>
+        <a href="./index.html#vbt">What is VBT?</a>
+        <a href="./index.html#results">Results</a>
+        <a href="./index.html#contact">Contact</a>
+      </div>
+      <div class="footer-links">
+        <h4>Resources &amp; Free Tools</h4>
+        <a href="./tools.html">Calculators &amp; Converters</a>
+        <a href="./velocity-trackers.html">Velocity Trackers Guide</a>
+        <a href="./quiz.html">Training Type Quiz</a>
+      </div>
+      <div class="footer-links">
+        <h4>Connect</h4>
+        <a href="mailto:brad@yeagersgym.com" class="footer-contact-link">brad@yeagersgym.com</a>
+        <a href="https://www.instagram.com/YeagersGym" target="_blank" rel="noopener noreferrer" class="footer-contact-link">@YeagersGym</a>
+        <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="footer-vagaro-link">Book via Vagaro &rarr;</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>&copy; 2026 Yeager's Gym &middot; San Diego, CA</span>
+      <div class="footer-bottom-right">
+        <a href="./index.html" aria-label="Yeager's Gym Home">
+          <img src="assets/logo.jpeg" alt="Yeager's Gym" class="logo-mark-img" width="24" height="24">
+        </a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- Mobile Sticky CTA -->
+<div class="mobile-sticky-cta" id="stickyCta" style="display: none; position: fixed; bottom: 0; left: 0; right: 0; z-index: 999; padding: 12px 16px; background: rgba(10,14,23,0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-top: 1px solid rgba(72,196,204,0.2); text-align: center;">
+  <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" style="display: inline-block; width: 100%; max-width: 320px; padding: 10px 20px; background: var(--color-teal); color: #0a0e17; font-family: var(--font-display); font-size: 0.8rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; text-decoration: none; border-radius: 6px;">Book a Free Session</a>
+</div>
+
+<script>
+(function() {
+  'use strict';
+
+  // ══════════════════════════════════════════════════════════
+  // POWERLIFTING STANDARDS DATA
+  // ══════════════════════════════════════════════════════════
+
+  var standards = {
+    male: {
+      squat:    { untrained: 0.75, novice: 1.25, intermediate: 1.75, advanced: 2.50 },
+      bench:    { untrained: 0.50, novice: 1.00, intermediate: 1.50, advanced: 2.00 },
+      deadlift: { untrained: 1.00, novice: 1.50, intermediate: 2.25, advanced: 3.00 }
+    },
+    female: {
+      squat:    { untrained: 0.50, novice: 1.00, intermediate: 1.50, advanced: 2.10 },
+      bench:    { untrained: 0.25, novice: 0.50, intermediate: 0.85, advanced: 1.25 },
+      deadlift: { untrained: 0.75, novice: 1.25, intermediate: 1.75, advanced: 2.50 }
+    }
+  };
+
+  var tierNames = ['Untrained', 'Novice', 'Intermediate', 'Advanced', 'Elite'];
+  var tierColors = {
+    'Untrained': 'rgba(255,255,255,0.5)',
+    'Novice': '#e8e6e3',
+    'Intermediate': '#1EC8B0',
+    'Advanced': '#F0448A',
+    'Elite': '#9B6FD4'
+  };
+
+  var liftLabels = {
+    squat: 'Back Squat',
+    bench: 'Bench Press',
+    deadlift: 'Deadlift'
+  };
+
+  var liftKeys = ['squat', 'bench', 'deadlift'];
+
+  // DOTS classification tiers
+  var dotsClasses = {
+    male:   { classIII: 175, classII: 250, classI: 325, master: 400, elite: 500 },
+    female: { classIII: 150, classII: 215, classI: 280, master: 350, elite: 425 }
+  };
+
+  // ══════════════════════════════════════════════════════════
+  // DOM REFS
+  // ══════════════════════════════════════════════════════════
+
+  var sexSelect = document.getElementById('sex');
+  var bwInput = document.getElementById('bodyweight');
+  var ageInput = document.getElementById('age');
+  var expSelect = document.getElementById('experience');
+  var fedSelect = document.getElementById('federation');
+  var stanceSelect = document.getElementById('deadlift-stance');
+  var squatInput = document.getElementById('squat');
+  var benchInput = document.getElementById('bench');
+  var deadliftInput = document.getElementById('deadlift');
+  var analyzeBtn = document.getElementById('analyze-btn');
+  var resultsPanel = document.getElementById('results-panel');
+
+  var liftInputs = {
+    squat: squatInput,
+    bench: benchInput,
+    deadlift: deadliftInput
+  };
+
+  var isKg = false;
+
+  // ══════════════════════════════════════════════════════════
+  // UNIT TOGGLE
+  // ══════════════════════════════════════════════════════════
+
+  var unitToggle = document.getElementById('unit-toggle');
+  var unitBtns = unitToggle.querySelectorAll('button');
+  var bwUnitLabel = document.getElementById('bw-unit');
+  var liftUnits = document.querySelectorAll('.lift-unit');
+
+  unitBtns.forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      unitBtns.forEach(function(b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      var unit = btn.getAttribute('data-unit');
+      isKg = (unit === 'kg');
+      var label = isKg ? 'kg' : 'lbs';
+      bwUnitLabel.textContent = label;
+      liftUnits.forEach(function(el) { el.textContent = label; });
+    });
+  });
+
+  // ══════════════════════════════════════════════════════════
+  // TIER CLASSIFICATION
+  // ══════════════════════════════════════════════════════════
+
+  function classifyLift(lift, value, bw, sex) {
+    var std = standards[sex][lift];
+    var mult = value / bw;
+    if (mult < std.untrained) return { tier: 'Untrained', index: 0, pct: Math.min(1, mult / std.untrained) };
+    if (mult < std.novice) return { tier: 'Novice', index: 1, pct: (mult - std.untrained) / (std.novice - std.untrained) };
+    if (mult < std.intermediate) return { tier: 'Intermediate', index: 2, pct: (mult - std.novice) / (std.intermediate - std.novice) };
+    if (mult < std.advanced) return { tier: 'Advanced', index: 3, pct: (mult - std.intermediate) / (std.advanced - std.intermediate) };
+    return { tier: 'Elite', index: 4, pct: 1 };
+  }
+
+  // ══════════════════════════════════════════════════════════
+  // DOTS SCORE (IPF approved replacement for Wilks)
+  // ══════════════════════════════════════════════════════════
+
+  function dotsScore(total, bw, sex) {
+    var a, b, c, d, e;
+    if (sex === 'male') {
+      a = -0.0000010930; b = 0.0007391293; c = -0.1918759221;
+      d = 24.0900756104; e = -307.75076;
+    } else {
+      a = -0.0000010706; b = 0.0005158568; c = -0.1126655495;
+      d = 13.6175032; e = -57.96288;
+    }
+    var denom = a * Math.pow(bw, 4) + b * Math.pow(bw, 3) + c * Math.pow(bw, 2) + d * bw + e;
+    return Math.round(total * (500 / denom) * 10) / 10;
+  }
+
+  function classifyDots(dots, sex) {
+    var dc = dotsClasses[sex];
+    if (dots >= dc.elite) return 'Elite';
+    if (dots >= dc.master) return 'Master';
+    if (dots >= dc.classI) return 'Class I';
+    if (dots >= dc.classII) return 'Class II';
+    if (dots >= dc.classIII) return 'Class III';
+    return 'Unclassified';
+  }
+
+  // ══════════════════════════════════════════════════════════
+  // ANALYSIS
+  // ══════════════════════════════════════════════════════════
+
+  analyzeBtn.addEventListener('click', function() {
+    var sex = sexSelect.value;
+    var bwRaw = parseFloat(bwInput.value);
+    var federation = fedSelect.value;
+    var stance = stanceSelect.value;
+    var exp = expSelect.value;
+
+    var rawValues = {};
+    var hasError = false;
+
+    // Validation
+    if (!bwRaw || bwRaw <= 0) { shakeField(bwInput); return; }
+
+    liftKeys.forEach(function(key) {
+      var val = parseFloat(liftInputs[key].value);
+      if (isNaN(val) || (!val && val !== 0)) {
+        if (!hasError) { shakeField(liftInputs[key]); hasError = true; }
+      }
+      rawValues[key] = val;
+    });
+    if (hasError) return;
+
+    // Convert to lbs for calculations if needed
+    var bw = isKg ? bwRaw * 2.20462 : bwRaw;
+    var bwKg = isKg ? bwRaw : bwRaw / 2.20462;
+    var lbsValues = {};
+    liftKeys.forEach(function(key) {
+      lbsValues[key] = isKg ? rawValues[key] * 2.20462 : rawValues[key];
+    });
+
+    // Classify each lift
+    var results = {};
+    liftKeys.forEach(function(key) {
+      results[key] = classifyLift(key, lbsValues[key], bw, sex);
+    });
+
+    // Multipliers
+    var mults = {};
+    liftKeys.forEach(function(key) {
+      mults[key] = lbsValues[key] / bw;
+    });
+
+    // Find strongest and weakest
+    var strongest = liftKeys[0];
+    var weakest = liftKeys[0];
+    liftKeys.forEach(function(k) {
+      var r = results[k];
+      var s = results[strongest];
+      var w = results[weakest];
+      if (r.index > s.index || (r.index === s.index && r.pct > s.pct)) strongest = k;
+      if (r.index < w.index || (r.index === w.index && r.pct < w.pct)) weakest = k;
+    });
+
+    // Overall tier (average index)
+    var avgIndex = 0;
+    liftKeys.forEach(function(k) { avgIndex += results[k].index + results[k].pct * 0.5; });
+    avgIndex /= liftKeys.length;
+    var overallIndex = Math.round(avgIndex);
+    if (overallIndex > 4) overallIndex = 4;
+    var overallTier = tierNames[overallIndex];
+
+    // SBD Total
+    var sbdTotalLbs = lbsValues.squat + lbsValues.bench + lbsValues.deadlift;
+    var sbdTotalKg = sbdTotalLbs / 2.20462;
+    var sbdDisplay = isKg ? Math.round(sbdTotalKg) : Math.round(sbdTotalLbs);
+
+    // DOTS score (uses kg)
+    var dots = dotsScore(sbdTotalKg, bwKg, sex);
+    var dotsClass = classifyDots(dots, sex);
+
+    // Squat : Deadlift ratio
+    var sqDlRatio = lbsValues.deadlift > 0 ? (lbsValues.squat / lbsValues.deadlift) * 100 : 0;
+
+    // Bench : Squat ratio
+    var bnSqRatio = lbsValues.squat > 0 ? (lbsValues.bench / lbsValues.squat) * 100 : 0;
+
+    var bwDisplay = isKg ? bwRaw : bw;
+
+    // ── Render Results ──
+
+    // Overall tier
+    document.getElementById('overall-tier').textContent = overallTier;
+    document.getElementById('overall-tier').style.color = tierColors[overallTier];
+    document.getElementById('overall-sub').textContent =
+      'Based on ' + (sex === 'male' ? 'male' : 'female') + ' standards at ' +
+      Math.round(bwDisplay) + (isKg ? ' kg' : ' lbs') + ' bodyweight.';
+
+    // Per-lift cards
+    var liftResultsEl = document.getElementById('lift-results');
+    liftResultsEl.innerHTML = '';
+
+    liftKeys.forEach(function(key) {
+      var r = results[key];
+      var card = document.createElement('div');
+      card.className = 'lift-card';
+      if (key === strongest) card.classList.add('strongest');
+      if (key === weakest) card.classList.add('weakest');
+
+      var tagHTML = '';
+      if (key === strongest) tagHTML = '<span class="lift-tag strongest-tag">Strongest</span>';
+      if (key === weakest) tagHTML = '<span class="lift-tag weakest-tag">Weakest</span>';
+
+      var metaHTML = '';
+      metaHTML = '<span>' + Math.round(rawValues[key]) + (isKg ? ' kg' : ' lbs') + '</span>';
+      metaHTML += '<span>' + mults[key].toFixed(2) + 'x BW</span>';
+
+      // Progress bar position (0-100%)
+      var barPct = ((r.index + r.pct) / 5) * 100;
+      barPct = Math.max(2, Math.min(98, barPct));
+
+      card.innerHTML =
+        '<div class="lift-card-header">' +
+          '<span class="lift-name">' + liftLabels[key] + '</span>' +
+          tagHTML +
+        '</div>' +
+        '<div class="lift-meta">' + metaHTML + '</div>' +
+        '<p class="lift-tier-label" style="color:' + tierColors[r.tier] + ';">' + r.tier + '</p>' +
+        '<div class="tier-bar-container">' +
+          '<div class="tier-bar-wrap">' +
+            '<div class="tier-segment seg-untrained' + (r.tier === 'Untrained' ? ' active-tier' : '') + '">UT</div>' +
+            '<div class="tier-segment seg-novice' + (r.tier === 'Novice' ? ' active-tier' : '') + '">NOV</div>' +
+            '<div class="tier-segment seg-intermediate' + (r.tier === 'Intermediate' ? ' active-tier' : '') + '">INT</div>' +
+            '<div class="tier-segment seg-advanced' + (r.tier === 'Advanced' ? ' active-tier' : '') + '">ADV</div>' +
+            '<div class="tier-segment seg-elite' + (r.tier === 'Elite' ? ' active-tier' : '') + '">ELT</div>' +
+          '</div>' +
+          '<div class="tier-marker" style="left:' + barPct + '%;"></div>' +
+        '</div>';
+
+      liftResultsEl.appendChild(card);
+    });
+
+    // Stats
+    document.getElementById('sbd-total').textContent = sbdDisplay;
+    document.getElementById('sbd-unit').textContent = isKg ? 'kg' : 'lbs';
+    document.getElementById('dots-score').textContent = dots;
+    document.getElementById('dots-class').textContent = dotsClass;
+    document.getElementById('sq-dl-ratio').textContent = Math.round(sqDlRatio) + '%';
+    document.getElementById('bn-sq-ratio').textContent = Math.round(bnSqRatio) + '%';
+
+    // Ratio notes
+    if (sqDlRatio >= 75 && sqDlRatio <= 85) {
+      document.getElementById('sq-dl-note').textContent = 'Right in the ideal range';
+    } else if (sqDlRatio < 75) {
+      document.getElementById('sq-dl-note').textContent = 'Squat may be lagging';
+    } else if (sqDlRatio > 85) {
+      document.getElementById('sq-dl-note').textContent = 'Deadlift may be lagging';
+    }
+
+    if (bnSqRatio >= 60 && bnSqRatio <= 70) {
+      document.getElementById('bn-sq-note').textContent = 'Right in the ideal range';
+    } else if (bnSqRatio < 60) {
+      document.getElementById('bn-sq-note').textContent = 'Bench may be lagging';
+    } else if (bnSqRatio > 70) {
+      document.getElementById('bn-sq-note').textContent = 'Unusually bench-dominant';
+    }
+
+    // Interpretation
+    var interpText = buildInterpretation(results, overallTier, strongest, weakest, sex, mults, dots, dotsClass, sqDlRatio, bnSqRatio, exp, federation);
+    document.getElementById('interpretation-text').textContent = interpText;
+
+    // Recommendations
+    var recs = buildRecommendations(results, weakest, strongest, sex, mults, dots, dotsClass, sqDlRatio, bnSqRatio, stance, federation);
+    var recsList = document.getElementById('recs-list');
+    recsList.innerHTML = '';
+    recs.forEach(function(rec, i) {
+      var li = document.createElement('li');
+      li.innerHTML = '<span class="rec-num">' + (i + 1) + '</span><span>' + rec + '</span>';
+      recsList.appendChild(li);
+    });
+
+    // Show results
+    resultsPanel.style.display = 'block';
+    requestAnimationFrame(function() {
+      requestAnimationFrame(function() {
+        resultsPanel.classList.add('visible');
+      });
+    });
+
+    // Scroll to results
+    setTimeout(function() {
+      resultsPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
+  });
+
+  // ══════════════════════════════════════════════════════════
+  // INTERPRETATION
+  // ══════════════════════════════════════════════════════════
+
+  function buildInterpretation(results, overallTier, strongest, weakest, sex, mults, dots, dotsClass, sqDlRatio, bnSqRatio, exp, federation) {
+    var text = '';
+
+    // Opening
+    if (overallTier === 'Elite') {
+      text += 'Your numbers put you in elite territory for competitive powerlifting. ';
+    } else if (overallTier === 'Advanced') {
+      text += 'You are well above average across all three competition lifts. ';
+    } else if (overallTier === 'Intermediate') {
+      text += 'You have a solid powerlifting base with clear room to grow your total. ';
+    } else if (overallTier === 'Novice') {
+      text += 'You are building your powerlifting foundation. Consistent training and progressive overload will drive rapid gains from here. ';
+    } else {
+      text += 'You are early in your powerlifting journey. The good news: structured programming will yield fast progress at this stage. ';
+    }
+
+    // Strongest
+    text += 'Your ' + liftLabels[strongest].toLowerCase() + ' is your standout lift at ' + mults[strongest].toFixed(2) + 'x bodyweight, classified as ' + results[strongest].tier + '. ';
+
+    // Weakest
+    text += 'Your ' + liftLabels[weakest].toLowerCase() + ' is your biggest opportunity for improvement at ' + mults[weakest].toFixed(2) + 'x bodyweight, currently at the ' + results[weakest].tier + ' level. ';
+
+    // DOTS classification
+    text += 'Your DOTS score of ' + dots + ' places you at the ' + dotsClass + ' level';
+    if (dotsClass === 'Elite' || dotsClass === 'Master') {
+      text += ', which is competitive at the national and international level. ';
+    } else if (dotsClass === 'Class I') {
+      text += ', meaning you are competitive at the regional and state level. ';
+    } else if (dotsClass === 'Class II') {
+      text += ', a solid score that puts you above most recreational lifters. ';
+    } else if (dotsClass === 'Class III') {
+      text += ', which is a good starting point for competitive powerlifting. ';
+    } else {
+      text += '. Building your total with structured programming will move this up quickly. ';
+    }
+
+    // Ratio analysis
+    if (sqDlRatio < 75) {
+      text += 'Your squat-to-deadlift ratio of ' + Math.round(sqDlRatio) + '% is below the typical 75-85% range, suggesting your squat has room to close the gap with your deadlift. ';
+    } else if (sqDlRatio > 85) {
+      text += 'Your squat-to-deadlift ratio of ' + Math.round(sqDlRatio) + '% is above the typical 75-85% range, which may indicate your deadlift is lagging relative to your squat. ';
+    }
+
+    if (bnSqRatio < 60) {
+      text += 'Your bench-to-squat ratio of ' + Math.round(bnSqRatio) + '% is below the typical 60-70% range. Bench is the most common lagging lift in powerlifting and has the most room to add to your total. ';
+    } else if (bnSqRatio > 70) {
+      text += 'Your bench-to-squat ratio of ' + Math.round(bnSqRatio) + '% is above the typical 60-70% range, which is unusually bench-dominant. Your squat or deadlift may have the most room for total gains. ';
+    }
+
+    // Gap analysis
+    var gap = results[strongest].index - results[weakest].index;
+    if (gap >= 2) {
+      text += 'The gap between your strongest and weakest lift is significant, which suggests a programming imbalance worth addressing. ';
+    } else if (gap === 0) {
+      text += 'Your three lifts are well-balanced, which is a sign of good programming. ';
+    }
+
+    // Experience context
+    if (exp === '10+' && overallTier === 'Intermediate') {
+      text += 'Given 10+ years of training, there may be programming, technique, or recovery factors limiting further progress.';
+    } else if (exp === '<1' && (overallTier === 'Intermediate' || overallTier === 'Advanced')) {
+      text += 'These numbers after less than a year of training are impressive and suggest strong athletic potential.';
+    }
+
+    // Federation context
+    if (federation === 'usapl') {
+      text += ' In USAPL/IPF competition, strict judging standards for squat depth and bench pause mean your competition numbers may be slightly lower than gym lifts.';
+    } else if (federation === 'untested') {
+      text += ' Keep in mind that untested federation standards tend to be higher overall, so these comparisons use drug-tested benchmarks.';
+    }
+
+    return text;
+  }
+
+  // ══════════════════════════════════════════════════════════
+  // RECOMMENDATIONS
+  // ══════════════════════════════════════════════════════════
+
+  function buildRecommendations(results, weakest, strongest, sex, mults, dots, dotsClass, sqDlRatio, bnSqRatio, stance, federation) {
+    var recs = [];
+
+    // Rec 1: Weakest lift specific protocol
+    var weakTier = results[weakest].tier;
+    if (weakest === 'squat') {
+      if (weakTier === 'Untrained' || weakTier === 'Novice') {
+        recs.push('Squat 2-3x per week with linear progression. Prioritize hitting competition depth on every rep. Focus on bracing with a belt, tempo squats (3 seconds down), and building leg drive out of the hole. Add leg press and walking lunges as accessories.');
+      } else {
+        recs.push('To push your squat higher, introduce pause squats at competition depth, tempo squats (3-1-0), and pin squats to address your sticking point. Belt squats and front squats are excellent accessories. Consider adding a heavier squat day and a volume day each week.');
+      }
+    } else if (weakest === 'bench') {
+      if (weakTier === 'Untrained' || weakTier === 'Novice') {
+        recs.push('Bench 2-3x per week with linear progression. Practice competition pauses on every working set. Focus on leg drive, arch setup, and consistent bar path. Add close-grip bench press and dumbbell pressing for accessories.');
+      } else {
+        recs.push('Break through your bench plateau with paused bench at varied grip widths, Spoto press (1-inch pause above chest), and floor press for lockout strength. Target triceps with close-grip bench and dips. Increase pressing frequency to 3-4x per week with varied intensities.');
+      }
+    } else if (weakest === 'deadlift') {
+      if (stance === 'conventional') {
+        if (weakTier === 'Untrained' || weakTier === 'Novice') {
+          recs.push('Deadlift 1-2x per week with progressive overload. Focus on hip hinge mechanics, maintaining a neutral spine, and driving through the floor. Add Romanian deadlifts and barbell rows for posterior chain development. Film your sets to check for lower back rounding.');
+        } else {
+          recs.push('For conventional deadlift, add deficit deadlifts for off-the-floor speed, pause deadlifts at the knee, and block pulls for lockout. Strengthen your upper back with heavy barbell rows and Pendlay rows. Focus on maintaining a strong brace and back position throughout.');
+        }
+      } else {
+        if (weakTier === 'Untrained' || weakTier === 'Novice') {
+          recs.push('Deadlift 1-2x per week with progressive overload. For sumo, prioritize hip mobility work and patience off the floor — the bar breaks the ground slower in sumo. Add hip abductor work, sumo block pulls, and tempo sumo deadlifts to groove the pattern.');
+        } else {
+          recs.push('For sumo deadlift, focus on hip mobility and positioning with pause sumo deadlifts at 1 inch off the floor, sumo block pulls, and wide-stance good mornings. Strengthen your adductors and glutes with belt squats and hip abduction work. Patience off the floor is key — avoid jerking the bar.');
+        }
+      }
+    }
+
+    // Rec 2: Ratio imbalances
+    if (bnSqRatio < 60) {
+      recs.push('Your bench is lagging relative to your squat, which is the most common imbalance in powerlifting. Increasing bench frequency to 3-4x per week and adding chest and tricep accessories will yield the most total gains per pound of effort. Close-grip bench, Spoto press, and DB incline press are high-value choices.');
+    } else if (sqDlRatio < 75) {
+      recs.push('Your squat is lagging relative to your deadlift. Temporarily increase squat volume and frequency while maintaining your deadlift. Belt squats, pause squats, and leg press will build squat-specific strength without overtaxing deadlift recovery.');
+    } else if (sqDlRatio > 85) {
+      recs.push('Your deadlift is lagging relative to your squat. Add a second deadlift day focused on variations — deficit pulls, paused deadlifts, or opposite-stance work. Strengthen your posterior chain with Romanian deadlifts and heavy rows while maintaining squat volume.');
+    } else {
+      var gap = results[strongest].index - results[weakest].index;
+      if (gap >= 2) {
+        recs.push('Address your lift imbalance by temporarily increasing training volume for ' + liftLabels[weakest].toLowerCase() + ' while maintaining your ' + liftLabels[strongest].toLowerCase() + ' with reduced volume. This will drive the fastest total gains.');
+      } else {
+        recs.push('Your lift ratios are well-balanced. Continue following a well-rounded powerlifting program with progressive overload across all three lifts. Focus on weekly volume progression and technique refinement.');
+      }
+    }
+
+    // Rec 3: Competition readiness based on DOTS
+    if (dotsClass === 'Unclassified' || dotsClass === 'Class III') {
+      recs.push('Focus on building your base with linear progression or simple periodization. A program like GZCLP, 5/3/1 for Beginners, or Calgary Barbell 16-Week will drive consistent total gains. Nail down your competition commands and technique before signing up for your first meet.');
+      if (federation === 'usapl') {
+        recs.push = recs.push; // keep same
+        recs[recs.length - 1] += ' USAPL requires strict squat depth and a clear pause on bench — practice these standards in training.';
+      }
+    } else if (dotsClass === 'Class II' || dotsClass === 'Class I') {
+      recs.push('At your level, block periodization with planned intensity peaks will be more effective than linear progression. Programs like Calgary Barbell 16-Week, Sheiko, or coached periodization work well. Start competing regularly to practice meet-day execution — attempt selection, timing, and peaking.');
+      if (federation === 'usapl') {
+        recs[recs.length - 1] += ' In USAPL, getting comfortable with commands and strict judging is as important as raw strength.';
+      }
+    } else {
+      recs.push('At the Master/Elite level, work with an experienced powerlifting coach who can individualize your programming, manage fatigue, and design peaking protocols for specific competitions. Nutrition periodization, recovery optimization, and strategic meet selection become as important as training itself.');
+    }
+
+    return recs;
+  }
+
+  // ══════════════════════════════════════════════════════════
+  // SHARE BUTTONS
+  // ══════════════════════════════════════════════════════════
+
+  document.getElementById('share-social').addEventListener('click', function() {
+    var tier = document.getElementById('overall-tier').textContent;
+    var text = 'I just scored ' + tier + ' on the Yeager\'s Gym Powerlifting Standards Calculator!';
+    var url = 'https://yeagersgym.com/tools-powerlifting.html';
+
+    var twitterUrl = 'https://twitter.com/intent/tweet?text=' + encodeURIComponent(text) + '&url=' + encodeURIComponent(url);
+    window.open(twitterUrl, '_blank', 'width=550,height=420');
+
+    setTimeout(function() {
+      var fbUrl = 'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(url) + '&quote=' + encodeURIComponent(text);
+      if (confirm('Also share on Facebook?')) {
+        window.open(fbUrl, '_blank', 'width=550,height=420');
+      }
+    }, 500);
+  });
+
+  document.getElementById('share-friend').addEventListener('click', function() {
+    var tier = document.getElementById('overall-tier').textContent;
+    var text = 'I just scored ' + tier + ' on the Yeager\'s Gym Powerlifting Standards Calculator! Try it: ';
+    var url = 'https://yeagersgym.com/tools-powerlifting.html';
+
+    if (navigator.share) {
+      navigator.share({
+        title: 'Powerlifting Standards Calculator',
+        text: text,
+        url: url
+      }).catch(function() {});
+    } else {
+      var mailUrl = 'mailto:?subject=' + encodeURIComponent('Check out my Powerlifting Standards results') + '&body=' + encodeURIComponent(text + url);
+      window.location.href = mailUrl;
+    }
+  });
+
+  document.getElementById('share-bookmark').addEventListener('click', function() {
+    var url = 'https://yeagersgym.com/tools-powerlifting.html';
+    if (window.sidebar && window.sidebar.addPanel) {
+      window.sidebar.addPanel('Powerlifting Standards Calculator', url, '');
+    } else {
+      alert('Press ' + (navigator.userAgent.indexOf('Mac') !== -1 ? 'Cmd' : 'Ctrl') + '+D to bookmark this page!');
+    }
+  });
+
+  // ══════════════════════════════════════════════════════════
+  // UTILITIES
+  // ══════════════════════════════════════════════════════════
+
+  function shakeField(el) {
+    el.style.animation = 'shake 0.4s ease';
+    el.style.borderColor = '#F0448A';
+    el.focus();
+    setTimeout(function() {
+      el.style.animation = '';
+      el.style.borderColor = '';
+    }, 500);
+  }
+
+  // Shake animation
+  var shakeStyle = document.createElement('style');
+  shakeStyle.textContent = '@keyframes shake { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-6px)} 40%{transform:translateX(6px)} 60%{transform:translateX(-4px)} 80%{transform:translateX(4px)} }';
+  document.head.appendChild(shakeStyle);
+
+  // Scroll reveal
+  var fadeEls = document.querySelectorAll('.fade-in');
+  if ('IntersectionObserver' in window) {
+    var observer = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+    fadeEls.forEach(function(el) { observer.observe(el); });
+  } else {
+    fadeEls.forEach(function(el) { el.classList.add('visible'); });
+  }
+
+  // Mobile Menu
+  var hamburger = document.querySelector('.hamburger');
+  var mobileNav = document.querySelector('.mobile-nav');
+  if (hamburger && mobileNav) {
+    hamburger.addEventListener('click', function() {
+      var isOpen = mobileNav.classList.toggle('open');
+      hamburger.classList.toggle('open');
+      hamburger.setAttribute('aria-expanded', isOpen);
+    });
+  }
+
+  // Header scroll shadow
+  var header = document.querySelector('.site-header');
+  window.addEventListener('scroll', function() {
+    if (window.scrollY > 60) {
+      header.style.boxShadow = 'var(--shadow-md)';
+    } else {
+      header.style.boxShadow = 'none';
+    }
+  }, { passive: true });
+
+  // Enter key triggers analyze
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' && document.activeElement && document.activeElement.closest('.calc-card')) {
+      analyzeBtn.click();
+    }
+  });
+
+  // Mobile sticky CTA
+  var cta = document.getElementById('stickyCta');
+  if (cta && window.innerWidth <= 768) {
+    window.addEventListener('scroll', function() {
+      cta.style.display = window.scrollY > 300 ? 'block' : 'none';
+    }, { passive: true });
+  }
+
+})();
+</script>
+
+</body>
+</html>
