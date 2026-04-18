@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(claude mcp:*)",
+      "WebSearch",
+      "Bash(python validate_v3.py test_batch_04/compound_master.json test_batch_04/compound_sources.json)",
+      "Bash(echo \"EXIT:$?\")",
+      "Bash(python \"C:/Projects/The Peptide Project/validate_v3.py\" \"C:/Projects/The Peptide Project/test_batch_04/compound_master.json\" \"C:/Projects/The Peptide Project/test_batch_04/compound_sources.json\")"
+    ]
+  }
+}
