@@ -8,7 +8,8 @@
     "node": ">=20"
   },
   "scripts": {
-    "start": "node billing.mjs"
+    "start": "node billing.mjs",
+    "monthly": "node monthly.mjs"
   },
   "dependencies": {
     "googleapis": "^144.0.0",

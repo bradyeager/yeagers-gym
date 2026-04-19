@@ -12,9 +12,18 @@ Reconciles Vagaro appointments against Venmo payments, emails you an unpaid-clie
 
 ## Your Friday
 
-Open the email on your phone. For each unpaid client, tap the button → Venmo app opens with amount + note pre-filled → tap Send. 30 seconds total.
+Open the email on your phone. Every actionable item has a button:
 
-For cash payments: add a line to `billing/cash-log.md` (`YYYY-MM-DD | Client Name | $amount | notes`) in the GitHub web UI. The next run will recognize it.
+- **Unpaid** → two buttons per client: **Request $X on Venmo** (pink, opens Venmo with amount + note pre-filled) or **Log as cash** (teal outline, drops a file in `billing/cash-entries/` via a GitHub prefilled-new-file link — tap, review, tap Commit).
+- **Needs review** (partial payments, wrong amount) → three buttons: **Accept as paid** / **Request $X diff** (if short) / **Mark disputed**. Each drops a resolution file in `billing/review-resolutions/` so you have a permanent record.
+- **Cash pending** (clients on the roster flagged as cash-only who haven't been logged yet) → one **Log $X cash** button per session.
+- **Unknown client / unmatched payment** → no button; edit `clients.csv` and re-run.
+
+30 seconds total on a good week. The `Log as cash` button opens GitHub's web editor with the line already composed — you hit **Commit changes** twice and you're done.
+
+## Monthly summary
+
+On the 1st of every month at 10 AM PT, a separate workflow (`monthly-summary.yml`) emails you the prior month's revenue split: Venmo total (what shows up on your 1099-K), cash total (still taxable but not reported by Venmo), outstanding balance, and session counts. Runs entirely off the committed `billing/logs/` — no Vagaro or Gmail calls, so it's very reliable.
 
 ## Set it up
 
@@ -34,9 +43,13 @@ Once that's done, it runs itself every Friday.
 | `SETUP.md` | One-time wiring instructions (read this first) |
 | `clients.csv` | Client roster — name, Venmo handle, default price, cash-only flag |
 | `cash-log.md` | Append-only log of cash-paid sessions |
-| `bot/billing.mjs` | The Node script that runs in GitHub Actions |
+| `bot/billing.mjs` | Weekly reconciliation script (Friday workflow) |
+| `bot/monthly.mjs` | Monthly revenue summary script (1st-of-month workflow) |
+| `bot/lib.mjs` | Shared helpers (CSV, palette, email shell, Brevo, URLs) |
 | `bot/package.json` | Node dependencies |
 | `logs/YYYY-MM-DD.md` | Per-week audit log, written by the bot |
+| `cash-entries/` | Per-session cash payments (auto-created via Log-as-cash buttons) |
+| `review-resolutions/` | Per-session needs-review dispositions (auto-created via buttons) |
 | `prompts/*.md` | Claude-for-Chrome fallback recipes (see below) |
 
 ## Updating the roster

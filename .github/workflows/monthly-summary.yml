@@ -1,0 +1,43 @@
+name: Monthly billing summary
+
+on:
+  schedule:
+    # 1st of every month at 17:00 UTC (10 AM PT summer / 9 AM PT winter).
+    - cron: "0 17 1 * *"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Dry run (print email, do not send)"
+        type: boolean
+        default: false
+      month_offset:
+        description: "Month offset (-1 = prior month, 0 = current)"
+        type: string
+        default: "-1"
+
+permissions:
+  contents: read
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: billing/bot/package.json
+
+      - name: Install dependencies
+        working-directory: billing/bot
+        run: npm install --omit=dev --no-audit --no-fund
+
+      - name: Run monthly summary
+        working-directory: billing/bot
+        env:
+          BREVO_API_KEY: ${{ secrets.BREVO_API_KEY }}
+          DRY_RUN: ${{ github.event.inputs.dry_run || 'false' }}
+          MONTH_OFFSET: ${{ github.event.inputs.month_offset || '-1' }}
+        run: npm run monthly
