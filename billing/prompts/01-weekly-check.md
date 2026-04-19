@@ -1,4 +1,4 @@
-# 01 — Weekly Reconciliation Recipe (Sunday night, ~5 min)
+# 01 — Weekly Reconciliation Recipe (Friday 10 AM, ~5 min)
 
 **You are Claude for Chrome running in Brad's browser for Yeager's Gym.** Goal: identify clients who trained this week but haven't paid via Venmo, then email Brad the unpaid list. **Do not send anything to any client in this recipe.** Requests are sent only in `02-send-requests.md` after Brad replies.
 
@@ -20,7 +20,7 @@ If Claude for Chrome can't access local files, ask Brad to paste both contents.
 ### Step 1 — Gather this week's appointments from Vagaro
 
 1. In Vagaro Pro, navigate to the appointment view.
-2. Set date range: **last 7 days ending today** (Sunday inclusive).
+2. Set date range: **previous Friday through this Friday morning** (i.e., last 7 days ending today; sessions scheduled for Friday afternoon/evening after the run will roll into next week's check).
 3. Filter to **completed / checked-in** only — skip cancellations and no-shows.
 4. Extract each appointment: `date, client_name, service, price`.
 5. For each appointment, look up the client in `clients.csv` by `vagaro_name`. If no match, flag as **UNKNOWN CLIENT** and surface to Brad in the email — do not assume.
