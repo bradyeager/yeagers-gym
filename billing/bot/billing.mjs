@@ -1,15 +1,20 @@
 #!/usr/bin/env node
 // Weekly Vagaro/Venmo billing reconciliation for Yeager's Gym.
-// Runs in GitHub Actions on Fridays. Reads Vagaro iCal + Gmail,
-// matches against billing/clients.csv, emails Brad via Brevo,
-// writes a log to billing/logs/YYYY-MM-DD.md.
+// Runs Fridays in GitHub Actions. Emails Brad via Brevo with
+// tap-to-action buttons (Venmo request, log cash, resolve review).
 
 import fs from "node:fs/promises";
 import path from "node:path";
 import ical from "node-ical";
 import { google } from "googleapis";
+import {
+  PALETTE, FONTS, GITHUB_OWNER, GITHUB_REPO, DEFAULT_BRANCH,
+  requireEnv, resolveRepoRoot, loadClients, loadCashEntries,
+  fuzzyName, fmtDate, fmtDateIso, slugify,
+  venmoRequestLink, githubNewFileUrl, sendBrevoEmail,
+  emailShell, sectionLabel, button, buttonOutline, card,
+} from "./lib.mjs";
 
-// ---- Config from env ----
 const {
   VAGARO_ICAL_URL,
   GOOGLE_CLIENT_ID,
@@ -23,13 +28,6 @@ const {
   DRY_RUN = "false",
 } = process.env;
 
-function requireEnv(name, val) {
-  if (!val) {
-    console.error(`Missing required env var: ${name}`);
-    process.exit(1);
-  }
-}
-
 requireEnv("VAGARO_ICAL_URL", VAGARO_ICAL_URL);
 requireEnv("GOOGLE_CLIENT_ID", GOOGLE_CLIENT_ID);
 requireEnv("GOOGLE_CLIENT_SECRET", GOOGLE_CLIENT_SECRET);
@@ -39,65 +37,9 @@ requireEnv("BREVO_API_KEY", BREVO_API_KEY);
 const LOOKBACK_MS = Number(LOOKBACK_DAYS) * 24 * 60 * 60 * 1000;
 const NOW = new Date();
 const WINDOW_START = new Date(NOW.getTime() - LOOKBACK_MS);
-const REPO_ROOT = path.resolve(path.dirname(new URL(import.meta.url).pathname), "..", "..");
+const REPO_ROOT = resolveRepoRoot(import.meta.url);
 const CLIENTS_CSV = path.join(REPO_ROOT, "billing", "clients.csv");
-const CASH_LOG_MD = path.join(REPO_ROOT, "billing", "cash-log.md");
 const LOGS_DIR = path.join(REPO_ROOT, "billing", "logs");
-
-// ---- Load roster ----
-
-async function loadClients() {
-  const raw = await fs.readFile(CLIENTS_CSV, "utf8");
-  const lines = raw.split("\n").map((l) => l.trim()).filter((l) => l && !l.startsWith("#"));
-  const header = lines.shift();
-  if (!header || !header.startsWith("vagaro_name,")) {
-    throw new Error(`Unexpected clients.csv header: ${header}`);
-  }
-  return lines.map((line) => {
-    const cells = parseCsvLine(line);
-    return {
-      vagaro_name: cells[0],
-      venmo_handle: cells[1] || "",
-      venmo_display_name: cells[2] || "",
-      default_price: cells[3] ? Number(cells[3]) : null,
-      pays_cash: (cells[4] || "").toLowerCase() === "true",
-      notes: cells[5] || "",
-    };
-  });
-}
-
-function parseCsvLine(line) {
-  const cells = [];
-  let cur = "";
-  let inQuotes = false;
-  for (let i = 0; i < line.length; i++) {
-    const c = line[i];
-    if (c === '"') {
-      if (inQuotes && line[i + 1] === '"') { cur += '"'; i++; }
-      else { inQuotes = !inQuotes; }
-    } else if (c === "," && !inQuotes) {
-      cells.push(cur); cur = "";
-    } else { cur += c; }
-  }
-  cells.push(cur);
-  return cells;
-}
-
-async function loadCashLog() {
-  try {
-    const raw = await fs.readFile(CASH_LOG_MD, "utf8");
-    const lines = raw.split("\n");
-    const entries = [];
-    for (const line of lines) {
-      const m = line.match(/^(\d{4}-\d{2}-\d{2})\s*\|\s*([^|]+?)\s*\|\s*\$?([\d.]+)/);
-      if (m) entries.push({ date: m[1], name: m[2].trim(), amount: Number(m[3]) });
-    }
-    return entries;
-  } catch (e) {
-    if (e.code === "ENOENT") return [];
-    throw e;
-  }
-}
 
 // ---- Vagaro iCal ----
 
@@ -108,14 +50,12 @@ async function fetchVagaroAppointments() {
     if (ev.type !== "VEVENT") continue;
     const start = ev.start instanceof Date ? ev.start : new Date(ev.start);
     if (start < WINDOW_START || start > NOW) continue;
-    const status = (ev.status || "").toUpperCase();
-    if (status === "CANCELLED") continue;
+    if ((ev.status || "").toUpperCase() === "CANCELLED") continue;
     const summary = (ev.summary || "").trim();
     appts.push({
       date: start,
       summary,
       description: (ev.description || "").trim(),
-      location: (ev.location || "").trim(),
       client_name: extractClientName(summary, ev.description),
     });
   }
@@ -123,8 +63,6 @@ async function fetchVagaroAppointments() {
   return appts;
 }
 
-// Vagaro iCal SUMMARY varies ("Alice Chen - PT 60", "PT 60 w/ Alice", etc.).
-// Try a few patterns, then fall back to matching the whole summary against the roster.
 function extractClientName(summary, description) {
   if (!summary) return "";
   const patterns = [
@@ -149,7 +87,6 @@ async function fetchVenmoPayments() {
   const oauth2 = new google.auth.OAuth2(GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET);
   oauth2.setCredentials({ refresh_token: GOOGLE_REFRESH_TOKEN });
   const gmail = google.gmail({ version: "v1", auth: oauth2 });
-
   const query = `from:venmo@venmo.com "paid you" newer_than:${LOOKBACK_DAYS}d`;
   const list = await gmail.users.messages.list({ userId: "me", q: query, maxResults: 200 });
   const msgs = list.data.messages || [];
@@ -168,24 +105,16 @@ function parseVenmoEmail(msg) {
   const dateHdr = headers["date"] || "";
   const snippet = msg.snippet || "";
   const body = extractBody(msg.payload);
-
-  // Subject form: "Alice Chen paid you $100.00"
   const subjMatch = subject.match(/^(.+?)\s+paid you\s+\$([\d,.]+)/i);
   if (!subjMatch) return null;
   const sender_display_name = subjMatch[1].trim();
   const amount = Number(subjMatch[2].replace(/,/g, ""));
-
-  // Handle: look for @username or venmo.com/u/<handle> in body/snippet
   const handleMatch = (body + "\n" + snippet).match(/venmo\.com\/u\/([A-Za-z0-9._-]+)/i)
     || (body + "\n" + snippet).match(/@([A-Za-z0-9._-]+)/);
   const sender_handle = handleMatch ? handleMatch[1].toLowerCase() : "";
-
-  // Note: Venmo emails often include the payment note in quotes after the amount line.
   const noteMatch = body.match(/"([^"\n]{1,140})"/);
   const note = noteMatch ? noteMatch[1].trim() : "";
-
   const date = dateHdr ? new Date(dateHdr) : new Date();
-
   return { sender_display_name, sender_handle, amount, note, date, subject };
 }
 
@@ -193,35 +122,14 @@ function extractBody(payload) {
   if (!payload) return "";
   const chunks = [];
   const walk = (p) => {
-    if (p.body?.data) {
-      chunks.push(Buffer.from(p.body.data, "base64").toString("utf8"));
-    }
+    if (p.body?.data) chunks.push(Buffer.from(p.body.data, "base64").toString("utf8"));
     if (p.parts) for (const sub of p.parts) walk(sub);
   };
   walk(payload);
   return chunks.join("\n");
 }
 
-// ---- Matching ----
-
-function fuzzyName(a, b) {
-  if (!a || !b) return 0;
-  const na = a.toLowerCase().replace(/[^a-z ]/g, "").trim();
-  const nb = b.toLowerCase().replace(/[^a-z ]/g, "").trim();
-  if (!na || !nb) return 0;
-  if (na === nb) return 1;
-  const aParts = na.split(/\s+/);
-  const bParts = nb.split(/\s+/);
-  // Same first name + last-initial match counts as strong.
-  if (aParts[0] === bParts[0]) {
-    const aLast = aParts[aParts.length - 1];
-    const bLast = bParts[bParts.length - 1];
-    if (aLast === bLast) return 1;
-    if (aLast[0] === bLast[0]) return 0.8;
-    return 0.6;
-  }
-  return 0;
-}
+// ---- Reconciliation ----
 
 function reconcile(appointments, payments, clients, cashLog) {
   const byVagaroName = new Map(clients.map((c) => [c.vagaro_name.toLowerCase(), c]));
@@ -240,11 +148,8 @@ function reconcile(appointments, payments, clients, cashLog) {
       const cashHit = cashLog.find(
         (c) => sameDay(c.date, appt.date) && fuzzyName(c.name, roster.vagaro_name) >= 0.8,
       );
-      if (cashHit) {
-        results.push({ appt, roster, status: "PAID_CASH", payment: cashHit });
-      } else {
-        results.push({ appt, roster, status: "CASH_PENDING" });
-      }
+      if (cashHit) results.push({ appt, roster, status: "PAID_CASH", payment: cashHit });
+      else results.push({ appt, roster, status: "CASH_PENDING" });
       continue;
     }
 
@@ -258,10 +163,7 @@ function reconcile(appointments, payments, clients, cashLog) {
         return nameMatch || displayMatch;
       })
       .filter(({ p }) => withinDateWindow(p.date, appt.date))
-      .map(({ p, idx }) => ({
-        p, idx,
-        amountScore: expectedPrice ? amountScore(p.amount, expectedPrice) : 0.5,
-      }))
+      .map(({ p, idx }) => ({ p, idx, amountScore: expectedPrice ? amountScore(p.amount, expectedPrice) : 0.5 }))
       .sort((a, b) => b.amountScore - a.amountScore);
 
     if (candidates.length === 0) {
@@ -288,7 +190,6 @@ function reconcile(appointments, payments, clients, cashLog) {
 function amountScore(received, expected) {
   if (!expected) return 0.5;
   if (received === expected) return 1;
-  // Multiples (package pre-pay) count as full match.
   const ratio = received / expected;
   if (Math.abs(ratio - Math.round(ratio)) < 0.02 && ratio >= 1) return 1;
   const pct = Math.abs(received - expected) / expected;
@@ -298,9 +199,7 @@ function amountScore(received, expected) {
 
 function sameDay(a, b) {
   const ad = new Date(a), bd = new Date(b);
-  return ad.getFullYear() === bd.getFullYear() &&
-    ad.getMonth() === bd.getMonth() &&
-    ad.getDate() === bd.getDate();
+  return ad.getFullYear() === bd.getFullYear() && ad.getMonth() === bd.getMonth() && ad.getDate() === bd.getDate();
 }
 
 function withinDateWindow(payDate, apptDate) {
@@ -308,26 +207,22 @@ function withinDateWindow(payDate, apptDate) {
   return diff >= -3 && diff <= 7;
 }
 
-// ---- Venmo deep-link ----
+// ---- Email building ----
 
-function venmoRequestLink(handle, amount, note) {
-  if (!handle) return "";
-  const params = new URLSearchParams({
-    txn: "charge",
-    recipients: handle,
-    amount: String(amount),
-    note,
-  });
-  return `https://account.venmo.com/pay?${params.toString()}`;
+function cashEntryLink({ date, name, amount, note = "per weekly billing email" }) {
+  const iso = fmtDateIso(date);
+  const slug = slugify(name);
+  const filename = `billing/cash-entries/${iso}-${slug}.md`;
+  const value = `${iso} | ${name} | $${amount} | ${note}\n`;
+  return githubNewFileUrl({ filename, value, message: `Cash: ${name} $${amount} ${iso}` });
 }
 
-// ---- Email (Brevo) ----
-
-function fmtDate(d) {
-  return new Date(d).toLocaleDateString("en-US", { weekday: "short", month: "numeric", day: "numeric" });
-}
-function fmtDateIso(d) {
-  return new Date(d).toISOString().slice(0, 10);
+function reviewResolutionLink({ date, name, disposition, detail }) {
+  const iso = fmtDateIso(date);
+  const slug = slugify(name);
+  const filename = `billing/review-resolutions/${iso}-${slug}-${disposition}.md`;
+  const value = `${iso} | ${name} | ${disposition} | ${detail}\n`;
+  return githubNewFileUrl({ filename, value, message: `Review: ${name} ${disposition}` });
 }
 
 function buildEmail({ results, unmatchedPayments }) {
@@ -339,101 +234,129 @@ function buildEmail({ results, unmatchedPayments }) {
   const cashPending = results.filter((r) => r.status === "CASH_PENDING");
 
   const weekOf = results.length ? fmtDate(results[0].appt.date) : fmtDate(WINDOW_START);
-
   const subject = `Weekly billing — ${unpaid.length} unpaid, ${review.length} needs review (week of ${weekOf})`;
 
-  const line = (r) => {
-    const price = r.expectedPrice || r.roster?.default_price || "?";
-    const d = fmtDate(r.appt.date);
-    const name = r.roster?.vagaro_name || r.appt.client_name;
-    const handle = r.roster?.venmo_handle;
-    const noteText = `Training session ${fmtDate(r.appt.date)} — Yeager's Gym`;
-    const link = handle ? venmoRequestLink(handle, price, noteText) : "";
-    return { d, name, price, handle, link, noteText };
-  };
+  let body = "";
 
-  let html = `<div style="font-family: -apple-system, sans-serif; max-width: 600px;">`;
-  html += `<h2 style="margin-top:0;">Weekly billing — week of ${weekOf}</h2>`;
-  html += `<p><strong>${unpaid.length} unpaid</strong> · <strong>${review.length} needs review</strong> · ${paidVenmo.length} paid (Venmo) · ${paidCash.length} paid (cash) · ${cashPending.length} cash pending</p>`;
+  // Top-line summary strip
+  body += `<div style="display:flex;flex-wrap:wrap;gap:14px;margin-bottom:20px;">`;
+  body += statChip(unpaid.length, "unpaid", unpaid.length ? "pink" : "textMuted");
+  body += statChip(review.length, "review", review.length ? "purple" : "textMuted");
+  body += statChip(paidVenmo.length + paidCash.length, "paid", "teal");
+  body += statChip(cashPending.length, "cash pending", cashPending.length ? "purple" : "textMuted");
+  body += `</div>`;
 
+  // UNPAID
   if (unpaid.length) {
-    html += `<h3 style="color:#c02;">Unpaid — tap to request</h3><ul style="padding-left:1em;">`;
+    body += sectionLabel(`Unpaid — ${unpaid.length}`, "pink");
     for (const r of unpaid) {
-      const L = line(r);
-      html += `<li style="margin-bottom:0.6em;"><strong>${L.name}</strong> — ${L.d} — $${L.price}`;
-      if (L.link) html += `<br><a href="${L.link}" style="display:inline-block;padding:6px 14px;background:#3D95CE;color:white;text-decoration:none;border-radius:4px;font-size:14px;margin-top:4px;">Request $${L.price} from @${L.handle}</a>`;
-      else html += ` <em>(no Venmo handle on file — add to clients.csv)</em>`;
-      html += `</li>`;
+      const price = r.expectedPrice || r.roster?.default_price || "?";
+      const handle = r.roster?.venmo_handle;
+      const noteText = `Training ${fmtDate(r.appt.date)} — Yeager's Gym`;
+      const requestUrl = handle ? venmoRequestLink(handle, price, noteText) : "";
+      const cashUrl = cashEntryLink({ date: r.appt.date, name: r.roster.vagaro_name, amount: price });
+
+      let inner = `<div style="font-family:${FONTS.body};font-size:15px;color:${PALETTE.textPrimary};margin-bottom:4px;"><strong>${escapeHtml(r.roster.vagaro_name)}</strong> — ${fmtDate(r.appt.date)} — $${price}</div>`;
+      inner += `<div style="margin-top:10px;">`;
+      if (requestUrl) inner += button({ href: requestUrl, label: `Request $${price} on Venmo`, color: "pink" });
+      else inner += `<span style="color:${PALETTE.textMuted};font-family:${FONTS.display};font-size:12px;">No Venmo handle in clients.csv</span> `;
+      inner += buttonOutline({ href: cashUrl, label: "Log as cash", color: "teal" });
+      inner += `</div>`;
+      body += card(inner, "pink");
     }
-    html += `</ul>`;
   }
 
+  // NEEDS REVIEW
   if (review.length) {
-    html += `<h3 style="color:#c60;">Needs review</h3><ul style="padding-left:1em;">`;
+    body += sectionLabel(`Needs review — ${review.length}`, "purple");
     for (const r of review) {
-      const L = line(r);
-      html += `<li><strong>${L.name}</strong> — ${L.d} — session $${L.price}, received $${r.payment?.amount} from @${r.payment?.sender_handle}. ${r.note || ""}</li>`;
+      const expected = r.expectedPrice || r.roster?.default_price || 0;
+      const received = r.payment?.amount || 0;
+      const diff = expected - received;
+      const name = r.roster.vagaro_name;
+      const noteText = `Balance from training ${fmtDate(r.appt.date)} — Yeager's Gym`;
+      const handle = r.roster?.venmo_handle;
+
+      let inner = `<div style="font-family:${FONTS.body};font-size:15px;color:${PALETTE.textPrimary};margin-bottom:4px;"><strong>${escapeHtml(name)}</strong> — ${fmtDate(r.appt.date)}</div>`;
+      inner += `<div style="font-family:${FONTS.display};font-size:12px;color:${PALETTE.textMuted};margin-bottom:10px;">Session $${expected} · received $${received} from @${escapeHtml(r.payment?.sender_handle || "?")}${diff > 0 ? ` · short $${diff}` : diff < 0 ? ` · over $${-diff}` : ""}</div>`;
+      inner += `<div>`;
+      // Accept as-is
+      inner += buttonOutline({
+        href: reviewResolutionLink({ date: r.appt.date, name, disposition: "accepted", detail: `Accepted $${received} of $${expected}` }),
+        label: "Accept as paid",
+        color: "teal",
+      });
+      // Request the diff (only if short)
+      if (diff > 0 && handle) {
+        inner += button({
+          href: venmoRequestLink(handle, diff, noteText),
+          label: `Request $${diff} diff`,
+          color: "pink",
+        });
+      }
+      // Dispute
+      inner += buttonOutline({
+        href: reviewResolutionLink({ date: r.appt.date, name, disposition: "disputed", detail: `Disputed — received $${received}, expected $${expected}` }),
+        label: "Mark disputed",
+        color: "purple",
+      });
+      inner += `</div>`;
+      body += card(inner, "purple");
     }
-    html += `</ul>`;
   }
 
+  // UNKNOWN
   if (unknown.length) {
-    html += `<h3 style="color:#c60;">Unknown clients (not in roster)</h3><ul style="padding-left:1em;">`;
+    body += sectionLabel(`Unknown clients — ${unknown.length}`, "purple");
     for (const r of unknown) {
-      html += `<li>${fmtDate(r.appt.date)} — "${r.appt.summary}" — ${r.note}</li>`;
+      body += card(
+        `<div style="color:${PALETTE.textPrimary};">${fmtDate(r.appt.date)} — "${escapeHtml(r.appt.summary)}"</div><div style="font-family:${FONTS.display};font-size:12px;color:${PALETTE.textMuted};margin-top:4px;">${escapeHtml(r.note || "")}. Add to clients.csv.</div>`,
+        "purple",
+      );
     }
-    html += `</ul>`;
   }
 
+  // CASH PENDING
   if (cashPending.length) {
-    html += `<h3>Cash pending (confirm by editing billing/cash-log.md)</h3><ul style="padding-left:1em;">`;
+    body += sectionLabel(`Cash pending — ${cashPending.length}`, "teal");
     for (const r of cashPending) {
-      html += `<li>${r.roster.vagaro_name} — ${fmtDate(r.appt.date)} — expected $${r.roster.default_price || "?"}</li>`;
+      const price = r.roster.default_price || "?";
+      const cashUrl = cashEntryLink({ date: r.appt.date, name: r.roster.vagaro_name, amount: price });
+      let inner = `<div style="color:${PALETTE.textPrimary};"><strong>${escapeHtml(r.roster.vagaro_name)}</strong> — ${fmtDate(r.appt.date)} — expected $${price}</div>`;
+      inner += `<div style="margin-top:10px;">`;
+      inner += button({ href: cashUrl, label: `Log $${price} cash`, color: "teal" });
+      inner += `</div>`;
+      body += card(inner, "teal");
     }
-    html += `</ul>`;
   }
 
+  // PAID (collapsed)
   if (paidVenmo.length || paidCash.length) {
-    html += `<h3 style="color:#282;">Paid — no action</h3><p style="color:#555;">`;
-    const names = [...paidVenmo, ...paidCash].map((r) => r.roster.vagaro_name).join(", ");
-    html += `${names} (${paidVenmo.length + paidCash.length} clients)</p>`;
+    body += sectionLabel(`Paid — ${paidVenmo.length + paidCash.length}`, "teal");
+    const names = [...paidVenmo, ...paidCash].map((r) => escapeHtml(r.roster.vagaro_name)).join(", ");
+    body += `<div style="color:${PALETTE.textMuted};font-size:14px;line-height:1.6;margin-bottom:10px;">${names}</div>`;
   }
 
+  // UNMATCHED PAYMENTS
   if (unmatchedPayments.length) {
-    html += `<h3>Unmatched Venmo payments (FYI)</h3><ul style="padding-left:1em;">`;
+    body += sectionLabel(`Unmatched Venmo payments — ${unmatchedPayments.length}`, "textMuted");
     for (const p of unmatchedPayments) {
-      html += `<li>${fmtDate(p.date)} — ${p.sender_display_name} (@${p.sender_handle || "?"}) — $${p.amount} — "${p.note}"</li>`;
+      body += `<div style="font-family:${FONTS.display};font-size:12px;color:${PALETTE.textMuted};padding:4px 0;border-bottom:1px solid ${PALETTE.border};">${fmtDate(p.date)} · ${escapeHtml(p.sender_display_name)} · $${p.amount} · "${escapeHtml(p.note || "")}"</div>`;
     }
-    html += `</ul>`;
   }
 
-  html += `<hr><p style="color:#777;font-size:12px;">Log: <code>billing/logs/${fmtDateIso(NOW)}.md</code></p>`;
-  html += `</div>`;
-
+  const footer = `Log committed to billing/logs/${fmtDateIso(NOW)}.md · Repo: ${GITHUB_OWNER}/${GITHUB_REPO}`;
+  const html = emailShell({ title: `Week of ${weekOf}`, bodyHtml: body, footerNote: footer });
   return { subject, html };
 }
 
-async function sendEmail(subject, html) {
-  if (DRY_RUN === "true") {
-    console.log("DRY_RUN — would have sent email:");
-    console.log("Subject:", subject);
-    console.log(html);
-    return;
-  }
-  const resp = await fetch("https://api.brevo.com/v3/smtp/email", {
-    method: "POST",
-    headers: { "api-key": BREVO_API_KEY, "content-type": "application/json", accept: "application/json" },
-    body: JSON.stringify({
-      sender: { name: SENDER_NAME, email: SENDER_EMAIL },
-      to: [{ email: RECIPIENT_EMAIL }],
-      subject,
-      htmlContent: html,
-    }),
-  });
-  if (!resp.ok) {
-    const body = await resp.text();
-    throw new Error(`Brevo send failed: ${resp.status} ${body}`);
-  }
+function statChip(n, label, color = "teal") {
+  const c = PALETTE[color] || PALETTE.teal;
+  return `<div style="flex:1;min-width:120px;background:${PALETTE.bgPanel};border:1px solid ${PALETTE.border};border-top:3px solid ${c};border-radius:6px;padding:12px 14px;"><div style="font-family:${FONTS.display};font-size:28px;font-weight:700;color:${c};line-height:1;">${n}</div><div style="font-family:${FONTS.display};font-size:11px;text-transform:uppercase;letter-spacing:0.15em;color:${PALETTE.textMuted};margin-top:6px;">${label}</div></div>`;
+}
+
+function escapeHtml(s) {
+  return String(s || "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 }
 
 // ---- Log file ----
@@ -481,8 +404,8 @@ async function writeLog({ appointments, payments, results, unmatchedPayments }) 
 async function main() {
   console.log(`Window: ${WINDOW_START.toISOString()} → ${NOW.toISOString()}`);
   const [clients, cashLog, appointments, payments] = await Promise.all([
-    loadClients(),
-    loadCashLog(),
+    loadClients(CLIENTS_CSV),
+    loadCashEntries(REPO_ROOT),
     fetchVagaroAppointments(),
     fetchVenmoPayments(),
   ]);
@@ -493,23 +416,31 @@ async function main() {
   const { subject, html } = buildEmail({ results, unmatchedPayments });
   const logFile = await writeLog({ appointments, payments, results, unmatchedPayments });
   console.log(`Wrote log: ${logFile}`);
-  await sendEmail(subject, html);
+  await sendBrevoEmail({
+    apiKey: BREVO_API_KEY,
+    to: RECIPIENT_EMAIL,
+    from: SENDER_EMAIL,
+    fromName: SENDER_NAME,
+    subject,
+    html,
+    dryRun: DRY_RUN === "true",
+  });
   console.log(`Sent email: ${subject}`);
 }
 
 main().catch(async (err) => {
   console.error("Fatal error:", err);
-  // Best-effort failure email so Brad knows to check.
   if (DRY_RUN !== "true" && BREVO_API_KEY) {
     try {
-      await fetch("https://api.brevo.com/v3/smtp/email", {
-        method: "POST",
-        headers: { "api-key": BREVO_API_KEY, "content-type": "application/json", accept: "application/json" },
-        body: JSON.stringify({
-          sender: { name: SENDER_NAME, email: SENDER_EMAIL },
-          to: [{ email: RECIPIENT_EMAIL }],
-          subject: "Weekly billing — FAILED",
-          htmlContent: `<p>Weekly billing run failed at ${NOW.toISOString()}.</p><pre>${String(err.stack || err).slice(0, 2000)}</pre><p>Check GitHub Actions logs.</p>`,
+      await sendBrevoEmail({
+        apiKey: BREVO_API_KEY,
+        to: RECIPIENT_EMAIL,
+        from: SENDER_EMAIL,
+        fromName: SENDER_NAME,
+        subject: "Weekly billing — FAILED",
+        html: emailShell({
+          title: "Weekly billing run failed",
+          bodyHtml: `<div style="color:${PALETTE.danger};font-family:${FONTS.body};margin-bottom:16px;">Run failed at ${NOW.toISOString()}.</div><pre style="background:${PALETTE.bgPanel};border:1px solid ${PALETTE.border};border-radius:6px;padding:12px;color:${PALETTE.textPrimary};font-family:${FONTS.display};font-size:12px;overflow-x:auto;">${escapeHtml(String(err.stack || err).slice(0, 2000))}</pre><div style="color:${PALETTE.textMuted};margin-top:16px;font-size:13px;">Check GitHub Actions logs: https://github.com/${GITHUB_OWNER}/${GITHUB_REPO}/actions</div>`,
         }),
       });
     } catch (_) { /* ignore */ }
