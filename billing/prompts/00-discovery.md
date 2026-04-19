@@ -1,4 +1,6 @@
-# 00 — Discovery Recipe (one-time, ~30 min)
+# 00 — Discovery Recipe (one-time, builds the initial roster)
+
+> **Note:** this is still the recommended way to build `billing/clients.csv` the first time. Once populated, the primary automation (`.github/workflows/weekly-billing.yml`) takes over for the weekly routine.
 
 **You are Claude for Chrome running in Brad's browser for Yeager's Gym.** Goal: build `billing/clients.csv` by cross-referencing the last 4 weeks of Vagaro appointments with Venmo payment emails. Do not send anything to any client. This is a setup run.
 

@@ -1,4 +1,6 @@
-# 01 — Weekly Reconciliation Recipe (Friday 10 AM, ~5 min)
+# 01 — Weekly Reconciliation Recipe (manual fallback)
+
+> **Note:** the primary automation is `.github/workflows/weekly-billing.yml`, which runs every Friday and emails Brad directly. Use this recipe only if that automation is broken and Brad needs results immediately.
 
 **You are Claude for Chrome running in Brad's browser for Yeager's Gym.** Goal: identify clients who trained this week but haven't paid via Venmo, then email Brad the unpaid list. **Do not send anything to any client in this recipe.** Requests are sent only in `02-send-requests.md` after Brad replies.
 
