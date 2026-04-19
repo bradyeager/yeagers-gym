@@ -28,12 +28,6 @@ const {
   DRY_RUN = "false",
 } = process.env;
 
-requireEnv("VAGARO_ICAL_URL", VAGARO_ICAL_URL);
-requireEnv("GOOGLE_CLIENT_ID", GOOGLE_CLIENT_ID);
-requireEnv("GOOGLE_CLIENT_SECRET", GOOGLE_CLIENT_SECRET);
-requireEnv("GOOGLE_REFRESH_TOKEN", GOOGLE_REFRESH_TOKEN);
-requireEnv("BREVO_API_KEY", BREVO_API_KEY);
-
 const LOOKBACK_MS = Number(LOOKBACK_DAYS) * 24 * 60 * 60 * 1000;
 const NOW = new Date();
 const WINDOW_START = new Date(NOW.getTime() - LOOKBACK_MS);
@@ -131,7 +125,7 @@ function extractBody(payload) {
 
 // ---- Reconciliation ----
 
-function reconcile(appointments, payments, clients, cashLog) {
+export function reconcile(appointments, payments, clients, cashLog) {
   const byVagaroName = new Map(clients.map((c) => [c.vagaro_name.toLowerCase(), c]));
   const usedPayments = new Set();
   const results = [];
@@ -191,10 +185,12 @@ function amountScore(received, expected) {
   if (!expected) return 0.5;
   if (received === expected) return 1;
   const ratio = received / expected;
+  // Exact multiple (package pre-pay) counts as full match.
   if (Math.abs(ratio - Math.round(ratio)) < 0.02 && ratio >= 1) return 1;
-  const pct = Math.abs(received - expected) / expected;
-  if (pct <= 0.2) return 0.8;
-  return 0;
+  // Within a couple dollars (rounding / cents) counts as full match.
+  if (Math.abs(received - expected) <= 2) return 1;
+  // Anything else is surface-for-review.
+  return 0.5;
 }
 
 function sameDay(a, b) {
@@ -225,7 +221,7 @@ function reviewResolutionLink({ date, name, disposition, detail }) {
   return githubNewFileUrl({ filename, value, message: `Review: ${name} ${disposition}` });
 }
 
-function buildEmail({ results, unmatchedPayments }) {
+export function buildEmail({ results, unmatchedPayments, now = NOW, windowStart = WINDOW_START }) {
   const unpaid = results.filter((r) => r.status === "UNPAID");
   const review = results.filter((r) => r.status === "NEEDS_REVIEW");
   const unknown = results.filter((r) => r.status === "UNKNOWN");
@@ -233,7 +229,7 @@ function buildEmail({ results, unmatchedPayments }) {
   const paidCash = results.filter((r) => r.status === "PAID_CASH");
   const cashPending = results.filter((r) => r.status === "CASH_PENDING");
 
-  const weekOf = results.length ? fmtDate(results[0].appt.date) : fmtDate(WINDOW_START);
+  const weekOf = results.length ? fmtDate(results[0].appt.date) : fmtDate(windowStart);
   const subject = `Weekly billing — ${unpaid.length} unpaid, ${review.length} needs review (week of ${weekOf})`;
 
   let body = "";
@@ -345,7 +341,7 @@ function buildEmail({ results, unmatchedPayments }) {
     }
   }
 
-  const footer = `Log committed to billing/logs/${fmtDateIso(NOW)}.md · Repo: ${GITHUB_OWNER}/${GITHUB_REPO}`;
+  const footer = `Log committed to billing/logs/${fmtDateIso(now)}.md · Repo: ${GITHUB_OWNER}/${GITHUB_REPO}`;
   const html = emailShell({ title: `Week of ${weekOf}`, bodyHtml: body, footerNote: footer });
   return { subject, html };
 }
@@ -402,6 +398,11 @@ async function writeLog({ appointments, payments, results, unmatchedPayments }) 
 // ---- Main ----
 
 async function main() {
+  requireEnv("VAGARO_ICAL_URL", VAGARO_ICAL_URL);
+  requireEnv("GOOGLE_CLIENT_ID", GOOGLE_CLIENT_ID);
+  requireEnv("GOOGLE_CLIENT_SECRET", GOOGLE_CLIENT_SECRET);
+  requireEnv("GOOGLE_REFRESH_TOKEN", GOOGLE_REFRESH_TOKEN);
+  requireEnv("BREVO_API_KEY", BREVO_API_KEY);
   console.log(`Window: ${WINDOW_START.toISOString()} → ${NOW.toISOString()}`);
   const [clients, cashLog, appointments, payments] = await Promise.all([
     loadClients(CLIENTS_CSV),
@@ -428,22 +429,25 @@ async function main() {
   console.log(`Sent email: ${subject}`);
 }
 
-main().catch(async (err) => {
-  console.error("Fatal error:", err);
-  if (DRY_RUN !== "true" && BREVO_API_KEY) {
-    try {
-      await sendBrevoEmail({
-        apiKey: BREVO_API_KEY,
-        to: RECIPIENT_EMAIL,
-        from: SENDER_EMAIL,
-        fromName: SENDER_NAME,
-        subject: "Weekly billing — FAILED",
-        html: emailShell({
-          title: "Weekly billing run failed",
-          bodyHtml: `<div style="color:${PALETTE.danger};font-family:${FONTS.body};margin-bottom:16px;">Run failed at ${NOW.toISOString()}.</div><pre style="background:${PALETTE.bgPanel};border:1px solid ${PALETTE.border};border-radius:6px;padding:12px;color:${PALETTE.textPrimary};font-family:${FONTS.display};font-size:12px;overflow-x:auto;">${escapeHtml(String(err.stack || err).slice(0, 2000))}</pre><div style="color:${PALETTE.textMuted};margin-top:16px;font-size:13px;">Check GitHub Actions logs: https://github.com/${GITHUB_OWNER}/${GITHUB_REPO}/actions</div>`,
-        }),
-      });
-    } catch (_) { /* ignore */ }
-  }
-  process.exit(1);
-});
+const isDirectRun = process.argv[1] && import.meta.url === `file://${process.argv[1]}`;
+if (isDirectRun) {
+  main().catch(async (err) => {
+    console.error("Fatal error:", err);
+    if (DRY_RUN !== "true" && BREVO_API_KEY) {
+      try {
+        await sendBrevoEmail({
+          apiKey: BREVO_API_KEY,
+          to: RECIPIENT_EMAIL,
+          from: SENDER_EMAIL,
+          fromName: SENDER_NAME,
+          subject: "Weekly billing — FAILED",
+          html: emailShell({
+            title: "Weekly billing run failed",
+            bodyHtml: `<div style="color:${PALETTE.danger};font-family:${FONTS.body};margin-bottom:16px;">Run failed at ${NOW.toISOString()}.</div><pre style="background:${PALETTE.bgPanel};border:1px solid ${PALETTE.border};border-radius:6px;padding:12px;color:${PALETTE.textPrimary};font-family:${FONTS.display};font-size:12px;overflow-x:auto;">${escapeHtml(String(err.stack || err).slice(0, 2000))}</pre><div style="color:${PALETTE.textMuted};margin-top:16px;font-size:13px;">Check GitHub Actions logs: https://github.com/${GITHUB_OWNER}/${GITHUB_REPO}/actions</div>`,
+          }),
+        });
+      } catch (_) { /* ignore */ }
+    }
+    process.exit(1);
+  });
+}
