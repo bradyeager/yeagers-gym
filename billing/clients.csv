@@ -1,0 +1,15 @@
+vagaro_name,venmo_handle,venmo_display_name,default_price,pays_cash,notes
+# This file is built by prompts/00-discovery.md on first run.
+# One row per active client. Delete rows when clients stop training.
+#
+# Column meanings:
+#   vagaro_name          — exact name as it appears in Vagaro appointment list
+#   venmo_handle         — @username on Venmo (no @ prefix; e.g., alice-chen-2021)
+#   venmo_display_name   — the name Venmo shows (e.g., "Alice C") for fuzzy matching
+#   default_price        — typical session price in dollars (integer, no $)
+#   pays_cash            — true/false; if true, skip from Venmo reconciliation
+#   notes                — anything else (multi-session packages, tips, etc.)
+#
+# Example rows (delete once real data is in):
+# Alice Chen,alice-chen-2021,Alice C,100,false,"Bought 10-pack Jan 2026"
+# Luis Ortiz,,,,true,"Always pays cash at end of session"
