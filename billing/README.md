@@ -1,81 +1,73 @@
 # Yeager's Gym — Weekly Billing Automation
 
-Reconciles Vagaro appointments against Venmo payments. Lists who trained but didn't pay, emails Brad, and (after Brad confirms) sends Venmo requests.
+Reconciles Vagaro appointments against Venmo payments, emails you an unpaid-client list with tap-to-request Venmo buttons, every Friday morning. No Chrome, no pasting, no manual triggers.
 
-Runs inside **Claude for Chrome** — no script, no server, no credentials stored anywhere. Brad stays logged into Vagaro + Gmail; Claude reads those tabs.
+## What happens every Friday
 
-## The weekly routine (Friday 10 AM, ~5 min)
+1. **10 AM PT (roughly):** GitHub Actions fires `weekly-billing.yml`.
+2. Bot fetches your Vagaro calendar (via iCal feed), Venmo receipts (via Gmail OAuth), and `clients.csv`.
+3. Bot matches payments to appointments, classifies each session as paid/unpaid/needs-review/cash-paid.
+4. Bot emails you via Brevo: unpaid clients with pre-filled "Request $X from @handle" buttons.
+5. Bot commits a weekly log to `billing/logs/YYYY-MM-DD.md` (disputes → `git log`).
 
-1. Google Calendar reminder fires at Fri 10 AM: *"Run weekly billing check."*
-2. Open Chrome. Make sure you're logged into **Gmail** and **Vagaro Pro** in two tabs.
-3. Open the Claude for Chrome side panel.
-4. Paste (or select saved recipe) **`prompts/01-weekly-check.md`**.
-5. Wait. Claude gathers the week's appointments and payments, writes a log under `billing/logs/`, and sends you an email titled *"Weekly billing — N unpaid"*.
-6. **Read the email.** Reply with one of:
-   - `confirm: Alice, Jordan` — send Venmo requests to those clients
-   - `skip: Tom (paid cash)` — exclude; Claude will log the cash payment
-   - `skip: Sarah` — exclude; no cash log (e.g., free session)
-7. Re-open Claude for Chrome and paste **`prompts/02-send-requests.md`**. Claude reads your reply, navigates Venmo, and sends each request one at a time — pausing for your OK on each.
+## Your Friday
 
-That's it. Do this every Friday. If a client disputes a session 6 weeks from now, grep `billing/logs/`.
+Open the email on your phone. For each unpaid client, tap the button → Venmo app opens with amount + note pre-filled → tap Send. 30 seconds total.
 
-## Set up the Friday 10 AM reminder (one-time, ~2 min)
+For cash payments: add a line to `billing/cash-log.md` (`YYYY-MM-DD | Client Name | $amount | notes`) in the GitHub web UI. The next run will recognize it.
 
-Claude for Chrome requires a human to click "go" — it can't fire on a schedule. A recurring calendar event handles that.
+## Set it up
 
-1. In Google Calendar, create an event: **"Weekly billing — Yeager's Gym"**
-2. Time: **Friday 10:00 AM**, repeats **weekly**, no end date.
-3. Duration: 15 minutes.
-4. Notification: 0 min before (email + popup).
-5. Description — paste this:
-   ```
-   1. Open Chrome, log into Gmail + Vagaro Pro.
-   2. Open Claude for Chrome side panel.
-   3. Paste billing/prompts/01-weekly-check.md.
-   4. Reply to the billing email with confirm/skip/cash.
-   5. Paste billing/prompts/02-send-requests.md.
-   ```
-6. Save.
+**First-time setup: see [`SETUP.md`](./SETUP.md).** ~45 min to wire up:
+- Vagaro iCal feed URL
+- Google OAuth (Gmail readonly scope)
+- Brevo API key
+- GitHub Secrets
+- A test run via workflow_dispatch
 
-## First-time setup (one 30-min session)
-
-Before the first weekly run, do **Phase 0 — Discovery** to build the client roster:
-
-1. Open Chrome with Gmail + Vagaro Pro logged in.
-2. Paste **`prompts/00-discovery.md`**.
-3. Claude scans the last 4 weeks of Vagaro appointments and Venmo emails, proposes a draft `clients.csv`, and walks you through it row by row.
-4. Confirm name matches, default prices, and flag cash-only clients.
-5. The final roster lands at `billing/clients.csv`.
-
-Re-run `00-discovery.md` whenever you onboard new clients or someone changes their Venmo handle.
+Once that's done, it runs itself every Friday.
 
 ## Files
 
-| File | Purpose | Who edits |
-|---|---|---|
-| `clients.csv` | Client roster + matching rules | Claude builds, you edit |
-| `cash-log.md` | Running log of cash-paid sessions | Claude appends each week |
-| `prompts/00-discovery.md` | One-time roster-building recipe | Do not edit |
-| `prompts/01-weekly-check.md` | Sunday-night reconciliation recipe | Do not edit |
-| `prompts/02-send-requests.md` | Confirmation → send-requests recipe | Do not edit |
-| `logs/YYYY-MM-DD.md` | Per-week audit trail | Claude writes |
+| File | Purpose |
+|---|---|
+| `SETUP.md` | One-time wiring instructions (read this first) |
+| `clients.csv` | Client roster — name, Venmo handle, default price, cash-only flag |
+| `cash-log.md` | Append-only log of cash-paid sessions |
+| `bot/billing.mjs` | The Node script that runs in GitHub Actions |
+| `bot/package.json` | Node dependencies |
+| `logs/YYYY-MM-DD.md` | Per-week audit log, written by the bot |
+| `prompts/*.md` | Claude-for-Chrome fallback recipes (see below) |
 
-## Design rules Claude follows
+## Updating the roster
 
-- **Never** send a Venmo request without a per-client visual confirmation from Brad.
-- **Never** store login credentials. Brad's browser session is the only auth.
-- **Always** write a log file for each weekly run so disputes are traceable.
-- **Pause 10–15 seconds** between Venmo requests to avoid rate-limit flags.
-- **If matching is ambiguous**, surface it under `NEEDS REVIEW` — do not auto-confirm.
+Edit `clients.csv` in GitHub's web UI (or locally + push). The next run picks it up. No redeploy needed.
 
-## When things break
+## Manual re-run
 
-- **Vagaro UI changes:** Claude reads the rendered page, so minor redesigns usually work. If the recipe fails, open Vagaro manually, describe what you see, and Claude will adapt.
-- **Venmo flags the account:** Stop auto-requests for a week. Resume with a slower cadence.
-- **Claude for Chrome access revoked:** Fall back to running `01-weekly-check.md` via Claude Code — paste the week's Vagaro appointment list and Venmo emails manually.
+Something seems off? Go to the **Actions** tab → **Weekly billing reconciliation** → **Run workflow**. Set `dry_run=true` to preview the email without sending.
 
-## What this does NOT do
+## Fallback: Claude-for-Chrome recipes
 
-- Does not handle taxes, 1099-K, or bookkeeping exports.
-- Does not replace Vagaro (scheduling) or Venmo (payments).
-- Does not message clients on Brad's behalf beyond the Venmo request itself.
+If the automation breaks and you need results immediately, the `prompts/` folder still contains manual recipes:
+
+- `prompts/00-discovery.md` — one-time, builds the initial `clients.csv` by scanning 4 weeks of history
+- `prompts/01-weekly-check.md` — manual version of the weekly reconciliation
+- `prompts/02-send-requests.md` — manual Venmo request sender (useful if you ever want human-in-the-loop per request)
+
+These run in Claude for Chrome. See headers of each file for the full procedure.
+
+## Design rules
+
+- **No stored passwords.** Gmail uses OAuth refresh tokens (can be revoked anytime at myaccount.google.com). Vagaro uses a feed URL (no login). Brevo uses an API key.
+- **No client-facing actions from the bot.** The bot emails you; you tap send on each Venmo request. Venmo's own servers send the requests.
+- **Read-only Gmail scope.** The bot cannot send or delete email from your account.
+- **Every weekly run writes a log.** Disputes are traceable via `git log -- billing/logs/`.
+
+## Limits
+
+- **Vagaro plan must expose iCal.** If yours doesn't, fall back to `prompts/`.
+- **Venmo email format can change.** If Venmo restructures their receipts, the regex in `bot/billing.mjs` needs an update. Low frequency (maybe 1-2x/year).
+- **DST drift.** GitHub cron runs at 17:00 UTC year-round = 10 AM PDT (summer) / 9 AM PST (winter). The 1-hour winter shift is cosmetic.
+- **Venmo deep-link behavior varies by device.** Pre-filled amount usually works on the Venmo app (iOS/Android) and on venmo.com if logged in. On rare edge cases you may need to type the amount manually — the email includes it as text too.
+- **Volume.** Brevo's free tier is 300 emails/day (more than enough — this sends you 1/week). Gmail API quotas are effectively unlimited for this use case.

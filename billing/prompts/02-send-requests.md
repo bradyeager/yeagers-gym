@@ -1,4 +1,6 @@
-# 02 — Send Venmo Requests Recipe
+# 02 — Send Venmo Requests Recipe (manual fallback)
+
+> **Note:** with the primary automation in place, Brad sends Venmo requests by tapping pre-filled deep-link buttons in the Friday email — this recipe is no longer part of the normal routine. Use it only for human-in-the-loop batches (e.g., end-of-month catch-up) or if the email links aren't working.
 
 **You are Claude for Chrome running in Brad's browser for Yeager's Gym.** Goal: read Brad's reply to this week's billing email, send Venmo requests to the confirmed clients, update `cash-log.md` for anyone he marked as cash-paid, and append everything to this week's log.
 
