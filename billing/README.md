@@ -4,19 +4,38 @@ Reconciles Vagaro appointments against Venmo payments. Lists who trained but did
 
 Runs inside **Claude for Chrome** — no script, no server, no credentials stored anywhere. Brad stays logged into Vagaro + Gmail; Claude reads those tabs.
 
-## The weekly routine (Sunday night, ~5 min)
+## The weekly routine (Friday 10 AM, ~5 min)
 
-1. Open Chrome. Make sure you're logged into **Gmail** and **Vagaro Pro** in two tabs.
-2. Open the Claude for Chrome side panel.
-3. Paste (or select saved recipe) **`prompts/01-weekly-check.md`**.
-4. Wait. Claude gathers the week's appointments and payments, writes a log under `billing/logs/`, and sends you an email titled *"Weekly billing — N unpaid"*.
-5. **Read the email.** Reply with one of:
+1. Google Calendar reminder fires at Fri 10 AM: *"Run weekly billing check."*
+2. Open Chrome. Make sure you're logged into **Gmail** and **Vagaro Pro** in two tabs.
+3. Open the Claude for Chrome side panel.
+4. Paste (or select saved recipe) **`prompts/01-weekly-check.md`**.
+5. Wait. Claude gathers the week's appointments and payments, writes a log under `billing/logs/`, and sends you an email titled *"Weekly billing — N unpaid"*.
+6. **Read the email.** Reply with one of:
    - `confirm: Alice, Jordan` — send Venmo requests to those clients
    - `skip: Tom (paid cash)` — exclude; Claude will log the cash payment
    - `skip: Sarah` — exclude; no cash log (e.g., free session)
-6. Re-open Claude for Chrome and paste **`prompts/02-send-requests.md`**. Claude reads your reply, navigates Venmo, and sends each request one at a time — pausing for your OK on each.
+7. Re-open Claude for Chrome and paste **`prompts/02-send-requests.md`**. Claude reads your reply, navigates Venmo, and sends each request one at a time — pausing for your OK on each.
 
-That's it. Do this every Sunday. If a client disputes a session 6 weeks from now, grep `billing/logs/`.
+That's it. Do this every Friday. If a client disputes a session 6 weeks from now, grep `billing/logs/`.
+
+## Set up the Friday 10 AM reminder (one-time, ~2 min)
+
+Claude for Chrome requires a human to click "go" — it can't fire on a schedule. A recurring calendar event handles that.
+
+1. In Google Calendar, create an event: **"Weekly billing — Yeager's Gym"**
+2. Time: **Friday 10:00 AM**, repeats **weekly**, no end date.
+3. Duration: 15 minutes.
+4. Notification: 0 min before (email + popup).
+5. Description — paste this:
+   ```
+   1. Open Chrome, log into Gmail + Vagaro Pro.
+   2. Open Claude for Chrome side panel.
+   3. Paste billing/prompts/01-weekly-check.md.
+   4. Reply to the billing email with confirm/skip/cash.
+   5. Paste billing/prompts/02-send-requests.md.
+   ```
+6. Save.
 
 ## First-time setup (one 30-min session)
 
