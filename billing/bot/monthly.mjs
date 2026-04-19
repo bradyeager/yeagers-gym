@@ -22,8 +22,6 @@ const {
   MONTH_OFFSET = "-1", // -1 = prior month, 0 = current
 } = process.env;
 
-requireEnv("BREVO_API_KEY", BREVO_API_KEY);
-
 const REPO_ROOT = resolveRepoRoot(import.meta.url);
 const LOGS_DIR = path.join(REPO_ROOT, "billing", "logs");
 
@@ -36,7 +34,7 @@ function monthWindow(offset) {
   return { start, end };
 }
 
-function totalsFromLogs(logs) {
+export function totalsFromLogs(logs) {
   let sessions = 0;
   let venmo_revenue = 0;
   let cash_revenue = 0;
@@ -90,7 +88,7 @@ function money(n) {
   return `$${Number(n).toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
 }
 
-function buildEmail({ monthLabel, totals, weekCount, start, end }) {
+export function buildEmail({ monthLabel, totals, weekCount, start, end }) {
   const subject = `Monthly billing summary — ${monthLabel} — ${money(totals.total_revenue)} revenue`;
 
   const stat = (value, label, color = "teal", big = false) => {
@@ -164,6 +162,7 @@ function buildEmail({ monthLabel, totals, weekCount, start, end }) {
 }
 
 async function main() {
+  requireEnv("BREVO_API_KEY", BREVO_API_KEY);
   const { start, end } = monthWindow(Number(MONTH_OFFSET));
   const monthLabel = fmtMonth(start);
   console.log(`Month window: ${start.toISOString()} → ${end.toISOString()} (${monthLabel})`);
@@ -191,7 +190,8 @@ async function main() {
   console.log(`Sent email: ${subject}`);
 }
 
-main().catch(async (err) => {
+const isDirectRun = process.argv[1] && import.meta.url === `file://${process.argv[1]}`;
+if (isDirectRun) main().catch(async (err) => {
   console.error("Monthly summary failed:", err);
   if (DRY_RUN !== "true" && BREVO_API_KEY) {
     try {
