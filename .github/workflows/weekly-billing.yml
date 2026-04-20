@@ -1,0 +1,62 @@
+name: Weekly billing reconciliation
+
+on:
+  schedule:
+    # Fridays at 17:00 UTC = 10 AM PDT (summer) / 9 AM PST (winter).
+    # GitHub Actions cron runs in UTC with no DST awareness; the 1-hour
+    # winter shift is acceptable.
+    - cron: "0 17 * * 5"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Dry run (print email, do not send)"
+        type: boolean
+        default: false
+      lookback_days:
+        description: "Days of history to reconcile"
+        type: string
+        default: "8"
+
+permissions:
+  contents: write
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: billing/bot/package.json
+
+      - name: Install dependencies
+        working-directory: billing/bot
+        run: npm install --omit=dev --no-audit --no-fund
+
+      - name: Run billing reconciliation
+        working-directory: billing/bot
+        env:
+          VAGARO_ICAL_URL: ${{ secrets.VAGARO_ICAL_URL }}
+          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+          GOOGLE_REFRESH_TOKEN: ${{ secrets.GOOGLE_REFRESH_TOKEN }}
+          BREVO_API_KEY: ${{ secrets.BREVO_API_KEY }}
+          DRY_RUN: ${{ github.event.inputs.dry_run || 'false' }}
+          LOOKBACK_DAYS: ${{ github.event.inputs.lookback_days || '8' }}
+        run: npm start
+
+      - name: Commit weekly log
+        if: ${{ github.event.inputs.dry_run != 'true' }}
+        run: |
+          git config user.name "yeagers-gym-bot"
+          git config user.email "bot@yeagersgym.com"
+          git add billing/logs/
+          if ! git diff --cached --quiet; then
+            git commit -m "Weekly billing log $(date -u +%Y-%m-%d)"
+            git push
+          else
+            echo "No log changes to commit"
+          fi
