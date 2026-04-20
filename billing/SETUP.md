@@ -2,18 +2,40 @@
 
 Follow these steps once. After that, the bot runs every Friday automatically and emails you an unpaid-client list with tap-to-request Venmo buttons.
 
-**Time required:** ~45 minutes. Coffee first.
+**Time required:** ~60 minutes. Coffee first.
 
 ---
 
-## Step 1 — Get the Vagaro iCal feed URL
+## Step 1 — Appointments iCal URL (via Google Calendar bridge)
 
-1. Log into Vagaro Pro (merchant portal).
-2. Go to **Calendar Settings** → **iCal Feed** (exact menu name varies; sometimes under "Integrations" or "Account Settings").
-3. Copy the feed URL. It looks like `https://www.vagaro.com/ical/XXXXX.ics`.
-4. If you don't see iCal export, your Vagaro plan may not support it — contact Vagaro support. Without this, Plan B can't work; fall back to the Claude-for-Chrome recipes under `prompts/`.
+Vagaro does **not** publish outbound `.ics` feeds directly. Instead, use Vagaro's Google Calendar Sync to mirror appointments into a dedicated Google Calendar, then grab *that* calendar's secret iCal URL.
 
-Keep this URL handy — you'll paste it as a GitHub Secret in Step 4.
+This takes ~15 min. Zero code changes — the bot reads any standard iCal feed, so it doesn't matter that the URL now lives on google.com.
+
+**Important:** use your **primary Google account** (the one that receives Venmo payment emails). That same account will be used for Gmail OAuth in Step 3, and the calendar you create below will live inside it.
+
+### 1a. Connect Vagaro to Google Calendar
+1. Log into Vagaro Pro.
+2. Go to **Settings → Employees** → click your own profile.
+3. Find the **Google Calendar Sync** tab (naming varies — might be "Calendar Sync" or "External Calendar").
+4. Click to connect Google → authorize with your primary Google account.
+5. When prompted *which* calendar to sync to: **create a new calendar** named `Yeager's Gym Appointments`. Keeps your personal calendar clean.
+6. Enable **Sync appointments to Google Calendar** (one-way: Vagaro → Google).
+7. Wait 5–10 minutes for the initial sync. Confirm by opening Google Calendar — you should see today's appointments appear.
+
+### 1b. Copy the secret iCal URL
+1. Open https://calendar.google.com
+2. Left sidebar: hover **Yeager's Gym Appointments** → three-dot menu → **Settings and sharing**.
+3. Scroll to **Integrate calendar**.
+4. Copy the **Secret address in iCal format** (URL ends in `/basic.ics`).
+5. **Treat this URL like a password.** Anyone with it can read all your appointments.
+6. Paste into your temp note. You'll save it as `VAGARO_ICAL_URL` in GitHub Secrets (Step 4).
+
+### If your Vagaro plan doesn't expose Google Calendar Sync
+Contact Vagaro support. As a last resort, fall back to the Claude-for-Chrome recipes under `prompts/`.
+
+### Sync lag caveat
+Vagaro → Google sync runs every 5–15 minutes. The bot fires at Friday 10 AM PT, so Friday-morning appointments should be mirrored before the run. Friday afternoon/evening sessions roll into next week's check (this is by design — matches the lookback window).
 
 ---
 
