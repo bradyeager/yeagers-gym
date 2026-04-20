@@ -75,6 +75,8 @@ You can update this file anytime a new client starts or a handle changes.
 
 The bot reads your Gmail (specifically, emails from `venmo@venmo.com`) to see who paid you. It does **not** store your Google password — it uses OAuth refresh tokens.
 
+**Forwarded emails work.** If Venmo sends to `brad@bradyeager.com` and that address forwards to a Gmail inbox, the bot reads them from the Gmail inbox just fine. Make sure every step below uses the **Gmail account that actually receives** the (forwarded) Venmo notifications.
+
 ### 3a. Create a Google Cloud project
 
 1. Go to https://console.cloud.google.com/
@@ -92,7 +94,7 @@ The bot reads your Gmail (specifically, emails from `venmo@venmo.com`) to see wh
 2. User type: **External** → Create.
 3. App name: `Yeager's Gym Billing Bot`. User support email: `brad@yeagersgym.com`. Developer contact: `brad@yeagersgym.com`. Save.
 4. **Scopes** page → Add → search for `gmail.readonly` → add it → Save.
-5. **Test users** page → Add `brad@yeagersgym.com` (or whichever Google account receives your Venmo emails) → Save.
+5. **Test users** page → Add the Gmail account that receives your Venmo payment emails — directly or via forwarding (e.g., if `brad@bradyeager.com` forwards to `thebradyeager@gmail.com`, add the Gmail address). → Save.
 6. You can leave the app in "Testing" mode indefinitely — no publishing required.
 
 ### 3d. Create OAuth credentials
