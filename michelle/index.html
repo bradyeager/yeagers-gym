@@ -1846,24 +1846,26 @@ function openPhotoModal(week, angle) {
   const modal = document.getElementById('modal-content');
   modal.innerHTML = `
     <div class="modal-header"><div class="modal-title">Week ${week} — ${angle}</div><button class="modal-close" onclick="closeModal()">✕</button></div>
-    ${!STATE.storageInitialized ? `<div class="nudge-banner" style="margin-bottom:14px"><div>Photo storage not initialized. Coach can paste a URL below or initialize storage in Settings.</div></div>` : ''}
-    <div class="form-row"><label class="form-label">Image URL</label><input class="form-input" id="photo-url" type="url" value="${existing?.url || ''}" placeholder="https://..."></div>
-    <div class="form-row"><label class="form-label">Or upload from device (requires storage)</label><input class="form-input" id="photo-file" type="file" accept="image/*"></div>
+    <div class="form-row"><label class="form-label">Take or choose photo</label><input class="form-input" id="photo-file" type="file" accept="image/*" capture="environment"></div>
+    <div class="form-row"><a id="photo-url-toggle" style="font-size:11px;color:var(--muted);text-decoration:underline;cursor:pointer">Paste URL instead</a></div>
+    <div class="form-row" id="photo-url-row" style="display:none"><label class="form-label">Image URL</label><input class="form-input" id="photo-url" type="url" value="${existing?.url || ''}" placeholder="https://..."></div>
     <div class="modal-actions"><button class="btn-secondary" onclick="closeModal()">Cancel</button><button class="btn-primary" id="save-photo-btn">Save</button></div>
   `;
   document.getElementById('modal-root').classList.add('active');
+  document.getElementById('photo-url-toggle').onclick = () => {
+    const row = document.getElementById('photo-url-row');
+    row.style.display = row.style.display === 'none' ? 'block' : 'none';
+  };
   document.getElementById('save-photo-btn').onclick = async () => {
     const url = document.getElementById('photo-url').value.trim();
     const file = document.getElementById('photo-file').files[0];
     let finalUrl = url, finalPath = null;
-    if (file && STATE.storageInitialized) {
+    if (file) {
+      await ensureStorageReady();
       try { const result = await uploadToStorage(file, week, angle); finalUrl = result.url; finalPath = result.path; }
-      catch (err) { toast('Upload failed. Pasted URL used as fallback.', 'error'); }
-    } else if (file && !STATE.storageInitialized) {
-      toast('Initialize photo storage in Settings to upload files.', 'error');
-      if (!url) return;
+      catch (err) { toast('Upload failed. Try again or paste a URL.', 'error'); return; }
     }
-    if (!finalUrl) { toast('Provide a URL or upload a file.', 'error'); return; }
+    if (!finalUrl) { toast('Take a photo or paste a URL.', 'error'); return; }
     try {
       if (existing) {
         const updated = await dbUpdate('photos', existing.id, { url: finalUrl, storage_path: finalPath });
@@ -1877,13 +1879,27 @@ function openPhotoModal(week, angle) {
     } catch (err) { toast('Save failed.', 'error'); }
   };
 }
+async function ensureStorageReady() {
+  if (STATE.storageInitialized) return;
+  try {
+    const r = await fetch(`${SUPABASE_URL}/storage/v1/bucket`, {
+      method: 'POST', headers: SB_HEADERS,
+      body: JSON.stringify({ id: 'michelle-progress', name: 'michelle-progress', public: true })
+    });
+    if (r.ok || r.status === 409) {
+      STATE.storageInitialized = true;
+      localStorage.setItem('storage_initialized', 'true');
+      const row = document.getElementById('init-storage-row');
+      if (row) row.style.display = 'none';
+    }
+  } catch (err) { /* silent — bucket likely already exists server-side */ }
+}
 async function uploadToStorage(file, week, angle) {
-  const path = `week-${week}/${angle}-${Date.now()}.jpg`;
-  const formData = new FormData();
-  formData.append('file', file);
+  const ext = (file.name.split('.').pop() || 'jpg').toLowerCase();
+  const path = `week-${week}/${angle}-${Date.now()}.${ext}`;
   const r = await fetch(`${SUPABASE_URL}/storage/v1/object/michelle-progress/${path}`, {
     method: 'POST',
-    headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` },
+    headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${SUPABASE_ANON_KEY}`, 'Content-Type': file.type || 'image/jpeg' },
     body: file
   });
   if (!r.ok) throw new Error(`Upload failed: ${r.status}`);
@@ -2344,6 +2360,7 @@ async function init() {
   } else {
     await loadAllData();
     await loadFrequencyPreference();
+    ensureStorageReady();
   }
   renderAll();
   // Onboarding trigger
