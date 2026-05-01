@@ -923,16 +923,22 @@ const LOGO_DATA_URI = 'assets/yeagers-logo.jpeg';
 const MICHELLE_DATA_URI = 'assets/michelle-photo.jpeg';
 
 function initAssets() {
-  document.getElementById('header-logo').src = LOGO_DATA_URI;
-  const photoContainer = document.getElementById('profile-photo-container');
-  if (MICHELLE_DATA_URI) {
-    const img = document.createElement('img');
-    img.src = MICHELLE_DATA_URI; img.className = 'profile-photo'; img.alt = 'Michelle';
-    photoContainer.appendChild(img);
-  } else {
-    const fallback = document.createElement('div');
-    fallback.className = 'profile-photo-fallback'; fallback.textContent = 'M';
-    photoContainer.appendChild(fallback);
+  try {
+    const headerLogo = document.getElementById('header-logo');
+    if (headerLogo) headerLogo.src = LOGO_DATA_URI;
+    const photoContainer = document.getElementById('profile-photo-container');
+    if (!photoContainer) return; // graceful no-op if container is absent
+    if (MICHELLE_DATA_URI) {
+      const img = document.createElement('img');
+      img.src = MICHELLE_DATA_URI; img.className = 'profile-photo'; img.alt = 'Michelle';
+      photoContainer.appendChild(img);
+    } else {
+      const fallback = document.createElement('div');
+      fallback.className = 'profile-photo-fallback'; fallback.textContent = 'M';
+      photoContainer.appendChild(fallback);
+    }
+  } catch (e) {
+    console.warn('initAssets failed (non-fatal):', e);
   }
 }
 
