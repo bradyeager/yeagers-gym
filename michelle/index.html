@@ -287,6 +287,27 @@ input, textarea, select { font-family: inherit; outline: none; border: none; bac
 .compare-cell-img { width: 100%; height: 100%; object-fit: cover; }
 .compare-cell-empty { color: var(--text-muted); font-size: 11px; text-align: center; padding: 8px; }
 .compare-cell-label { position: absolute; top: 6px; left: 6px; background: rgba(15,22,32,0.8); color: white; font-size: 10px; padding: 2px 6px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.06em; }
+.biweekly-pill { display: flex; align-items: center; gap: 6px; padding: 8px 12px; background: linear-gradient(135deg, var(--pink-glow), rgba(239,50,149,0.04)); border: 1px solid rgba(239,50,149,0.4); border-radius: 999px; margin-bottom: 12px; font-size: 11px; color: var(--text-primary); flex-wrap: wrap; }
+.biweekly-pill-label { color: var(--pink); font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; font-size: 10px; }
+.biweekly-pill-week { display: inline-flex; align-items: center; justify-content: center; min-width: 28px; padding: 3px 6px; border-radius: 999px; background: rgba(15,22,32,0.45); color: var(--text-muted); font-size: 10px; font-weight: 600; letter-spacing: 0.04em; }
+.biweekly-pill-week.done { background: rgba(72,196,204,0.18); color: var(--teal); border: 1px solid rgba(72,196,204,0.35); }
+.biweekly-pill-week.current { background: var(--pink); color: white; border: 1px solid var(--pink); box-shadow: 0 0 12px rgba(239,50,149,0.45); }
+.biweekly-pill-week.upcoming { background: rgba(239,50,149,0.08); color: var(--pink); border: 1px solid rgba(239,50,149,0.25); }
+.measurement-row-readonly { opacity: 0.95; }
+.measurement-cell.readonly { cursor: default; color: var(--teal); font-weight: 600; }
+.measurement-cell.readonly.empty { color: var(--text-muted); font-weight: 400; }
+.measurement-cell.readonly.hit { color: var(--teal); background: rgba(72,196,204,0.08); border-radius: 4px; }
+@media (min-width: 900px) {
+  #tab-aesthetic { display: grid; grid-template-columns: 1fr 1fr; gap: 16px 20px; align-items: start; }
+  #tab-aesthetic > .biweekly-pill,
+  #tab-aesthetic > .section-subtitle { grid-column: 1 / -1; }
+  #tab-aesthetic > .angle-toggle,
+  #tab-aesthetic > .compare-view,
+  #tab-aesthetic > .delta-row { grid-column: 1; }
+  #tab-aesthetic > .divider,
+  #tab-aesthetic > .card,
+  #tab-aesthetic > #photo-grid-container { grid-column: 2; }
+}
 .angle-toggle { display: flex; gap: 4px; margin-bottom: 12px; background: var(--card-bg); border-radius: 10px; padding: 4px; }
 .angle-btn { flex: 1; padding: 8px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); border-radius: 8px; }
 .angle-btn.active { background: var(--teal); color: var(--charcoal); font-weight: 600; }
@@ -620,6 +641,14 @@ input, textarea, select { font-family: inherit; outline: none; border: none; bac
 
 <!-- ═══════ TAB 6 — AESTHETIC ═══════ -->
 <div class="tab-panel" id="tab-aesthetic">
+  <div class="biweekly-pill" id="biweekly-pill">
+    <span class="biweekly-pill-label">Biweekly Check-Ins</span>
+    <span class="biweekly-pill-week" data-week="0">W0</span>
+    <span class="biweekly-pill-week" data-week="2">W2</span>
+    <span class="biweekly-pill-week" data-week="4">W4</span>
+    <span class="biweekly-pill-week" data-week="6">W6</span>
+    <span class="biweekly-pill-week" data-week="8">W8</span>
+  </div>
   <div class="section-subtitle">// LATEST COMPARISON</div>
   <div class="angle-toggle">
     <button class="angle-btn active" data-angle="front">Front</button>
@@ -640,6 +669,7 @@ input, textarea, select { font-family: inherit; outline: none; border: none; bac
   <div class="delta-row">
     <div class="delta-tile"><div class="delta-label">Glutes</div><div class="delta-value" id="delta-glutes">—</div></div>
     <div class="delta-tile"><div class="delta-label">Waist</div><div class="delta-value pink-val" id="delta-waist">—</div></div>
+    <div class="delta-tile"><div class="delta-label">Hip:Waist</div><div class="delta-value" id="delta-hip-waist">—</div></div>
   </div>
 
   <div class="divider">// MEASUREMENTS</div>
@@ -1702,6 +1732,20 @@ function renderAesthetic() {
   const waistD = (w0BM?.waist && latestBM?.waist) ? (latestBM.waist - w0BM.waist).toFixed(1) : null;
   document.getElementById('delta-glutes').textContent = glutesD ? `${glutesD>=0?'+':''}${glutesD} in` : '—';
   document.getElementById('delta-waist').textContent = waistD ? `${waistD>=0?'+':''}${waistD} in` : '—';
+  // Hip:Waist ratio (latest entry with both glutes_hips + waist)
+  const ratioBM = [...STATE.bodyMeasurements].filter(m => m.glutes_hips && m.waist).sort((a,b) => b.week_number - a.week_number)[0];
+  const hipWaistEl = document.getElementById('delta-hip-waist');
+  if (ratioBM) {
+    const ratio = ratioBM.glutes_hips / ratioBM.waist;
+    hipWaistEl.textContent = ratio.toFixed(2);
+    hipWaistEl.classList.toggle('pink-val', ratio < 1.40);
+  } else {
+    hipWaistEl.textContent = '—';
+    hipWaistEl.classList.remove('pink-val');
+  }
+
+  // Biweekly check-in pill state
+  renderBiweeklyPill();
 
   // Measurement table
   renderMeasurementTable();
@@ -1724,9 +1768,36 @@ function renderMeasurementTable() {
     });
     html += `</div>`;
   });
+  // Auto-calculated Hip:Waist ratio row
+  html += `<div class="measurement-table-row measurement-row-readonly"><span class="measurement-row-label">Hip:Waist</span>`;
+  weeks.forEach(w => {
+    const m = STATE.bodyMeasurements.find(bm => bm.week_number === w);
+    if (m?.glutes_hips && m?.waist) {
+      const ratio = m.glutes_hips / m.waist;
+      const hit = ratio >= 1.40 ? 'hit' : '';
+      html += `<div class="measurement-cell readonly ${hit}">${ratio.toFixed(2)}</div>`;
+    } else {
+      html += `<div class="measurement-cell readonly empty">—</div>`;
+    }
+  });
+  html += `</div>`;
   table.innerHTML = html;
-  table.querySelectorAll('.measurement-cell').forEach(cell => {
+  table.querySelectorAll('.measurement-cell:not(.readonly)').forEach(cell => {
     cell.onclick = () => openMeasurementModal(parseInt(cell.dataset.week), cell.dataset.field, labels[fields.indexOf(cell.dataset.field)]);
+  });
+}
+function renderBiweeklyPill() {
+  const pill = document.getElementById('biweekly-pill');
+  if (!pill) return;
+  const currentWeek = getCurrentWeek();
+  pill.querySelectorAll('.biweekly-pill-week').forEach(el => {
+    const w = parseInt(el.dataset.week);
+    el.classList.remove('done', 'current', 'upcoming');
+    const m = STATE.bodyMeasurements.find(bm => bm.week_number === w);
+    const hasData = m && (m.glutes_hips || m.waist || m.bodyweight || m.thigh || m.shoulders);
+    if (hasData) el.classList.add('done');
+    else if (currentWeek >= w - 1 && currentWeek <= w + 1) el.classList.add('current');
+    else if (w > currentWeek) el.classList.add('upcoming');
   });
 }
 function openMeasurementModal(week, field, label) {
