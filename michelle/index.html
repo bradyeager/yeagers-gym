@@ -59,7 +59,8 @@ input, textarea, select { font-family: inherit; outline: none; border: none; bac
 .week-progress-wrap { padding: 8px 0 12px; }
 .week-progress-label { display: flex; justify-content: space-between; font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 6px; }
 .week-progress-bar { height: 4px; background: var(--card-bg); border-radius: 2px; overflow: hidden; }
-.week-progress-fill { height: 100%; background: var(--teal); border-radius: 2px; transition: width 0.6s ease; }
+.week-progress-fill { height: 100%; background: linear-gradient(90deg, var(--teal), var(--pink)); border-radius: 2px; transition: width 0.6s ease; }
+.week-progress-label > span:first-child { color: var(--pink); font-weight: 700; }
 
 /* ═══════ TAB NAV ═══════ */
 .tab-nav { position: sticky; top: 96px; z-index: 99; background: var(--charcoal); display: flex; overflow-x: auto; scroll-snap-type: x mandatory; border-bottom: 1px solid var(--border); -ms-overflow-style: none; scrollbar-width: none; }
@@ -92,7 +93,7 @@ input, textarea, select { font-family: inherit; outline: none; border: none; bac
 .mission-progress-wrap { margin-top: 14px; }
 .mission-progress-label { display: flex; justify-content: space-between; font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 6px; }
 .mission-progress-bar { height: 6px; background: rgba(255,255,255,0.05); border-radius: 3px; overflow: hidden; }
-.mission-progress-fill { height: 100%; background: linear-gradient(90deg, var(--teal), var(--pink)); border-radius: 3px; transition: width 0.8s ease; }
+.mission-progress-fill { height: 100%; background: linear-gradient(90deg, var(--teal) 0%, var(--pink) 45%, var(--pink-deep) 100%); border-radius: 3px; transition: width 0.8s ease; }
 
 /* ═══════ ADHERENCE ENGINE ═══════ */
 .adherence-card { border-radius: 16px; padding: 18px; margin-bottom: 12px; transition: border-color 0.4s; }
@@ -118,6 +119,7 @@ input, textarea, select { font-family: inherit; outline: none; border: none; bac
 .stat-tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 12px; }
 .stat-tile { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 12px 8px; text-align: center; }
 .stat-tile-value { font-family: 'DM Serif Display', serif; font-size: 28px; line-height: 1; color: var(--teal); margin-bottom: 6px; }
+.stat-tile:first-child .stat-tile-value { color: var(--pink); }
 .stat-tile-label { font-size: 9px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; }
 
 /* ═══════ COACH MESSAGE ═══════ */
@@ -182,6 +184,8 @@ input, textarea, select { font-family: inherit; outline: none; border: none; bac
 /* ═══════ LIFT TILES (TAB 2) ═══════ */
 .lift-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 .lift-tile { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 12px; cursor: pointer; transition: border-color 0.2s; }
+.lift-tile[data-lift="Hip Thrust"] { border-color: rgba(239,50,149,0.45); background: linear-gradient(160deg, var(--card-bg), rgba(239,50,149,0.06)); }
+.lift-tile[data-lift="Hip Thrust"] .lift-tile-name { color: var(--pink); }
 .lift-tile:active { border-color: var(--border-strong); }
 .lift-tile-name { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 4px; }
 .lift-tile-value { font-family: 'DM Serif Display', serif; font-size: 18px; line-height: 1.1; margin-bottom: 6px; }
@@ -411,8 +415,8 @@ input, textarea, select { font-family: inherit; outline: none; border: none; bac
 /* ═══════ MISC ═══════ */
 .empty-state { text-align: center; padding: 24px 16px; color: var(--text-muted); font-size: 12px; }
 .section-title { font-family: 'DM Serif Display', serif; font-size: 18px; margin: 16px 0 12px; }
-.section-subtitle { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; margin: 16px 0 8px; }
-.divider { color: var(--text-muted); font-size: 11px; letter-spacing: 0.1em; margin: 16px 0 8px; opacity: 0.7; }
+.section-subtitle { font-size: 11px; color: var(--pink); font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; margin: 16px 0 8px; opacity: 0.85; }
+.divider { color: var(--pink); font-size: 11px; font-weight: 600; letter-spacing: 0.1em; margin: 16px 0 8px; opacity: 0.75; }
 
 /* ═══════ NEXT BLOCK CTA ═══════ */
 .next-block-cta { background: linear-gradient(135deg, rgba(239,50,149,0.18), rgba(72,196,204,0.1)); border: 1px solid var(--pink); border-radius: 14px; padding: 18px; text-align: center; margin-top: 16px; }
