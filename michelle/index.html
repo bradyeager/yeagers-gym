@@ -524,7 +524,7 @@ input, textarea, select { font-family: inherit; outline: none; border: none; bac
   <div class="divider">// THE CONUNDRUM</div>
   <div class="card narrative-card conundrum-card">
     <div class="conundrum-tag">The Gym Girl Dilemma</div>
-    <div class="narrative-text">Every gym girl wants ass and abs. The trouble: you need a caloric <strong class="pink">surplus</strong> to grow glutes, and a caloric <strong class="teal">deficit</strong> to drop subcutaneous fat in the stomach. Two opposing paths. Fortunately, you're a newbie — and newbie gains let you do both at once. We won't have to choose.</div>
+    <div class="narrative-text">Every gym girl wants ass and abs. Problem: glutes grow in a <strong class="pink">surplus</strong>. Belly fat drops in a <strong class="teal">deficit</strong>. Opposing paths — except for one window. Newbie gains. You get to do both at once. We won't have to choose.</div>
   </div>
 
   <div class="divider">// PRIMARY TARGETS</div>
@@ -537,7 +537,7 @@ input, textarea, select { font-family: inherit; outline: none; border: none; bac
     <div class="target-card">
       <div class="target-title">Core</div>
       <div class="target-desc">Tighter waistline, visible abs</div>
-      <div class="target-movements">Hollow Holds · Weighted Planks</div>
+      <div class="target-movements">Hollow Rocks · Weighted Planks</div>
     </div>
     <div class="target-card">
       <div class="target-title">Shoulders</div>
@@ -555,7 +555,7 @@ input, textarea, select { font-family: inherit; outline: none; border: none; bac
   <div class="card">
     <div class="session-block">
       <div class="session-block-title">Session 1 — Glutes / Upper / Core</div>
-      <div class="session-block-lifts">Hip Thrust · Strict Press · RDL · Cable Kickbacks · Hollow Hold</div>
+      <div class="session-block-lifts">Hip Thrust · Strict Press · RDL · Cable Kickbacks · Hollow Rock</div>
     </div>
     <div class="session-block">
       <div class="session-block-title">Session 2 — Glutes / Upper / Core</div>
@@ -1121,8 +1121,9 @@ function renderChecklist() {
   const c = document.getElementById('checklist-container');
   const week0 = STATE.timelineChecklist.filter(i => i.week_number === 0);
   if (!week0.length || week0.every(i => i.checked)) { c.innerHTML = ''; return; }
+  const sorted = [...week0].sort((a, b) => (b.checked ? 1 : 0) - (a.checked ? 1 : 0));
   c.innerHTML = `<div class="divider">// WEEK 0 BASELINE CHECKLIST</div><div class="card" id="checklist-card">${
-    week0.map(item => `<div class="checklist-item ${item.checked?'checked':''}" data-id="${item.id}"><div class="checklist-checkbox"></div><div class="checklist-label">${item.item_label}</div></div>`).join('')
+    sorted.map(item => `<div class="checklist-item ${item.checked?'checked':''}" data-id="${item.id}"><div class="checklist-checkbox"></div><div class="checklist-label">${item.item_label}</div></div>`).join('')
   }</div>`;
   c.querySelectorAll('.checklist-item').forEach(el => {
     el.onclick = async () => {
@@ -2028,7 +2029,7 @@ const SPLASH_SLIDES = [
     <div class="splash-section-label">Goals</div>
     <div class="splash-card-list">
       <div class="splash-goal-card"><div class="splash-goal-card-title">Glutes</div><div class="splash-goal-card-body">Fuller, lifted, +1 inch</div></div>
-      <div class="splash-goal-card"><div class="splash-goal-card-title">Core</div><div class="splash-goal-card-body">Tighter, more visible. Hollow hold + weighted plank PRs</div></div>
+      <div class="splash-goal-card"><div class="splash-goal-card-title">Core</div><div class="splash-goal-card-body">Tighter, more visible. Hollow rock + weighted plank PRs</div></div>
       <div class="splash-goal-card"><div class="splash-goal-card-title">Bonus</div><div class="splash-goal-card-body">Shoulders, back, posture</div></div>
     </div>
     <button class="splash-btn" onclick="nextSplash()">Continue →</button>
@@ -2071,8 +2072,7 @@ const SPLASH_SLIDES = [
   () => `<div class="splash-section-label">Commitment</div>
     <div class="splash-headline" style="font-size:24px">Pick your pace.</div>
     <div class="freq-coach-line">
-      Mondays are yours. We've got that locked.<br>
-      <strong>Both paths work.</strong> You pick what fits your week.
+      Mondays are locked. <strong>Both paths work</strong> — pick what fits your week.
     </div>
     <div class="freq-card-list">
       <button class="freq-card build" onclick="chooseFrequency('2x')">
