@@ -1228,7 +1228,11 @@ function renderLiftTiles() {
     if (lift === 'Hip Thrust' && sets.some(s => s.reps >= 15)) flag = '🏁 Time to add weight';
     // Delta vs baseline (pink) or goal hit (teal)
     let deltaHTML = '';
-    if (typeof goal === 'number' && max >= goal) {
+    const isBodyweightGoal = goal === 'bodyweight';
+    const bwTarget = isBodyweightGoal ? getCurrentBodyweight() : null;
+    if (isBodyweightGoal && max >= bwTarget) {
+      deltaHTML = `<div class="lift-tile-delta goal-hit">GOAL HIT · BODYWEIGHT</div>`;
+    } else if (typeof goal === 'number' && max >= goal) {
       deltaHTML = `<div class="lift-tile-delta goal-hit">GOAL HIT · +${(max - baseline).toFixed(0)} lb</div>`;
     } else if (baseline && max > baseline) {
       const diff = max - baseline;
@@ -2376,7 +2380,7 @@ function loadDemoData() {
     { id: 'demo-st7',  session_id: 'demo-s1', lift_name: 'Hollow Rock', set_number: 2, weight: null, reps: 10, created_at: dateAt(0) },
     // Session 2 (W1) — Chin-Up + Deadlift + Strict Press + Weighted Plank
     { id: 'demo-st8',  session_id: 'demo-s2', lift_name: 'Chin-Up', set_number: 1, weight: 115, reps: 6, created_at: dateAt(3) },
-    { id: 'demo-st9',  session_id: 'demo-s2', lift_name: 'Chin-Up', set_number: 2, weight: 110, reps: 6, created_at: dateAt(3) },
+    { id: 'demo-st9',  session_id: 'demo-s2', lift_name: 'Chin-Up', set_number: 2, weight: 120, reps: 5, created_at: dateAt(3) },
     { id: 'demo-st10', session_id: 'demo-s2', lift_name: 'Deadlift', set_number: 1, weight: 145, reps: 5, created_at: dateAt(3) },
     { id: 'demo-st11', session_id: 'demo-s2', lift_name: 'Deadlift', set_number: 2, weight: 155, reps: 5, created_at: dateAt(3) },
     { id: 'demo-st12', session_id: 'demo-s2', lift_name: 'Strict Press', set_number: 1, weight: 65, reps: 6, created_at: dateAt(3) },
@@ -2389,8 +2393,8 @@ function loadDemoData() {
     { id: 'demo-st18', session_id: 'demo-s3', lift_name: 'Back Squat', set_number: 2, weight: 140, reps: 6, created_at: dateAt(7) },
     { id: 'demo-st19', session_id: 'demo-s3', lift_name: 'Hollow Rock', set_number: 1, weight: null, reps: 15, created_at: dateAt(7) },
     // Session 4 (W2)
-    { id: 'demo-st20', session_id: 'demo-s4', lift_name: 'Chin-Up', set_number: 1, weight: 105, reps: 6, created_at: dateAt(10) },
-    { id: 'demo-st21', session_id: 'demo-s4', lift_name: 'Chin-Up', set_number: 2, weight: 100, reps: 6, created_at: dateAt(10) },
+    { id: 'demo-st20', session_id: 'demo-s4', lift_name: 'Chin-Up', set_number: 1, weight: 125, reps: 5, created_at: dateAt(10) },
+    { id: 'demo-st21', session_id: 'demo-s4', lift_name: 'Chin-Up', set_number: 2, weight: 130, reps: 4, created_at: dateAt(10) },
     { id: 'demo-st22', session_id: 'demo-s4', lift_name: 'Deadlift', set_number: 1, weight: 165, reps: 5, created_at: dateAt(10) },
     { id: 'demo-st23', session_id: 'demo-s4', lift_name: 'Deadlift', set_number: 2, weight: 170, reps: 4, created_at: dateAt(10) },
     { id: 'demo-st24', session_id: 'demo-s4', lift_name: 'Strict Press', set_number: 1, weight: 70, reps: 5, created_at: dateAt(10) },
