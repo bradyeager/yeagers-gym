@@ -548,11 +548,11 @@ input, textarea, select { font-family: inherit; outline: none; border: none; bac
   <div class="card">
     <div class="session-block">
       <div class="session-block-title">Session 1 — Glutes / Upper / Core</div>
-      <div class="session-block-lifts">Hip Thrust · Strict Press · RDL · Cable Kickbacks · Hollow Rock</div>
+      <div class="session-block-lifts">Pick from: Back Squat · Hip Thrust · Chin-Up · Deadlift · Strict Press · Weighted Plank · Hollow Rock</div>
     </div>
     <div class="session-block">
       <div class="session-block-title">Session 2 — Glutes / Upper / Core</div>
-      <div class="session-block-lifts">Squat · Chin-Up · Deficit Glute Bridge · Lat Pulldown · Weighted Plank</div>
+      <div class="session-block-lifts">Pick from: Back Squat · Hip Thrust · Chin-Up · Deadlift · Strict Press · Weighted Plank · Hollow Rock</div>
     </div>
     <div class="session-note-line">Every session hits all three. No "leg day, off day, repeat."</div>
   </div>
@@ -727,23 +727,26 @@ const CLIENT = {
   weeks: 8,
   checkpointWeeks: [0, 2, 4, 6, 8],
   sessionsPerWeek: 2,
-  primaryLifts: ["Hip Thrust", "Squat", "RDL", "Chin-Up", "Strict Press"],
-  accessoryLifts: ["Barbell Row", "Cable Kickbacks", "Banded Donkey Kicks", "Deficit Elevated Glute Bridge", "Lat Pulldown", "DB Lateral Raise"],
+  primaryLifts: ["Back Squat", "Hip Thrust", "Chin-Up", "Deadlift", "Strict Press"],
+  coreLifts: ["Weighted Plank", "Hollow Rock"],
+  allLoggableLifts: ["Back Squat", "Hip Thrust", "Chin-Up", "Deadlift", "Strict Press", "Weighted Plank", "Hollow Rock"],
+  liftUnits: { "Back Squat": "weight_reps", "Hip Thrust": "weight_reps", "Chin-Up": "weight_reps", "Deadlift": "weight_reps", "Strict Press": "weight_reps", "Weighted Plank": "weight_seconds", "Hollow Rock": "reps_only" },
   sessions: [
-    { id: "session_1", name: "Session 1 — Glutes / Upper / Core", lifts: ["Hip Thrust", "Strict Press", "RDL", "Cable Kickbacks", "Hollow Hold"] },
-    { id: "session_2", name: "Session 2 — Glutes / Upper / Core", lifts: ["Squat", "Chin-Up", "Deficit Elevated Glute Bridge", "Lat Pulldown", "Weighted Plank"] }
+    { id: "session_1", name: "Session 1 — Glutes / Upper / Core" },
+    { id: "session_2", name: "Session 2 — Glutes / Upper / Core" }
   ],
-  baselines: { "Hip Thrust": 225, "Squat": 125, "RDL": null, "Chin-Up": 115, "Strict Press": null },
-  goals: { "Hip Thrust": 315, "Squat": 150, "Deadlift": 175, "Chin-Up": "bodyweight" },
+  baselines: { "Hip Thrust": 225, "Back Squat": 125, "Chin-Up": 115, "Deadlift": 145, "Strict Press": null },
+  goals: { "Hip Thrust": 315, "Back Squat": 150, "Deadlift": 175, "Chin-Up": "bodyweight" },
   startingBodyweight: 125,
   strengthTests: [
     { name: "Back Squat", unit: "lb", week0: 125, week8Goal: 150, lowerIsBetter: false },
+    { name: "Strict Press", unit: "lb", week0: null, week8Goal: null, lowerIsBetter: false },
     { name: "Deadlift", unit: "lb", week0: 145, week8Goal: 175, lowerIsBetter: false },
     { name: "Hip Thrust", unit: "lb", week0: 225, week8Goal: 315, lowerIsBetter: false },
     { name: "Chin-Up cable", unit: "lb", week0: 115, week8Goal: "bodyweight", lowerIsBetter: false }
   ],
   coreTests: [
-    { name: "Hollow Hold", unit: "seconds" },
+    { name: "Hollow Rock", unit: "reps" },
     { name: "Weighted Plank", unit: "seconds" }
   ],
   glutesGoalInches: 1,
@@ -957,9 +960,9 @@ function renderMissionCard() {
     : `${CLIENT.baselines['Hip Thrust']} lb`;
   rows.push({ label: 'Hip Thrust', current: htDisplay, target: `${CLIENT.goals['Hip Thrust']} lb` });
 
-  // Hollow Hold — show "Test Week 1" until baseline logged
-  const hh = STATE.fitnessTests.filter(t => t.test_name === 'Hollow Hold').sort((a,b) => b.date.localeCompare(a.date))[0];
-  rows.push({ label: 'Hollow Hold', current: hh ? `${hh.result} sec` : 'Test Week 1', target: 'Week 8 retest' });
+  // Hollow Rock — show "Test Week 1" until baseline logged
+  const hh = STATE.fitnessTests.filter(t => t.test_name === 'Hollow Rock').sort((a,b) => b.date.localeCompare(a.date))[0];
+  rows.push({ label: 'Hollow Rock', current: hh ? `${hh.result} reps` : 'Test Week 1', target: 'Week 8 retest' });
 
   // Weighted Plank — same
   const wp = STATE.fitnessTests.filter(t => t.test_name === 'Weighted Plank').sort((a,b) => b.date.localeCompare(a.date))[0];
@@ -1264,7 +1267,7 @@ function detectMajorMilestones(newSessionId) {
   const newSets = STATE.sets.filter(s => s.session_id === newSessionId);
   for (const s of newSets) {
     if (s.lift_name === 'Hip Thrust' && s.weight >= CLIENT.goals['Hip Thrust']) major.push({ type: `Hip Thrust ${CLIENT.goals['Hip Thrust']} ACHIEVED` });
-    if (s.lift_name === 'Squat' && s.weight >= CLIENT.goals['Squat']) major.push({ type: `Squat ${CLIENT.goals['Squat']} ACHIEVED` });
+    if (s.lift_name === 'Back Squat' && s.weight >= CLIENT.goals['Back Squat']) major.push({ type: `Back Squat ${CLIENT.goals['Back Squat']} ACHIEVED` });
     if (s.lift_name === 'Chin-Up') {
       const bw = getCurrentBodyweight();
       if (s.weight >= bw) major.push({ type: 'Chin-Up bodyweight milestone' });
@@ -1287,14 +1290,17 @@ function openSessionModal(presetSessionType) {
   const lastSessions = STATE.sessions.filter(s => s.session_type === sessionType).sort((a,b) => b.date.localeCompare(a.date));
   const last = lastSessions[0];
   const lastSets = last ? STATE.sets.filter(s => s.session_id === last.id) : [];
-  const liftsList = CLIENT.sessions.find(s => s.id === presetSessionType || (presetSessionType === 'session_2' && s.id === 'session_2') || (s.id === 'session_1' && !presetSessionType)) ?.lifts || CLIENT.sessions[0].lifts;
-  const targetSession = CLIENT.sessions.find(s => s.name === sessionType.replace('Session ', 'Session ').includes('1') ? CLIENT.sessions[0] : (sessionType === 'Session 1' ? CLIENT.sessions[0] : CLIENT.sessions[1]));
-  const sessionDef = sessionType === 'Session 1' ? CLIENT.sessions[0] : CLIENT.sessions[1];
 
-  const liftBlocks = sessionDef.lifts.map(lift => {
+  const liftBlocks = CLIENT.allLoggableLifts.map(lift => {
     const prevSets = lastSets.filter(s => s.lift_name === lift);
-    const sets = prevSets.length ? prevSets.map(s => ({ weight: s.weight, reps: s.reps })) : [{ weight: CLIENT.baselines[lift] || 0, reps: 8 }];
-    return { lift, sets };
+    const unit = CLIENT.liftUnits[lift];
+    const defaultPrimary = unit === 'reps_only' ? 0 : (CLIENT.baselines[lift] || 0);
+    const defaultSecondary = unit === 'reps_only' ? 10 : (unit === 'weight_seconds' ? 30 : 8);
+    const sets = prevSets.length
+      ? prevSets.map(s => ({ weight: s.weight, reps: s.reps }))
+      : [{ weight: defaultPrimary, reps: defaultSecondary }];
+    const wasLogged = prevSets.length > 0;
+    return { lift, sets, wasLogged };
   });
 
   const currentBW = getCurrentBodyweight();
@@ -1312,14 +1318,15 @@ function openSessionModal(presetSessionType) {
     <div class="form-row">
       <label class="form-label">Session Type</label>
       <select class="form-select" id="session-type">
-        <option value="Session 1" ${sessionType==='Session 1'?'selected':''}>Session 1 — Glutes + Core</option>
-        <option value="Session 2" ${sessionType==='Session 2'?'selected':''}>Session 2 — Upper + Core</option>
+        <option value="Session 1" ${sessionType==='Session 1'?'selected':''}>Session 1 — 1st of the week</option>
+        <option value="Session 2" ${sessionType==='Session 2'?'selected':''}>Session 2 — 2nd of the week</option>
       </select>
     </div>
     <div class="form-row">
       <label class="form-label">Bodyweight (lb)</label>
       ${numericInput('session-bw', currentBW, 0.1, 1, 'lb')}
     </div>
+    <div class="form-row" style="margin-bottom:6px"><label class="form-label">Lifts — check what you did</label></div>
     <div id="lift-blocks-container">${liftBlocks.map((b, idx) => liftBlockHTML(b, idx)).join('')}</div>
     <div class="form-row">
       <label class="form-label">Session Note (optional)</label>
@@ -1333,6 +1340,7 @@ function openSessionModal(presetSessionType) {
   document.getElementById('modal-root').classList.add('active');
 
   document.getElementById('session-type').onchange = (e) => { closeModal(); openSessionModal(e.target.value === 'Session 2' ? 'session_2' : 'session_1'); };
+  document.querySelectorAll('.lift-block-toggle').forEach(cb => cb.onchange = handleLiftToggle);
   document.querySelectorAll('.numeric-btn').forEach(b => b.onclick = handleNumericBtn);
   document.querySelectorAll('.add-set-btn').forEach(b => b.onclick = handleAddSet);
   document.querySelectorAll('.set-row-remove').forEach(b => b.onclick = (e) => e.target.closest('.set-row').remove());
@@ -1340,18 +1348,52 @@ function openSessionModal(presetSessionType) {
   document.getElementById('save-session-btn').onclick = () => saveSession(sessionType);
 }
 function liftBlockHTML(block, idx) {
-  return `<div class="lift-block" data-lift="${block.lift}">
-    <div class="lift-block-title"><span>${block.lift}</span><button class="add-set-btn" data-lift-idx="${idx}">+ Add Set</button></div>
-    <div class="lift-block-sets">${block.sets.map((s, i) => setRowHTML(block.lift, i+1, s.weight, s.reps)).join('')}</div>
+  const checked = block.wasLogged ? 'checked' : '';
+  const collapsed = block.wasLogged ? '' : 'collapsed';
+  return `<div class="lift-block ${collapsed}" data-lift="${block.lift}" data-unit="${CLIENT.liftUnits[block.lift]}">
+    <div class="lift-block-title">
+      <label style="display:flex;align-items:center;gap:8px;cursor:pointer;flex:1">
+        <input type="checkbox" class="lift-block-toggle" data-lift-idx="${idx}" ${checked}>
+        <span>${block.lift}</span>
+      </label>
+      <button class="add-set-btn" data-lift-idx="${idx}" style="${collapsed?'display:none':''}">+ Add Set</button>
+    </div>
+    <div class="lift-block-sets" style="${collapsed?'display:none':''}">${block.sets.map((s, i) => setRowHTML(block.lift, i+1, s.weight, s.reps)).join('')}</div>
   </div>`;
 }
 function setRowHTML(lift, num, weight, reps) {
+  const unit = CLIENT.liftUnits[lift];
+  const safeLift = lift.replace(/\s/g,'_');
+  if (unit === 'reps_only') {
+    return `<div class="set-row" data-lift="${lift}">
+      <div class="set-row-label">${num}</div>
+      ${numericInput(`set-r-${safeLift}-${num}`, reps || 10, 1, 0, 'rep')}
+      <button class="set-row-remove">×</button>
+    </div>`;
+  }
+  const secondaryUnit = unit === 'weight_seconds' ? 'sec' : 'rep';
+  const secondaryStep = 1;
   return `<div class="set-row" data-lift="${lift}">
     <div class="set-row-label">${num}</div>
-    ${numericInput(`set-w-${lift.replace(/\s/g,'_')}-${num}`, weight, 2.5, 0, 'lb')}
-    ${numericInput(`set-r-${lift.replace(/\s/g,'_')}-${num}`, reps, 1, 0, 'rep')}
+    ${numericInput(`set-w-${safeLift}-${num}`, weight, 2.5, 0, 'lb')}
+    ${numericInput(`set-r-${safeLift}-${num}`, reps, secondaryStep, 0, secondaryUnit)}
     <button class="set-row-remove">×</button>
   </div>`;
+}
+function handleLiftToggle(e) {
+  const cb = e.currentTarget;
+  const block = cb.closest('.lift-block');
+  const sets = block.querySelector('.lift-block-sets');
+  const addBtn = block.querySelector('.add-set-btn');
+  if (cb.checked) {
+    block.classList.remove('collapsed');
+    sets.style.display = '';
+    addBtn.style.display = '';
+  } else {
+    block.classList.add('collapsed');
+    sets.style.display = 'none';
+    addBtn.style.display = 'none';
+  }
 }
 function numericInput(id, value, step, min, unit) {
   return `<div class="numeric-input-wrap">
@@ -1369,14 +1411,21 @@ function handleNumericBtn(e) {
   input.value = step % 1 === 0 ? Math.round(newVal) : newVal.toFixed(1);
 }
 function handleAddSet(e) {
-  const idx = parseInt(e.currentTarget.dataset.liftIdx);
   const block = e.currentTarget.closest('.lift-block');
   const setsContainer = block.querySelector('.lift-block-sets');
   const lift = block.dataset.lift;
+  const unit = CLIENT.liftUnits[lift];
   const num = setsContainer.children.length + 1;
   const lastSet = setsContainer.lastElementChild;
-  const lastW = lastSet ? lastSet.querySelector('.numeric-input').value : (CLIENT.baselines[lift] || 0);
-  const lastR = lastSet ? lastSet.querySelectorAll('.numeric-input')[1].value : 8;
+  const lastInputs = lastSet ? lastSet.querySelectorAll('.numeric-input') : null;
+  let lastW, lastR;
+  if (unit === 'reps_only') {
+    lastW = 0;
+    lastR = lastInputs ? lastInputs[0].value : 10;
+  } else {
+    lastW = lastInputs ? lastInputs[0].value : (CLIENT.baselines[lift] || 0);
+    lastR = lastInputs && lastInputs.length > 1 ? lastInputs[1].value : (unit === 'weight_seconds' ? 30 : 8);
+  }
   const div = document.createElement('div');
   div.innerHTML = setRowHTML(lift, num, lastW, lastR);
   const newRow = div.firstChild;
@@ -1400,12 +1449,18 @@ async function saveSession(sessionType) {
     const setsToInsert = [];
     document.querySelectorAll('.lift-block').forEach(block => {
       const lift = block.dataset.lift;
+      const unit = CLIENT.liftUnits[lift];
+      const toggle = block.querySelector('.lift-block-toggle');
+      if (!toggle || !toggle.checked) return; // skip unchecked lifts
       block.querySelectorAll('.set-row').forEach((row, idx) => {
         const inputs = row.querySelectorAll('.numeric-input');
-        const w = parseFloat(inputs[0].value);
-        const r = parseInt(inputs[1].value);
-        if (w > 0 && r > 0) {
-          setsToInsert.push({ session_id: insertedSession.id, lift_name: lift, set_number: idx + 1, weight: w, reps: r });
+        if (unit === 'reps_only') {
+          const r = parseInt(inputs[0].value);
+          if (r > 0) setsToInsert.push({ session_id: insertedSession.id, lift_name: lift, set_number: idx + 1, weight: null, reps: r });
+        } else {
+          const w = parseFloat(inputs[0].value);
+          const r = parseInt(inputs[1].value);
+          if (w > 0 && r > 0) setsToInsert.push({ session_id: insertedSession.id, lift_name: lift, set_number: idx + 1, weight: w, reps: r });
         }
       });
     });
@@ -1796,7 +1851,7 @@ function getAdherenceScore() {
   return Math.min(100, (STATE.sessions.length / targetSessions) * 100);
 }
 function getStrengthScore() {
-  const lifts = ['Hip Thrust', 'Squat', 'Chin-Up'];
+  const lifts = ['Hip Thrust', 'Back Squat', 'Chin-Up'];
   const scores = [];
   lifts.forEach(lift => {
     const baseline = CLIENT.baselines[lift];
@@ -1825,7 +1880,7 @@ function getBodyScore() {
     scores.push(Math.min(100, Math.max(0, (delta / CLIENT.glutesGoalInches) * 100)));
   }
   // Hollow hold improvement
-  const hhTests = STATE.fitnessTests.filter(t => t.test_name === 'Hollow Hold').sort((a,b) => a.date.localeCompare(b.date));
+  const hhTests = STATE.fitnessTests.filter(t => t.test_name === 'Hollow Rock').sort((a,b) => a.date.localeCompare(b.date));
   if (hhTests.length >= 2) {
     const w0Val = hhTests[0].result, latestVal = hhTests[hhTests.length-1].result;
     if (w0Val > 0) scores.push(Math.min(100, Math.max(0, ((latestVal - w0Val) / w0Val) * 100)));
@@ -1879,10 +1934,10 @@ function renderProgressRings() {
   const grid = document.getElementById('rings-grid'); grid.innerHTML = '';
   const rings = [
     { label: 'Hip Thrust', current: getMaxLiftWeight('Hip Thrust'), baseline: CLIENT.baselines['Hip Thrust'], goal: CLIENT.goals['Hip Thrust'] },
-    { label: 'Squat', current: getMaxLiftWeight('Squat'), baseline: CLIENT.baselines['Squat'], goal: CLIENT.goals['Squat'] },
+    { label: 'Back Squat', current: getMaxLiftWeight('Back Squat'), baseline: CLIENT.baselines['Back Squat'], goal: CLIENT.goals['Back Squat'] },
     { label: 'Deadlift', current: STATE.fitnessTests.find(t => t.test_name === 'Deadlift' && t.week_number === 8)?.result || 145, baseline: 145, goal: CLIENT.goals['Deadlift'] },
     { label: 'Glutes', current: ((latest, w0) => latest && w0 ? latest.glutes_hips - w0.glutes_hips : 0)([...STATE.bodyMeasurements].filter(m=>m.week_number>0).sort((a,b)=>b.week_number-a.week_number)[0], STATE.bodyMeasurements.find(m=>m.week_number===0)), baseline: 0, goal: CLIENT.glutesGoalInches },
-    { label: 'Hollow Hold', current: STATE.fitnessTests.filter(t=>t.test_name==='Hollow Hold').sort((a,b)=>b.date.localeCompare(a.date))[0]?.result || 0, baseline: STATE.fitnessTests.find(t=>t.test_name==='Hollow Hold' && t.week_number===0)?.result || 0, goal: null },
+    { label: 'Hollow Rock', current: STATE.fitnessTests.filter(t=>t.test_name==='Hollow Rock').sort((a,b)=>b.date.localeCompare(a.date))[0]?.result || 0, baseline: STATE.fitnessTests.find(t=>t.test_name==='Hollow Rock' && t.week_number===0)?.result || 0, goal: null },
     { label: 'Weighted Plank', current: STATE.fitnessTests.filter(t=>t.test_name==='Weighted Plank').sort((a,b)=>b.date.localeCompare(a.date))[0]?.result || 0, baseline: STATE.fitnessTests.find(t=>t.test_name==='Weighted Plank' && t.week_number===0)?.result || 0, goal: null }
   ];
   rings.forEach(r => {
@@ -2024,7 +2079,7 @@ const SPLASH_SLIDES = [
         <div class="splash-section-label" style="text-align:left;margin:0 0 8px;font-size:10px">Strength</div>
         <div class="splash-stats-grid" style="gap:6px">
           <div class="splash-stat-row pink-accent"><span class="splash-stat-label">Hip Thrust</span><span class="splash-stat-vals">225 → 315</span></div>
-          <div class="splash-stat-row pink-accent"><span class="splash-stat-label">Squat</span><span class="splash-stat-vals">125 → 150</span></div>
+          <div class="splash-stat-row pink-accent"><span class="splash-stat-label">Back Squat</span><span class="splash-stat-vals">125 → 150</span></div>
           <div class="splash-stat-row pink-accent"><span class="splash-stat-label">Deadlift</span><span class="splash-stat-vals">145 → 175</span></div>
           <div class="splash-stat-row pink-accent"><span class="splash-stat-label">Chin-Up cable</span><span class="splash-stat-vals">115 → bodyweight</span></div>
         </div>
@@ -2126,7 +2181,7 @@ function exportPDF() {
   const gD = (w0G && ltG) ? (ltG - w0G).toFixed(1) : '0.0';
   [
     `Hip Thrust:    ${CLIENT.baselines['Hip Thrust']} → ${ht} (target: ${CLIENT.goals['Hip Thrust']})`,
-    `Squat:         ${CLIENT.baselines['Squat']} → ${getMaxLiftWeight('Squat')} (target: ${CLIENT.goals['Squat']})`,
+    `Back Squat:    ${CLIENT.baselines['Back Squat']} → ${getMaxLiftWeight('Back Squat')} (target: ${CLIENT.goals['Back Squat']})`,
     `Glutes:        +${gD} in (target: +1 in)`,
     `Sessions:      ${STATE.sessions.length} logged · Streak: ${getStreak()} weeks`
   ].forEach(line => { doc.text(line, 40, y); y += 18; });
