@@ -463,7 +463,6 @@ input, textarea, select { font-family: inherit; outline: none; border: none; bac
   <button class="tab-btn active" data-tab="mission"><span class="tab-emoji">🎯</span>Mission</button>
   <button class="tab-btn" data-tab="performance"><span class="tab-emoji">💪</span>Performance</button>
   <button class="tab-btn" data-tab="bodycomp"><span class="tab-emoji">📊</span>Body Comp</button>
-  <button class="tab-btn" data-tab="strength"><span class="tab-emoji">🏋️</span>Strength Tests</button>
   <button class="tab-btn" data-tab="aesthetic"><span class="tab-emoji">📸</span>Aesthetic</button>
   <button class="tab-btn" data-tab="scorecard"><span class="tab-emoji">🏆</span>Scorecard</button>
 </nav>
@@ -571,7 +570,7 @@ input, textarea, select { font-family: inherit; outline: none; border: none; bac
   </div>
 </div>
 
-<!-- ═══════ TAB 2 — PERFORMANCE ═══════ -->
+<!-- ═══════ TAB 2 — PERFORMANCE (incl. STRENGTH TESTS) ═══════ -->
 <div class="tab-panel" id="tab-performance">
   <div class="card hero-stat-card">
     <div class="hero-stat-label">Last Session</div>
@@ -581,6 +580,14 @@ input, textarea, select { font-family: inherit; outline: none; border: none; bac
 
   <div class="divider">// PRIMARY LIFTS</div>
   <div class="lift-grid" id="lift-grid"></div>
+
+  <div class="divider">// 1RM TESTS — WEEK 0 → WEEK 8</div>
+  <div class="test-grid" id="strength-test-grid"></div>
+
+  <div class="divider">// CORE TESTS</div>
+  <div class="test-grid" id="core-test-grid"></div>
+
+  <button class="btn-primary" style="margin-top:12px" id="add-test-btn">+ Log Test Result</button>
 
   <div class="divider">// SESSION HISTORY</div>
   <div id="session-history"></div>
@@ -609,17 +616,6 @@ input, textarea, select { font-family: inherit; outline: none; border: none; bac
 
   <div class="divider">// SCAN HISTORY</div>
   <div id="hume-history"></div>
-</div>
-
-<!-- ═══════ TAB 5 — STRENGTH TESTS ═══════ -->
-<div class="tab-panel" id="tab-strength">
-  <div class="section-subtitle">// 1RM TESTS — WEEK 0 → WEEK 8</div>
-  <div class="test-grid" id="strength-test-grid"></div>
-
-  <div class="section-subtitle">// CORE TESTS</div>
-  <div class="test-grid" id="core-test-grid"></div>
-
-  <button class="btn-primary" style="margin-top:12px" id="add-test-btn">+ Log Test Result</button>
 </div>
 
 <!-- ═══════ TAB 6 — AESTHETIC ═══════ -->
