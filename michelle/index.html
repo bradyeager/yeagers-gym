@@ -287,6 +287,12 @@ input, textarea, select { font-family: inherit; outline: none; border: none; bac
 .compare-cell-img { width: 100%; height: 100%; object-fit: cover; }
 .compare-cell-empty { color: var(--text-muted); font-size: 11px; text-align: center; padding: 8px; }
 .compare-cell-label { position: absolute; top: 6px; left: 6px; background: rgba(15,22,32,0.8); color: white; font-size: 10px; padding: 2px 6px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.06em; }
+#demo-banner { position: sticky; top: 0; z-index: 200; display: flex; align-items: center; justify-content: center; gap: 10px; padding: 8px 14px; background: linear-gradient(90deg, var(--pink), var(--pink-deep)); color: white; font-size: 11px; letter-spacing: 0.04em; box-shadow: 0 2px 12px rgba(239,50,149,0.4); }
+.demo-banner-label { font-weight: 800; letter-spacing: 0.12em; padding: 2px 8px; background: rgba(15,22,32,0.35); border-radius: 4px; }
+.demo-banner-text { opacity: 0.95; }
+.demo-banner-exit { color: white; text-decoration: underline; opacity: 0.9; font-weight: 600; margin-left: auto; }
+.demo-mode-active .app-header { top: 32px; }
+.demo-mode-active .tab-nav { top: 128px; }
 .biweekly-pill { display: flex; align-items: center; gap: 6px; padding: 8px 12px; background: linear-gradient(135deg, var(--pink-glow), rgba(239,50,149,0.04)); border: 1px solid rgba(239,50,149,0.4); border-radius: 999px; margin-bottom: 12px; font-size: 11px; color: var(--text-primary); flex-wrap: wrap; }
 .biweekly-pill-label { color: var(--pink); font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; font-size: 10px; }
 .biweekly-pill-week { display: inline-flex; align-items: center; justify-content: center; min-width: 28px; padding: 3px 6px; border-radius: 999px; background: rgba(15,22,32,0.45); color: var(--text-muted); font-size: 10px; font-weight: 600; letter-spacing: 0.04em; }
@@ -817,7 +823,8 @@ const STATE = {
   liftCharts: {},
   coachMode: localStorage.getItem('coach_mode') === 'true',
   coachMessages: JSON.parse(localStorage.getItem('coach_messages') || '{}'),
-  storageInitialized: localStorage.getItem('storage_initialized') === 'true'
+  storageInitialized: localStorage.getItem('storage_initialized') === 'true',
+  demoMode: new URLSearchParams(window.location.search).get('demo') === '1'
 };
 
 /* ═══════════════════════════════════════════════════════════════
@@ -830,6 +837,11 @@ async function dbGet(table, query = '') {
   return r.json();
 }
 async function dbInsert(table, data) {
+  if (STATE.demoMode) {
+    toast('Demo mode — changes not saved.', 'info');
+    const arr = Array.isArray(data) ? data : [data];
+    return arr.map(d => ({ ...d, id: 'demo-' + Math.random().toString(36).slice(2, 9), created_at: new Date().toISOString() }));
+  }
   const r = await fetch(`${SUPABASE_URL}/rest/v1/${table}`, {
     method: 'POST', headers: SB_HEADERS, body: JSON.stringify(data)
   });
@@ -837,6 +849,10 @@ async function dbInsert(table, data) {
   return r.json();
 }
 async function dbUpdate(table, id, data) {
+  if (STATE.demoMode) {
+    toast('Demo mode — changes not saved.', 'info');
+    return [{ id, ...data }];
+  }
   const r = await fetch(`${SUPABASE_URL}/rest/v1/${table}?id=eq.${id}`, {
     method: 'PATCH', headers: SB_HEADERS, body: JSON.stringify(data)
   });
@@ -844,6 +860,10 @@ async function dbUpdate(table, id, data) {
   return r.json();
 }
 async function dbDelete(table, id) {
+  if (STATE.demoMode) {
+    toast('Demo mode — changes not saved.', 'info');
+    return true;
+  }
   const r = await fetch(`${SUPABASE_URL}/rest/v1/${table}?id=eq.${id}`, {
     method: 'DELETE', headers: SB_HEADERS
   });
@@ -2345,13 +2365,106 @@ async function init() {
   initFAB();
   initSettings();
   renderQR();
-  await loadAllData();
-  await loadFrequencyPreference();
+  if (STATE.demoMode) {
+    loadDemoData();
+    showDemoBanner();
+    STATE.frequencyChoice = '2x';
+  } else {
+    await loadAllData();
+    await loadFrequencyPreference();
+  }
   renderAll();
   // Onboarding trigger
-  if (!localStorage.getItem('onboarding_complete') && !STATE.sessions.length) {
+  if (!STATE.demoMode && !localStorage.getItem('onboarding_complete') && !STATE.sessions.length) {
     setTimeout(showSplash, 300);
   }
+}
+function showDemoBanner() {
+  const banner = document.createElement('div');
+  banner.id = 'demo-banner';
+  banner.innerHTML = `<span class="demo-banner-label">DEMO MODE</span><span class="demo-banner-text">Week 2 sample data — nothing saves</span><a class="demo-banner-exit" href="./">Exit Demo ✕</a>`;
+  document.body.insertBefore(banner, document.body.firstChild);
+  document.body.classList.add('demo-mode-active');
+}
+function loadDemoData() {
+  // 4 sessions logged: W1 ×2, W2 ×2
+  const startDate = new Date(CLIENT.startDate);
+  const dateAt = (offsetDays) => { const d = new Date(startDate); d.setDate(d.getDate() + offsetDays); return d.toISOString().slice(0,10); };
+
+  const sessions = [
+    { id: 'demo-s1', date: dateAt(0),  session_type: 'Session 1', bodyweight: 125,   note: 'Baseline week. Felt good.' },
+    { id: 'demo-s2', date: dateAt(3),  session_type: 'Session 2', bodyweight: 124.8, note: 'Chin-up assist felt lighter.' },
+    { id: 'demo-s3', date: dateAt(7),  session_type: 'Session 1', bodyweight: 124.5, note: 'Hip thrust PR — added 10 lb.' },
+    { id: 'demo-s4', date: dateAt(10), session_type: 'Session 2', bodyweight: 124.2, note: 'Hollow rocks getting smoother.' }
+  ];
+  const sets = [
+    // Session 1 (W1) — Hip Thrust + Back Squat + Hollow Rock
+    { id: 'demo-st1',  session_id: 'demo-s1', lift_name: 'Hip Thrust', set_number: 1, weight: 225, reps: 8, created_at: dateAt(0) },
+    { id: 'demo-st2',  session_id: 'demo-s1', lift_name: 'Hip Thrust', set_number: 2, weight: 225, reps: 8, created_at: dateAt(0) },
+    { id: 'demo-st3',  session_id: 'demo-s1', lift_name: 'Hip Thrust', set_number: 3, weight: 235, reps: 6, created_at: dateAt(0) },
+    { id: 'demo-st4',  session_id: 'demo-s1', lift_name: 'Back Squat', set_number: 1, weight: 125, reps: 8, created_at: dateAt(0) },
+    { id: 'demo-st5',  session_id: 'demo-s1', lift_name: 'Back Squat', set_number: 2, weight: 130, reps: 6, created_at: dateAt(0) },
+    { id: 'demo-st6',  session_id: 'demo-s1', lift_name: 'Hollow Rock', set_number: 1, weight: null, reps: 12, created_at: dateAt(0) },
+    { id: 'demo-st7',  session_id: 'demo-s1', lift_name: 'Hollow Rock', set_number: 2, weight: null, reps: 10, created_at: dateAt(0) },
+    // Session 2 (W1) — Chin-Up + Deadlift + Strict Press + Weighted Plank
+    { id: 'demo-st8',  session_id: 'demo-s2', lift_name: 'Chin-Up', set_number: 1, weight: 115, reps: 6, created_at: dateAt(3) },
+    { id: 'demo-st9',  session_id: 'demo-s2', lift_name: 'Chin-Up', set_number: 2, weight: 110, reps: 6, created_at: dateAt(3) },
+    { id: 'demo-st10', session_id: 'demo-s2', lift_name: 'Deadlift', set_number: 1, weight: 145, reps: 5, created_at: dateAt(3) },
+    { id: 'demo-st11', session_id: 'demo-s2', lift_name: 'Deadlift', set_number: 2, weight: 155, reps: 5, created_at: dateAt(3) },
+    { id: 'demo-st12', session_id: 'demo-s2', lift_name: 'Strict Press', set_number: 1, weight: 65, reps: 6, created_at: dateAt(3) },
+    { id: 'demo-st13', session_id: 'demo-s2', lift_name: 'Weighted Plank', set_number: 1, weight: 25, reps: 45, created_at: dateAt(3) },
+    // Session 3 (W2) — Hip Thrust + Back Squat + Hollow Rock (PR)
+    { id: 'demo-st14', session_id: 'demo-s3', lift_name: 'Hip Thrust', set_number: 1, weight: 245, reps: 8, created_at: dateAt(7) },
+    { id: 'demo-st15', session_id: 'demo-s3', lift_name: 'Hip Thrust', set_number: 2, weight: 245, reps: 8, created_at: dateAt(7) },
+    { id: 'demo-st16', session_id: 'demo-s3', lift_name: 'Hip Thrust', set_number: 3, weight: 255, reps: 5, created_at: dateAt(7) },
+    { id: 'demo-st17', session_id: 'demo-s3', lift_name: 'Back Squat', set_number: 1, weight: 135, reps: 8, created_at: dateAt(7) },
+    { id: 'demo-st18', session_id: 'demo-s3', lift_name: 'Back Squat', set_number: 2, weight: 140, reps: 6, created_at: dateAt(7) },
+    { id: 'demo-st19', session_id: 'demo-s3', lift_name: 'Hollow Rock', set_number: 1, weight: null, reps: 15, created_at: dateAt(7) },
+    // Session 4 (W2)
+    { id: 'demo-st20', session_id: 'demo-s4', lift_name: 'Chin-Up', set_number: 1, weight: 105, reps: 6, created_at: dateAt(10) },
+    { id: 'demo-st21', session_id: 'demo-s4', lift_name: 'Chin-Up', set_number: 2, weight: 100, reps: 6, created_at: dateAt(10) },
+    { id: 'demo-st22', session_id: 'demo-s4', lift_name: 'Deadlift', set_number: 1, weight: 165, reps: 5, created_at: dateAt(10) },
+    { id: 'demo-st23', session_id: 'demo-s4', lift_name: 'Deadlift', set_number: 2, weight: 170, reps: 4, created_at: dateAt(10) },
+    { id: 'demo-st24', session_id: 'demo-s4', lift_name: 'Strict Press', set_number: 1, weight: 70, reps: 5, created_at: dateAt(10) },
+    { id: 'demo-st25', session_id: 'demo-s4', lift_name: 'Weighted Plank', set_number: 1, weight: 30, reps: 50, created_at: dateAt(10) }
+  ];
+  const bodyMeasurements = [
+    { id: 'demo-bm1', date: dateAt(0),  week_number: 0, bodyweight: 125,   waist: 28.0, glutes_hips: 38.5, thigh: 22.0, shoulders: 38.0 },
+    { id: 'demo-bm2', date: dateAt(14), week_number: 2, bodyweight: 124.2, waist: 27.5, glutes_hips: 39.2, thigh: 22.2, shoulders: 38.2 }
+  ];
+  const fitnessTests = [
+    { id: 'demo-ft1', test_name: 'Back Squat',     date: dateAt(0),  week_number: 0, result: 125, unit: 'lb' },
+    { id: 'demo-ft2', test_name: 'Deadlift',       date: dateAt(0),  week_number: 0, result: 145, unit: 'lb' },
+    { id: 'demo-ft3', test_name: 'Hip Thrust',     date: dateAt(0),  week_number: 0, result: 225, unit: 'lb' },
+    { id: 'demo-ft4', test_name: 'Chin-Up cable',  date: dateAt(0),  week_number: 0, result: 115, unit: 'lb' },
+    { id: 'demo-ft5', test_name: 'Strict Press',   date: dateAt(0),  week_number: 0, result: 65,  unit: 'lb' },
+    { id: 'demo-ft6', test_name: 'Hollow Rock',    date: dateAt(0),  week_number: 0, result: 12,  unit: 'reps' },
+    { id: 'demo-ft7', test_name: 'Weighted Plank', date: dateAt(0),  week_number: 0, result: 45,  unit: 'seconds' }
+  ];
+  const measurements = [
+    { id: 'demo-m1', date: dateAt(0),  week_number: 0, bodyweight: 125,   body_fat_pct: 24.5, skeletal_muscle_mass: 52.0, visceral_fat_index: 4.0, body_water_pct: 55.0 },
+    { id: 'demo-m2', date: dateAt(14), week_number: 2, bodyweight: 124.2, body_fat_pct: 23.8, skeletal_muscle_mass: 52.6, visceral_fat_index: 3.8, body_water_pct: 55.4 }
+  ];
+  const photos = []; // empty — placeholders show "No photos yet"
+  const timelineChecklist = [
+    { id: 'demo-tc1', key: 'w0_squat',          label: 'Baseline squat weight/reps',     checked: true,  checked_at: dateAt(0) },
+    { id: 'demo-tc2', key: 'w0_chin_up',        label: 'Baseline chin-up assistance/reps', checked: true,  checked_at: dateAt(0) },
+    { id: 'demo-tc3', key: 'w0_hip_thrust',     label: 'Baseline hip thrust weight/reps', checked: true,  checked_at: dateAt(0) },
+    { id: 'demo-tc4', key: 'w0_strict_press',   label: 'Baseline strict press weight/reps', checked: true, checked_at: dateAt(0) },
+    { id: 'demo-tc5', key: 'w0_hollow_rock',    label: 'Baseline hollow rock hold (seconds)', checked: true, checked_at: dateAt(0) },
+    { id: 'demo-tc6', key: 'w0_weighted_plank', label: 'Baseline weighted plank (load + seconds)', checked: true, checked_at: dateAt(0) },
+    { id: 'demo-tc7', key: 'w0_hume_scan',      label: 'Hume scan',                       checked: true,  checked_at: dateAt(0) },
+    { id: 'demo-tc8', key: 'w0_photos',         label: 'Front/side/back photos',          checked: false, checked_at: null }
+  ];
+
+  STATE.sessions = sessions;
+  STATE.sets = sets;
+  STATE.bodyMeasurements = bodyMeasurements;
+  STATE.fitnessTests = fitnessTests;
+  STATE.measurements = measurements;
+  STATE.photos = photos;
+  STATE.timelineChecklist = timelineChecklist;
+  STATE.loaded = true;
 }
 window.addEventListener('DOMContentLoaded', init);
 window.closeModal = closeModal;
