@@ -82,6 +82,14 @@ input, textarea, select { font-family: inherit; outline: none; border: none; bac
 
 /* ═══════ MISSION CARD ═══════ */
 .mission-card { position: relative; background: linear-gradient(135deg, rgba(72,196,204,0.08), rgba(239,50,149,0.05)); border: 1px solid var(--border-strong); border-radius: 16px; padding: 18px; margin-bottom: 12px; }
+.mission-hero-line { font-family: 'DM Serif Display', serif; font-size: 15px; line-height: 1.35; color: var(--text-primary); margin: 14px 0 12px; padding: 10px 0; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+.mission-hero-line .pink-em { color: var(--pink); }
+.mission-pillars { display: grid; grid-template-columns: 1fr; gap: 8px; margin: 10px 0 4px; }
+@media (min-width: 720px) { .mission-pillars { grid-template-columns: repeat(3, 1fr); gap: 10px; } }
+.mission-pillar { background: rgba(15,22,32,0.4); border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; }
+.mission-pillar-label { font-size: 10px; font-weight: 700; color: var(--pink); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 4px; }
+.mission-pillar-tag { font-size: 11px; color: var(--text-muted); font-style: italic; margin-bottom: 6px; }
+.mission-pillar-targets { font-size: 11px; color: var(--teal); line-height: 1.45; letter-spacing: 0.02em; }
 .mission-card::before { content: ''; position: absolute; inset: 0; border-radius: 16px; padding: 1px; background: linear-gradient(135deg, var(--teal), var(--pink)); -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); -webkit-mask-composite: xor; mask-composite: exclude; pointer-events: none; opacity: 0.6; }
 .mission-header { font-family: 'DM Serif Display', serif; font-size: 22px; line-height: 1.1; margin-bottom: 4px; }
 .mission-sub { font-size: 12px; color: var(--text-secondary); margin-bottom: 14px; }
@@ -157,6 +165,7 @@ input, textarea, select { font-family: inherit; outline: none; border: none; bac
 
 /* ═══════ QR CODE ═══════ */
 .qr-card { text-align: center; }
+.qr-sub { font-size: 11px; color: var(--text-muted); margin: 8px 0 4px; line-height: 1.45; max-width: 220px; margin-left: auto; margin-right: auto; }
 .qr-canvas-wrap { background: white; padding: 12px; border-radius: 12px; display: inline-block; margin: 12px auto; }
 .qr-canvas-wrap img, .qr-canvas-wrap canvas { display: block; width: 160px; height: 160px; }
 .qr-url { font-size: 11px; color: var(--text-muted); margin-top: 4px; word-break: break-all; }
@@ -508,6 +517,24 @@ input, textarea, select { font-family: inherit; outline: none; border: none; bac
   <div class="mission-card">
     <div class="mission-header">The Mission</div>
     <div class="mission-sub">Glutes &amp; Core — 8 Weeks</div>
+    <div class="mission-hero-line">Fuller glutes. Tighter waist. <span class="pink-em">Visible abs by Week 8.</span></div>
+    <div class="mission-pillars">
+      <div class="mission-pillar">
+        <div class="mission-pillar-label">Performance</div>
+        <div class="mission-pillar-tag">Lifts that build the shape</div>
+        <div class="mission-pillar-targets">Hip Thrust · Back Squat · Chin-Up · Deadlift · Strict Press</div>
+      </div>
+      <div class="mission-pillar">
+        <div class="mission-pillar-label">Body Comp</div>
+        <div class="mission-pillar-tag">Recomp, not loss</div>
+        <div class="mission-pillar-targets">−1.5% body fat · +1.5 lb lean mass · −0.5″ waist</div>
+      </div>
+      <div class="mission-pillar">
+        <div class="mission-pillar-label">Aesthetics</div>
+        <div class="mission-pillar-tag">What you'll see in the mirror</div>
+        <div class="mission-pillar-targets">Glutes +0.5″ · visible abs · defined shoulder cap</div>
+      </div>
+    </div>
     <div id="mission-rows"></div>
     <div class="mission-progress-wrap">
       <div class="mission-progress-label">
@@ -544,7 +571,7 @@ input, textarea, select { font-family: inherit; outline: none; border: none; bac
 
   <div class="divider">// THE PLAN</div>
   <div class="card narrative-card">
-    <div class="narrative-text">Michelle, since you're already lean, the best path for your aesthetic goal is not more fat loss — it's building muscle in the areas that create shape, posture, and definition. Your top priorities are glutes and core.</div>
+    <div class="narrative-text">Since you're already lean, the path to your goal isn't more fat loss — it's building muscle where it shapes you. Top priorities: <strong class="pink">fuller glutes, more visible abs</strong>.</div>
     <div class="core-message">Once a week maintains.<br>Twice a week builds.</div>
   </div>
 
@@ -552,30 +579,6 @@ input, textarea, select { font-family: inherit; outline: none; border: none; bac
   <div class="card narrative-card conundrum-card">
     <div class="conundrum-tag">The Gym Girl Dilemma</div>
     <div class="narrative-text">Every gym girl wants ass and abs. Problem: glutes grow in a <strong class="pink">surplus</strong>. Belly fat drops in a <strong class="teal">deficit</strong>. Opposing paths — except for one window. Newbie gains. You get to do both at once. We won't have to choose.</div>
-  </div>
-
-  <div class="divider">// PRIMARY TARGETS</div>
-  <div class="targets-grid">
-    <div class="target-card">
-      <div class="target-title">Glutes</div>
-      <div class="target-desc">Fuller, lifted look</div>
-      <div class="target-movements">Hip Thrusts · RDLs · Kickbacks · Abductions</div>
-    </div>
-    <div class="target-card">
-      <div class="target-title">Core</div>
-      <div class="target-desc">Tighter waistline, visible abs</div>
-      <div class="target-movements">Hollow Rocks · Weighted Planks</div>
-    </div>
-    <div class="target-card">
-      <div class="target-title">Shoulders</div>
-      <div class="target-desc">Defined cap</div>
-      <div class="target-movements">Strict Press · Lateral Raises</div>
-    </div>
-    <div class="target-card">
-      <div class="target-title">Lats / Back</div>
-      <div class="target-desc">Posture, shape</div>
-      <div class="target-movements">Chin-Ups · Lat Pulldowns · Rows</div>
-    </div>
   </div>
 
   <div class="divider">// WEEKLY TRAINING PLAN</div>
@@ -588,7 +591,7 @@ input, textarea, select { font-family: inherit; outline: none; border: none; bac
       <div class="session-block-title">Session 2 — Glutes / Upper / Core</div>
       <div class="session-block-lifts">Pick from: Back Squat · Hip Thrust · Chin-Up · Deadlift · Strict Press · Weighted Plank · Hollow Rock</div>
     </div>
-    <div class="session-note-line">Every session hits all three. No "leg day, off day, repeat."</div>
+    <div class="session-note-line">Every week hits all six.</div>
   </div>
 
   <div id="checklist-container"></div>
@@ -598,6 +601,7 @@ input, textarea, select { font-family: inherit; outline: none; border: none; bac
     <div class="card-title">Take it with you</div>
     <div class="qr-canvas-wrap" id="qr-canvas-wrap"></div>
     <div class="qr-url" id="qr-url">yeagersgym.com/michelle</div>
+    <div class="qr-sub">Scan this to take it with you. Track your progress anywhere.</div>
     <div class="qr-actions">
       <button class="btn-small" id="qr-download-btn">Download PNG</button>
     </div>
