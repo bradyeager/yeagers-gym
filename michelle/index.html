@@ -187,6 +187,9 @@ input, textarea, select { font-family: inherit; outline: none; border: none; bac
 .lift-tile-value { font-family: 'DM Serif Display', serif; font-size: 18px; line-height: 1.1; margin-bottom: 6px; }
 .lift-tile-spark { width: 100%; height: 30px; }
 .lift-tile-flag { font-size: 10px; color: var(--pink); margin-top: 4px; }
+.lift-tile-delta { font-size: 11px; font-weight: 700; color: var(--pink); margin-top: 4px; letter-spacing: 0.04em; }
+.lift-tile-delta.goal-hit { color: var(--teal); }
+.section-headline-pink { font-family: 'DM Serif Display', serif; font-size: 18px; color: var(--pink); margin: 18px 0 10px; letter-spacing: 0.02em; }
 
 /* ═══════ FAB ═══════ */
 .fab { position: fixed; right: 16px; bottom: 96px; z-index: 50; width: 56px; height: 56px; border-radius: 50%; background: var(--teal); color: var(--charcoal); display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 700; box-shadow: 0 8px 24px rgba(72,196,204,0.4); }
@@ -647,14 +650,7 @@ input, textarea, select { font-family: inherit; outline: none; border: none; bac
 
 <!-- ═══════ TAB 6 — AESTHETIC ═══════ -->
 <div class="tab-panel" id="tab-aesthetic">
-  <div class="biweekly-pill" id="biweekly-pill">
-    <span class="biweekly-pill-label">Biweekly Check-Ins</span>
-    <span class="biweekly-pill-week" data-week="0">W0</span>
-    <span class="biweekly-pill-week" data-week="2">W2</span>
-    <span class="biweekly-pill-week" data-week="4">W4</span>
-    <span class="biweekly-pill-week" data-week="6">W6</span>
-    <span class="biweekly-pill-week" data-week="8">W8</span>
-  </div>
+  <h2 class="section-headline-pink">Biweekly Check-Ins</h2>
   <div class="section-subtitle">// LATEST COMPARISON</div>
   <div class="angle-toggle">
     <button class="angle-btn active" data-angle="front">Front</button>
@@ -670,12 +666,6 @@ input, textarea, select { font-family: inherit; outline: none; border: none; bac
       <span class="compare-cell-label">Latest</span>
       <div class="compare-cell-empty">No photos yet</div>
     </div>
-  </div>
-
-  <div class="delta-row">
-    <div class="delta-tile"><div class="delta-label">Glutes</div><div class="delta-value" id="delta-glutes">—</div></div>
-    <div class="delta-tile"><div class="delta-label">Waist</div><div class="delta-value pink-val" id="delta-waist">—</div></div>
-    <div class="delta-tile"><div class="delta-label">Hip:Waist</div><div class="delta-value" id="delta-hip-waist">—</div></div>
   </div>
 
   <div class="divider">// MEASUREMENTS</div>
@@ -1224,16 +1214,26 @@ function renderLiftTiles() {
   CLIENT.primaryLifts.forEach(lift => {
     const sets = STATE.sets.filter(s => s.lift_name === lift && s.weight);
     const max = sets.length ? Math.max(...sets.map(s => s.weight)) : (CLIENT.baselines[lift] || 0);
-    const recent = sets.slice(-5);
+    const baseline = CLIENT.baselines[lift];
+    const goal = CLIENT.goals[lift];
     let flag = '';
     if (lift === 'Chin-Up') {
       const bw = getCurrentBodyweight();
       if (max >= bw) flag = '🏁 Bodyweight milestone';
     }
     if (lift === 'Hip Thrust' && sets.some(s => s.reps >= 15)) flag = '🏁 Time to add weight';
+    // Delta vs baseline (pink) or goal hit (teal)
+    let deltaHTML = '';
+    if (typeof goal === 'number' && max >= goal) {
+      deltaHTML = `<div class="lift-tile-delta goal-hit">GOAL HIT · +${(max - baseline).toFixed(0)} lb</div>`;
+    } else if (baseline && max > baseline) {
+      const diff = max - baseline;
+      deltaHTML = `<div class="lift-tile-delta">+${diff.toFixed(diff % 1 === 0 ? 0 : 1)} lb since start</div>`;
+    }
     grid.innerHTML += `<div class="lift-tile" data-lift="${lift}">
       <div class="lift-tile-name">${lift}</div>
       <div class="lift-tile-value">${max || '—'} lb</div>
+      ${deltaHTML}
       <canvas class="lift-tile-spark" id="spark-${lift.replace(/\s/g,'-')}" width="200" height="30"></canvas>
       ${flag ? `<div class="lift-tile-flag">${flag}</div>` : ''}
     </div>`;
@@ -1745,28 +1745,6 @@ function renderAesthetic() {
   baseEl.innerHTML = `<span class="compare-cell-label">Week 0</span>` + (w0?.url ? `<img src="${w0.url}" class="compare-cell-img">` : `<div class="compare-cell-empty">First photos<br>May 4</div>`);
   latestEl.innerHTML = `<span class="compare-cell-label">${latest ? `Week ${latest.week_number}` : 'Latest'}</span>` + (latest?.url ? `<img src="${latest.url}" class="compare-cell-img">` : `<div class="compare-cell-empty">No photos yet</div>`);
 
-  // Deltas
-  const w0BM = STATE.bodyMeasurements.find(m => m.week_number === 0);
-  const latestBM = [...STATE.bodyMeasurements].filter(m => m.week_number > 0).sort((a,b) => b.week_number - a.week_number)[0];
-  const glutesD = (w0BM?.glutes_hips && latestBM?.glutes_hips) ? (latestBM.glutes_hips - w0BM.glutes_hips).toFixed(1) : null;
-  const waistD = (w0BM?.waist && latestBM?.waist) ? (latestBM.waist - w0BM.waist).toFixed(1) : null;
-  document.getElementById('delta-glutes').textContent = glutesD ? `${glutesD>=0?'+':''}${glutesD} in` : '—';
-  document.getElementById('delta-waist').textContent = waistD ? `${waistD>=0?'+':''}${waistD} in` : '—';
-  // Hip:Waist ratio (latest entry with both glutes_hips + waist)
-  const ratioBM = [...STATE.bodyMeasurements].filter(m => m.glutes_hips && m.waist).sort((a,b) => b.week_number - a.week_number)[0];
-  const hipWaistEl = document.getElementById('delta-hip-waist');
-  if (ratioBM) {
-    const ratio = ratioBM.glutes_hips / ratioBM.waist;
-    hipWaistEl.textContent = ratio.toFixed(2);
-    hipWaistEl.classList.toggle('pink-val', ratio < 1.40);
-  } else {
-    hipWaistEl.textContent = '—';
-    hipWaistEl.classList.remove('pink-val');
-  }
-
-  // Biweekly check-in pill state
-  renderBiweeklyPill();
-
   // Measurement table
   renderMeasurementTable();
 
@@ -1804,20 +1782,6 @@ function renderMeasurementTable() {
   table.innerHTML = html;
   table.querySelectorAll('.measurement-cell:not(.readonly)').forEach(cell => {
     cell.onclick = () => openMeasurementModal(parseInt(cell.dataset.week), cell.dataset.field, labels[fields.indexOf(cell.dataset.field)]);
-  });
-}
-function renderBiweeklyPill() {
-  const pill = document.getElementById('biweekly-pill');
-  if (!pill) return;
-  const currentWeek = getCurrentWeek();
-  pill.querySelectorAll('.biweekly-pill-week').forEach(el => {
-    const w = parseInt(el.dataset.week);
-    el.classList.remove('done', 'current', 'upcoming');
-    const m = STATE.bodyMeasurements.find(bm => bm.week_number === w);
-    const hasData = m && (m.glutes_hips || m.waist || m.bodyweight || m.thigh || m.shoulders);
-    if (hasData) el.classList.add('done');
-    else if (currentWeek >= w - 1 && currentWeek <= w + 1) el.classList.add('current');
-    else if (w > currentWeek) el.classList.add('upcoming');
   });
 }
 function openMeasurementModal(week, field, label) {
