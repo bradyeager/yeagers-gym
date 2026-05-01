@@ -53,8 +53,8 @@ input, textarea, select { font-family: inherit; outline: none; border: none; bac
 .header-row { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
 .header-logo { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
 .header-titles { flex: 1; min-width: 0; }
-.header-title { font-family: 'DM Serif Display', serif; font-size: 18px; line-height: 1.1; color: var(--text-primary); }
-.header-subtitle { font-size: 11px; color: var(--pink); font-weight: 500; letter-spacing: 0.04em; margin-top: 2px; }
+.header-title { font-family: 'DM Serif Display', serif; font-size: 24px; line-height: 1.05; color: var(--text-primary); letter-spacing: -0.01em; }
+.header-subtitle { font-size: 13px; color: var(--pink); font-weight: 600; letter-spacing: 0.06em; margin-top: 4px; text-transform: uppercase; text-shadow: 0 0 12px rgba(239,50,149,0.35); }
 .header-settings-btn { width: 32px; height: 32px; border-radius: 50%; background: var(--card-bg); display: flex; align-items: center; justify-content: center; font-size: 16px; color: var(--text-secondary); }
 .week-progress-wrap { padding: 8px 0 12px; }
 .week-progress-label { display: flex; justify-content: space-between; font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 6px; }
@@ -514,37 +514,6 @@ input, textarea, select { font-family: inherit; outline: none; border: none; bac
 <div class="tab-panel active" id="tab-mission">
   <div id="nudge-container"></div>
 
-  <div class="mission-card">
-    <div class="mission-header">The Mission</div>
-    <div class="mission-sub">Glutes &amp; Core — 8 Weeks</div>
-    <div class="mission-hero-line">Fuller glutes. Tighter waist. <span class="pink-em">Visible abs by Week 8.</span></div>
-    <div class="mission-pillars">
-      <div class="mission-pillar">
-        <div class="mission-pillar-label">Performance</div>
-        <div class="mission-pillar-tag">Lifts that build the shape</div>
-        <div class="mission-pillar-targets">Hip Thrust · Back Squat · Chin-Up · Deadlift · Strict Press</div>
-      </div>
-      <div class="mission-pillar">
-        <div class="mission-pillar-label">Body Comp</div>
-        <div class="mission-pillar-tag">Recomp, not loss</div>
-        <div class="mission-pillar-targets">−1.5% body fat · +1.5 lb lean mass · −0.5″ waist</div>
-      </div>
-      <div class="mission-pillar">
-        <div class="mission-pillar-label">Aesthetics</div>
-        <div class="mission-pillar-tag">What you'll see in the mirror</div>
-        <div class="mission-pillar-targets">Glutes +0.5″ · visible abs · defined shoulder cap</div>
-      </div>
-    </div>
-    <div id="mission-rows"></div>
-    <div class="mission-progress-wrap">
-      <div class="mission-progress-label">
-        <span id="mission-day-label">Day 0 of 56</span>
-        <span id="mission-day-pct">0%</span>
-      </div>
-      <div class="mission-progress-bar"><div class="mission-progress-fill" id="mission-progress-fill" style="width:0%"></div></div>
-    </div>
-  </div>
-
   <div class="adherence-card maintaining" id="adherence-card">
     <div class="adherence-label">This Week</div>
     <div class="adherence-count" id="adherence-count">0 / 2 SESSIONS</div>
@@ -581,17 +550,35 @@ input, textarea, select { font-family: inherit; outline: none; border: none; bac
     <div class="narrative-text">Every gym girl wants ass and abs. Problem: glutes grow in a <strong class="pink">surplus</strong>. Belly fat drops in a <strong class="teal">deficit</strong>. Opposing paths — except for one window. Newbie gains. You get to do both at once. We won't have to choose.</div>
   </div>
 
-  <div class="divider">// WEEKLY TRAINING PLAN</div>
-  <div class="card">
-    <div class="session-block">
-      <div class="session-block-title">Session 1 — Glutes / Upper / Core</div>
-      <div class="session-block-lifts">Pick from: Back Squat · Hip Thrust · Chin-Up · Deadlift · Strict Press · Weighted Plank · Hollow Rock</div>
+  <div class="divider">// THE MISSION</div>
+  <div class="mission-card">
+    <div class="mission-header">The Mission</div>
+    <div class="mission-sub">Fuller Glutes · Tighter Waist · Visible Abs</div>
+    <div class="mission-pillars">
+      <div class="mission-pillar">
+        <div class="mission-pillar-label">Performance</div>
+        <div class="mission-pillar-tag">Lifts that build the shape</div>
+        <div class="mission-pillar-targets">Hip Thrust · Back Squat · Chin-Up · Deadlift · Strict Press</div>
+      </div>
+      <div class="mission-pillar">
+        <div class="mission-pillar-label">Body Comp</div>
+        <div class="mission-pillar-tag">Recomp, not loss</div>
+        <div class="mission-pillar-targets">−0.5% body fat · +1.5 lb lean mass</div>
+      </div>
+      <div class="mission-pillar">
+        <div class="mission-pillar-label">Aesthetics</div>
+        <div class="mission-pillar-tag">What you'll see in the mirror</div>
+        <div class="mission-pillar-targets">Glutes +0.5″ · visible abs · defined shoulder cap</div>
+      </div>
     </div>
-    <div class="session-block">
-      <div class="session-block-title">Session 2 — Glutes / Upper / Core</div>
-      <div class="session-block-lifts">Pick from: Back Squat · Hip Thrust · Chin-Up · Deadlift · Strict Press · Weighted Plank · Hollow Rock</div>
+    <div id="mission-rows"></div>
+    <div class="mission-progress-wrap">
+      <div class="mission-progress-label">
+        <span id="mission-day-label">Day 0 of 56</span>
+        <span id="mission-day-pct">0%</span>
+      </div>
+      <div class="mission-progress-bar"><div class="mission-progress-fill" id="mission-progress-fill" style="width:0%"></div></div>
     </div>
-    <div class="session-note-line">Every week hits all six.</div>
   </div>
 
   <div id="checklist-container"></div>
@@ -770,13 +757,13 @@ const CLIENT = {
     { id: "session_2", name: "Session 2 — Glutes / Upper / Core" }
   ],
   baselines: { "Hip Thrust": 225, "Back Squat": 125, "Chin-Up": 115, "Deadlift": 145, "Strict Press": null },
-  goals: { "Hip Thrust": 315, "Back Squat": 150, "Deadlift": 175, "Chin-Up": "bodyweight" },
+  goals: { "Hip Thrust": 325, "Back Squat": 150, "Deadlift": 175, "Chin-Up": "bodyweight" },
   startingBodyweight: 125,
   strengthTests: [
     { name: "Back Squat", unit: "lb", week0: 125, week8Goal: 150, lowerIsBetter: false },
     { name: "Strict Press", unit: "lb", week0: null, week8Goal: null, lowerIsBetter: false },
     { name: "Deadlift", unit: "lb", week0: 145, week8Goal: 175, lowerIsBetter: false },
-    { name: "Hip Thrust", unit: "lb", week0: 225, week8Goal: 315, lowerIsBetter: false },
+    { name: "Hip Thrust", unit: "lb", week0: 225, week8Goal: 325, lowerIsBetter: false },
     { name: "Chin-Up cable", unit: "lb", week0: 115, week8Goal: "bodyweight", lowerIsBetter: false }
   ],
   coreTests: [
@@ -998,7 +985,7 @@ function renderMissionCard() {
   const w0Glutes = STATE.bodyMeasurements.find(m => m.week_number === 0)?.glutes_hips;
   const latestGlutes = [...STATE.bodyMeasurements].filter(m => m.glutes_hips).sort((a,b) => b.week_number - a.week_number)[0]?.glutes_hips;
   const glutesDelta = (w0Glutes && latestGlutes) ? (latestGlutes - w0Glutes).toFixed(1) : '0.0';
-  rows.push({ label: 'Glutes', current: `+${glutesDelta} in`, target: `+${CLIENT.glutesGoalInches} in` });
+  rows.push({ label: 'Glutes', current: `+${glutesDelta} in`, target: `Goal: +${CLIENT.glutesGoalInches} in` });
 
   // Hip Thrust — only show "current → max" once she's logged a session above baseline
   const htSets = STATE.sets.filter(s => s.lift_name === 'Hip Thrust' && s.weight);
@@ -1006,15 +993,24 @@ function renderMissionCard() {
   const htDisplay = (htMax && htMax > CLIENT.baselines['Hip Thrust'])
     ? `${CLIENT.baselines['Hip Thrust']} → ${htMax}`
     : `${CLIENT.baselines['Hip Thrust']} lb`;
-  rows.push({ label: 'Hip Thrust', current: htDisplay, target: `${CLIENT.goals['Hip Thrust']} lb` });
+  const htAddNeeded = CLIENT.goals['Hip Thrust'] - CLIENT.baselines['Hip Thrust'];
+  rows.push({ label: 'Hip Thrust', current: htDisplay, target: `Goal: add ${htAddNeeded} lb` });
 
-  // Hollow Rock — show "Test Week 1" until baseline logged
-  const hh = STATE.fitnessTests.filter(t => t.test_name === 'Hollow Rock').sort((a,b) => b.date.localeCompare(a.date))[0];
-  rows.push({ label: 'Hollow Rock', current: hh ? `${hh.result} reps` : 'Test Week 1', target: 'Week 8 retest' });
+  // Hollow Rock — "Test Week 1" until W0 baseline; then "2x W1 (X reps)"
+  const hhTests = STATE.fitnessTests.filter(t => t.test_name === 'Hollow Rock').sort((a,b) => a.date.localeCompare(b.date));
+  const hhBaseline = hhTests.find(t => t.week_number === 0) || hhTests[0];
+  const hhLatest = hhTests[hhTests.length - 1];
+  const hhCurrent = hhLatest ? `${hhLatest.result} reps` : 'Test Week 1';
+  const hhTarget = hhBaseline ? `Goal: 2× W1 (${hhBaseline.result * 2} reps)` : 'Goal: double W1 result';
+  rows.push({ label: 'Hollow Rock', current: hhCurrent, target: hhTarget });
 
-  // Weighted Plank — same
-  const wp = STATE.fitnessTests.filter(t => t.test_name === 'Weighted Plank').sort((a,b) => b.date.localeCompare(a.date))[0];
-  rows.push({ label: 'Weighted Plank', current: wp ? `${wp.result} sec` : 'Test Week 1', target: 'Week 8 retest' });
+  // Weighted Plank — same pattern
+  const wpTests = STATE.fitnessTests.filter(t => t.test_name === 'Weighted Plank').sort((a,b) => a.date.localeCompare(b.date));
+  const wpBaseline = wpTests.find(t => t.week_number === 0) || wpTests[0];
+  const wpLatest = wpTests[wpTests.length - 1];
+  const wpCurrent = wpLatest ? `${wpLatest.result} sec` : 'Test Week 1';
+  const wpTarget = wpBaseline ? `Goal: 2× W1 (${wpBaseline.result * 2} sec)` : 'Goal: double W1 result';
+  rows.push({ label: 'Weighted Plank', current: wpCurrent, target: wpTarget });
 
   document.getElementById('mission-rows').innerHTML = rows.map(r =>
     `<div class="mission-row"><span class="mission-row-label">${r.label}</span><span class="mission-row-pair"><span class="mission-row-value">${r.current}</span><span class="mission-row-target-pink">${r.target}</span></span></div>`
@@ -2145,7 +2141,7 @@ const SPLASH_SLIDES = [
       <div>
         <div class="splash-section-label" style="text-align:left;margin:0 0 8px;font-size:10px">Strength</div>
         <div class="splash-stats-grid" style="gap:6px">
-          <div class="splash-stat-row pink-accent"><span class="splash-stat-label">Hip Thrust</span><span class="splash-stat-vals">225 → 315</span></div>
+          <div class="splash-stat-row pink-accent"><span class="splash-stat-label">Hip Thrust</span><span class="splash-stat-vals">225 → 325</span></div>
           <div class="splash-stat-row pink-accent"><span class="splash-stat-label">Back Squat</span><span class="splash-stat-vals">125 → 150</span></div>
           <div class="splash-stat-row pink-accent"><span class="splash-stat-label">Deadlift</span><span class="splash-stat-vals">145 → 175</span></div>
           <div class="splash-stat-row pink-accent"><span class="splash-stat-label">Chin-Up cable</span><span class="splash-stat-vals">115 → bodyweight</span></div>
