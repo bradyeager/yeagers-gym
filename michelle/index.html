@@ -426,6 +426,20 @@ input, textarea, select { font-family: inherit; outline: none; border: none; bac
 .splash-section-stack { display: flex; flex-direction: column; gap: 18px; margin-bottom: 16px; }
 .splash-stat-row.pink-accent { border-left: 3px solid var(--pink); }
 
+
+/* Mission Card — pink targets */
+.mission-row-pair { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
+.mission-row-target-pink { font-size: 11px; color: var(--pink); font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; }
+
+/* The Conundrum */
+.conundrum-card { border: 1px solid rgba(239,50,149,0.25); background: linear-gradient(135deg, rgba(239,50,149,0.04), rgba(72,196,204,0.02)); }
+.conundrum-tag { font-size: 11px; color: var(--pink); font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 10px; text-align: center; }
+
+/* Primary Targets — movements separated */
+.target-movements { font-size: 10px; color: var(--teal); font-weight: 500; letter-spacing: 0.04em; margin-top: 6px; padding-top: 6px; border-top: 1px solid var(--border); line-height: 1.5; }
+
+/* Mixed session note */
+.session-note-line { font-size: 11px; color: var(--text-muted); font-style: italic; margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--border); text-align: center; }
 </style>
 </head>
 <body>
@@ -501,53 +515,53 @@ input, textarea, select { font-family: inherit; outline: none; border: none; bac
     </div>
   </div>
 
-  <div class="card coach-msg-card" id="coach-msg-card">
-    <div class="card-title">Coach's Message</div>
-    <div class="coach-msg-preview" id="coach-msg-preview">Tap to read this week's note from your coach.</div>
-    <div class="coach-msg-full">
-      <div id="coach-msg-text">Your coach will leave a message here each week.</div>
-      <button class="coach-msg-edit-btn" id="coach-msg-edit-btn" style="display:none">Edit</button>
-      <textarea class="coach-msg-input" id="coach-msg-input" style="display:none" placeholder="Your message to Michelle..."></textarea>
-      <div id="coach-msg-save-row" style="display:none; margin-top:8px;">
-        <button class="btn-primary" id="coach-msg-save" style="padding:8px 14px; font-size:12px;">Save</button>
-      </div>
-    </div>
-  </div>
-
-  <div class="divider">// PROFILE</div>
-  <div class="card profile-card">
-    <div id="profile-photo-container"></div>
-    <div class="profile-info">
-      <div class="profile-name">Michelle</div>
-      <div class="profile-meta">Glutes &amp; Core · Started May 4</div>
-      <div class="profile-meta" id="profile-bw">Bodyweight: —</div>
-    </div>
-  </div>
-
   <div class="divider">// THE PLAN</div>
   <div class="card narrative-card">
     <div class="narrative-text">Michelle, since you're already lean, the best path for your aesthetic goal is not more fat loss — it's building muscle in the areas that create shape, posture, and definition. Your top priorities are glutes and core.</div>
     <div class="core-message">Once a week maintains.<br>Twice a week builds.</div>
   </div>
 
+  <div class="divider">// THE CONUNDRUM</div>
+  <div class="card narrative-card conundrum-card">
+    <div class="conundrum-tag">The Gym Girl Dilemma</div>
+    <div class="narrative-text">Every gym girl wants ass and abs. The trouble: you need a caloric <strong class="pink">surplus</strong> to grow glutes, and a caloric <strong class="teal">deficit</strong> to drop subcutaneous fat in the stomach. Two opposing paths. Fortunately, you're a newbie — and newbie gains let you do both at once. We won't have to choose.</div>
+  </div>
+
   <div class="divider">// PRIMARY TARGETS</div>
   <div class="targets-grid">
-    <div class="target-card"><div class="target-title">Glutes</div><div class="target-desc">Fuller, lifted look. Hip thrusts, RDLs, kickbacks, abductions.</div></div>
-    <div class="target-card"><div class="target-title">Core</div><div class="target-desc">Tighter waistline, visible abs, hollow holds, weighted planks.</div></div>
-    <div class="target-card"><div class="target-title">Shoulders</div><div class="target-desc">Defined cap. Strict press, lateral raises.</div></div>
-    <div class="target-card"><div class="target-title">Lats / Back</div><div class="target-desc">Posture, shape. Chin-ups, lat pulldowns, rows.</div></div>
+    <div class="target-card">
+      <div class="target-title">Glutes</div>
+      <div class="target-desc">Fuller, lifted look</div>
+      <div class="target-movements">Hip Thrusts · RDLs · Kickbacks · Abductions</div>
+    </div>
+    <div class="target-card">
+      <div class="target-title">Core</div>
+      <div class="target-desc">Tighter waistline, visible abs</div>
+      <div class="target-movements">Hollow Holds · Weighted Planks</div>
+    </div>
+    <div class="target-card">
+      <div class="target-title">Shoulders</div>
+      <div class="target-desc">Defined cap</div>
+      <div class="target-movements">Strict Press · Lateral Raises</div>
+    </div>
+    <div class="target-card">
+      <div class="target-title">Lats / Back</div>
+      <div class="target-desc">Posture, shape</div>
+      <div class="target-movements">Chin-Ups · Lat Pulldowns · Rows</div>
+    </div>
   </div>
 
   <div class="divider">// WEEKLY TRAINING PLAN</div>
   <div class="card">
     <div class="session-block">
-      <div class="session-block-title">Session 1 — Glutes + Core</div>
-      <div class="session-block-lifts">Hip Thrust · Squat · RDL · Cable Kickbacks · Banded Donkey Kicks · Deficit Elevated Glute Bridge</div>
+      <div class="session-block-title">Session 1 — Glutes / Upper / Core</div>
+      <div class="session-block-lifts">Hip Thrust · Strict Press · RDL · Cable Kickbacks · Hollow Hold</div>
     </div>
     <div class="session-block">
-      <div class="session-block-title">Session 2 — Upper + Core</div>
-      <div class="session-block-lifts">Chin-Up · Strict Press · Barbell Row · Lat Pulldown · DB Lateral Raise</div>
+      <div class="session-block-title">Session 2 — Glutes / Upper / Core</div>
+      <div class="session-block-lifts">Squat · Chin-Up · Deficit Glute Bridge · Lat Pulldown · Weighted Plank</div>
     </div>
+    <div class="session-note-line">Every session hits all three. No "leg day, off day, repeat."</div>
   </div>
 
   <div class="divider">// QR CODE</div>
@@ -735,8 +749,8 @@ const CLIENT = {
   primaryLifts: ["Hip Thrust", "Squat", "RDL", "Chin-Up", "Strict Press"],
   accessoryLifts: ["Barbell Row", "Cable Kickbacks", "Banded Donkey Kicks", "Deficit Elevated Glute Bridge", "Lat Pulldown", "DB Lateral Raise"],
   sessions: [
-    { id: "session_1", name: "Session 1 — Glutes + Core", lifts: ["Hip Thrust", "Squat", "RDL", "Cable Kickbacks", "Banded Donkey Kicks", "Deficit Elevated Glute Bridge"] },
-    { id: "session_2", name: "Session 2 — Upper + Core", lifts: ["Chin-Up", "Strict Press", "Barbell Row", "Lat Pulldown", "DB Lateral Raise"] }
+    { id: "session_1", name: "Session 1 — Glutes / Upper / Core", lifts: ["Hip Thrust", "Strict Press", "RDL", "Cable Kickbacks", "Hollow Hold"] },
+    { id: "session_2", name: "Session 2 — Glutes / Upper / Core", lifts: ["Squat", "Chin-Up", "Deficit Elevated Glute Bridge", "Lat Pulldown", "Weighted Plank"] }
   ],
   baselines: { "Hip Thrust": 225, "Squat": 125, "RDL": null, "Chin-Up": 115, "Strict Press": null },
   goals: { "Hip Thrust": 315, "Squat": 150, "Deadlift": 175, "Chin-Up": "bodyweight" },
@@ -941,22 +955,31 @@ function renderHeader() {
    ═══════════════════════════════════════════════════════════════ */
 function renderMissionCard() {
   const rows = [];
+
+  // Glutes — show delta, even if 0
   const w0Glutes = STATE.bodyMeasurements.find(m => m.week_number === 0)?.glutes_hips;
   const latestGlutes = [...STATE.bodyMeasurements].filter(m => m.glutes_hips).sort((a,b) => b.week_number - a.week_number)[0]?.glutes_hips;
   const glutesDelta = (w0Glutes && latestGlutes) ? (latestGlutes - w0Glutes).toFixed(1) : '0.0';
-  rows.push({ label: 'Glutes', value: `+${glutesDelta} in`, target: `target: +${CLIENT.glutesGoalInches} in` });
+  rows.push({ label: 'Glutes', current: `+${glutesDelta} in`, target: `+${CLIENT.glutesGoalInches} in` });
 
-  const htMax = getMaxLiftWeight('Hip Thrust');
-  rows.push({ label: 'Hip Thrust', value: `${CLIENT.baselines['Hip Thrust']} → ${htMax}`, target: `target: ${CLIENT.goals['Hip Thrust']}` });
+  // Hip Thrust — only show "current → max" once she's logged a session above baseline
+  const htSets = STATE.sets.filter(s => s.lift_name === 'Hip Thrust' && s.weight);
+  const htMax = htSets.length ? Math.max(...htSets.map(s => s.weight)) : null;
+  const htDisplay = (htMax && htMax > CLIENT.baselines['Hip Thrust'])
+    ? `${CLIENT.baselines['Hip Thrust']} → ${htMax}`
+    : `${CLIENT.baselines['Hip Thrust']} lb`;
+  rows.push({ label: 'Hip Thrust', current: htDisplay, target: `${CLIENT.goals['Hip Thrust']} lb` });
 
+  // Hollow Hold — show "Test Week 1" until baseline logged
   const hh = STATE.fitnessTests.filter(t => t.test_name === 'Hollow Hold').sort((a,b) => b.date.localeCompare(a.date))[0];
-  rows.push({ label: 'Hollow Hold', value: hh ? `${hh.result} sec` : '— sec', target: 'Week 8 retest' });
+  rows.push({ label: 'Hollow Hold', current: hh ? `${hh.result} sec` : 'Test Week 1', target: 'Week 8 retest' });
 
+  // Weighted Plank — same
   const wp = STATE.fitnessTests.filter(t => t.test_name === 'Weighted Plank').sort((a,b) => b.date.localeCompare(a.date))[0];
-  rows.push({ label: 'Weighted Plank', value: wp ? `${wp.result} sec` : '— sec', target: 'Week 8 retest' });
+  rows.push({ label: 'Weighted Plank', current: wp ? `${wp.result} sec` : 'Test Week 1', target: 'Week 8 retest' });
 
   document.getElementById('mission-rows').innerHTML = rows.map(r =>
-    `<div class="mission-row"><span class="mission-row-label">${r.label}</span><span><span class="mission-row-value">${r.value}</span><span class="mission-row-target">${r.target}</span></span></div>`
+    `<div class="mission-row"><span class="mission-row-label">${r.label}</span><span class="mission-row-pair"><span class="mission-row-value">${r.current}</span><span class="mission-row-target-pink">${r.target}</span></span></div>`
   ).join('');
 
   const daysElapsed = Math.max(0, daysBetween(CLIENT.startDate, todayISO()));
@@ -1058,38 +1081,13 @@ function renderStatTiles() {
   document.getElementById('stat-streak').textContent = getStreak();
   document.getElementById('stat-sessions').textContent = STATE.sessions.length;
   document.getElementById('stat-checkpoint').textContent = getDaysToCheckpoint();
-  document.getElementById('profile-bw').textContent = `Bodyweight: ${getCurrentBodyweight()} lbs`;
+  // profile-bw removed in V1.8
 }
 
 /* ═══════════════════════════════════════════════════════════════
    COACH MESSAGE
    ═══════════════════════════════════════════════════════════════ */
-function renderCoachMessage() {
-  const week = getCurrentWeek();
-  const msg = STATE.coachMessages[`week_${week}`] || '';
-  const card = document.getElementById('coach-msg-card');
-  const preview = document.getElementById('coach-msg-preview');
-  const text = document.getElementById('coach-msg-text');
-  const editBtn = document.getElementById('coach-msg-edit-btn');
-  preview.textContent = msg ? (msg.length > 80 ? msg.slice(0, 80) + '…' : msg) : 'Tap to read this week\'s note from your coach.';
-  text.textContent = msg || 'Your coach will leave a message here each week.';
-  editBtn.style.display = STATE.coachMode ? 'inline-block' : 'none';
-  preview.onclick = () => card.classList.toggle('expanded');
-  editBtn.onclick = () => {
-    const input = document.getElementById('coach-msg-input');
-    const saveRow = document.getElementById('coach-msg-save-row');
-    input.value = msg; input.style.display = 'block'; saveRow.style.display = 'block'; text.style.display = 'none'; editBtn.style.display = 'none';
-  };
-  document.getElementById('coach-msg-save').onclick = () => {
-    const input = document.getElementById('coach-msg-input');
-    const newMsg = input.value.trim();
-    STATE.coachMessages[`week_${week}`] = newMsg;
-    localStorage.setItem('coach_messages', JSON.stringify(STATE.coachMessages));
-    input.style.display = 'none'; document.getElementById('coach-msg-save-row').style.display = 'none'; text.style.display = 'block';
-    renderCoachMessage();
-    toast('Message saved.', 'success');
-  };
-}
+function renderCoachMessage() { /* removed in V1.8 */ }
 
 /* ═══════════════════════════════════════════════════════════════
    QR CODE
