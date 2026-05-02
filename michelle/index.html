@@ -51,7 +51,6 @@ input, textarea, select { font-family: inherit; outline: none; border: none; bac
 /* ═══════ HEADER ═══════ */
 .app-header { position: sticky; top: 0; z-index: 100; background: var(--charcoal); padding: 12px 16px 0; border-bottom: 1px solid var(--border); }
 .header-row { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
-.header-logo { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
 .header-titles { flex: 1; min-width: 0; }
 .header-title { font-family: 'DM Serif Display', serif; font-size: 24px; line-height: 1.05; color: var(--teal); letter-spacing: -0.01em; }
 .header-subtitle { font-size: 13px; color: var(--pink); font-weight: 600; letter-spacing: 0.06em; margin-top: 4px; text-transform: uppercase; text-shadow: 0 0 12px rgba(239,50,149,0.35); }
@@ -139,15 +138,11 @@ input, textarea, select { font-family: inherit; outline: none; border: none; bac
 .coach-msg-input { width: 100%; padding: 10px; background: var(--card-elevated); border-radius: 8px; font-size: 13px; color: var(--text-primary); margin-top: 8px; min-height: 60px; resize: vertical; }
 .coach-msg-edit-btn { font-size: 11px; color: var(--teal); margin-top: 8px; padding: 6px 10px; }
 
-/* ═══════ PROFILE CARD ═══════ */
-.profile-card { display: flex; gap: 14px; align-items: center; }
+/* ═══════ HEADER AVATAR (profile-photo used by JS in #profile-photo-container) ═══════ */
 .profile-photo { width: 64px; height: 64px; border-radius: 50%; border: 2px solid var(--teal); object-fit: cover; }
 .profile-photo-fallback { width: 64px; height: 64px; border-radius: 50%; border: 2px solid var(--teal); background: var(--card-elevated); display: flex; align-items: center; justify-content: center; font-family: 'DM Serif Display', serif; font-size: 28px; color: var(--teal); }
 #profile-photo-container { flex-shrink: 0; }
 #profile-photo-container .profile-photo, #profile-photo-container .profile-photo-fallback { width: 44px; height: 44px; border-width: 2px; font-size: 18px; }
-.profile-info { flex: 1; }
-.profile-name { font-family: 'DM Serif Display', serif; font-size: 20px; }
-.profile-meta { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
 
 /* ═══════ MISSION NARRATIVE ═══════ */
 .narrative-card { padding: 18px; }
@@ -320,19 +315,12 @@ input, textarea, select { font-family: inherit; outline: none; border: none; bac
 .demo-banner-exit { color: white; text-decoration: underline; opacity: 0.9; font-weight: 600; margin-left: auto; }
 .demo-mode-active .app-header { top: 32px; }
 .demo-mode-active .tab-nav { top: 128px; }
-.biweekly-pill { display: flex; align-items: center; gap: 6px; padding: 8px 12px; background: linear-gradient(135deg, var(--pink-glow), rgba(239,50,149,0.04)); border: 1px solid rgba(239,50,149,0.4); border-radius: 999px; margin-bottom: 12px; font-size: 11px; color: var(--text-primary); flex-wrap: wrap; }
-.biweekly-pill-label { color: var(--pink); font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; font-size: 10px; }
-.biweekly-pill-week { display: inline-flex; align-items: center; justify-content: center; min-width: 28px; padding: 3px 6px; border-radius: 999px; background: rgba(15,22,32,0.45); color: var(--text-muted); font-size: 10px; font-weight: 600; letter-spacing: 0.04em; }
-.biweekly-pill-week.done { background: rgba(72,196,204,0.18); color: var(--teal); border: 1px solid rgba(72,196,204,0.35); }
-.biweekly-pill-week.current { background: var(--pink); color: white; border: 1px solid var(--pink); box-shadow: 0 0 12px rgba(239,50,149,0.45); }
-.biweekly-pill-week.upcoming { background: rgba(239,50,149,0.08); color: var(--pink); border: 1px solid rgba(239,50,149,0.25); }
 .measurement-row-readonly { opacity: 0.95; }
 .measurement-cell.readonly { cursor: default; color: var(--teal); font-weight: 600; }
 .measurement-cell.readonly.empty { color: var(--text-muted); font-weight: 400; }
 .measurement-cell.readonly.hit { color: var(--teal); background: rgba(72,196,204,0.08); border-radius: 4px; }
 @media (min-width: 900px) {
   #tab-aesthetic { display: grid; grid-template-columns: 1fr 1fr; gap: 16px 20px; align-items: start; }
-  #tab-aesthetic > .biweekly-pill,
   #tab-aesthetic > .section-subtitle { grid-column: 1 / -1; }
   #tab-aesthetic > .angle-toggle,
   #tab-aesthetic > .compare-view,
@@ -789,7 +777,7 @@ const CLIENT = {
   startDate: "2026-05-04",
   endDate: "2026-07-13",
   weeks: 10,
-  checkpointWeeks: [0, 2, 4, 6, 8],
+  checkpointWeeks: [0, 2, 4, 6, 8, 10],
   sessionsPerWeek: 2,
   primaryLifts: ["Back Squat", "Hip Thrust", "Chin-Up", "Deadlift", "Bench Press", "Strict Press"],
   coreLifts: ["Weighted Plank", "Hollow Rock"],
@@ -799,16 +787,16 @@ const CLIENT = {
     { id: "session_1", name: "Session 1 — Glutes / Upper / Core" },
     { id: "session_2", name: "Session 2 — Glutes / Upper / Core" }
   ],
-  baselines: { "Hip Thrust": 225, "Back Squat": 125, "Chin-Up": 115, "Deadlift": 145, "Bench Press": 75, "Strict Press": 65 },
+  baselines: { "Hip Thrust": 225, "Back Squat": 125, "Chin-Up": 110, "Deadlift": 125, "Bench Press": 75, "Strict Press": 65 },
   goals: { "Hip Thrust": 325, "Back Squat": 150, "Deadlift": 175, "Chin-Up": "bodyweight", "Bench Press": 85, "Strict Press": 85 },
   startingBodyweight: 125,
   strengthTests: [
-    { name: "Back Squat", unit: "lb", week0: 125, week8Goal: 150, lowerIsBetter: false },
-    { name: "Strict Press", unit: "lb", week0: 65, week8Goal: 85, lowerIsBetter: false },
-    { name: "Deadlift", unit: "lb", week0: 145, week8Goal: 175, lowerIsBetter: false },
-    { name: "Hip Thrust", unit: "lb", week0: 225, week8Goal: 325, lowerIsBetter: false },
-    { name: "Chin-Up", unit: "lb", week0: 115, week8Goal: "bodyweight", lowerIsBetter: false },
-    { name: "Bench Press", unit: "lb", week0: 75, week8Goal: 85, lowerIsBetter: false }
+    { name: "Back Squat", unit: "lb", week0: 125, week10Goal: 150, lowerIsBetter: false },
+    { name: "Strict Press", unit: "lb", week0: 65, week10Goal: 85, lowerIsBetter: false },
+    { name: "Deadlift", unit: "lb", week0: 125, week10Goal: 175, lowerIsBetter: false },
+    { name: "Hip Thrust", unit: "lb", week0: 225, week10Goal: 325, lowerIsBetter: false },
+    { name: "Chin-Up", unit: "lb", week0: 110, week10Goal: "bodyweight", lowerIsBetter: false },
+    { name: "Bench Press", unit: "lb", week0: 75, week10Goal: 85, lowerIsBetter: false }
   ],
   coreTests: [
     { name: "Hollow Rock", unit: "reps" },
@@ -1713,14 +1701,13 @@ function renderStrengthTests() {
   CLIENT.strengthTests.forEach(test => {
     const results = STATE.fitnessTests.filter(t => t.test_name === test.name).sort((a,b) => b.date.localeCompare(a.date));
     const current = results[0]?.result;
-    const goal = test.week8Goal === 'bodyweight' ? getCurrentBodyweight() : test.week8Goal;
+    const goal = test.week10Goal === 'bodyweight' ? getCurrentBodyweight() : test.week10Goal;
     let pct = 0;
     if (current != null && test.week0 != null && goal != null && goal !== test.week0) {
       pct = Math.min(100, Math.max(0, ((current - test.week0) / (goal - test.week0)) * 100));
     }
     const complete = current != null && goal != null && current >= goal;
     const baselineDisp = test.week0 ?? '—';
-    const goalDisp = goal ?? '—';
     let improvementText;
     if (current == null) {
       improvementText = goal != null ? `Goal: ${goal} ${test.unit}` : 'Pending baseline';
@@ -1783,7 +1770,7 @@ function openTestModal() {
       STATE.fitnessTests.unshift(inserted);
       // Major celebration check
       const sd = CLIENT.strengthTests.find(t => t.name === name);
-      if (sd && sd.week8Goal !== 'bodyweight' && data.result >= sd.week8Goal) {
+      if (sd && sd.week10Goal !== 'bodyweight' && data.result >= sd.week10Goal) {
         fireCelebration({ tier: 'major', message: `${name} GOAL ACHIEVED — ${data.result} ${data.unit}` });
         logPR({ lift: name, type: 'GOAL', value: `${data.result} ${data.unit}` });
       }
@@ -2332,7 +2319,7 @@ function exportPDF() {
   doc.setTextColor(255, 255, 255); doc.setFontSize(10);
   CLIENT.strengthTests.forEach(t => {
     const r = STATE.fitnessTests.filter(x => x.test_name === t.name).sort((a,b) => b.date.localeCompare(a.date))[0];
-    doc.text(`${t.name}:  Week 0: ${t.week0} · Current: ${r?.result ?? '—'} · Goal: ${t.week8Goal}`, 40, y); y += 18;
+    doc.text(`${t.name}:  Week 0: ${t.week0} · Current: ${r?.result ?? '—'} · Goal: ${t.week10Goal}`, 40, y); y += 18;
   });
   // Footer
   doc.setFontSize(8); doc.setTextColor(150); doc.text('Coached by Brad Yeager · yeagersgym.com', 40, 800);
