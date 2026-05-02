@@ -143,6 +143,8 @@ input, textarea, select { font-family: inherit; outline: none; border: none; bac
 .profile-card { display: flex; gap: 14px; align-items: center; }
 .profile-photo { width: 64px; height: 64px; border-radius: 50%; border: 2px solid var(--teal); object-fit: cover; }
 .profile-photo-fallback { width: 64px; height: 64px; border-radius: 50%; border: 2px solid var(--teal); background: var(--card-elevated); display: flex; align-items: center; justify-content: center; font-family: 'DM Serif Display', serif; font-size: 28px; color: var(--teal); }
+#profile-photo-container { flex-shrink: 0; }
+#profile-photo-container .profile-photo, #profile-photo-container .profile-photo-fallback { width: 36px; height: 36px; border-width: 1.5px; font-size: 16px; }
 .profile-info { flex: 1; }
 .profile-name { font-family: 'DM Serif Display', serif; font-size: 20px; }
 .profile-meta { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
@@ -486,6 +488,7 @@ input, textarea, select { font-family: inherit; outline: none; border: none; bac
 <div class="app-header">
   <div class="header-row">
     <img id="header-logo" class="header-logo" alt="Yeager's Gym">
+    <div id="profile-photo-container"></div>
     <div class="header-titles">
       <div class="header-title">Michelle's Muscle Mission</div>
       <div class="header-subtitle">The Ass &amp; Abs Agenda</div>
@@ -1673,18 +1676,28 @@ function renderStrengthTests() {
     const current = results[0]?.result;
     const goal = test.week8Goal === 'bodyweight' ? getCurrentBodyweight() : test.week8Goal;
     let pct = 0;
-    if (current && goal !== test.week0) {
+    if (current != null && test.week0 != null && goal != null && goal !== test.week0) {
       pct = Math.min(100, Math.max(0, ((current - test.week0) / (goal - test.week0)) * 100));
     }
-    const complete = current >= goal;
+    const complete = current != null && goal != null && current >= goal;
+    const baselineDisp = test.week0 ?? '—';
+    const goalDisp = goal ?? '—';
+    let improvementText;
+    if (current == null) {
+      improvementText = goal != null ? `Goal: ${goal} ${test.unit}` : 'Pending baseline';
+    } else if (test.week0 == null || goal == null) {
+      improvementText = `Current: ${current} ${test.unit}`;
+    } else {
+      improvementText = `${Math.round(pct)}% to goal (${goal})`;
+    }
     grid.innerHTML += `<div class="test-card">
       <div class="test-name">${test.name}</div>
       <div class="test-progression">
-        <span class="test-baseline">${test.week0}</span>
+        <span class="test-baseline">${baselineDisp}</span>
         <span class="test-arrow">→</span>
         <span class="test-current">${current ?? '?'}</span>
       </div>
-      <div class="test-improvement ${complete?'complete':''}">${current ? `${Math.round(pct)}% to goal (${goal})` : `Goal: ${goal} ${test.unit}`}</div>
+      <div class="test-improvement ${complete?'complete':''}">${improvementText}</div>
     </div>`;
   });
   const coreGrid = document.getElementById('core-test-grid'); coreGrid.innerHTML = '';
@@ -1882,17 +1895,27 @@ function openPhotoModal(week, angle) {
 async function ensureStorageReady() {
   if (STATE.storageInitialized) return;
   try {
-    const r = await fetch(`${SUPABASE_URL}/storage/v1/bucket`, {
-      method: 'POST', headers: SB_HEADERS,
-      body: JSON.stringify({ id: 'michelle-progress', name: 'michelle-progress', public: true })
-    });
-    if (r.ok || r.status === 409) {
+    // Check bucket exists first via GET (anon-key-friendly) before attempting POST
+    const probe = await fetch(`${SUPABASE_URL}/storage/v1/bucket/michelle-progress`, { headers: SB_HEADERS });
+    if (probe.ok) {
       STATE.storageInitialized = true;
       localStorage.setItem('storage_initialized', 'true');
       const row = document.getElementById('init-storage-row');
       if (row) row.style.display = 'none';
+      return;
     }
-  } catch (err) { /* silent — bucket likely already exists server-side */ }
+    // Bucket missing — try to create (may fail under anon RLS; bucket should exist server-side)
+    if (probe.status === 404) {
+      const create = await fetch(`${SUPABASE_URL}/storage/v1/bucket`, {
+        method: 'POST', headers: SB_HEADERS,
+        body: JSON.stringify({ id: 'michelle-progress', name: 'michelle-progress', public: true })
+      });
+      if (create.ok || create.status === 409) {
+        STATE.storageInitialized = true;
+        localStorage.setItem('storage_initialized', 'true');
+      }
+    }
+  } catch (err) { /* silent */ }
 }
 async function uploadToStorage(file, week, angle) {
   const ext = (file.name.split('.').pop() || 'jpg').toLowerCase();
@@ -1958,7 +1981,7 @@ function getBodyScore() {
     const delta = latest.glutes_hips - w0.glutes_hips;
     scores.push(Math.min(100, Math.max(0, (delta / CLIENT.glutesGoalInches) * 100)));
   }
-  // Hollow hold improvement
+  // Hollow rock improvement
   const hhTests = STATE.fitnessTests.filter(t => t.test_name === 'Hollow Rock').sort((a,b) => a.date.localeCompare(b.date));
   if (hhTests.length >= 2) {
     const w0Val = hhTests[0].result, latestVal = hhTests[hhTests.length-1].result;
