@@ -53,7 +53,7 @@ input, textarea, select { font-family: inherit; outline: none; border: none; bac
 .header-row { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
 .header-logo { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
 .header-titles { flex: 1; min-width: 0; }
-.header-title { font-family: 'DM Serif Display', serif; font-size: 24px; line-height: 1.05; color: var(--text-primary); letter-spacing: -0.01em; }
+.header-title { font-family: 'DM Serif Display', serif; font-size: 24px; line-height: 1.05; color: var(--teal); letter-spacing: -0.01em; }
 .header-subtitle { font-size: 13px; color: var(--pink); font-weight: 600; letter-spacing: 0.06em; margin-top: 4px; text-transform: uppercase; text-shadow: 0 0 12px rgba(239,50,149,0.35); }
 .header-settings-btn { width: 32px; height: 32px; border-radius: 50%; background: var(--card-bg); display: flex; align-items: center; justify-content: center; font-size: 16px; color: var(--text-secondary); }
 .week-progress-wrap { padding: 8px 0 12px; }
@@ -205,6 +205,15 @@ input, textarea, select { font-family: inherit; outline: none; border: none; bac
 .lift-tile-delta { font-size: 11px; font-weight: 700; color: var(--pink); margin-top: 4px; letter-spacing: 0.04em; }
 .lift-tile-delta.goal-hit { color: var(--teal); }
 .section-headline-pink { font-family: 'DM Serif Display', serif; font-size: 18px; color: var(--pink); margin: 18px 0 10px; letter-spacing: 0.02em; }
+.tab-hero { text-align: center; margin: 4px 0 18px; }
+.tab-hero-headline { font-family: 'DM Serif Display', serif; font-size: 26px; color: var(--teal); line-height: 1.1; letter-spacing: -0.005em; }
+.tab-hero-tagline { font-size: 11px; color: var(--pink); font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; margin-top: 6px; }
+.lift-meta-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; margin-bottom: 12px; }
+.lift-meta-card { background: var(--card-bg); border: 1px solid var(--border-strong); border-radius: 12px; padding: 12px 14px; }
+.lift-meta-name { font-size: 11px; color: var(--pink); font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px; }
+.lift-meta-range { font-family: 'DM Serif Display', serif; font-size: 16px; color: var(--teal); margin-bottom: 6px; }
+.lift-meta-tag { font-size: 10px; color: var(--pink); }
+.qr-card { border: 1.5px solid var(--teal) !important; }
 
 /* ═══════ FAB ═══════ */
 .fab { position: fixed; right: 16px; bottom: 96px; z-index: 50; width: 56px; height: 56px; border-radius: 50%; background: var(--teal); color: var(--charcoal); display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 700; box-shadow: 0 8px 24px rgba(72,196,204,0.4); }
@@ -516,7 +525,11 @@ input, textarea, select { font-family: inherit; outline: none; border: none; bac
 <div class="tab-panel active" id="tab-mission">
   <div id="nudge-container"></div>
 
-  <div class="divider">// THE MISSION</div>
+  <div class="tab-hero">
+    <div class="tab-hero-headline">The Ass &amp; Abs Agenda</div>
+    <div class="tab-hero-tagline">Your 8-Week Newbie-Gains Window</div>
+  </div>
+
   <div class="mission-card">
     <div class="mission-header">The Mission</div>
     <div class="mission-sub">Fuller Glutes · Tighter Waist · Visible Abs</div>
@@ -547,15 +560,25 @@ input, textarea, select { font-family: inherit; outline: none; border: none; bac
     </div>
   </div>
 
+  <div class="divider">// THE PRIMARY LIFTS &amp; METRICS</div>
+  <div class="lift-meta-grid">
+    <div class="lift-meta-card"><div class="lift-meta-name">Hip Thrust</div><div class="lift-meta-range">225 → 325 lb</div><div class="lift-meta-tag">Direct glute hypertrophy</div></div>
+    <div class="lift-meta-card"><div class="lift-meta-name">Back Squat</div><div class="lift-meta-range">125 → 150 lb</div><div class="lift-meta-tag">Lower-body foundation · 2x/wk</div></div>
+    <div class="lift-meta-card"><div class="lift-meta-name">Chin-Up</div><div class="lift-meta-range">Goal: bodyweight</div><div class="lift-meta-tag">Back · lats · posture</div></div>
+    <div class="lift-meta-card"><div class="lift-meta-name">Deadlift</div><div class="lift-meta-range">145 → 175 lb</div><div class="lift-meta-tag">Posterior chain · glutes &amp; hams</div></div>
+    <div class="lift-meta-card"><div class="lift-meta-name">Strict Press</div><div class="lift-meta-range">65 → 85 lb</div><div class="lift-meta-tag">Upper push · shoulder cap</div></div>
+    <div class="lift-meta-card"><div class="lift-meta-name">Glutes</div><div class="lift-meta-range">Goal: +1 in</div><div class="lift-meta-tag">Hip circumference · 8 wks</div></div>
+  </div>
+
   <div class="divider">// THE CONUNDRUM</div>
   <div class="card narrative-card conundrum-card">
     <div class="conundrum-tag">The Gym Girl Dilemma</div>
-    <div class="narrative-text">Every gym girl wants ass and abs. Problem: glutes grow in a <strong class="pink">surplus</strong>. Belly fat drops in a <strong class="teal">deficit</strong>. Opposing paths — except for one window. Newbie gains. You get to do both at once. We won't have to choose.</div>
+    <div class="narrative-text" style="line-height:1.7">Glutes need a <strong class="pink">surplus</strong> to grow. Belly fat needs a <strong class="teal">deficit</strong> to drop. Opposite paths.<br><br><strong>Except here.</strong> You're 5 weeks postpartum, untrained for hypertrophy, in your <strong class="pink">newbie-gains window</strong> — when muscle protein synthesis outruns the energy gap.<br><br><em>Translation:</em> lean tissue up, fat tissue down, <strong>at the same time</strong>. We don't have to choose.</div>
   </div>
 
   <div class="divider">// THE PLAN</div>
   <div class="card narrative-card">
-    <div class="narrative-text">Since you're already lean, the path to your goal isn't more fat loss — it's building muscle where it shapes you. Top priorities: <strong class="pink">fuller glutes, more visible abs</strong>.</div>
+    <div class="narrative-text" style="line-height:1.7">You're already lean. Fat loss isn't the lever — <strong class="pink">muscle in the right places</strong> is.<br><br>Top priorities: <strong class="pink">fuller glutes · visible abs</strong>.</div>
     <div class="core-message">Once a week maintains.<br>Twice a week builds.</div>
   </div>
 
@@ -575,7 +598,7 @@ input, textarea, select { font-family: inherit; outline: none; border: none; bac
       <div class="stat-tile-label">🔥 Streak</div>
     </div>
     <div class="stat-tile">
-      <div class="stat-tile-value" id="stat-sessions">0</div>
+      <div class="stat-tile-value" id="stat-sessions">0 / 16</div>
       <div class="stat-tile-label">Sessions Logged</div>
     </div>
     <div class="stat-tile">
@@ -591,7 +614,7 @@ input, textarea, select { font-family: inherit; outline: none; border: none; bac
     <div class="card-title">Take it with you</div>
     <div class="qr-canvas-wrap" id="qr-canvas-wrap"></div>
     <div class="qr-url" id="qr-url">yeagersgym.com/michelle</div>
-    <div class="qr-sub">Scan this to take it with you. Track your progress anywhere.</div>
+    <div class="qr-sub">Scan and keep on your phone to track your progress in real time.</div>
     <div class="qr-actions">
       <button class="btn-small" id="qr-download-btn">Download PNG</button>
     </div>
@@ -600,6 +623,10 @@ input, textarea, select { font-family: inherit; outline: none; border: none; bac
 
 <!-- ═══════ TAB 2 — PERFORMANCE (incl. STRENGTH TESTS) ═══════ -->
 <div class="tab-panel" id="tab-performance">
+  <div class="tab-hero">
+    <div class="tab-hero-headline">The Strength Receipts</div>
+    <div class="tab-hero-tagline">Lift More · Look Stronger</div>
+  </div>
   <div class="card hero-stat-card">
     <div class="hero-stat-label">Last Session</div>
     <div class="hero-stat-value" id="perf-hero-value">—</div>
@@ -626,6 +653,10 @@ input, textarea, select { font-family: inherit; outline: none; border: none; bac
 
 <!-- ═══════ TAB 3 — BODY COMP ═══════ -->
 <div class="tab-panel" id="tab-bodycomp">
+  <div class="tab-hero">
+    <div class="tab-hero-headline">The Hard Numbers</div>
+    <div class="tab-hero-tagline">Recomp Is Real · −0.5% BF · +1.5 lb Lean</div>
+  </div>
   <div class="card">
     <div class="card-title">Skeletal Muscle Mass</div>
     <div class="hume-hero" id="bodycomp-hero">—</div>
@@ -648,6 +679,10 @@ input, textarea, select { font-family: inherit; outline: none; border: none; bac
 
 <!-- ═══════ TAB 6 — AESTHETIC ═══════ -->
 <div class="tab-panel" id="tab-aesthetic">
+  <div class="tab-hero">
+    <div class="tab-hero-headline">The Receipts</div>
+    <div class="tab-hero-tagline">See It Happen · 8 Weeks of Evidence</div>
+  </div>
   <h2 class="section-headline-pink">Biweekly Check-Ins</h2>
   <div class="section-subtitle">// LATEST COMPARISON</div>
   <div class="angle-toggle">
@@ -677,6 +712,10 @@ input, textarea, select { font-family: inherit; outline: none; border: none; bac
 
 <!-- ═══════ TAB 7 — SCORECARD ═══════ -->
 <div class="tab-panel" id="tab-scorecard">
+  <div class="tab-hero">
+    <div class="tab-hero-headline">The Build Score</div>
+    <div class="tab-hero-tagline">Effort Meets Evidence</div>
+  </div>
   <div class="card build-score-card">
     <div class="build-score-label">Build Score</div>
     <div id="build-score-display"></div>
@@ -759,15 +798,15 @@ const CLIENT = {
     { id: "session_1", name: "Session 1 — Glutes / Upper / Core" },
     { id: "session_2", name: "Session 2 — Glutes / Upper / Core" }
   ],
-  baselines: { "Hip Thrust": 225, "Back Squat": 125, "Chin-Up": 115, "Deadlift": 145, "Strict Press": null },
-  goals: { "Hip Thrust": 325, "Back Squat": 150, "Deadlift": 175, "Chin-Up": "bodyweight" },
+  baselines: { "Hip Thrust": 225, "Back Squat": 125, "Chin-Up": 115, "Deadlift": 145, "Strict Press": 65 },
+  goals: { "Hip Thrust": 325, "Back Squat": 150, "Deadlift": 175, "Chin-Up": "bodyweight", "Strict Press": 85 },
   startingBodyweight: 125,
   strengthTests: [
     { name: "Back Squat", unit: "lb", week0: 125, week8Goal: 150, lowerIsBetter: false },
-    { name: "Strict Press", unit: "lb", week0: null, week8Goal: null, lowerIsBetter: false },
+    { name: "Strict Press", unit: "lb", week0: 65, week8Goal: 85, lowerIsBetter: false },
     { name: "Deadlift", unit: "lb", week0: 145, week8Goal: 175, lowerIsBetter: false },
     { name: "Hip Thrust", unit: "lb", week0: 225, week8Goal: 325, lowerIsBetter: false },
-    { name: "Chin-Up cable", unit: "lb", week0: 115, week8Goal: "bodyweight", lowerIsBetter: false }
+    { name: "Chin-Up", unit: "lb", week0: 115, week8Goal: "bodyweight", lowerIsBetter: false }
   ],
   coreTests: [
     { name: "Hollow Rock", unit: "reps" },
@@ -1114,7 +1153,7 @@ function getDaysToCheckpoint() {
 }
 function renderStatTiles() {
   document.getElementById('stat-streak').textContent = getStreak();
-  document.getElementById('stat-sessions').textContent = STATE.sessions.length;
+  document.getElementById('stat-sessions').textContent = `${STATE.sessions.length} / 16`;
   document.getElementById('stat-checkpoint').textContent = getDaysToCheckpoint();
   // profile-bw removed in V1.8
 }
