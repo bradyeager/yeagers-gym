@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#0F1620">
 <title>Michelle's Muscle Mission · Yeager's Gym</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -38,7 +38,20 @@ html, body {
   font-size: 14px; line-height: 1.5; min-height: 100vh; overflow-x: hidden;
 }
 body { max-width: 480px; margin: 0 auto; position: relative; padding-bottom: 80px; }
-@media (min-width: 481px) { body { box-shadow: 0 0 60px rgba(0,0,0,0.6); min-height: 100vh; } }
+/* Mobile: no change — app fills phone width naturally */
+/* Desktop/tablet: center the app like a phone frame with polish */
+@media (min-width: 481px) {
+  html { background: #080f18; }
+  body { box-shadow: 0 0 0 1px rgba(72,196,204,0.15), 0 0 80px rgba(0,0,0,0.75); min-height: 100vh; }
+}
+@media (min-width: 768px) {
+  html { display: flex; align-items: flex-start; justify-content: center; }
+  body { margin: 20px auto; border-radius: 16px; overflow: hidden; min-height: calc(100vh - 40px); }
+}
+@media (min-width: 1200px) {
+  html { align-items: center; min-height: 100vh; }
+  body { margin: 0; min-height: 100vh; border-radius: 0; }
+}
 button { font-family: inherit; cursor: pointer; border: none; outline: none; background: transparent; color: inherit; }
 input, textarea, select { font-family: inherit; outline: none; border: none; background: transparent; color: inherit; -webkit-appearance: none; }
 .serif { font-family: 'DM Serif Display', serif; font-weight: 400; }
@@ -53,8 +66,9 @@ input, textarea, select { font-family: inherit; outline: none; border: none; bac
 .header-row { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
 .header-titles { flex: 1; min-width: 0; }
 .header-title { font-family: 'DM Serif Display', serif; font-size: 24px; line-height: 1.05; color: var(--teal); letter-spacing: -0.01em; }
-.header-subtitle { font-size: 13px; color: var(--pink); font-weight: 600; letter-spacing: 0.06em; margin-top: 4px; text-transform: uppercase; text-shadow: 0 0 12px rgba(239,50,149,0.35); }
+.header-subtitle { font-size: 11px; color: var(--pink); font-weight: 500; letter-spacing: 0.04em; margin-top: 2px; }
 .header-settings-btn { width: 32px; height: 32px; border-radius: 50%; background: var(--card-bg); display: flex; align-items: center; justify-content: center; font-size: 16px; color: var(--text-secondary); }
+.header-version-badge { position: absolute; top: 6px; right: 8px; font-size: 9px; font-family: 'SF Mono', Menlo, monospace; color: var(--text-muted); opacity: 0.55; letter-spacing: 0.04em; pointer-events: none; }
 .week-progress-wrap { padding: 8px 0 12px; }
 .week-progress-label { display: flex; justify-content: space-between; font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 6px; }
 .week-progress-bar { height: 4px; background: var(--card-bg); border-radius: 2px; overflow: hidden; }
@@ -83,15 +97,24 @@ input, textarea, select { font-family: inherit; outline: none; border: none; bac
 .mission-card { position: relative; background: linear-gradient(135deg, rgba(72,196,204,0.08), rgba(239,50,149,0.05)); border: 1px solid var(--border-strong); border-radius: 16px; padding: 18px; margin-bottom: 12px; }
 .mission-hero-line { font-family: 'DM Serif Display', serif; font-size: 15px; line-height: 1.35; color: var(--text-primary); margin: 14px 0 12px; padding: 10px 0; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
 .mission-hero-line .pink-em { color: var(--pink); }
-.mission-pillars { display: grid; grid-template-columns: 1fr; gap: 8px; margin: 10px 0 4px; }
-@media (min-width: 720px) { .mission-pillars { grid-template-columns: repeat(3, 1fr); gap: 10px; } }
-.mission-pillar { background: rgba(15,22,32,0.4); border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; }
+.mission-pillars { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 10px 0 4px; }
+.mission-pillar { background: rgba(15,22,32,0.4); border: 1px solid var(--border); border-radius: 10px; padding: 10px 8px; }
 .mission-pillar-label { font-size: 10px; font-weight: 700; color: var(--pink); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 4px; }
 .mission-pillar-tag { font-size: 11px; color: var(--text-muted); font-style: italic; margin-bottom: 6px; }
 .mission-pillar-targets { font-size: 11px; color: var(--teal); line-height: 1.45; letter-spacing: 0.02em; }
+.mission-metrics-intro { font-size: 13px; color: var(--text-primary); line-height: 1.55; margin: 4px 0 14px; padding-bottom: 12px; border-bottom: 1px solid rgba(72,196,204,0.12); font-weight: 500; }
+.mission-metrics-line { font-size: 12px; color: var(--text-secondary); text-align: center; line-height: 1.5; margin: 8px 0 16px; padding: 0 8px; }
+.mission-metrics-line strong { color: var(--teal); font-weight: 600; }
 .mission-card::before { content: ''; position: absolute; inset: 0; border-radius: 16px; padding: 1px; background: linear-gradient(135deg, var(--teal), var(--pink)); -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); -webkit-mask-composite: xor; mask-composite: exclude; pointer-events: none; opacity: 0.6; }
 .mission-header { font-family: 'DM Serif Display', serif; font-size: 22px; line-height: 1.1; margin-bottom: 4px; }
-.mission-sub { font-size: 12px; color: var(--text-secondary); margin-bottom: 14px; }
+.mission-sub { font-size: 13px; color: var(--pink); margin-bottom: 14px; font-weight: 600; letter-spacing: 0.02em; }
+.mission-narrative { margin-bottom: 16px; padding: 12px 14px; background: rgba(72,196,204,0.04); border-left: 2px solid var(--teal); border-radius: 0 6px 6px 0; }
+.mission-narrative p { font-size: 12px; line-height: 1.55; color: var(--text-primary); margin: 0 0 8px; font-style: italic; }
+.mission-narrative p:last-child { margin-bottom: 0; }
+.mission-narrative p strong { color: var(--pink); font-style: normal; }
+.mission-pillar-targets-list { margin: 6px 0 0; padding: 0; list-style: none; }
+.mission-pillar-targets-list li { font-size: 11px; color: var(--teal); line-height: 1.55; padding: 2px 0 2px 14px; position: relative; letter-spacing: 0.01em; }
+.mission-pillar-targets-list li::before { content: '•'; position: absolute; left: 2px; color: var(--teal); font-weight: 700; }
 .mission-row { display: flex; justify-content: space-between; align-items: baseline; padding: 8px 0; border-bottom: 1px solid rgba(72,196,204,0.08); font-size: 13px; }
 .mission-row:last-of-type { border-bottom: none; }
 .mission-row-label { color: var(--text-secondary); }
@@ -127,7 +150,7 @@ input, textarea, select { font-family: inherit; outline: none; border: none; bac
 .stat-tile { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 12px 8px; text-align: center; }
 .stat-tile-value { font-family: 'DM Serif Display', serif; font-size: 28px; line-height: 1; color: var(--teal); margin-bottom: 6px; }
 .stat-tile:first-child .stat-tile-value { color: var(--pink); }
-.stat-tile-label { font-size: 9px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; }
+.stat-tile-label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; }
 
 /* ═══════ COACH MESSAGE ═══════ */
 .coach-msg-card { border-left: 3px solid var(--teal); }
@@ -139,7 +162,7 @@ input, textarea, select { font-family: inherit; outline: none; border: none; bac
 .coach-msg-edit-btn { font-size: 11px; color: var(--teal); margin-top: 8px; padding: 6px 10px; }
 
 /* ═══════ HEADER AVATAR (profile-photo used by JS in #profile-photo-container) ═══════ */
-.profile-photo { width: 64px; height: 64px; border-radius: 50%; border: 2px solid var(--teal); object-fit: cover; }
+.profile-photo { width: 64px; height: 64px; border-radius: 50%; border: 2px solid var(--teal); object-fit: cover; object-position: center center; }
 .profile-photo-fallback { width: 64px; height: 64px; border-radius: 50%; border: 2px solid var(--teal); background: var(--card-elevated); display: flex; align-items: center; justify-content: center; font-family: 'DM Serif Display', serif; font-size: 28px; color: var(--teal); }
 #profile-photo-container { flex-shrink: 0; }
 #profile-photo-container .profile-photo, #profile-photo-container .profile-photo-fallback { width: 44px; height: 44px; border-width: 2px; font-size: 18px; }
@@ -200,15 +223,23 @@ input, textarea, select { font-family: inherit; outline: none; border: none; bac
 .lift-tile-delta { font-size: 11px; font-weight: 700; color: var(--pink); margin-top: 4px; letter-spacing: 0.04em; }
 .lift-tile-delta.goal-hit { color: var(--teal); }
 .section-headline-pink { font-family: 'DM Serif Display', serif; font-size: 18px; color: var(--pink); margin: 18px 0 10px; letter-spacing: 0.02em; }
-.tab-hero { text-align: center; margin: 4px 0 18px; }
-.tab-hero-headline { font-family: 'DM Serif Display', serif; font-size: 26px; color: var(--teal); line-height: 1.1; letter-spacing: -0.005em; }
-.tab-hero-tagline { font-size: 11px; color: var(--pink); font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; margin-top: 6px; }
+.page-header-block { text-align: center; margin: 4px 0 18px; }
+.page-headline { font-family: 'DM Serif Display', serif; font-size: 26px; color: var(--teal); line-height: 1.1; letter-spacing: -0.005em; margin: 0; }
+.page-subhead { font-size: 11px; color: var(--pink); font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; margin-top: 6px; }
 .lift-meta-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; margin-bottom: 12px; }
 .lift-meta-card { background: var(--card-bg); border: 1px solid var(--border-strong); border-radius: 12px; padding: 12px 14px; }
 .lift-meta-name { font-size: 11px; color: var(--pink); font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px; }
 .lift-meta-range { font-family: 'DM Serif Display', serif; font-size: 16px; color: var(--teal); margin-bottom: 6px; }
 .lift-meta-tag { font-size: 10px; color: var(--pink); }
 .qr-card { border: 1.5px solid var(--teal) !important; }
+.qr-card-bordered { border: 1.5px solid var(--teal) !important; box-shadow: 0 0 0 4px rgba(72,196,204,0.06), 0 4px 24px rgba(72,196,204,0.12); }
+.qr-eyebrow { font-size: 10px; color: var(--pink); font-weight: 700; text-transform: uppercase; letter-spacing: 0.16em; margin-bottom: 6px; }
+.qr-headline { font-family: 'DM Serif Display', serif; font-size: 24px; color: var(--text-primary); line-height: 1.1; margin-bottom: 4px; }
+.qr-tagline { font-size: 12px; color: var(--text-secondary); margin-bottom: 4px; }
+.qr-tagline em { font-style: italic; }
+.qr-url { font-size: 12px; color: var(--teal); font-weight: 600; margin-top: 4px; word-break: break-all; letter-spacing: 0.02em; }
+.qr-footer-italic { font-size: 11px; color: var(--text-muted); margin-top: 6px; }
+.qr-footer-italic em { font-style: italic; }
 
 /* ═══════ FAB ═══════ */
 .fab { position: fixed; right: 16px; bottom: 96px; z-index: 50; width: 56px; height: 56px; border-radius: 50%; background: var(--teal); color: var(--charcoal); display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 700; box-shadow: 0 8px 24px rgba(72,196,204,0.4); }
@@ -267,7 +298,7 @@ input, textarea, select { font-family: inherit; outline: none; border: none; bac
 .ring-svg-fg { fill: none; stroke: var(--teal); stroke-width: 6; stroke-linecap: round; transform: rotate(-90deg); transform-origin: center; transition: stroke-dashoffset 0.8s ease; }
 .ring-svg-fg.complete { stroke: var(--pink); }
 .ring-pct { font-family: 'DM Serif Display', serif; font-size: 14px; }
-.ring-label { font-size: 9px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+.ring-label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
 
 /* ═══════ BUILD SCORE ═══════ */
 .build-score-card { text-align: center; padding: 24px 16px; }
@@ -284,6 +315,10 @@ input, textarea, select { font-family: inherit; outline: none; border: none; bac
 /* ═══════ HUME METRICS (TAB 3) ═══════ */
 .hume-hero { font-family: 'DM Serif Display', serif; font-size: 24px; color: var(--teal); }
 .hume-hero-sub { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+.hume-hero-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+.hume-hero-cell { text-align: center; padding: 8px 4px; }
+.hume-hero-label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 4px; }
+.hume-hero-grid .hume-hero { font-size: 20px; }
 .metric-card-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid rgba(72,196,204,0.06); }
 .metric-card-row:last-child { border-bottom: none; }
 .metric-name { font-size: 12px; color: var(--text-secondary); }
@@ -305,7 +340,7 @@ input, textarea, select { font-family: inherit; outline: none; border: none; bac
 
 /* ═══════ AESTHETIC (TAB 6) ═══════ */
 .compare-view { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
-.compare-cell { aspect-ratio: 3/4; background: var(--card-elevated); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; position: relative; display: flex; align-items: center; justify-content: center; }
+.compare-cell { aspect-ratio: 1/1; background: var(--card-elevated); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; position: relative; display: flex; align-items: center; justify-content: center; }
 .compare-cell-img { width: 100%; height: 100%; object-fit: cover; }
 .compare-cell-empty { color: var(--text-muted); font-size: 11px; text-align: center; padding: 8px; }
 .compare-cell-label { position: absolute; top: 6px; left: 6px; background: rgba(15,22,32,0.8); color: white; font-size: 10px; padding: 2px 6px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.06em; }
@@ -319,16 +354,10 @@ input, textarea, select { font-family: inherit; outline: none; border: none; bac
 .measurement-cell.readonly { cursor: default; color: var(--teal); font-weight: 600; }
 .measurement-cell.readonly.empty { color: var(--text-muted); font-weight: 400; }
 .measurement-cell.readonly.hit { color: var(--teal); background: rgba(72,196,204,0.08); border-radius: 4px; }
-@media (min-width: 900px) {
-  #tab-aesthetic { display: grid; grid-template-columns: 1fr 1fr; gap: 16px 20px; align-items: start; }
-  #tab-aesthetic > .section-subtitle { grid-column: 1 / -1; }
-  #tab-aesthetic > .angle-toggle,
-  #tab-aesthetic > .compare-view,
-  #tab-aesthetic > .delta-row { grid-column: 1; }
-  #tab-aesthetic > .divider,
-  #tab-aesthetic > .card,
-  #tab-aesthetic > #photo-grid-container { grid-column: 2; }
-}
+/* V4.3 FIX: Removed @media (min-width: 900px) #tab-aesthetic display:grid block.
+   It used an ID selector (higher specificity than .tab-panel:not(.active)),
+   which forced Aesthetic content visible on every tab when the viewport hit 900px.
+   Mobile-first stacking layout works fine without it. */
 .angle-toggle { display: flex; gap: 4px; margin-bottom: 12px; background: var(--card-bg); border-radius: 10px; padding: 4px; }
 .angle-btn { flex: 1; padding: 8px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); border-radius: 8px; }
 .angle-btn.active { background: var(--teal); color: var(--charcoal); font-weight: 600; }
@@ -340,15 +369,15 @@ input, textarea, select { font-family: inherit; outline: none; border: none; bac
 .delta-value.pink-val { color: var(--pink); }
 
 .photo-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
-.photo-grid-cell { aspect-ratio: 3/4; background: var(--card-elevated); border: 1px solid var(--border); border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; overflow: hidden; position: relative; }
+.photo-grid-cell { aspect-ratio: 1/1; background: var(--card-elevated); border: 1px solid var(--border); border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; overflow: hidden; position: relative; }
 .photo-grid-cell:active { border-color: var(--border-strong); }
 .photo-grid-cell img { width: 100%; height: 100%; object-fit: cover; }
 .photo-grid-empty { color: var(--text-muted); font-size: 18px; }
 .week-row-label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; margin: 12px 0 6px; }
 
 .measurement-table { width: 100%; }
-.measurement-table-header { display: grid; grid-template-columns: 90px repeat(5, 1fr); gap: 4px; font-size: 9px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; padding: 6px 0; border-bottom: 1px solid var(--border); }
-.measurement-table-row { display: grid; grid-template-columns: 90px repeat(5, 1fr); gap: 4px; padding: 8px 0; border-bottom: 1px solid rgba(72,196,204,0.06); align-items: center; }
+.measurement-table-header { display: grid; grid-template-columns: 80px repeat(7, 1fr); gap: 2px; font-size: 9px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; padding: 6px 0; border-bottom: 1px solid var(--border); }
+.measurement-table-row { display: grid; grid-template-columns: 80px repeat(7, 1fr); gap: 2px; padding: 8px 0; border-bottom: 1px solid rgba(72,196,204,0.06); align-items: center; }
 .measurement-row-label { font-size: 11px; color: var(--text-secondary); }
 .measurement-cell { font-size: 12px; text-align: center; padding: 4px 2px; background: var(--card-elevated); border-radius: 4px; cursor: pointer; min-height: 24px; }
 .measurement-cell.empty { color: var(--text-muted); }
@@ -395,6 +424,16 @@ input, textarea, select { font-family: inherit; outline: none; border: none; bac
 .splash-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--card-elevated); transition: background 0.2s; }
 .splash-dot.active { background: var(--teal); }
 
+/* Splash slide 5 — Personal Tracker QR (Lisa-screenshot style) */
+.splash-eyebrow { font-size: 11px; color: var(--pink); font-weight: 700; text-transform: uppercase; letter-spacing: 0.18em; text-align: center; margin-bottom: 10px; }
+.splash-tagline { font-size: 13px; color: var(--text-secondary); text-align: center; margin: -4px 0 24px; }
+.splash-tagline em { font-style: italic; }
+.splash-qr-wrap-bordered { border: 1.5px solid var(--teal); box-shadow: 0 0 0 4px rgba(72,196,204,0.06), 0 8px 32px rgba(72,196,204,0.18); padding: 16px; }
+.splash-qr-url { font-size: 13px; color: var(--teal); font-weight: 600; text-align: center; margin: 8px 0 0; letter-spacing: 0.02em; }
+.splash-sub-tight { font-size: 13px; color: var(--text-secondary); text-align: center; margin: 18px 0 4px; }
+.splash-footer-italic { font-size: 12px; color: var(--text-muted); text-align: center; margin-bottom: 24px; }
+.splash-footer-italic em { font-style: italic; }
+
 /* ═══════ SETTINGS PANEL ═══════ */
 .settings-panel { display: none; position: fixed; top: 0; right: 0; bottom: 0; width: 280px; background: var(--card-bg); border-left: 1px solid var(--border); z-index: 500; padding: 20px; overflow-y: auto; transform: translateX(100%); transition: transform 0.3s; }
 .settings-panel.active { display: block; transform: translateX(0); }
@@ -422,12 +461,33 @@ input, textarea, select { font-family: inherit; outline: none; border: none; bac
 
 /* ═══════ MISC ═══════ */
 .empty-state { text-align: center; padding: 24px 16px; color: var(--text-muted); font-size: 12px; }
+.empty-state-large { padding: 36px 20px; }
+
+/* Scorecard Resources section — quick-launch cards for daily routines */
+.resources-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 4px; }
+.resource-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 14px 10px; text-align: center; cursor: pointer; transition: border 0.15s, transform 0.1s; color: var(--text-primary); display: block; }
+.resource-card:hover { border-color: var(--teal); transform: translateY(-1px); }
+.resource-card:active { transform: translateY(0); }
+.resource-card-icon { font-size: 22px; margin-bottom: 6px; }
+.resource-card-title { font-size: 12px; font-weight: 700; color: var(--text-primary); margin-bottom: 3px; letter-spacing: 0.02em; }
+.resource-card-sub { font-size: 10px; color: var(--text-muted); line-height: 1.35; }
 .section-title { font-family: 'DM Serif Display', serif; font-size: 18px; margin: 16px 0 12px; }
 .section-subtitle { font-size: 11px; color: var(--pink); font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; margin: 16px 0 8px; opacity: 0.85; }
 .divider { color: var(--pink); font-size: 11px; font-weight: 600; letter-spacing: 0.1em; margin: 16px 0 8px; opacity: 0.75; }
 
 /* ═══════ NEXT BLOCK CTA ═══════ */
 .next-block-cta { background: linear-gradient(135deg, rgba(239,50,149,0.18), rgba(72,196,204,0.1)); border: 1px solid var(--pink); border-radius: 14px; padding: 18px; text-align: center; margin-top: 16px; }
+
+/* How This Rolls Up card (Scorecard) */
+.rollup-card { margin-top: 16px; padding: 16px; background: var(--card-bg); border: 1px solid var(--border); }
+.rollup-card-title { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.14em; font-weight: 700; margin-bottom: 14px; }
+.rollup-row { padding: 8px 0; border-bottom: 1px solid rgba(72,196,204,0.06); }
+.rollup-row:last-of-type { border-bottom: none; }
+.rollup-row-label { font-size: 13px; color: var(--text-primary); font-weight: 600; display: flex; align-items: center; gap: 8px; }
+.rollup-emoji { font-size: 14px; }
+.rollup-weight { color: var(--teal); font-family: 'DM Serif Display', serif; font-size: 14px; margin-left: auto; }
+.rollup-row-detail { font-size: 11px; color: var(--text-muted); margin-top: 3px; padding-left: 26px; }
+.rollup-footnote { font-size: 11px; color: var(--text-muted); font-style: italic; margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--border); line-height: 1.5; }
 .next-block-headline { font-family: 'DM Serif Display', serif; font-size: 18px; margin-bottom: 6px; }
 .next-block-text { font-size: 12px; color: var(--text-secondary); margin-bottom: 14px; line-height: 1.5; }
 .next-block-btn { display: inline-block; padding: 12px 24px; background: var(--pink); color: white; border-radius: 10px; font-weight: 700; font-size: 13px; text-decoration: none; }
@@ -471,12 +531,221 @@ input, textarea, select { font-family: inherit; outline: none; border: none; bac
 /* The Conundrum */
 .conundrum-card { border: 1px solid rgba(239,50,149,0.25); background: linear-gradient(135deg, rgba(239,50,149,0.04), rgba(72,196,204,0.02)); }
 .conundrum-tag { font-size: 11px; color: var(--pink); font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 10px; text-align: center; }
+.lever-list { display: flex; flex-direction: column; gap: 8px; padding: 4px 0; }
+.lever-item { font-size: 14px; line-height: 1.4; color: var(--text-primary); display: flex; align-items: baseline; gap: 8px; }
+.lever-num { font-family: 'DM Serif Display', serif; font-size: 16px; color: var(--text-secondary); flex-shrink: 0; min-width: 18px; }
+.lever-stack-tagline { text-align: center; font-family: 'DM Serif Display', serif; font-size: 19px; font-weight: 400; line-height: 1.45; color: var(--text-primary); padding: 14px 0 4px; border-top: 1px solid rgba(72,196,204,0.15); margin-top: 14px; }
+.lever-stack-tagline .pink { color: var(--pink); font-style: italic; }
+
+/* ═══════ UNIFIED STORY CARDS (Mission tab narrative) ═══════ */
+/* One type system. Same rhythm in every card. */
+.story-card { padding: 18px 16px; }
+.story-card + .divider { margin-top: 18px; }
+.story-line { font-family: 'DM Sans', sans-serif; font-size: 14px; line-height: 1.55; color: var(--text-primary); margin: 0 0 10px; text-align: left; }
+.story-line:last-child { margin-bottom: 0; }
+.story-rule { padding-top: 12px; border-top: 1px solid rgba(72,196,204,0.12); margin-top: 4px; }
+.story-hero { font-family: 'DM Serif Display', serif; font-size: 19px; line-height: 1.3; text-align: center; margin: 6px 0 14px; color: var(--text-primary); }
+.story-closer { font-family: 'DM Sans', sans-serif; font-size: 13px; line-height: 1.55; color: var(--text-secondary); text-align: center; padding: 14px 4px 2px; margin: 14px 0 0; border-top: 1px solid rgba(72,196,204,0.12); }
+.story-closer em { font-style: italic; }
+.hl-teal { color: var(--teal); font-weight: 600; }
+.hl-pink { color: var(--pink); font-weight: 600; }
+.hl-muted { color: var(--text-muted); }
+.hl-teal-em { color: var(--teal); font-style: italic; font-weight: 500; }
+.hl-pink-em { color: var(--pink); font-style: italic; font-weight: 500; }
+.story-outcomes { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 14px; padding: 12px; background: rgba(72,196,204,0.04); border: 1px solid rgba(72,196,204,0.18); border-radius: 10px; }
+.story-outcome { display: flex; align-items: center; justify-content: space-between; padding: 6px 10px; background: var(--card-elevated); border-radius: 8px; font-size: 13px; }
+.story-outcome-label { color: var(--text-primary); font-weight: 500; }
+.story-outcome-arrow { font-family: 'DM Serif Display', serif; font-size: 16px; font-weight: 700; }
+.story-outcome-arrow.up { color: var(--teal); }
+.story-outcome-arrow.down { color: var(--pink); }
+.story-outcome-arrow.shift { color: var(--teal); font-size: 14px; }
+
+/* ═══════ V3.0 NARRATIVE CARDS — giant headline + visual right column ═══════ */
+.v3-card { padding: 16px 14px; background: var(--card-bg); border: 1px solid var(--border); border-radius: 14px; }
+.v3-grid { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); gap: 14px; align-items: center; }
+.v3-text { display: flex; flex-direction: column; min-width: 0; }
+@media (max-width: 320px) {
+  .v3-grid { grid-template-columns: 1fr; gap: 14px; }
+}
+.v3-headline {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.45;
+  letter-spacing: 0;
+  color: var(--text-primary);
+  margin: 0;
+  text-align: left;
+}
+@media (max-width: 320px) { .v3-headline { font-size: 14px; line-height: 1.5; } }
+.v3-subhead { font-family: 'DM Sans', sans-serif; font-size: 11px; line-height: 1.5; color: var(--teal); margin: 8px 0 0; opacity: 0.85; letter-spacing: 0.01em; }
+.v3-subhead em { font-style: italic; color: var(--text-muted); opacity: 1; }
+.v3-hl-pink { color: var(--pink); font-weight: 700; text-transform: uppercase; letter-spacing: 0.02em; }
+.v3-hl-pink-lower { color: var(--pink); font-weight: 700; }
+.v3-hl-teal { color: var(--teal); font-weight: 700; text-transform: uppercase; letter-spacing: 0.02em; }
+
+/* Visual column shared */
+.v3-visual { display: flex; flex-direction: column; gap: 10px; align-items: stretch; min-width: 0; }
+
+/* DILEMMA — 2 hex icons side by side */
+.v3-visual-dilemma { flex-direction: row; justify-content: space-between; gap: 8px; align-items: flex-start; }
+.v3-icon-stack { display: flex; flex-direction: column; align-items: center; gap: 4px; flex: 1; min-width: 0; }
+.v3-arrow-up { color: var(--teal); font-size: 18px; font-weight: 700; line-height: 1; }
+.v3-arrow-down { color: var(--pink); font-size: 18px; font-weight: 700; line-height: 1; }
+.v3-hex { width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; border-radius: 10px; }
+.v3-hex svg { width: 22px; height: 22px; }
+.v3-hex-teal { background: rgba(72,196,204,0.08); border: 1.5px solid var(--teal); color: var(--teal); }
+.v3-hex-pink { background: rgba(239,50,149,0.08); border: 1.5px solid var(--pink); color: var(--pink); }
+.v3-icon-label { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; margin-top: 2px; text-align: center; }
+.v3-icon-sub { font-size: 11px; color: var(--text-muted); text-align: center; line-height: 1.3; }
+.v3-label-teal { color: var(--teal); }
+.v3-label-pink { color: var(--pink); }
+
+/* WILDCARD — vertical outcomes list */
+.v3-visual-wildcard { gap: 6px; padding: 10px; background: rgba(15,22,32,0.4); border: 1px solid rgba(72,196,204,0.18); border-radius: 10px; }
+.v3-outcome-row { display: flex; align-items: center; gap: 8px; padding: 4px 6px; }
+.v3-outcome-row + .v3-outcome-row { border-top: 1px solid rgba(72,196,204,0.08); padding-top: 8px; }
+.v3-outcome-icon { width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; border-radius: 50%; border: 1px solid var(--pink); color: var(--pink); font-size: 11px; flex-shrink: 0; }
+.v3-outcome-name { flex: 1; font-size: 11px; font-weight: 700; letter-spacing: 0.06em; color: var(--text-primary); }
+.v3-outcome-arrow { font-family: 'DM Serif Display', serif; font-size: 16px; font-weight: 700; line-height: 1; }
+.v3-outcome-arrow.up { color: var(--pink); }
+.v3-outcome-arrow.down { color: var(--teal); }
+
+/* PLAN — 3 pillars stacked */
+.v3-visual-plan { gap: 10px; }
+.v3-pillar-row { display: flex; align-items: center; gap: 10px; }
+.v3-pillar-circle { width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.v3-pillar-circle svg { width: 18px; height: 18px; }
+.v3-pillar-pink { border: 1.5px solid var(--pink); color: var(--pink); background: rgba(239,50,149,0.06); }
+.v3-pillar-teal { border: 1.5px solid var(--teal); color: var(--teal); background: rgba(72,196,204,0.06); }
+.v3-pillar-text { min-width: 0; }
+.v3-pillar-title { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; }
+.v3-pillar-sub { font-size: 10px; color: var(--text-muted); margin-top: 1px; line-height: 1.3; }
+
+/* COMMITMENT — 2 frequency pills */
+.v3-visual-commitment { gap: 12px; }
+.v3-freq-row { display: flex; align-items: center; gap: 10px; }
+.v3-freq-circle { width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.v3-freq-circle svg { width: 22px; height: 22px; }
+.v3-freq-pink { border: 1.5px solid var(--pink); color: var(--pink); background: rgba(239,50,149,0.06); box-shadow: 0 0 12px rgba(239,50,149,0.18); }
+.v3-freq-teal { border: 1.5px solid var(--teal); color: var(--teal); background: rgba(72,196,204,0.06); box-shadow: 0 0 12px rgba(72,196,204,0.18); }
+.v3-freq-text { display: flex; flex-direction: column; line-height: 1.15; }
+.v3-freq-rate { font-family: 'DM Serif Display', serif; font-size: 14px; color: var(--text-primary); }
+.v3-freq-action { font-size: 10px; font-weight: 700; letter-spacing: 0.08em; }
+.v3-freq-target { font-size: 10px; color: var(--text-muted); }
+
+/* Biweekly Pill (Lisa pattern — checkpoint progress indicator)
+   V4.3: tightened gap/padding/font so 7 chips (W0-W12) fit one row at 380px.
+         border-radius 14px (not 999px) so it stays rectangular if it ever wraps. */
+.biweekly-pill { display: flex; align-items: center; gap: 4px; padding: 6px 10px; background: linear-gradient(135deg, var(--pink-glow), rgba(239,50,149,0.04)); border: 1px solid rgba(239,50,149,0.4); border-radius: 14px; margin-bottom: 12px; font-size: 10px; color: var(--text-primary); flex-wrap: wrap; }
+.biweekly-pill-label { color: var(--pink); font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; font-size: 9px; margin-right: 2px; }
+.biweekly-pill-week { display: inline-flex; align-items: center; justify-content: center; min-width: 24px; padding: 2px 4px; border-radius: 6px; background: rgba(15,22,32,0.45); color: var(--text-muted); font-size: 9px; font-weight: 600; letter-spacing: 0.02em; }
+.biweekly-pill-week.done { background: rgba(72,196,204,0.18); color: var(--teal); border: 1px solid rgba(72,196,204,0.35); }
+.biweekly-pill-week.current { background: var(--pink); color: white; border: 1px solid var(--pink); box-shadow: 0 0 12px rgba(239,50,149,0.45); }
+.biweekly-pill-week.upcoming { background: rgba(239,50,149,0.08); color: var(--pink); border: 1px solid rgba(239,50,149,0.25); }
+.biweekly-pill-week:hover { transform: translateY(-1px); transition: transform 0.15s; filter: brightness(1.15); }
 
 /* Primary Targets — movements separated */
 .target-movements { font-size: 10px; color: var(--teal); font-weight: 500; letter-spacing: 0.04em; margin-top: 6px; padding-top: 6px; border-top: 1px solid var(--border); line-height: 1.5; }
 
 /* Mixed session note */
 .session-note-line { font-size: 11px; color: var(--text-muted); font-style: italic; margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--border); text-align: center; }
+
+/* Inline workout log (Lisa pattern) */
+.workout-log-card { padding: 14px; }
+.wl-row { margin-bottom: 12px; }
+.wl-lift-wrap { width: 100%; }
+.wl-label { display: block; font-size: 10px; color: var(--teal); text-transform: uppercase; letter-spacing: 0.12em; font-weight: 700; margin-bottom: 6px; }
+.wl-select { width: 100%; background: var(--card-elevated); border: 1px solid var(--border-strong); border-radius: 10px; padding: 10px 12px; font-size: 14px; color: var(--text-primary); font-family: 'DM Sans', sans-serif; }
+.wl-sets-container { margin-bottom: 12px; }
+.wl-actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.wl-actions .btn-small { flex-shrink: 0; }
+.wl-actions .btn-primary { flex: 1; padding: 12px; font-size: 13px; }
+.wl-status { margin-top: 10px; font-size: 12px; color: var(--teal); font-weight: 600; min-height: 16px; }
+.wl-status.error { color: var(--warning); }
+.set-row-header { display: grid; grid-template-columns: 22px minmax(0,1fr) minmax(0,1fr) 24px; gap: 6px; align-items: center; padding: 6px 0 4px; border-bottom: 1px solid rgba(72,196,204,0.15); margin-bottom: 4px; }
+.set-row-header-num, .set-row-header-cell { font-size: 11px; color: var(--teal); text-transform: uppercase; letter-spacing: 0.12em; font-weight: 700; text-align: center; }
+.set-row-header-spacer { width: 24px; }
+
+/* Lisa-style photo upload drop zone */
+.hume-upload-zone { border: 2px dashed var(--border-strong); border-radius: 12px; padding: 32px 16px; text-align: center; cursor: pointer; transition: all 0.15s; background: var(--card-elevated); }
+.hume-upload-zone:hover { border-color: var(--teal); background: rgba(72,196,204,0.04); }
+.hume-upload-zone.has-image { border-color: var(--teal); padding: 8px; border-style: solid; }
+.hume-upload-zone img { max-width: 100%; max-height: 200px; border-radius: 8px; display: block; margin: 0 auto; }
+.hume-upload-prompt-icon { font-size: 32px; margin-bottom: 8px; }
+.hume-upload-prompt-text { font-size: 13px; color: var(--text-primary); font-weight: 500; margin-bottom: 4px; }
+.hume-upload-prompt-sub { font-size: 11px; color: var(--text-muted); }
+
+/* ═══════ TODAY'S ORDERS COCKPIT (Lisa pattern) ═══════ */
+.todays-orders-card { padding: 18px 16px; margin-bottom: 16px; background: var(--card-bg); border: 1px solid var(--border-strong); }
+.todays-orders-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 14px; }
+.todays-orders-title { font-family: 'DM Serif Display', serif; font-size: 18px; color: var(--text-primary); }
+.todays-orders-date { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.12em; font-weight: 600; }
+.todays-orders-list { display: flex; flex-direction: column; gap: 2px; margin-bottom: 14px; }
+.todays-order-row { display: flex; align-items: center; gap: 10px; padding: 11px 10px; border-radius: 9px; cursor: pointer; transition: background 0.15s; min-height: 40px; }
+.todays-order-row:hover { background: var(--card-elevated); }
+.todays-order-row.complete { opacity: 0.55; }
+.todays-order-row.complete .todays-order-label { text-decoration: line-through; }
+.todays-order-checkbox { width: 18px; height: 18px; border: 1.5px solid var(--border-strong); border-radius: 5px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; background: transparent; transition: all 0.15s; }
+.todays-order-row.complete .todays-order-checkbox { background: var(--teal); border-color: var(--teal); color: white; }
+.todays-order-checkbox::after { content: ''; opacity: 0; }
+.todays-order-row.complete .todays-order-checkbox::after { content: '✓'; opacity: 1; font-size: 12px; font-weight: 700; }
+.todays-order-emoji { font-size: 16px; flex-shrink: 0; }
+.todays-order-label { flex: 1; font-size: 13px; color: var(--text-primary); font-weight: 500; }
+.todays-order-status { font-size: 11px; font-weight: 600; flex-shrink: 0; }
+.todays-order-status.due { color: var(--pink); }
+.todays-order-status.count { color: var(--text-muted); }
+.todays-order-status.tap { color: var(--teal); }
+.todays-orders-cta { width: 100%; padding: 14px; font-size: 14px; }
+
+/* ═══════ DAILY ROUTINE MODAL ═══════ */
+.routine-modal-eyebrow { font-size: 10px; color: var(--teal); text-transform: uppercase; letter-spacing: 0.14em; font-weight: 700; margin-bottom: 4px; }
+.routine-modal-title { font-family: 'DM Serif Display', serif; font-size: 22px; color: var(--text-primary); margin-bottom: 4px; }
+.routine-modal-duration { font-size: 12px; color: var(--text-muted); margin-bottom: 16px; }
+.routine-exercise-row { display: flex; flex-direction: column; padding: 12px 14px; background: var(--card-elevated); border-radius: 10px; margin-bottom: 8px; border-left: 3px solid var(--pink); }
+.routine-exercise-name { font-size: 14px; font-weight: 700; color: var(--text-primary); }
+.routine-exercise-reps { font-size: 12px; color: var(--teal); font-weight: 600; margin-top: 2px; }
+.routine-exercise-note { font-size: 11px; color: var(--text-muted); margin-top: 4px; font-style: italic; }
+.routine-modal-actions { display: flex; gap: 10px; margin-top: 16px; }
+.routine-complete-btn { flex: 1; padding: 12px; font-size: 13px; }
+
+/* ═══════ BOOKEND INVENTORY (Lisa pattern) ═══════ */
+.bookend-card { padding: 14px 16px; cursor: pointer; transition: border 0.15s; margin-bottom: 10px; }
+.bookend-card:hover { border-color: var(--teal); }
+.bookend-card-header { display: flex; justify-content: space-between; align-items: center; }
+.bookend-card-title { font-family: 'DM Serif Display', serif; font-size: 15px; color: var(--text-primary); }
+.bookend-card-progress { font-size: 11px; color: var(--teal); font-weight: 600; }
+.bookend-card-toggle { font-size: 14px; color: var(--text-muted); transition: transform 0.2s; }
+.bookend-card.expanded .bookend-card-toggle { transform: rotate(90deg); }
+.bookend-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 12px; }
+.bookend-cell { aspect-ratio: 1/1; background: var(--card-elevated); border: 1px solid var(--border); border-radius: 8px; cursor: pointer; overflow: hidden; position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 6px; }
+.bookend-cell:active { border-color: var(--border-strong); }
+.bookend-cell-empty-icon { font-size: 18px; margin-bottom: 4px; opacity: 0.5; }
+.bookend-cell-label { font-size: 10px; color: var(--text-muted); text-align: center; line-height: 1.3; padding: 0 2px; }
+.bookend-cell.has-photo { padding: 0; }
+.bookend-cell.has-photo img { width: 100%; height: 100%; object-fit: cover; }
+.bookend-cell.has-photo .bookend-cell-label { position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.7); color: white; padding: 3px 4px; font-size: 8px; }
+
+/* ═══════ CORE BUILDER CARD (Performance tab) ═══════ */
+.core-builder-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.core-builder-cell { padding: 12px 10px; background: var(--card-elevated); border: 1px solid var(--border); border-radius: 10px; }
+.core-builder-name { font-size: 11px; color: var(--text-primary); font-weight: 600; margin-bottom: 8px; }
+.core-builder-progression { display: flex; justify-content: space-between; align-items: baseline; gap: 4px; }
+.core-builder-w0 { font-size: 11px; color: var(--text-muted); }
+.core-builder-current { font-family: 'DM Serif Display', serif; font-size: 16px; color: var(--teal); }
+.core-builder-goal { font-size: 11px; color: var(--pink); }
+
+/* ═══════ SHAPE SCORE (Aesthetic) ═══════ */
+.shape-score-card { padding: 16px; background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; margin-bottom: 14px; }
+.shape-score-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px; }
+.shape-score-title { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.12em; font-weight: 700; }
+.shape-score-tag { font-size: 10px; color: var(--pink); }
+.shape-score-value { font-family: 'DM Serif Display', serif; font-size: 28px; color: var(--teal); }
+.shape-score-baseline { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+.shape-score-delta { font-size: 12px; font-weight: 700; margin-top: 4px; }
+.shape-score-delta.up { color: var(--teal); }
+.shape-score-delta.down { color: var(--warning); }
+.shape-score-empty { font-size: 12px; color: var(--text-muted); font-style: italic; }
 </style>
 </head>
 <body>
@@ -487,14 +756,15 @@ input, textarea, select { font-family: inherit; outline: none; border: none; bac
     <div id="profile-photo-container"></div>
     <div class="header-titles">
       <div class="header-title">Michelle's Muscle Mission</div>
-      <div class="header-subtitle">The Both-At-Once Project</div>
+      <div class="header-subtitle">The &quot;Both-At-Once&quot; Project</div>
     </div>
     <button class="header-settings-btn" id="settings-toggle">⚙</button>
+    <div class="header-version-badge" title="Build version">v4.5</div>
   </div>
   <div class="week-progress-wrap">
     <div class="week-progress-label">
-      <span id="week-label">Week 0 of 10</span>
-      <span id="days-remaining">70 days remaining</span>
+      <span id="week-label">Week 0 of 12</span>
+      <span id="days-remaining">84 days remaining</span>
     </div>
     <div class="week-progress-bar"><div class="week-progress-fill" id="week-progress-fill" style="width:0%"></div></div>
   </div>
@@ -513,72 +783,198 @@ input, textarea, select { font-family: inherit; outline: none; border: none; bac
 <div class="tab-panel active" id="tab-mission">
   <div id="nudge-container"></div>
 
-  <div class="tab-hero">
-    <div class="tab-hero-headline">The Ass &amp; Abs Agenda</div>
-    <div class="tab-hero-tagline">Your 10-Week Newbie-Gains Window</div>
+  <div class="page-header-block">
+    <h2 class="page-headline">The Ass &amp; Abs Agenda</h2>
+    <div class="page-subhead">Your 12-Week Newbie-Gains Window</div>
+  </div>
+
+  <!-- Today's Orders cockpit — Lisa-pattern -->
+  <div class="card todays-orders-card" id="todays-orders-card">
+    <div class="todays-orders-header">
+      <div class="todays-orders-title">Today's Orders</div>
+      <div class="todays-orders-date" id="todays-orders-date">—</div>
+    </div>
+    <div class="todays-orders-list" id="todays-orders-list"></div>
+    <button class="btn-primary todays-orders-cta" id="todays-orders-cta" style="display:none">—</button>
   </div>
 
   <div class="mission-card">
     <div class="mission-header">The Mission</div>
     <div class="mission-sub">Fuller Glutes · Tighter Waist · Visible Abs</div>
+    <div class="mission-narrative">
+      <p>We're not just growing your butt. We're building the upper shelf, tightening the lower edge, and turning the horizontal line into more of a smile.</p>
+      <p>We're not just doing abs. We're building the front wall, tightening the waistline, and turning your core from "flat but hidden" into strong, visible, athletic definition.</p>
+    </div>
+    <div class="mission-metrics-intro">We track results across three metrics:</div>
     <div class="mission-pillars">
       <div class="mission-pillar">
         <div class="mission-pillar-label">Performance</div>
         <div class="mission-pillar-tag">Lifts that build the shape</div>
-        <div class="mission-pillar-targets">Hip Thrust · Back Squat · Chin-Up · Deadlift · Bench Press · Strict Press</div>
+        <ul class="mission-pillar-targets-list">
+          <li>Hip Thrust</li>
+          <li>Hip Abduction</li>
+          <li>Kickback</li>
+          <li>Cable Crunch</li>
+          <li>Hanging Knee Raise</li>
+          <li>Hollow Hold</li>
+        </ul>
       </div>
       <div class="mission-pillar">
-        <div class="mission-pillar-label">Body Comp</div>
+        <div class="mission-pillar-label">Body Composition</div>
         <div class="mission-pillar-tag">Recomp, not loss</div>
-        <div class="mission-pillar-targets">−0.5% body fat · +1.5 lb lean mass</div>
+        <ul class="mission-pillar-targets-list">
+          <li>−0.5% body fat</li>
+          <li>+1.5 lb lean mass</li>
+          <li>Glute / Waist Ratio ↑ toward hourglass</li>
+        </ul>
       </div>
       <div class="mission-pillar">
-        <div class="mission-pillar-label">Aesthetics</div>
+        <div class="mission-pillar-label">Overall Aesthetics</div>
         <div class="mission-pillar-tag">What you'll see in the mirror</div>
-        <div class="mission-pillar-targets">Glutes +0.5″ · visible abs · defined shoulder cap</div>
+        <ul class="mission-pillar-targets-list">
+          <li>Glutes +0.5″</li>
+          <li>Visible abs</li>
+          <li>Defined shoulder cap</li>
+          <li>Infragluteal fold ↑ 0.25–0.5″ (smiley line)</li>
+        </ul>
       </div>
     </div>
     <div id="mission-rows"></div>
     <div class="mission-progress-wrap">
       <div class="mission-progress-label">
-        <span id="mission-day-label">Day 0 of 70</span>
+        <span id="mission-day-label">Day 0 of 84</span>
         <span id="mission-day-pct">0%</span>
       </div>
       <div class="mission-progress-bar"><div class="mission-progress-fill" id="mission-progress-fill" style="width:0%"></div></div>
     </div>
   </div>
 
-  <div class="divider">// THE PRIMARY LIFTS &amp; METRICS</div>
-  <div class="lift-meta-grid">
-    <div class="lift-meta-card"><div class="lift-meta-name">Hip Thrust</div><div class="lift-meta-range">225 → 325 lb</div><div class="lift-meta-tag">Direct glute hypertrophy</div></div>
-    <div class="lift-meta-card"><div class="lift-meta-name">Back Squat</div><div class="lift-meta-range">125 → 150 lb</div><div class="lift-meta-tag">Lower-body foundation · 2x/wk</div></div>
-    <div class="lift-meta-card"><div class="lift-meta-name">Chin-Up</div><div class="lift-meta-range">Goal: bodyweight</div><div class="lift-meta-tag">Back · lats · posture</div></div>
-    <div class="lift-meta-card"><div class="lift-meta-name">Deadlift</div><div class="lift-meta-range">145 → 175 lb</div><div class="lift-meta-tag">Posterior chain · glutes &amp; hams</div></div>
-    <div class="lift-meta-card"><div class="lift-meta-name">Bench Press</div><div class="lift-meta-range">75 → 85 lb</div><div class="lift-meta-tag">Upper push · chest · triceps</div></div>
-    <div class="lift-meta-card"><div class="lift-meta-name">Strict Press</div><div class="lift-meta-range">65 → 85 lb</div><div class="lift-meta-tag">Upper push · shoulder cap</div></div>
-    <div class="lift-meta-card"><div class="lift-meta-name">Glutes</div><div class="lift-meta-range">Goal: +1 in</div><div class="lift-meta-tag">Hip circumference · 10 wks</div></div>
+  <div class="divider">// THE GYM GIRL DILEMMA</div>
+  <div class="card v3-card">
+    <div class="v3-grid">
+      <div class="v3-text">
+      <h3 class="v3-headline">
+        Glutes grow when <span class="v3-hl-pink">FUEL</span> is high,
+        abs show when <span class="v3-hl-pink">BODY FAT</span> is low.
+      </h3>
+      <p class="v3-subhead">Two goals, two opposite directions. <em>For most women, this is the central tension every gym journey hits.</em></p>
+      </div>
+      <div class="v3-visual v3-visual-dilemma">
+        <div class="v3-icon-stack">
+          <div class="v3-arrow-up">↑</div>
+          <div class="v3-hex v3-hex-teal">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z"/></svg>
+          </div>
+          <div class="v3-icon-label v3-label-teal">HIGH FUEL</div>
+          <div class="v3-icon-sub">supports muscle growth</div>
+        </div>
+        <div class="v3-icon-stack">
+          <div class="v3-arrow-down">↓</div>
+          <div class="v3-hex v3-hex-pink">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>
+          </div>
+          <div class="v3-icon-label v3-label-pink">LOW BODY FAT</div>
+          <div class="v3-icon-sub">reveals definition</div>
+        </div>
+      </div>
+    </div>
   </div>
 
-  <div class="divider">// THE CONUNDRUM</div>
-  <div class="card narrative-card conundrum-card">
-    <div class="conundrum-tag">The Gym Girl Dilemma</div>
-    <div class="narrative-text" style="line-height:1.7">Glutes need a <strong class="pink">surplus</strong> to grow. Belly fat needs a <strong class="teal">deficit</strong> to drop. Opposite paths.<br><br><strong>Except here.</strong> You're 5 weeks postpartum, untrained for hypertrophy, in your <strong class="pink">newbie-gains window</strong> — when muscle protein synthesis outruns the energy gap.<br><br><em>Translation:</em> lean tissue up, fat tissue down, <strong>at the same time</strong>. We don't have to choose.</div>
+  <div class="divider">// MICHELLE'S WILD CARD</div>
+  <div class="card v3-card">
+    <div class="v3-grid">
+      <div class="v3-text">
+      <h3 class="v3-headline">
+        The <span class="v3-hl-pink">ReComp WINDOW</span>
+        builds muscle and loses fat at the same time.
+      </h3>
+      <p class="v3-subhead">Untrained muscle responds fast to a real stimulus. <em>You get to break the normal rules — but only while the window is open.</em></p>
+      </div>
+      <div class="v3-visual v3-visual-wildcard">
+        <div class="v3-outcome-row"><span class="v3-outcome-icon v3-icon-pink">◐</span><span class="v3-outcome-name">GLUTES</span><span class="v3-outcome-arrow up">↑</span></div>
+        <div class="v3-outcome-row"><span class="v3-outcome-icon v3-icon-pink">◑</span><span class="v3-outcome-name">ABS</span><span class="v3-outcome-arrow up">↑</span></div>
+        <div class="v3-outcome-row"><span class="v3-outcome-icon v3-icon-pink">⌖</span><span class="v3-outcome-name">WAIST</span><span class="v3-outcome-arrow down">↓</span></div>
+        <div class="v3-outcome-row"><span class="v3-outcome-icon v3-icon-pink">⧗</span><span class="v3-outcome-name">SHAPE</span><span class="v3-outcome-arrow up">↑</span></div>
+      </div>
+    </div>
   </div>
 
-  <div class="divider">// THE PLAN</div>
-  <div class="card narrative-card">
-    <div class="narrative-text" style="line-height:1.7">You're already lean. Fat loss isn't the lever — <strong class="pink">muscle in the right places</strong> is.<br><br>Top priorities: <strong class="pink">fuller glutes · visible abs</strong>.</div>
-    <div class="core-message">Once a week maintains.<br>Twice a week builds.</div>
+  <div class="divider">// OUR PLAN</div>
+  <div class="card v3-card">
+    <div class="v3-grid">
+      <div class="v3-text">
+      <h3 class="v3-headline">
+        Rebuilding your <span class="v3-hl-pink">SHAPE</span>
+        with rounder <span class="v3-hl-pink-lower">glutes</span>
+        and sharper <span class="v3-hl-pink-lower">abs</span>.
+      </h3>
+      <p class="v3-subhead">You're already lean — fat loss isn't the lever. <em>Muscle in the right places is what changes how you look.</em></p>
+      </div>
+      <div class="v3-visual v3-visual-plan">
+        <div class="v3-pillar-row">
+          <div class="v3-pillar-circle v3-pillar-pink">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 4v16M18 4v16M3 8h3M3 16h3M18 8h3M18 16h3M9 12h6"/></svg>
+          </div>
+          <div class="v3-pillar-text">
+            <div class="v3-pillar-title v3-label-pink">STRENGTH</div>
+            <div class="v3-pillar-sub">build the foundation</div>
+          </div>
+        </div>
+        <div class="v3-pillar-row">
+          <div class="v3-pillar-circle v3-pillar-teal">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11h18a8 8 0 0 1-8 8h-2a8 8 0 0 1-8-8z"/><path d="M9 7c0-1 1-2 1-3M13 7c0-1 1-2 1-3M17 7c0-1 1-2 1-3"/></svg>
+          </div>
+          <div class="v3-pillar-text">
+            <div class="v3-pillar-title v3-label-teal">NUTRITION</div>
+            <div class="v3-pillar-sub">fuel the process</div>
+          </div>
+        </div>
+        <div class="v3-pillar-row">
+          <div class="v3-pillar-circle v3-pillar-pink">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+          </div>
+          <div class="v3-pillar-text">
+            <div class="v3-pillar-title v3-label-pink">RECOVERY</div>
+            <div class="v3-pillar-sub">amplify results</div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
-  <div class="divider">// THIS WEEK</div>
-  <div class="adherence-card maintaining" id="adherence-card">
-    <div class="adherence-label">This Week</div>
-    <div class="adherence-count" id="adherence-count">0 / 2 SESSIONS</div>
-    <div class="adherence-status new-status" id="adherence-status">NEW WEEK</div>
-    <div class="adherence-message" id="adherence-message">Two sessions builds.</div>
-    <div class="adherence-progress-bar"><div class="adherence-progress-fill maintaining-fill" id="adherence-progress-fill" style="width:0%"></div></div>
-    <button class="adherence-cta" id="adherence-cta" style="display:none">Log Session 1 →</button>
+  <div class="divider">// YOUR COMMITMENT</div>
+  <div class="card v3-card">
+    <div class="v3-grid">
+      <div class="v3-text">
+      <h3 class="v3-headline">
+        Once a week <span class="v3-hl-pink">REMINDS</span> your body.
+        Twice a week <span class="v3-hl-pink">REWIRES</span> your body.
+      </h3>
+      <p class="v3-subhead">Frequency is the dose. <em>The same lifts at twice the rhythm produce a fundamentally different result over 12 weeks.</em></p>
+      </div>
+      <div class="v3-visual v3-visual-commitment">
+        <div class="v3-freq-row">
+          <div class="v3-freq-circle v3-freq-pink">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><circle cx="8" cy="14" r="0.8" fill="currentColor"/><circle cx="12" cy="14" r="0.8" fill="currentColor"/><circle cx="16" cy="14" r="0.8" fill="currentColor"/></svg>
+          </div>
+          <div class="v3-freq-text">
+            <div class="v3-freq-rate">1× / week</div>
+            <div class="v3-freq-action v3-label-pink">REMINDS</div>
+            <div class="v3-freq-target">your body</div>
+          </div>
+        </div>
+        <div class="v3-freq-row">
+          <div class="v3-freq-circle v3-freq-teal">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a3 3 0 0 0-3 3v1a3 3 0 0 0-3 3 3 3 0 0 0 0 6 3 3 0 0 0 3 3v1a3 3 0 0 0 6 0v-1a3 3 0 0 0 3-3 3 3 0 0 0 0-6 3 3 0 0 0-3-3V5a3 3 0 0 0-3-3z"/><path d="M9 9v2M15 9v2M9 13v2M15 13v2"/></svg>
+          </div>
+          <div class="v3-freq-text">
+            <div class="v3-freq-rate">2× / week</div>
+            <div class="v3-freq-action v3-label-teal">REWIRES</div>
+            <div class="v3-freq-target">your body</div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <div class="stat-tiles">
@@ -587,7 +983,7 @@ input, textarea, select { font-family: inherit; outline: none; border: none; bac
       <div class="stat-tile-label">🔥 Streak</div>
     </div>
     <div class="stat-tile">
-      <div class="stat-tile-value" id="stat-sessions">0 / 20</div>
+      <div class="stat-tile-value" id="stat-sessions">0 / 24</div>
       <div class="stat-tile-label">Sessions Logged</div>
     </div>
     <div class="stat-tile">
@@ -599,12 +995,15 @@ input, textarea, select { font-family: inherit; outline: none; border: none; bac
   <div id="checklist-container"></div>
 
   <div class="divider">// QR CODE</div>
-  <div class="card qr-card">
-    <div class="card-title">Take it with you</div>
+  <div class="card qr-card qr-card-bordered">
+    <div class="qr-eyebrow">Your Personal Tracker</div>
+    <div class="qr-headline">Take It With You</div>
+    <div class="qr-tagline"><em>Every PR. Every weigh-in. Every glow-up shot.</em></div>
     <div class="qr-canvas-wrap" id="qr-canvas-wrap"></div>
     <div class="qr-url" id="qr-url">michelle.yeagersgym.com</div>
-    <div class="qr-sub">Scan and keep on your phone to track your progress in real time.</div>
-    <div class="qr-actions">
+    <div class="qr-sub">Scan to bookmark on your phone.</div>
+    <div class="qr-footer-italic"><em>Synced live — your progress, always in your pocket.</em></div>
+    <div class="qr-actions" style="margin-top:12px">
       <button class="btn-small" id="qr-download-btn">Download PNG</button>
     </div>
   </div>
@@ -612,24 +1011,60 @@ input, textarea, select { font-family: inherit; outline: none; border: none; bac
 
 <!-- ═══════ TAB 2 — PERFORMANCE (incl. STRENGTH TESTS) ═══════ -->
 <div class="tab-panel" id="tab-performance">
-  <div class="tab-hero">
-    <div class="tab-hero-headline">The Heavy Math</div>
-    <div class="tab-hero-tagline">Volume In · Curves Out</div>
+  <div class="page-header-block">
+    <h2 class="page-headline">The Strong Stuff</h2>
+    <div class="page-subhead">Lift Heavy · Look Bomb AF · Take Notes</div>
   </div>
   <div class="card hero-stat-card">
-    <div class="hero-stat-label">Last Session</div>
+    <div class="hero-stat-label">Last Session — Volume Change</div>
     <div class="hero-stat-value" id="perf-hero-value">—</div>
-    <div class="hero-stat-sub" id="perf-hero-sub">Log your first session</div>
+    <div class="hero-stat-sub" id="perf-hero-sub">Log your first session to start tracking volume changes.</div>
   </div>
 
-  <div class="divider">// PRIMARY LIFTS</div>
-  <div class="lift-grid" id="lift-grid"></div>
+  <div class="divider">// LOG YEAGER'S GYM WORKOUT</div>
+  <div class="card workout-log-card" id="workout-log-card">
+    <div class="wl-row">
+      <div class="wl-field-wrap wl-lift-wrap">
+        <label class="wl-label">Lift</label>
+        <select class="wl-select" id="wl-lift">
+          <option value="">Select lift...</option>
+          <option>Back Squat</option>
+          <option>Hip Thrust</option>
+          <option>Chin-Up</option>
+          <option>Deadlift</option>
+          <option>Bench Press</option>
+          <option>Strict Press</option>
+          <option>Cable Crunch</option>
+          <option>Hanging Knee Raise</option>
+          <option>Hollow Rock</option>
+          <option>Weighted Plank</option>
+        </select>
+      </div>
+    </div>
+    <div class="wl-sets-container" id="wl-sets-container">
+      <div class="set-row-header" id="wl-header">
+        <div class="set-row-header-num">SET</div>
+        <div class="set-row-header-cell" id="wl-col-1">WEIGHT (lb)</div>
+        <div class="set-row-header-cell" id="wl-col-2">REPS</div>
+        <div class="set-row-header-spacer"></div>
+      </div>
+      <div id="wl-sets"></div>
+    </div>
+    <div class="wl-actions">
+      <button class="btn-small" id="wl-add-set-btn" onclick="wlAddSet()">+ Add Set</button>
+      <button class="btn-primary" id="wl-save-btn" onclick="wlSave()">Save to Session</button>
+    </div>
+    <div class="wl-status" id="wl-status"></div>
+  </div>
 
-  <div class="divider">// 1RM TESTS — WEEK 0 → WEEK 8</div>
+  <div class="divider">// 1RM TESTS — WEEK 0 → WEEK 12</div>
   <div class="test-grid" id="strength-test-grid"></div>
 
-  <div class="divider">// CORE TESTS</div>
-  <div class="test-grid" id="core-test-grid"></div>
+  <div class="divider">// CORE BUILDER</div>
+  <div class="card">
+    <div class="core-builder-grid" id="core-builder-grid"></div>
+    <div class="empty-state" id="core-builder-empty" style="display:none;margin-top:8px">Test this once in Week 1. Retest in Week 12. Abs need progressive overload too.</div>
+  </div>
 
   <button class="btn-primary" style="margin-top:12px" id="add-test-btn">+ Log Test Result</button>
 
@@ -642,14 +1077,28 @@ input, textarea, select { font-family: inherit; outline: none; border: none; bac
 
 <!-- ═══════ TAB 3 — BODY COMP ═══════ -->
 <div class="tab-panel" id="tab-bodycomp">
-  <div class="tab-hero">
-    <div class="tab-hero-headline">The Scale Tells Lies</div>
-    <div class="tab-hero-tagline">Hume Tells the Truth</div>
+  <div class="page-header-block">
+    <h2 class="page-headline">Your Scale is Bullshit</h2>
+    <div class="page-subhead">Hume Tells the Truth</div>
   </div>
   <div class="card">
-    <div class="card-title">Skeletal Muscle Mass</div>
-    <div class="hume-hero" id="bodycomp-hero">—</div>
-    <div class="hume-hero-sub" id="bodycomp-hero-sub">First Hume scan May 4 — baseline goes here.</div>
+    <div class="hume-hero-grid">
+      <div class="hume-hero-cell">
+        <div class="hume-hero-label">Bodyweight</div>
+        <div class="hume-hero" id="bodycomp-bw">—</div>
+        <div class="hume-hero-sub" id="bodycomp-bw-sub">Goal: 125 lb</div>
+      </div>
+      <div class="hume-hero-cell">
+        <div class="hume-hero-label">Skeletal Muscle Mass</div>
+        <div class="hume-hero" id="bodycomp-hero">—</div>
+        <div class="hume-hero-sub" id="bodycomp-hero-sub">Pending scan</div>
+      </div>
+      <div class="hume-hero-cell">
+        <div class="hume-hero-label">Body Fat %</div>
+        <div class="hume-hero" id="bodycomp-bf">—</div>
+        <div class="hume-hero-sub" id="bodycomp-bf-sub">Goal: 22%</div>
+      </div>
+    </div>
   </div>
 
   <div class="divider">// RECOMPOSITION TIMELINE</div>
@@ -668,16 +1117,37 @@ input, textarea, select { font-family: inherit; outline: none; border: none; bac
 
 <!-- ═══════ TAB 6 — AESTHETIC ═══════ -->
 <div class="tab-panel" id="tab-aesthetic">
-  <div class="tab-hero">
-    <div class="tab-hero-headline">The Glow-Up, Documented</div>
-    <div class="tab-hero-tagline">See It Happen · 10 Weeks of Evidence</div>
+  <div class="page-header-block">
+    <h2 class="page-headline">The Glow-Up, Documented</h2>
+    <div class="page-subhead">See It Happen · 12 Weeks of Evidence</div>
   </div>
-  <h2 class="section-headline-pink">Biweekly Check-Ins</h2>
+
+  <div class="biweekly-pill" id="biweekly-pill"></div>
+
+  <div class="shape-score-card">
+    <div class="shape-score-header">
+      <div class="shape-score-title">Shape Score · Glute / Waist Ratio</div>
+      <div class="shape-score-tag">Higher = more hourglass</div>
+    </div>
+    <div class="shape-score-value" id="shape-score-value">—</div>
+    <div class="shape-score-baseline" id="shape-score-baseline">Add waist + glute measurements to unlock Shape Score.</div>
+    <div class="shape-score-delta" id="shape-score-delta"></div>
+  </div>
+
   <div class="section-subtitle">// LATEST COMPARISON</div>
   <div class="angle-toggle">
-    <button class="angle-btn active" data-angle="front">Front</button>
-    <button class="angle-btn" data-angle="side">Side</button>
-    <button class="angle-btn" data-angle="back">Back</button>
+    <select id="angle-select" style="width:100%;background:var(--card-bg);border:1px solid var(--border-strong);border-radius:10px;padding:10px 12px;font-size:13px;color:var(--text-primary);font-family:'DM Sans',sans-serif">
+      <option value="front_relaxed">Front · Relaxed</option>
+      <option value="front_flexed">Front · Flexed</option>
+      <option value="back_relaxed">Back · Relaxed</option>
+      <option value="back_flexed">Back · Flexed</option>
+      <option value="side_relaxed">Side · Relaxed</option>
+      <option value="side_flexed">Side · Flexed</option>
+      <option value="glutes_relaxed">Glutes · Relaxed</option>
+      <option value="glutes_flexed">Glutes · Flexed</option>
+      <option value="core_relaxed">Core · Relaxed</option>
+      <option value="core_flexed">Core · Flexed</option>
+    </select>
   </div>
   <div class="compare-view">
     <div class="compare-cell" id="compare-baseline">
@@ -695,18 +1165,48 @@ input, textarea, select { font-family: inherit; outline: none; border: none; bac
     <div class="measurement-table" id="measurement-table"></div>
   </div>
 
-  <div class="divider">// PROGRESS PHOTOS</div>
+  <div class="divider">// BIWEEKLY PROGRESS PHOTOS</div>
   <div id="photo-grid-container"></div>
+
+  <div class="divider">// BOOKEND INVENTORY</div>
+  <div class="card" style="padding:12px 14px;margin-bottom:10px">
+    <div style="font-size:11px;color:var(--text-muted);line-height:1.5">Detailed muscle-by-muscle photo set for <strong style="color:var(--teal)">Week 0</strong> (start) and <strong style="color:var(--pink)">Week 12</strong> (finish). 16 angles · captures every body part for a true before/after.</div>
+  </div>
+  <div class="card bookend-card" id="bookend-w0" data-week="0">
+    <div class="bookend-card-header">
+      <div>
+        <div class="bookend-card-title">Week 0 — The Starting Line</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <span class="bookend-card-progress" id="bookend-w0-progress">0 / 16</span>
+        <span class="bookend-card-toggle">→</span>
+      </div>
+    </div>
+    <div class="bookend-grid" id="bookend-w0-grid" style="display:none"></div>
+  </div>
+  <div class="card bookend-card" id="bookend-w12" data-week="12">
+    <div class="bookend-card-header">
+      <div>
+        <div class="bookend-card-title">Week 12 — The Finish Line</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <span class="bookend-card-progress" id="bookend-w12-progress">0 / 16</span>
+        <span class="bookend-card-toggle">→</span>
+      </div>
+    </div>
+    <div class="bookend-grid" id="bookend-w12-grid" style="display:none"></div>
+  </div>
 </div>
 
 <!-- ═══════ TAB 7 — SCORECARD ═══════ -->
 <div class="tab-panel" id="tab-scorecard">
-  <div class="tab-hero">
-    <div class="tab-hero-headline">The Effort Audit</div>
-    <div class="tab-hero-tagline">Are You Actually Doing the Thing???</div>
+  <div class="page-header-block">
+    <h2 class="page-headline">The ReComp Scorecard</h2>
+    <div class="page-subhead">Is She Actually Doing the Thing???</div>
+    <div style="font-size:11px;color:var(--text-muted);margin-top:4px;letter-spacing:0.04em">40% Adherence · 30% Strength · 30% Shape</div>
   </div>
   <div class="card build-score-card">
-    <div class="build-score-label">Build Score</div>
+    <div class="build-score-label">ReComp Score</div>
     <div id="build-score-display"></div>
     <div class="build-score-status" id="build-score-status"></div>
   </div>
@@ -717,7 +1217,48 @@ input, textarea, select { font-family: inherit; outline: none; border: none; bac
   <div class="divider">// DETAILED BREAKDOWN</div>
   <div id="scorecard-breakdown"></div>
 
+  <div class="card rollup-card">
+    <div class="rollup-card-title">How This Rolls Up</div>
+    <div class="rollup-row">
+      <div class="rollup-row-label"><span class="rollup-emoji">🎯</span> Adherence <span class="rollup-weight">40%</span></div>
+      <div class="rollup-row-detail">Sessions logged vs. program plan</div>
+    </div>
+    <div class="rollup-row">
+      <div class="rollup-row-label"><span class="rollup-emoji">💪</span> Strength <span class="rollup-weight">30%</span></div>
+      <div class="rollup-row-detail">1RM tests vs. Week 0 baseline</div>
+    </div>
+    <div class="rollup-row">
+      <div class="rollup-row-label"><span class="rollup-emoji">📊</span> Body <span class="rollup-weight">30%</span></div>
+      <div class="rollup-row-detail">SMM gain + waist/glute deltas</div>
+    </div>
+    <div class="rollup-footnote">Categories without data yet are deweighted automatically — the score reflects what's been measured, not what's missing.</div>
+  </div>
+
   <div id="next-block-cta-container"></div>
+
+  <div class="divider">// RESOURCES</div>
+  <div class="resources-grid">
+    <button class="resource-card" onclick="openDailyRoutineModal('mobility')">
+      <div class="resource-card-icon">🧘</div>
+      <div class="resource-card-title">Daily Mobility</div>
+      <div class="resource-card-sub">2.5 min · 7-exercise warm-up</div>
+    </button>
+    <button class="resource-card" onclick="openDailyRoutineModal('glutes')">
+      <div class="resource-card-icon">🍑</div>
+      <div class="resource-card-title">Daily Glute Work</div>
+      <div class="resource-card-sub">~6 min · 2 sets · band only</div>
+    </button>
+    <button class="resource-card" onclick="openDailyRoutineModal('core')">
+      <div class="resource-card-icon">💪</div>
+      <div class="resource-card-title">Daily Core Work</div>
+      <div class="resource-card-sub">~6 min · 2 sets · bodyweight</div>
+    </button>
+    <a class="resource-card" href="mobility.pdf" target="_blank" style="text-decoration:none">
+      <div class="resource-card-icon">📄</div>
+      <div class="resource-card-title">Mobility PDF</div>
+      <div class="resource-card-sub">Printable protocol</div>
+    </a>
+  </div>
 </div>
 
 <!-- ═══════ MODAL ROOT ═══════ -->
@@ -775,34 +1316,149 @@ const CLIENT = {
   goal: "Glutes & Core",
   url: "michelle.yeagersgym.com",
   startDate: "2026-05-04",
-  endDate: "2026-07-13",
-  weeks: 10,
-  checkpointWeeks: [0, 2, 4, 6, 8, 10],
+  endDate: "2026-07-27",
+  weeks: 12,
+  checkpointWeeks: [0, 2, 4, 6, 8, 10, 12],
   sessionsPerWeek: 2,
+  // Days of week (Sun=0, Mon=1, ..., Sat=6) when athlete trains with Brad in person.
+  // Skip core/glute homework on these days to avoid overload.
+  // Monday is locked; second day TBD — adjust to actual day once scheduled.
+  trainingDays: [1, -1],
   primaryLifts: ["Back Squat", "Hip Thrust", "Chin-Up", "Deadlift", "Bench Press", "Strict Press"],
-  coreLifts: ["Weighted Plank", "Hollow Rock"],
-  allLoggableLifts: ["Back Squat", "Hip Thrust", "Chin-Up", "Deadlift", "Bench Press", "Strict Press", "Weighted Plank", "Hollow Rock"],
-  liftUnits: { "Back Squat": "weight_reps", "Hip Thrust": "weight_reps", "Chin-Up": "weight_reps", "Deadlift": "weight_reps", "Bench Press": "weight_reps", "Strict Press": "weight_reps", "Weighted Plank": "weight_seconds", "Hollow Rock": "reps_only" },
+  coreLifts: ["Cable Crunch", "Hanging Knee Raise", "Weighted Plank", "Hollow Rock"],
+  allLoggableLifts: ["Back Squat", "Hip Thrust", "Chin-Up", "Deadlift", "Bench Press", "Strict Press", "Cable Crunch", "Hanging Knee Raise", "Weighted Plank", "Hollow Rock"],
+  liftUnits: { "Back Squat": "weight_reps", "Hip Thrust": "weight_reps", "Chin-Up": "weight_reps", "Deadlift": "weight_reps", "Bench Press": "weight_reps", "Strict Press": "weight_reps", "Cable Crunch": "weight_reps", "Hanging Knee Raise": "reps_only", "Weighted Plank": "weight_seconds", "Hollow Rock": "reps_only" },
   sessions: [
     { id: "session_1", name: "Session 1 — Glutes / Upper / Core" },
     { id: "session_2", name: "Session 2 — Glutes / Upper / Core" }
   ],
-  baselines: { "Hip Thrust": 225, "Back Squat": 125, "Chin-Up": 110, "Deadlift": 125, "Bench Press": 75, "Strict Press": 65 },
-  goals: { "Hip Thrust": 325, "Back Squat": 150, "Deadlift": 175, "Chin-Up": "bodyweight", "Bench Press": 85, "Strict Press": 85 },
+  baselines: { "Hip Thrust": 225, "Back Squat": 125, "Chin-Up": 110, "Deadlift": 125, "Bench Press": 75, "Strict Press": 65, "Cable Crunch": 40, "Hanging Knee Raise": 8, "Weighted Plank": 30, "Hollow Rock": 30 },
+  goals: { "Hip Thrust": 325, "Back Squat": 150, "Deadlift": 175, "Chin-Up": "bodyweight", "Bench Press": 85, "Strict Press": 75, "Cable Crunch": 70, "Hanging Knee Raise": 15, "Weighted Plank": 60, "Hollow Rock": 60 },
   startingBodyweight: 125,
+
+  // Daily Homework Routines — 7-day rotation, bodyweight + glute band only
+  // Volume calibrated for an untrained beginner working in the ReComp window — push, but don't break.
+  dailyRoutines: {
+    core: {
+      0: { name: "Sunday — The Slow Burn", duration: "~6 min", exercises: [
+        { move: "Hollow Hold", reps: "45 sec × 3", note: "Lower back glued to floor" },
+        { move: "Dead Bug", reps: "2 × 20 / side", note: "Slow and deliberate" },
+        { move: "Bird Dog", reps: "2 × 20 / side", note: "Squeeze glute at the top" }
+      ]},
+      1: { name: "Monday — The Crunch Stack", duration: "~6 min", exercises: [
+        { move: "Crunches", reps: "2 × 60", note: "Top of the rep, exhale fully" },
+        { move: "Bicycle Crunches", reps: "2 × 60 total", note: "Slow rotation, not speed" },
+        { move: "Butterfly Crunches", reps: "2 × 60", note: "Soles together, knees flat" }
+      ]},
+      2: { name: "Tuesday — The Hollow Series", duration: "~6 min", exercises: [
+        { move: "Hollow Rock", reps: "2 × 60 reps", note: "Tight body, no slack" },
+        { move: "Flutter Kicks", reps: "2 × 80 total", note: "Small fast kicks, lower back down" },
+        { move: "V-Ups", reps: "2 × 30", note: "Reach feet to hands at the top" }
+      ]},
+      3: { name: "Wednesday — Rotational Power", duration: "~6 min", exercises: [
+        { move: "Russian Twists", reps: "2 × 80 total", note: "Heels off the floor" },
+        { move: "Bicycle Crunches", reps: "2 × 60 total", note: "Elbow to opposite knee" },
+        { move: "Side Plank", reps: "2 × 60 sec / side", note: "Hips stacked, no sag" }
+      ]},
+      4: { name: "Thursday — Lower-Ab Focus", duration: "~6 min", exercises: [
+        { move: "Reverse Crunch", reps: "2 × 40", note: "Hips OFF the floor at top" },
+        { move: "Flutter Kicks", reps: "2 × 80 total", note: "Lower back pressed down" },
+        { move: "Candlesticks", reps: "2 × 20", note: "Roll smooth, don't crash down" }
+      ]},
+      5: { name: "Friday — The Volume Day", duration: "~6 min", exercises: [
+        { move: "Sit-Ups", reps: "2 × 200 total", note: "Break into 4 × 50 if needed" }
+      ]},
+      6: { name: "Saturday — Hold Everything", duration: "~6 min", exercises: [
+        { move: "Hollow Hold", reps: "60 sec × 2", note: "All-out, hands overhead" },
+        { move: "Plank", reps: "2 × 90 sec", note: "Stack shoulders over wrists" },
+        { move: "Side Plank", reps: "2 × 60 sec / side", note: "Free hand reaches up" }
+      ]}
+    },
+    glutes: {
+      0: { name: "Sunday — Activation Sunday", duration: "~6 min", exercises: [
+        { move: "Banded Loop Bridges", reps: "2 × 40", note: "Squeeze hard at the top" },
+        { move: "Banded Sidesteps", reps: "2 × 30 / side", note: "Stay low, knees out" },
+        { move: "Banded Clamshells", reps: "2 × 30 / side", note: "Slow tempo, don't rush" }
+      ]},
+      1: { name: "Monday — The Bridge Burner", duration: "~6 min", exercises: [
+        { move: "Banded Loop Bridges", reps: "2 × 60", note: "Pause 1 sec at top of every rep" },
+        { move: "Banded Feet-Elevated Bridges", reps: "2 × 40", note: "Heels on a bench/chair" },
+        { move: "Single-Leg Bridge", reps: "2 × 20 / leg", note: "Knee out, glute square" }
+      ]},
+      2: { name: "Tuesday — Kickback Tuesday", duration: "~6 min", exercises: [
+        { move: "Banded Kickbacks", reps: "2 × 50 / leg", note: "Squeeze glute, don't arch back" },
+        { move: "Banded Behind-the-Leg Kickbacks", reps: "2 × 30 / leg", note: "Cross under and out" },
+        { move: "Donkey Kicks", reps: "2 × 40 / leg", note: "Heel up, square hips" }
+      ]},
+      3: { name: "Wednesday — Lateral Power", duration: "~6 min", exercises: [
+        { move: "Banded Sidesteps", reps: "2 × 40 / direction", note: "Low athletic stance" },
+        { move: "Banded Monster Walks", reps: "2 × 30 forward / 30 back", note: "Tension all the way" },
+        { move: "Curtsy Lunges", reps: "2 × 20 / leg", note: "Knee tracks over toe" }
+      ]},
+      4: { name: "Thursday — Hip Thrust Volume", duration: "~6 min", exercises: [
+        { move: "Banded Loop Bridges", reps: "2 × 50", note: "Top hold 2 seconds" },
+        { move: "Single-Leg Glute Bridge", reps: "2 × 30 / leg", note: "Heel down, drive through" },
+        { move: "Banded Frog Pumps", reps: "2 × 60", note: "Soles together, knees out" }
+      ]},
+      5: { name: "Friday — The Volume Day", duration: "~6 min", exercises: [
+        { move: "Banded Donkey Kicks", reps: "2 × 200 / leg", note: "Break into 4 × 50 if needed" }
+      ]},
+      6: { name: "Saturday — Full-Hip Finisher", duration: "~6 min", exercises: [
+        { move: "Banded Sidesteps", reps: "2 × 40 / direction", note: "Hold tension throughout" },
+        { move: "Banded Kickbacks", reps: "2 × 40 / leg", note: "Pulse 3 at the top of the last 10" },
+        { move: "Banded Loop Bridges", reps: "2 × 40", note: "Pulse 10 at the end" }
+      ]}
+    }
+  },
+
+  // Photo angles — biweekly check-ins capture 5 areas × flexed/relaxed = 10 angles
+  photoAngles: [
+    { key: "front_relaxed", label: "Front · Relaxed" },
+    { key: "front_flexed", label: "Front · Flexed" },
+    { key: "back_relaxed", label: "Back · Relaxed" },
+    { key: "back_flexed", label: "Back · Flexed" },
+    { key: "side_relaxed", label: "Side · Relaxed" },
+    { key: "side_flexed", label: "Side · Flexed" },
+    { key: "glutes_relaxed", label: "Glutes · Relaxed" },
+    { key: "glutes_flexed", label: "Glutes · Flexed" },
+    { key: "core_relaxed", label: "Core · Relaxed" },
+    { key: "core_flexed", label: "Core · Flexed" }
+  ],
+
+  // Bookend Inventory — Week 0 + Week 12 only — every muscle group, flexed/relaxed where applicable
+  bookendAngles: [
+    { key: "front_relaxed", label: "Front · Relaxed" },
+    { key: "front_flexed", label: "Front · Flexed" },
+    { key: "back_relaxed", label: "Back · Relaxed" },
+    { key: "back_flexed", label: "Back · Flexed" },
+    { key: "side_left", label: "Side · Left" },
+    { key: "side_right", label: "Side · Right" },
+    { key: "glutes_relaxed", label: "Glutes · Relaxed" },
+    { key: "glutes_flexed", label: "Glutes · Flexed" },
+    { key: "abs_relaxed", label: "Abs · Relaxed" },
+    { key: "abs_flexed", label: "Abs · Flexed" },
+    { key: "obliques", label: "Obliques · Flexed" },
+    { key: "biceps", label: "Biceps · Flexed" },
+    { key: "triceps", label: "Triceps · Flexed" },
+    { key: "lats_spread", label: "Lats · Spread" },
+    { key: "hamstrings", label: "Hamstrings + Posterior" },
+    { key: "calves", label: "Calves · Flexed" }
+  ],
   strengthTests: [
     { name: "Back Squat", unit: "lb", week0: 125, week10Goal: 150, lowerIsBetter: false },
-    { name: "Strict Press", unit: "lb", week0: 65, week10Goal: 85, lowerIsBetter: false },
+    { name: "Strict Press", unit: "lb", week0: 65, week10Goal: 75, lowerIsBetter: false, baselineLocked: true },
     { name: "Deadlift", unit: "lb", week0: 125, week10Goal: 175, lowerIsBetter: false },
     { name: "Hip Thrust", unit: "lb", week0: 225, week10Goal: 325, lowerIsBetter: false },
     { name: "Chin-Up", unit: "lb", week0: 110, week10Goal: "bodyweight", lowerIsBetter: false },
-    { name: "Bench Press", unit: "lb", week0: 75, week10Goal: 85, lowerIsBetter: false }
+    { name: "Bench Press", unit: "lb", week0: 75, week10Goal: 85, lowerIsBetter: false, baselineLocked: true }
   ],
   coreTests: [
-    { name: "Hollow Rock", unit: "reps" },
-    { name: "Weighted Plank", unit: "seconds" }
+    { name: "Cable Crunch", unit: "lb", week0: 40, week10Goal: 70, lowerIsBetter: false },
+    { name: "Hanging Knee Raise", unit: "reps", week0: 8, week10Goal: 15, lowerIsBetter: false },
+    { name: "Hollow Rock", unit: "reps", week0: 30, week10Goal: 60, lowerIsBetter: false },
+    { name: "Weighted Plank", unit: "seconds", week0: 30, week10Goal: 60, lowerIsBetter: false }
   ],
-  glutesGoalInches: 1,
+  glutesGoalInches: 0.5,
   buildScoreWeights: { adherence: 0.40, strength: 0.30, body: 0.30 },
   buildScoreActivationDays: 7
 };
@@ -810,8 +1466,8 @@ const CLIENT = {
 /* ═══════════════════════════════════════════════════════════════
    SUPABASE CONFIG + EMBEDDED ASSETS
    ═══════════════════════════════════════════════════════════════ */
-const SUPABASE_URL = 'https://bxyiefzzqcgmnmjvnaax.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ4eWllZnp6cWNnbW5tanZuYWF4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc1NjUxNjIsImV4cCI6MjA5MzE0MTE2Mn0.vYaUT2XQ3C_X2d1JZw6MoIocp-rw5htvBn_QpNL3TnM';
+const SUPABASE_URL = 'https://qfprpepqzckymbijeexw.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFmcHJwZXBxemNreW1iaWplZXh3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc3Mjc3NjMsImV4cCI6MjA5MzMwMzc2M30.KmAlrZqf3wJMpn0flKCYR2dxHYN7D3AFhUUarVdzsNg';
 
 const SB_HEADERS = {
   'apikey': SUPABASE_ANON_KEY,
@@ -835,7 +1491,7 @@ const STATE = {
   frequencyChoice: localStorage.getItem('frequency_choice') || null,
   preferenceId: localStorage.getItem('preference_id') || null,
   currentTab: 'mission',
-  currentAngle: 'front',
+  currentAngle: 'front_relaxed',
   recompChart: null,
   liftCharts: {},
   coachMode: localStorage.getItem('coach_mode') === 'true',
@@ -971,7 +1627,7 @@ function initTabs() {
    ASSETS (BASE64)
    ═══════════════════════════════════════════════════════════════ */
 const LOGO_DATA_URI = 'assets/yeagers-logo.jpeg';
-const MICHELLE_DATA_URI = 'assets/michelle-photo.jpeg';
+const MICHELLE_DATA_URI = 'data:image/jpeg;base64,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';
 
 function initAssets() {
   try {
@@ -1093,6 +1749,7 @@ function getAdherenceState() {
 function renderAdherence() {
   const a = getAdherenceState();
   const card = document.getElementById('adherence-card');
+  if (!card) return; // V4.1: adherence card removed in favor of Today's Orders cockpit
   const wasBuilding = card.classList.contains('building');
   card.classList.remove('maintaining', 'building');
   card.classList.add(a.status === 'BUILDING' ? 'building' : 'maintaining');
@@ -1143,7 +1800,7 @@ function getDaysToCheckpoint() {
 }
 function renderStatTiles() {
   document.getElementById('stat-streak').textContent = getStreak();
-  document.getElementById('stat-sessions').textContent = `${STATE.sessions.length} / 20`;
+  document.getElementById('stat-sessions').textContent = `${STATE.sessions.length} / 24`;
   document.getElementById('stat-checkpoint').textContent = getDaysToCheckpoint();
   // profile-bw removed in V1.8
 }
@@ -1244,7 +1901,9 @@ function renderPerformanceHero() {
   document.getElementById('perf-hero-value').className = 'hero-stat-value' + (dV < 0 ? ' pink-color' : '');
 }
 function renderLiftTiles() {
-  const grid = document.getElementById('lift-grid'); grid.innerHTML = '';
+  const grid = document.getElementById('lift-grid');
+  if (!grid) return; // V4.3: lift-grid section removed in favor of 1RM Tests + Core Builder
+  grid.innerHTML = '';
   CLIENT.primaryLifts.forEach(lift => {
     const sets = STATE.sets.filter(s => s.lift_name === lift && s.weight);
     const max = sets.length ? Math.max(...sets.map(s => s.weight)) : (CLIENT.baselines[lift] || 0);
@@ -1298,7 +1957,7 @@ function renderLiftTiles() {
 }
 function renderSessionHistory() {
   const c = document.getElementById('session-history');
-  if (!STATE.sessions.length) { c.innerHTML = '<div class="empty-state">No sessions yet. Tap + to log your first.</div>'; return; }
+  if (!STATE.sessions.length) { c.innerHTML = '<div class="empty-state"><div style="font-weight:700;color:var(--text-primary);margin-bottom:4px">No sessions logged yet.</div><div>Use <span style="color:var(--teal);font-weight:600">Log Yeager\'s Gym Workout</span> above to start your tracking.</div></div>'; return; }
   c.innerHTML = STATE.sessions.slice(0, 10).map(s => {
     const sets = STATE.sets.filter(x => x.session_id === s.id);
     const liftSummary = {};
@@ -1313,7 +1972,7 @@ function renderSessionHistory() {
 function renderPRHallOfFame() {
   const c = document.getElementById('pr-hof');
   const prs = JSON.parse(localStorage.getItem('pr_hof') || '[]');
-  if (!prs.length) { c.innerHTML = '<div class="empty-state">PRs unlock here as you set them.</div>'; return; }
+  if (!prs.length) { c.innerHTML = '<div class="empty-state"><div style="font-weight:700;color:var(--text-primary);margin-bottom:4px">Trophy case still empty.</div><div>Save your first session above — every PR lands here automatically.</div></div>'; return; }
   c.innerHTML = prs.slice(-20).reverse().map(pr =>
     `<div class="hof-item"><span class="hof-name">${pr.lift}</span><span class="hof-detail">${pr.type} · ${pr.value} · ${pr.date}</span></div>`
   ).join('');
@@ -1591,21 +2250,57 @@ function closeModal() { document.getElementById('modal-root').classList.remove('
 function renderBodyComp() {
   const w0 = STATE.measurements.find(m => m.week_number === 0);
   const latest = [...STATE.measurements].sort((a,b) => b.date.localeCompare(a.date))[0];
-  const heroEl = document.getElementById('bodycomp-hero');
-  const heroSub = document.getElementById('bodycomp-hero-sub');
-  if (latest && latest.skeletal_muscle_mass) {
-    if (w0 && w0.skeletal_muscle_mass && w0.id !== latest.id) {
-      heroEl.textContent = `${w0.skeletal_muscle_mass} → ${latest.skeletal_muscle_mass} lb`;
-      const delta = (latest.skeletal_muscle_mass - w0.skeletal_muscle_mass).toFixed(1);
-      heroSub.textContent = `Skeletal muscle mass · ${delta >= 0 ? '+' : ''}${delta} lb`;
+
+  // 3-up hero grid (Lisa pattern)
+  const bwEl = document.getElementById('bodycomp-bw');
+  const bwSub = document.getElementById('bodycomp-bw-sub');
+  const smmEl = document.getElementById('bodycomp-hero');
+  const smmSub = document.getElementById('bodycomp-hero-sub');
+  const bfEl = document.getElementById('bodycomp-bf');
+  const bfSub = document.getElementById('bodycomp-bf-sub');
+
+  // Bodyweight
+  if (latest && latest.bodyweight) {
+    bwEl.textContent = `${latest.bodyweight} lb`;
+    if (w0 && w0.bodyweight && w0.id !== latest.id) {
+      const delta = (latest.bodyweight - w0.bodyweight).toFixed(1);
+      bwSub.textContent = `${delta >= 0 ? '+' : ''}${delta} lb from W0`;
     } else {
-      heroEl.textContent = `${latest.skeletal_muscle_mass} lb`;
-      heroSub.textContent = 'Baseline locked.';
+      bwSub.textContent = 'Baseline';
     }
   } else {
-    heroEl.textContent = '— lb';
-    heroSub.textContent = 'First Hume scan May 4 — baseline goes here.';
+    bwEl.textContent = '—';
+    bwSub.textContent = 'Goal: 125 lb';
   }
+
+  // Skeletal Muscle Mass
+  if (latest && latest.skeletal_muscle_mass) {
+    smmEl.textContent = `${latest.skeletal_muscle_mass} lb`;
+    if (w0 && w0.skeletal_muscle_mass && w0.id !== latest.id) {
+      const delta = (latest.skeletal_muscle_mass - w0.skeletal_muscle_mass).toFixed(1);
+      smmSub.textContent = `${delta >= 0 ? '+' : ''}${delta} lb from W0`;
+    } else {
+      smmSub.textContent = 'Baseline';
+    }
+  } else {
+    smmEl.textContent = '—';
+    smmSub.textContent = 'Pending scan';
+  }
+
+  // Body Fat %
+  if (latest && latest.body_fat_pct) {
+    bfEl.textContent = `${latest.body_fat_pct}%`;
+    if (w0 && w0.body_fat_pct && w0.id !== latest.id) {
+      const delta = (latest.body_fat_pct - w0.body_fat_pct).toFixed(1);
+      bfSub.textContent = `${delta >= 0 ? '+' : ''}${delta}% from W0`;
+    } else {
+      bfSub.textContent = 'Baseline';
+    }
+  } else {
+    bfEl.textContent = '—';
+    bfSub.textContent = 'Goal: 22%';
+  }
+
   // Metrics grid
   const m = latest || {};
   const metrics = [
@@ -1621,7 +2316,7 @@ function renderBodyComp() {
   // History
   document.getElementById('hume-history').innerHTML = STATE.measurements.length
     ? STATE.measurements.map(m => `<div class="history-item"><div class="history-item-header"><span>Week ${m.week_number} · ${m.date}</span><span class="history-item-bw">${m.bodyweight||'—'} lb</span></div><div class="history-item-summary">SMM ${m.skeletal_muscle_mass||'—'} · BF ${m.body_fat_pct||'—'}% · VFI ${m.visceral_fat_index||'—'}</div></div>`).join('')
-    : '<div class="empty-state">No scans logged.</div>';
+    : '<div class="empty-state"><div style="font-weight:700;color:var(--text-primary);margin-bottom:4px">Nothing logged yet.</div><div>Add Week 0 baseline scan so we can prove the ReComp Effect is working.</div></div>';
 }
 function renderRecompChart() {
   const ctx = document.getElementById('recomp-chart');
@@ -1629,7 +2324,7 @@ function renderRecompChart() {
   if (STATE.recompChart) STATE.recompChart.destroy();
   const data = STATE.measurements;
   if (!data.length) {
-    ctx.parentElement.innerHTML = '<div class="empty-state">Recomp timeline activates after first scan.</div>';
+    ctx.parentElement.innerHTML = '<div class="empty-state empty-state-large"><div style="font-weight:700;color:var(--text-primary);margin-bottom:10px;font-size:18px;line-height:1.3">Recomp timeline activates after first scan.</div><div style="font-size:15px;line-height:1.5">Tap <span style="color:var(--teal);font-weight:600">+ Add Hume Scan</span> below, or open your Hume Body Pod app on your phone for a fresh reading.</div></div>';
     return;
   }
   STATE.recompChart = new Chart(ctx, {
@@ -1700,7 +2395,8 @@ function renderStrengthTests() {
   const grid = document.getElementById('strength-test-grid'); grid.innerHTML = '';
   CLIENT.strengthTests.forEach(test => {
     const results = STATE.fitnessTests.filter(t => t.test_name === test.name).sort((a,b) => b.date.localeCompare(a.date));
-    const current = results[0]?.result;
+    let current = results[0]?.result;
+    // V4.2: Show '?' until a real test result is logged (was auto-filling baseline for baselineLocked lifts)
     const goal = test.week10Goal === 'bodyweight' ? getCurrentBodyweight() : test.week10Goal;
     let pct = 0;
     if (current != null && test.week0 != null && goal != null && goal !== test.week0) {
@@ -1710,7 +2406,7 @@ function renderStrengthTests() {
     const baselineDisp = test.week0 ?? '—';
     let improvementText;
     if (current == null) {
-      improvementText = goal != null ? `Goal: ${goal} ${test.unit}` : 'Pending baseline';
+      improvementText = test.baselineLocked && goal != null ? `Goal: ${goal} ${test.unit} · Log retest` : (goal != null ? `Goal: ${goal} ${test.unit}` : 'Pending baseline');
     } else if (test.week0 == null || goal == null) {
       improvementText = `Current: ${current} ${test.unit}`;
     } else {
@@ -1726,21 +2422,29 @@ function renderStrengthTests() {
       <div class="test-improvement ${complete?'complete':''}">${improvementText}</div>
     </div>`;
   });
-  const coreGrid = document.getElementById('core-test-grid'); coreGrid.innerHTML = '';
-  CLIENT.coreTests.forEach(test => {
-    const results = STATE.fitnessTests.filter(t => t.test_name === test.name).sort((a,b) => b.date.localeCompare(a.date));
-    const current = results[0]?.result;
-    const w0 = STATE.fitnessTests.find(t => t.test_name === test.name && t.week_number === 0)?.result;
-    coreGrid.innerHTML += `<div class="test-card">
-      <div class="test-name">${test.name}</div>
-      <div class="test-progression">
-        <span class="test-baseline">${w0 ?? '?'}</span>
-        <span class="test-arrow">→</span>
-        <span class="test-current">${current ?? '?'}</span>
-      </div>
-      <div class="test-improvement">${current && w0 ? `+${(current - w0).toFixed(1)} ${test.unit}` : `Baseline ${test.unit}`}</div>
-    </div>`;
-  });
+  const coreGrid = document.getElementById('core-builder-grid');
+  const coreEmpty = document.getElementById('core-builder-empty');
+  if (coreGrid) {
+    coreGrid.innerHTML = '';
+    let hasData = false;
+    CLIENT.coreTests.forEach(test => {
+      const results = STATE.fitnessTests.filter(t => t.test_name === test.name).sort((a,b) => b.date.localeCompare(a.date));
+      const current = results[0]?.result;
+      const w0 = test.week0 ?? STATE.fitnessTests.find(t => t.test_name === test.name && t.week_number === 0)?.result;
+      const goal = test.week10Goal;
+      if (current != null) hasData = true;
+      const currentDisp = current ?? '—';
+      coreGrid.innerHTML += `<div class="core-builder-cell">
+        <div class="core-builder-name">${test.name}</div>
+        <div class="core-builder-progression">
+          <span class="core-builder-w0">${w0 ?? '—'}</span>
+          <span class="core-builder-current">${currentDisp}</span>
+          <span class="core-builder-goal">${goal ?? '—'}</span>
+        </div>
+      </div>`;
+    });
+    if (coreEmpty) coreEmpty.style.display = hasData ? 'none' : 'block';
+  }
 }
 function openTestModal() {
   const allTests = [...CLIENT.strengthTests.map(t=>t.name), ...CLIENT.coreTests.map(t=>t.name)];
@@ -1783,6 +2487,8 @@ function openTestModal() {
    TAB 6: AESTHETIC
    ═══════════════════════════════════════════════════════════════ */
 function renderAesthetic() {
+  // Shape Score (V4.0)
+  renderShapeScore();
   // Compare view
   const angle = STATE.currentAngle;
   const w0 = STATE.photos.find(p => p.week_number === 0 && p.angle === angle);
@@ -1792,17 +2498,24 @@ function renderAesthetic() {
   baseEl.innerHTML = `<span class="compare-cell-label">Week 0</span>` + (w0?.url ? `<img src="${w0.url}" class="compare-cell-img">` : `<div class="compare-cell-empty">First photos<br>May 4</div>`);
   latestEl.innerHTML = `<span class="compare-cell-label">${latest ? `Week ${latest.week_number}` : 'Latest'}</span>` + (latest?.url ? `<img src="${latest.url}" class="compare-cell-img">` : `<div class="compare-cell-empty">No photos yet</div>`);
 
+  // Sync angle dropdown to STATE
+  const angleSelect = document.getElementById('angle-select');
+  if (angleSelect && angleSelect.value !== STATE.currentAngle) angleSelect.value = STATE.currentAngle;
+
   // Measurement table
   renderMeasurementTable();
 
-  // Photo grid
+  // Photo grid (biweekly)
   renderPhotoGrid();
+
+  // Bookend inventory (Week 0 + Week 12)
+  renderBookendInventory();
 }
 function renderMeasurementTable() {
   const table = document.getElementById('measurement-table');
   const fields = ['bodyweight', 'waist', 'glutes_hips', 'thigh', 'shoulders'];
-  const labels = ['Bodyweight', 'Waist', 'Glutes/Hips', 'Thigh', 'Shoulders'];
-  const weeks = [0, 2, 4, 6, 8];
+  const labels = ['Bodyweight (lb)', 'Waist (cm)', 'Glutes/Hips (cm)', 'Thigh (cm)', 'Shoulders (cm)'];
+  const weeks = [0, 2, 4, 6, 8, 10, 12];
   let html = `<div class="measurement-table-header"><span>Field</span>${weeks.map(w => `<span>W${w}</span>`).join('')}</div>`;
   fields.forEach((field, idx) => {
     html += `<div class="measurement-table-row"><span class="measurement-row-label">${labels[idx]}</span>`;
@@ -1834,10 +2547,12 @@ function renderMeasurementTable() {
 function openMeasurementModal(week, field, label) {
   const existing = STATE.bodyMeasurements.find(m => m.week_number === week);
   const currentVal = existing?.[field] || 0;
+  const unit = field === 'bodyweight' ? 'lb' : 'cm';
+  const step = field === 'bodyweight' ? 0.5 : 0.5;
   const modal = document.getElementById('modal-content');
   modal.innerHTML = `
     <div class="modal-header"><div class="modal-title">Week ${week}: ${label}</div><button class="modal-close" onclick="closeModal()">✕</button></div>
-    <div class="form-row"><label class="form-label">${label} (in)</label>${numericInput('measurement-val', currentVal, 0.25, 0, 'in')}</div>
+    <div class="form-row"><label class="form-label">${label}</label>${numericInput('measurement-val', currentVal, step, 0, unit)}</div>
     <div class="modal-actions"><button class="btn-secondary" onclick="closeModal()">Cancel</button><button class="btn-primary" id="save-measurement-btn">Save</button></div>
   `;
   document.getElementById('modal-root').classList.add('active');
@@ -1857,8 +2572,8 @@ function openMeasurementModal(week, field, label) {
       if (field === 'glutes_hips') {
         const w0 = STATE.bodyMeasurements.find(m => m.week_number === 0);
         if (w0 && (val - w0.glutes_hips) >= CLIENT.glutesGoalInches && week !== 0) {
-          fireCelebration({ tier: 'major', message: 'GLUTES GOAL: +1 inch achieved' });
-          logPR({ lift: 'Glutes', type: 'GOAL', value: '+1 in' });
+          fireCelebration({ tier: 'major', message: 'GLUTES GOAL: +0.5 inch achieved' });
+          logPR({ lift: 'Glutes', type: 'GOAL', value: '+0.5 in' });
         }
       }
       closeModal(); toast('Measurement saved.', 'success'); renderAll();
@@ -1867,37 +2582,100 @@ function openMeasurementModal(week, field, label) {
 }
 function renderPhotoGrid() {
   const c = document.getElementById('photo-grid-container'); c.innerHTML = '';
-  const weeks = [0, 2, 4, 6, 8]; const angles = ['front', 'side', 'back'];
+  const weeks = [0, 2, 4, 6, 8, 10, 12];
+  const angles = CLIENT.photoAngles;
   weeks.forEach(w => {
-    c.innerHTML += `<div class="week-row-label">Week ${w}</div><div class="photo-grid">${
+    c.innerHTML += `<div class="week-row-label">Week ${w}</div><div class="photo-grid" >${
       angles.map(a => {
-        const photo = STATE.photos.find(p => p.week_number === w && p.angle === a);
-        return `<div class="photo-grid-cell" data-week="${w}" data-angle="${a}">${photo?.url ? `<img src="${photo.url}">` : `<div class="photo-grid-empty">+</div>`}</div>`;
+        const photo = STATE.photos.find(p => p.week_number === w && p.angle === a.key);
+        return `<div class="photo-grid-cell" data-week="${w}" data-angle="${a.key}" data-label="${a.label}" style="aspect-ratio:3/4;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:6px">
+          ${photo?.url ? `<img src="${photo.url}" style="width:100%;height:100%;object-fit:cover">` : `<div style="font-size:18px;opacity:0.5;margin-bottom:4px">📸</div><div style="font-size:10px;color:var(--text-muted);text-align:center;line-height:1.3">${a.label}</div>`}
+        </div>`;
       }).join('')
     }</div>`;
   });
   c.querySelectorAll('.photo-grid-cell').forEach(cell => {
-    cell.onclick = () => openPhotoModal(parseInt(cell.dataset.week), cell.dataset.angle);
+    cell.onclick = () => openPhotoModal(parseInt(cell.dataset.week), cell.dataset.angle, cell.dataset.label);
   });
 }
-function openPhotoModal(week, angle) {
+
+function renderBookendInventory() {
+  [0, 12].forEach(week => {
+    const grid = document.getElementById(`bookend-w${week}-grid`);
+    const progress = document.getElementById(`bookend-w${week}-progress`);
+    if (!grid) return;
+    const angles = CLIENT.bookendAngles;
+    const completed = angles.filter(a => STATE.photos.find(p => p.week_number === week && p.angle === a.key && p.url)).length;
+    if (progress) progress.textContent = `${completed} / ${angles.length}`;
+    grid.innerHTML = angles.map(a => {
+      const photo = STATE.photos.find(p => p.week_number === week && p.angle === a.key);
+      const has = photo?.url;
+      return `<div class="bookend-cell ${has?'has-photo':''}" data-week="${week}" data-angle="${a.key}" data-label="${a.label}">
+        ${has ? `<img src="${photo.url}"><div class="bookend-cell-label">${a.label}</div>` : `<div class="bookend-cell-empty-icon">📸</div><div class="bookend-cell-label">${a.label}</div>`}
+      </div>`;
+    }).join('');
+    grid.querySelectorAll('.bookend-cell').forEach(cell => {
+      cell.onclick = () => openPhotoModal(parseInt(cell.dataset.week), cell.dataset.angle, cell.dataset.label);
+    });
+  });
+}
+
+function renderShapeScore() {
+  const valEl = document.getElementById('shape-score-value');
+  const baseEl = document.getElementById('shape-score-baseline');
+  const deltaEl = document.getElementById('shape-score-delta');
+  if (!valEl) return;
+  const w0 = STATE.bodyMeasurements.find(m => m.week_number === 0);
+  const latest = [...STATE.bodyMeasurements].sort((a,b) => b.week_number - a.week_number).find(m => m.glutes_hips && m.waist);
+  if (!latest) {
+    valEl.textContent = '—';
+    baseEl.textContent = 'Add waist + glute measurements to unlock Shape Score.';
+    deltaEl.textContent = '';
+    return;
+  }
+  const ratio = latest.glutes_hips / latest.waist;
+  valEl.textContent = ratio.toFixed(2);
+  if (w0?.glutes_hips && w0?.waist && w0.id !== latest.id) {
+    const baseRatio = w0.glutes_hips / w0.waist;
+    const delta = ratio - baseRatio;
+    baseEl.textContent = `Week 0 baseline: ${baseRatio.toFixed(2)}`;
+    if (delta > 0) {
+      deltaEl.textContent = `+${delta.toFixed(2)} since W0 — moving toward hourglass`;
+      deltaEl.className = 'shape-score-delta up';
+    } else if (delta < 0) {
+      deltaEl.textContent = `${delta.toFixed(2)} since W0`;
+      deltaEl.className = 'shape-score-delta down';
+    } else {
+      deltaEl.textContent = `Holding steady at baseline`;
+      deltaEl.className = 'shape-score-delta';
+    }
+  } else {
+    baseEl.textContent = `Baseline locked. Higher = more hourglass.`;
+    deltaEl.textContent = '';
+  }
+}
+function openPhotoModal(week, angle, label) {
   const existing = STATE.photos.find(p => p.week_number === week && p.angle === angle);
+  const displayLabel = label || angle;
   const modal = document.getElementById('modal-content');
   modal.innerHTML = `
-    <div class="modal-header"><div class="modal-title">Week ${week} — ${angle}</div><button class="modal-close" onclick="closeModal()">✕</button></div>
-    <div class="form-row"><label class="form-label">Take or choose photo</label><input class="form-input" id="photo-file" type="file" accept="image/*" capture="environment"></div>
-    <div class="form-row"><a id="photo-url-toggle" style="font-size:11px;color:var(--muted);text-decoration:underline;cursor:pointer">Paste URL instead</a></div>
-    <div class="form-row" id="photo-url-row" style="display:none"><label class="form-label">Image URL</label><input class="form-input" id="photo-url" type="url" value="${existing?.url || ''}" placeholder="https://..."></div>
+    <div class="modal-header"><div class="modal-title">Week ${week} — ${displayLabel}</div><button class="modal-close" onclick="closeModal()">✕</button></div>
+    <div class="hume-upload-zone" id="photo-upload-zone" onclick="document.getElementById('photo-file-input').click()" style="margin-bottom:14px">
+      <div class="hume-upload-prompt-icon">📸</div>
+      <div class="hume-upload-prompt-text">Tap to upload photo from camera roll</div>
+      <div class="hume-upload-prompt-sub">JPEG or PNG · max 10MB</div>
+      <input type="file" id="photo-file-input" accept="image/*" capture="environment" style="display:none">
+    </div>
+    <div class="form-row" style="margin-top:4px">
+      <label class="form-label" style="font-size:10px;color:var(--text-muted)">Or paste a URL instead</label>
+      <input class="form-input" id="photo-url" type="url" value="${existing?.url || ''}" placeholder="https://...">
+    </div>
     <div class="modal-actions"><button class="btn-secondary" onclick="closeModal()">Cancel</button><button class="btn-primary" id="save-photo-btn">Save</button></div>
   `;
   document.getElementById('modal-root').classList.add('active');
-  document.getElementById('photo-url-toggle').onclick = () => {
-    const row = document.getElementById('photo-url-row');
-    row.style.display = row.style.display === 'none' ? 'block' : 'none';
-  };
   document.getElementById('save-photo-btn').onclick = async () => {
     const url = document.getElementById('photo-url').value.trim();
-    const file = document.getElementById('photo-file').files[0];
+    const file = document.getElementById('photo-file-input').files[0];
     let finalUrl = url, finalPath = null;
     if (file) {
       await ensureStorageReady();
@@ -1990,10 +2768,12 @@ function getStrengthScore() {
       scores.push(pct);
     }
   });
-  // Deadlift only after Week 8
-  const dlW8 = STATE.fitnessTests.find(t => t.test_name === 'Deadlift' && t.week_number === 8);
-  if (dlW8) {
-    const pct = Math.min(100, Math.max(0, ((dlW8.result - 145) / (175 - 145)) * 100));
+  // Deadlift only counted after Week 12 retest
+  const dlW10 = STATE.fitnessTests.find(t => t.test_name === 'Deadlift' && t.week_number === 12);
+  if (dlW10) {
+    const dlBase = CLIENT.baselines['Deadlift'];
+    const dlGoal = CLIENT.goals['Deadlift'];
+    const pct = Math.min(100, Math.max(0, ((dlW10.result - dlBase) / (dlGoal - dlBase)) * 100));
     scores.push(pct);
   }
   if (!scores.length) return null;
@@ -2054,7 +2834,7 @@ function renderBuildScore() {
     if (result.value >= 90 && !localStorage.getItem('crushing_it_celebrated')) {
       localStorage.setItem('crushing_it_celebrated', 'true');
       fireCelebration({ tier: 'major', message: 'BUILD SCORE: CRUSHING IT' });
-      logPR({ lift: 'Build Score', type: 'GOAL', value: result.value });
+      logPR({ lift: 'ReComp Score', type: 'GOAL', value: result.value });
     }
   }
 }
@@ -2063,7 +2843,7 @@ function renderProgressRings() {
   const rings = [
     { label: 'Hip Thrust', current: getMaxLiftWeight('Hip Thrust'), baseline: CLIENT.baselines['Hip Thrust'], goal: CLIENT.goals['Hip Thrust'] },
     { label: 'Back Squat', current: getMaxLiftWeight('Back Squat'), baseline: CLIENT.baselines['Back Squat'], goal: CLIENT.goals['Back Squat'] },
-    { label: 'Deadlift', current: STATE.fitnessTests.find(t => t.test_name === 'Deadlift' && t.week_number === 8)?.result || 145, baseline: 145, goal: CLIENT.goals['Deadlift'] },
+    { label: 'Deadlift', current: STATE.fitnessTests.find(t => t.test_name === 'Deadlift' && t.week_number === 12)?.result || CLIENT.baselines['Deadlift'], baseline: CLIENT.baselines['Deadlift'], goal: CLIENT.goals['Deadlift'] },
     { label: 'Glutes', current: ((latest, w0) => latest && w0 ? latest.glutes_hips - w0.glutes_hips : 0)([...STATE.bodyMeasurements].filter(m=>m.week_number>0).sort((a,b)=>b.week_number-a.week_number)[0], STATE.bodyMeasurements.find(m=>m.week_number===0)), baseline: 0, goal: CLIENT.glutesGoalInches },
     { label: 'Hollow Rock', current: STATE.fitnessTests.filter(t=>t.test_name==='Hollow Rock').sort((a,b)=>b.date.localeCompare(a.date))[0]?.result || 0, baseline: STATE.fitnessTests.find(t=>t.test_name==='Hollow Rock' && t.week_number===0)?.result || 0, goal: null },
     { label: 'Weighted Plank', current: STATE.fitnessTests.filter(t=>t.test_name==='Weighted Plank').sort((a,b)=>b.date.localeCompare(a.date))[0]?.result || 0, baseline: STATE.fitnessTests.find(t=>t.test_name==='Weighted Plank' && t.week_number===0)?.result || 0, goal: null }
@@ -2104,7 +2884,7 @@ function renderNextBlockCTA() {
   const week = getCurrentWeek();
   if (week >= CLIENT.weeks) {
     c.innerHTML = `<div class="next-block-cta">
-      <div class="next-block-headline">10 weeks done.</div>
+      <div class="next-block-headline">12 weeks done.</div>
       <div class="next-block-text">The data says you're ready for the next level. Let's build Block 2.</div>
       <a href="https://www.vagaro.com/tmoxgj" target="_blank" class="next-block-btn">Book Next Session</a>
     </div>`;
@@ -2178,88 +2958,74 @@ async function loadFrequencyPreference() {
 
 let splashIdx = 0;
 const SPLASH_SLIDES = [
-  // SLIDE 1 — Welcome
-  () => `<img src="${LOGO_DATA_URI}" class="splash-logo" alt="Yeager's Gym">
-    <div class="splash-headline">Michelle's Muscle Mission</div>
-    <div class="splash-sub" style="color:var(--pink);font-weight:600">a.k.a. The Ass &amp; Abs Agenda</div>
-    <div class="splash-sub" style="margin-top:8px">10 Weeks &middot; May 4 → July 13</div>
-    <button class="splash-btn" onclick="nextSplash()">Continue →</button>
-    <div class="splash-dot-row">${[0,1,2,3,4].map(i=>`<div class="splash-dot ${i===0?'active':''}"></div>`).join('')}</div>`,
+  // SLIDE 1 — Welcome + headshot
+  () => `<div style="text-align:center;margin-bottom:16px">
+    <img src="${MICHELLE_DATA_URI}" style="width:100px;height:100px;border-radius:50%;object-fit:cover;object-position:center center;border:3px solid var(--teal);margin:0 auto 12px;display:block">
+    <div style="font-size:9px;color:var(--teal);font-weight:700;letter-spacing:0.18em;text-transform:uppercase;margin-bottom:6px">YEAGER'S GYM</div>
+    <div class="splash-headline" style="margin-bottom:8px">Michelle's<br>Muscle Mission</div>
+    <div style="font-size:15px;color:var(--pink);font-weight:700;margin-bottom:6px">The Ass &amp; Abs Agenda</div>
+    <div style="font-size:13px;color:var(--text-secondary)">12 Weeks &middot; May 4 → July 27, 2026</div>
+  </div>
+  <button class="splash-btn" onclick="nextSplash()" style="margin-top:24px">Let's Build →</button>
+  <div class="splash-dot-row">${[0,1,2,3].map(i=>`<div class="splash-dot ${i===0?'active':''}"></div>`).join('')}</div>`,
 
-  // SLIDE 2 — Frequency + Goals
-  () => `<div class="splash-section-label">Frequency</div>
-    <div class="splash-headline" style="font-size:24px">Once a week maintains.<br>Twice a week builds.</div>
-    <div class="splash-narrative">You came to me for ass and abs.<br>Here's the build.</div>
-    <div class="splash-section-label">Goals</div>
-    <div class="splash-card-list">
-      <div class="splash-goal-card"><div class="splash-goal-card-title">Glutes</div><div class="splash-goal-card-body">Fuller, lifted, +1 inch</div></div>
-      <div class="splash-goal-card"><div class="splash-goal-card-title">Core</div><div class="splash-goal-card-body">Tighter, more visible. Hollow rock + weighted plank PRs</div></div>
-      <div class="splash-goal-card"><div class="splash-goal-card-title">Bonus</div><div class="splash-goal-card-body">Shoulders, back, posture</div></div>
+  // SLIDE 2 — The Mission
+  () => `<div>
+    <div style="font-size:9px;color:var(--teal);font-weight:700;letter-spacing:0.18em;text-transform:uppercase;text-align:center;margin-bottom:12px">YOUR MISSION</div>
+    <div class="splash-headline" style="font-size:24px;margin-bottom:16px">Fuller glutes.<br>Visible abs.<br>Built from scratch.</div>
+    <div style="font-size:13px;color:var(--text-secondary);text-align:center;margin-bottom:20px;line-height:1.55">Two sessions (that's right — TWO!) per week with Brad.</div>
+    <div style="display:grid;gap:8px">
+      <div style="background:rgba(239,50,149,0.08);border:1px solid rgba(239,50,149,0.3);border-radius:10px;padding:12px 14px">
+        <div style="font-size:10px;color:var(--pink);font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:4px">🍑 Glutes</div>
+        <div style="font-size:12px;color:var(--text-secondary)">More smiley line.</div>
+      </div>
+      <div style="background:rgba(72,196,204,0.08);border:1px solid rgba(72,196,204,0.3);border-radius:10px;padding:12px 14px">
+        <div style="font-size:10px;color:var(--teal);font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:4px">💪 Core</div>
+        <div style="font-size:12px;color:var(--text-secondary)">Strong, visible, athletic.</div>
+      </div>
+      <div style="background:rgba(239,50,149,0.06);border:1px solid var(--border);border-radius:10px;padding:12px 14px">
+        <div style="font-size:10px;color:var(--pink);font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:4px">⏳ ReComp</div>
+        <div style="font-size:12px;color:var(--text-secondary)">Shape score rising.</div>
+      </div>
     </div>
-    <button class="splash-btn" onclick="nextSplash()">Continue →</button>
-    <div class="splash-dot-row">${[0,1,2,3,4].map(i=>`<div class="splash-dot ${i===1?'active':''}"></div>`).join('')}</div>`,
+  </div>
+  <button class="splash-btn" onclick="nextSplash()" style="margin-top:20px">Continue →</button>
+  <div class="splash-dot-row">${[0,1,2,3].map(i=>`<div class="splash-dot ${i===1?'active':''}"></div>`).join('')}</div>`,
 
-  // SLIDE 3 — Where We're Going (Strength + Aesthetic + Body Comp)
-  () => `<div class="splash-section-label">Where We're Going</div>
-    <div class="splash-headline" style="font-size:22px;margin-bottom:24px">10 weeks. Three layers of progress.</div>
-    <div class="splash-section-stack">
+  // SLIDE 3 — The Numbers
+  () => `<div>
+    <div style="font-size:9px;color:var(--teal);font-weight:700;letter-spacing:0.18em;text-transform:uppercase;text-align:center;margin-bottom:12px">THE NUMBERS</div>
+    <div class="splash-headline" style="font-size:22px;margin-bottom:16px">12 weeks.<br>Three layers<br>of progress.</div>
+    <div style="display:flex;flex-direction:column;gap:10px">
       <div>
-        <div class="splash-section-label" style="text-align:left;margin:0 0 8px;font-size:10px">Strength</div>
-        <div class="splash-stats-grid" style="gap:6px">
-          <div class="splash-stat-row pink-accent"><span class="splash-stat-label">Hip Thrust</span><span class="splash-stat-vals">225 → 325</span></div>
-          <div class="splash-stat-row pink-accent"><span class="splash-stat-label">Back Squat</span><span class="splash-stat-vals">125 → 150</span></div>
-          <div class="splash-stat-row pink-accent"><span class="splash-stat-label">Deadlift</span><span class="splash-stat-vals">145 → 175</span></div>
-          <div class="splash-stat-row pink-accent"><span class="splash-stat-label">Chin-Up cable</span><span class="splash-stat-vals">115 → bodyweight</span></div>
+        <div style="font-size:9px;color:var(--pink);font-weight:700;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:6px">STRENGTH</div>
+        <div style="display:grid;gap:4px">
+          ${[['Hip Thrust','225 → 325 lb'],['Back Squat','125 → 150 lb'],['Cable Crunch','40 → 70 lb'],['Hanging Knee Raise','8 → 15 reps']].map(([l,v])=>`<div style="display:flex;justify-content:space-between;padding:6px 10px;background:var(--card-bg);border:1px solid var(--border);border-radius:6px;font-size:11px"><span style="color:var(--text-muted)">${l}</span><span style="font-family:'DM Serif Display',serif;color:var(--teal)">${v}</span></div>`).join('')}
         </div>
       </div>
       <div>
-        <div class="splash-section-label" style="text-align:left;margin:0 0 8px;font-size:10px">Aesthetic</div>
-        <div class="splash-stats-grid" style="gap:6px">
-          <div class="splash-stat-row pink-accent"><span class="splash-stat-label">Glutes</span><span class="splash-stat-vals">+1 inch</span></div>
-          <div class="splash-stat-row pink-accent"><span class="splash-stat-label">Waist</span><span class="splash-stat-vals">tighter</span></div>
-          <div class="splash-stat-row pink-accent"><span class="splash-stat-label">Photos</span><span class="splash-stat-vals">5 checkpoints</span></div>
-        </div>
-      </div>
-      <div>
-        <div class="splash-section-label" style="text-align:left;margin:0 0 8px;font-size:10px">Body Comp</div>
-        <div class="splash-stats-grid" style="gap:6px">
-          <div class="splash-stat-row pink-accent"><span class="splash-stat-label">Skeletal Muscle</span><span class="splash-stat-vals">trending up</span></div>
-          <div class="splash-stat-row pink-accent"><span class="splash-stat-label">Body Fat %</span><span class="splash-stat-vals">trending down</span></div>
-          <div class="splash-stat-row pink-accent"><span class="splash-stat-label">Hume scans</span><span class="splash-stat-vals">every 2 wks</span></div>
+        <div style="font-size:9px;color:var(--pink);font-weight:700;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:6px">AESTHETICS + RECOMP</div>
+        <div style="display:grid;gap:4px">
+          ${[['Glutes','+0.5 inch'],['Body fat','trending ↓'],['Hume scans','every 2 wks']].map(([l,v])=>`<div style="display:flex;justify-content:space-between;padding:6px 10px;background:var(--card-bg);border:1px solid var(--border);border-radius:6px;font-size:11px"><span style="color:var(--text-muted)">${l}</span><span style="font-family:'DM Serif Display',serif;color:var(--teal)">${v}</span></div>`).join('')}
         </div>
       </div>
     </div>
-    <button class="splash-btn" onclick="nextSplash()">Continue →</button>
-    <div class="splash-dot-row">${[0,1,2,3,4].map(i=>`<div class="splash-dot ${i===2?'active':''}"></div>`).join('')}</div>`,
+  </div>
+  <button class="splash-btn" onclick="nextSplash()" style="margin-top:16px">Let's Do This →</button>
+  <div class="splash-dot-row">${[0,1,2,3].map(i=>`<div class="splash-dot ${i===2?'active':''}"></div>`).join('')}</div>`,
 
-  // SLIDE 4 — Commitment chooser (no pressure)
-  () => `<div class="splash-section-label">Commitment</div>
-    <div class="splash-headline" style="font-size:24px">Pick your pace.</div>
-    <div class="freq-coach-line">
-      Mondays are locked. <strong>Both paths work</strong> — pick what fits your week.
-    </div>
-    <div class="freq-card-list">
-      <button class="freq-card build" onclick="chooseFrequency('2x')">
-        <div class="freq-card-tag">🔥 Build</div>
-        <div class="freq-card-title">Twice a week</div>
-        <div class="freq-card-sub">Faster glute growth, faster strength, faster recomp. Mondays with me + a second day you choose.</div>
-        <div class="freq-card-tap">Tap to choose →</div>
-      </button>
-      <button class="freq-card maintain" onclick="chooseFrequency('1x')">
-        <div class="freq-card-tag">Maintain</div>
-        <div class="freq-card-title">Once a week</div>
-        <div class="freq-card-sub">Steady gains, sustainable rhythm. Mondays only. We can always add a second day later.</div>
-        <div class="freq-card-tap">Tap to choose →</div>
-      </button>
-    </div>
-    <div class="splash-dot-row">${[0,1,2,3,4].map(i=>`<div class="splash-dot ${i===3?'active':''}"></div>`).join('')}</div>`,
-
-  // SLIDE 5 — QR (UNCHANGED)
-  () => `<div class="splash-headline">Take It With You</div>
-    <div class="splash-qr-wrap" id="splash-qr"></div>
-    <div class="splash-sub">Scan to keep this on your phone.<br><br>Every rep, every measurement, every photo — synced live.</div>
-    <button class="splash-btn pink-btn" onclick="finishSplash()">Let's begin →</button>
-    <div class="splash-dot-row">${[0,1,2,3,4].map(i=>`<div class="splash-dot ${i===4?'active':''}"></div>`).join('')}</div>`
+  // SLIDE 4 — QR + Begin
+  () => `<div style="text-align:center">
+    <div class="splash-eyebrow">Your Personal Tracker</div>
+    <div class="splash-headline" style="margin-bottom:8px">Take It With You</div>
+    <div class="splash-tagline"><em>Every PR. Every weigh-in. Every glow-up shot.</em></div>
+    <div class="splash-qr-wrap splash-qr-wrap-bordered" id="splash-qr" style="margin:16px auto"></div>
+    <div class="splash-qr-url">michelle.yeagersgym.com</div>
+    <div class="splash-sub-tight">Scan to bookmark on your phone.</div>
+    <div class="splash-footer-italic"><em>Synced live — your progress, always in your pocket.</em></div>
+  </div>
+  <button class="splash-btn pink-btn" onclick="finishSplash()" style="margin-top:16px">Let's go, Michelle. 👋</button>
+  <div class="splash-dot-row">${[0,1,2,3].map(i=>`<div class="splash-dot ${i===3?'active':''}"></div>`).join('')}</div>`
 ];
 function showSplash() {
   document.getElementById('splash-overlay').classList.add('active');
@@ -2268,15 +3034,29 @@ function showSplash() {
 }
 function renderSplashSlide() {
   document.getElementById('splash-content').innerHTML = SPLASH_SLIDES[splashIdx]();
-  if (splashIdx === 4 && typeof QRCode !== 'undefined') {
+  // QR code on slide 4 (index 3)
+  if (splashIdx === 3 && typeof QRCode !== 'undefined') {
     const w = document.getElementById('splash-qr');
-    if (w) new QRCode(w, { text: `https://${CLIENT.url}`, width: 200, height: 200, colorDark: '#0F1620', colorLight: '#FFFFFF', correctLevel: QRCode.CorrectLevel.H });
+    if (w) new QRCode(w, { text: `https://${CLIENT.url}`, width: 180, height: 180, colorDark: '#0F1620', colorLight: '#FFFFFF', correctLevel: QRCode.CorrectLevel.H });
   }
 }
 function nextSplash() { splashIdx++; if (splashIdx >= SPLASH_SLIDES.length) finishSplash(); else renderSplashSlide(); }
+
 function finishSplash() {
   document.getElementById('splash-overlay').classList.remove('active');
   localStorage.setItem('onboarding_complete', 'true');
+  // Silently default to 2x (Build mode) — no toast, no nextSplash loop
+  STATE.frequencyChoice = '2x';
+  localStorage.setItem('frequency_choice', '2x');
+  try {
+    if (STATE.preferenceId) {
+      dbUpdate('athlete_preferences', STATE.preferenceId, { frequency_choice: '2x', updated_at: new Date().toISOString() });
+    } else {
+      dbInsert('athlete_preferences', { frequency_choice: '2x' }).then(([row]) => {
+        if (row?.id) { STATE.preferenceId = row.id; localStorage.setItem('preference_id', row.id); }
+      }).catch(() => {});
+    }
+  } catch(e) {}
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -2289,9 +3069,9 @@ function exportPDF() {
   doc.setFillColor(15, 22, 32); doc.rect(0, 0, 595, 100, 'F');
   doc.setTextColor(72, 196, 204); doc.setFont('helvetica', 'bold'); doc.setFontSize(22);
   doc.text("Michelle's Muscle Mission", 40, 50);
-  doc.setFontSize(12); doc.setTextColor(239, 50, 149); doc.text("The Both-At-Once Project · Yeager's Gym", 40, 72);
+  doc.setFontSize(12); doc.setTextColor(239, 50, 149); doc.text("The \"Both-At-Once\" Project · Yeager's Gym", 40, 72);
   doc.setTextColor(255, 255, 255); doc.setFontSize(10);
-  doc.text(`May 4 → July 13, 2026`, 40, 90);
+  doc.text(`May 4 → July 27, 2026`, 40, 90);
   // Build Score
   const bs = calculateBuildScore();
   doc.setFillColor(26, 35, 48); doc.rect(0, 100, 595, 80, 'F');
@@ -2349,10 +3129,32 @@ function initSettings() {
   document.getElementById('export-pdf-btn').onclick = exportPDF;
   document.getElementById('show-onboarding-btn').onclick = () => { document.getElementById('settings-panel').classList.remove('active'); showSplash(); };
   document.getElementById('reset-data-btn').onclick = () => {
-    if (confirm('Permanently delete all local cache and reset onboarding? Supabase data is NOT deleted.')) {
+    const modal = document.getElementById('modal-content');
+    modal.innerHTML = `
+      <div class="modal-header"><div class="modal-title" style="color:var(--warning)">Reset All Local Data</div><button class="modal-close" onclick="closeModal()">✕</button></div>
+      <div style="font-size:13px;color:var(--text-primary);line-height:1.55;margin-bottom:14px">
+        This deletes <strong>local app data</strong> for this client (cache, preferences, daily-orders state).
+        <br><br>Supabase cloud data is <strong>NOT deleted</strong> — your sessions, scans, photos, and measurements remain safe in the database.
+      </div>
+      <div class="form-row">
+        <label class="form-label" style="color:var(--warning)">Type <strong>RESET</strong> to confirm</label>
+        <input class="form-input" id="reset-confirm-input" type="text" placeholder="RESET" autocomplete="off">
+      </div>
+      <div class="modal-actions">
+        <button class="btn-secondary" onclick="closeModal()">Cancel</button>
+        <button class="btn-primary" id="reset-confirm-btn" style="background:var(--warning);border-color:var(--warning)">Reset Local Data</button>
+      </div>
+    `;
+    document.getElementById('modal-root').classList.add('active');
+    document.getElementById('reset-confirm-btn').onclick = () => {
+      const val = document.getElementById('reset-confirm-input').value.trim();
+      if (val !== 'RESET') {
+        toast('Type RESET (all caps) to confirm.', 'error');
+        return;
+      }
       localStorage.clear();
       location.reload();
-    }
+    };
   };
 }
 
@@ -2363,11 +3165,22 @@ function initFAB() {
   document.getElementById('fab-log').onclick = () => openSessionModal();
   document.getElementById('add-hume-btn').onclick = openHumeModal;
   document.getElementById('add-test-btn').onclick = openTestModal;
-  document.querySelectorAll('.angle-btn').forEach(b => b.onclick = () => {
-    document.querySelectorAll('.angle-btn').forEach(x => x.classList.remove('active'));
-    b.classList.add('active');
-    STATE.currentAngle = b.dataset.angle;
-    renderAesthetic();
+  const angleSelect = document.getElementById('angle-select');
+  if (angleSelect) {
+    angleSelect.onchange = () => {
+      STATE.currentAngle = angleSelect.value;
+      renderAesthetic();
+    };
+  }
+  // Bookend card expand/collapse toggle
+  document.querySelectorAll('.bookend-card').forEach(card => {
+    card.onclick = (e) => {
+      // Don't toggle when clicking inside the grid (that's a cell click)
+      if (e.target.closest('.bookend-cell')) return;
+      const grid = card.querySelector('.bookend-grid');
+      const expanded = card.classList.toggle('expanded');
+      if (grid) grid.style.display = expanded ? 'grid' : 'none';
+    };
   });
   document.getElementById('modal-root').addEventListener('click', (e) => { if (e.target.id === 'modal-root') closeModal(); });
 }
@@ -2375,8 +3188,39 @@ function initFAB() {
 /* ═══════════════════════════════════════════════════════════════
    MASTER RENDER
    ═══════════════════════════════════════════════════════════════ */
+function renderBiweeklyPill() {
+  const el = document.getElementById('biweekly-pill');
+  if (!el) return;
+  const currentWeek = getCurrentWeek();
+  const checkpoints = CLIENT.checkpointWeeks || [];
+  const chips = checkpoints.map(w => {
+    let state = 'upcoming';
+    if (w < currentWeek) state = 'done';
+    else if (w === currentWeek) state = 'current';
+    return `<span class="biweekly-pill-week ${state}" data-week="${w}" role="button" tabindex="0" style="cursor:pointer">W${w}</span>`;
+  }).join('');
+  el.innerHTML = `<span class="biweekly-pill-label">Checkpoints</span>${chips}`;
+  el.querySelectorAll('.biweekly-pill-week').forEach(chip => {
+    chip.onclick = () => {
+      const week = parseInt(chip.dataset.week);
+      // Scroll the corresponding week-row-label into view in the photo grid
+      const labels = document.querySelectorAll('.week-row-label');
+      for (const label of labels) {
+        if (label.textContent.trim() === `Week ${week}`) {
+          label.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          return;
+        }
+      }
+      // Fallback — just switch to aesthetic tab
+      switchTab('aesthetic');
+    };
+  });
+}
+
 function renderAll() {
   renderHeader();
+  renderTodaysOrders();
+  renderBiweeklyPill();
   renderMissionCard();
   renderAdherence();
   renderStatTiles();
@@ -2504,7 +3348,406 @@ function loadDemoData() {
   STATE.timelineChecklist = timelineChecklist;
   STATE.loaded = true;
 }
+/* ═══════════════════════════════════════════════════════════════
+   INLINE WORKOUT LOG (Lisa pattern — log sets without modal)
+   ═══════════════════════════════════════════════════════════════ */
+let wlSetCount = 0;
+
+function wlUpdateHeader() {
+  const lift = document.getElementById('wl-lift').value;
+  const unit = CLIENT.liftUnits[lift] || 'weight_reps';
+  const col1 = document.getElementById('wl-col-1');
+  const col2 = document.getElementById('wl-col-2');
+  if (!col1 || !col2) return;
+  if (unit === 'weight_reps') { col1.textContent = 'WEIGHT (lb)'; col2.textContent = 'REPS'; col1.style.display = ''; }
+  else if (unit === 'weight_seconds') { col1.textContent = 'WEIGHT (lb)'; col2.textContent = 'SECONDS'; col1.style.display = ''; }
+  else if (unit === 'reps_only') { col1.style.display = 'none'; col2.textContent = 'REPS'; }
+}
+
+function wlAddSet() {
+  wlSetCount++;
+  const container = document.getElementById('wl-sets');
+  if (!container) return;
+  const lift = document.getElementById('wl-lift').value;
+  const unit = CLIENT.liftUnits[lift] || 'weight_reps';
+  const lastRow = container.lastElementChild;
+
+  let rowHTML = `<div class="set-row-label">${wlSetCount}</div>`;
+
+  if (unit === 'weight_reps') {
+    const lastW = lastRow ? lastRow.querySelector('.wl-weight')?.value || 0 : (CLIENT.baselines[lift] || 0);
+    const lastR = lastRow ? lastRow.querySelector('.wl-reps')?.value || 5 : 5;
+    rowHTML += `
+      <div class="set-row-header-cell" style="display:flex;gap:4px;align-items:center;min-width:0">
+        <button class="numeric-btn" onclick="wlStep(this,-5)">−</button>
+        <input type="number" class="numeric-input wl-weight" value="${lastW}" min="0" step="5">
+        <button class="numeric-btn" onclick="wlStep(this,5)">+</button>
+      </div>
+      <div class="set-row-header-cell" style="display:flex;gap:4px;align-items:center;min-width:0">
+        <button class="numeric-btn" onclick="wlStep(this,-1)">−</button>
+        <input type="number" class="numeric-input wl-reps" value="${lastR}" min="0" step="1">
+        <button class="numeric-btn" onclick="wlStep(this,1)">+</button>
+      </div>`;
+  } else if (unit === 'weight_seconds') {
+    const lastW = lastRow ? lastRow.querySelector('.wl-weight')?.value || 0 : 0;
+    const lastS = lastRow ? lastRow.querySelector('.wl-reps')?.value || 30 : 30;
+    rowHTML += `
+      <div class="set-row-header-cell" style="display:flex;gap:4px;align-items:center;min-width:0">
+        <button class="numeric-btn" onclick="wlStep(this,-2.5)">−</button>
+        <input type="number" class="numeric-input wl-weight" value="${lastW}" min="0" step="2.5">
+        <button class="numeric-btn" onclick="wlStep(this,2.5)">+</button>
+      </div>
+      <div class="set-row-header-cell" style="display:flex;gap:4px;align-items:center;min-width:0">
+        <button class="numeric-btn" onclick="wlStep(this,-5)">−</button>
+        <input type="number" class="numeric-input wl-reps" value="${lastS}" min="0" step="5">
+        <button class="numeric-btn" onclick="wlStep(this,5)">+</button>
+      </div>`;
+  } else if (unit === 'reps_only') {
+    const lastR = lastRow ? lastRow.querySelector('.wl-reps')?.value || 10 : 10;
+    rowHTML += `
+      <div style="display:none"><input type="hidden" class="wl-weight" value="0"></div>
+      <div class="set-row-header-cell" style="display:flex;gap:4px;align-items:center;min-width:0;grid-column:span 2">
+        <button class="numeric-btn" onclick="wlStep(this,-1)">−</button>
+        <input type="number" class="numeric-input wl-reps" value="${lastR}" min="0" step="1">
+        <button class="numeric-btn" onclick="wlStep(this,1)">+</button>
+      </div>`;
+  }
+
+  rowHTML += `<button class="set-row-remove" onclick="this.closest('.set-row').remove(); wlRenumber()">×</button>`;
+
+  const row = document.createElement('div');
+  row.className = 'set-row';
+  row.dataset.set = wlSetCount;
+  row.innerHTML = rowHTML;
+  container.appendChild(row);
+  wlUpdateStatus();
+}
+
+function wlStep(btn, delta) {
+  const input = btn.parentElement.querySelector('input');
+  if (!input) return;
+  const current = parseFloat(input.value) || 0;
+  input.value = Math.max(0, current + delta);
+  wlUpdateStatus();
+}
+
+function wlRenumber() {
+  document.querySelectorAll('#wl-sets .set-row').forEach((row, i) => {
+    const label = row.querySelector('.set-row-label');
+    if (label) label.textContent = i + 1;
+    row.dataset.set = i + 1;
+  });
+  wlSetCount = document.querySelectorAll('#wl-sets .set-row').length;
+}
+
+function wlUpdateStatus() {
+  const statusEl = document.getElementById('wl-status');
+  if (!statusEl) return;
+  const rows = document.querySelectorAll('#wl-sets .set-row');
+  if (!rows.length) { statusEl.textContent = ''; return; }
+  let bestE1rm = 0;
+  rows.forEach(row => {
+    const w = parseFloat(row.querySelector('.wl-weight')?.value) || 0;
+    const r = parseInt(row.querySelector('.wl-reps')?.value) || 0;
+    if (w > 0 && r > 0) {
+      const e = Math.round(w * (1 + r / 30));
+      if (e > bestE1rm) bestE1rm = e;
+    }
+  });
+  statusEl.className = 'wl-status';
+  statusEl.textContent = bestE1rm > 0 ? `est 1RM: ${bestE1rm} lb` : '';
+}
+
+async function wlSave() {
+  const lift = document.getElementById('wl-lift').value;
+  const statusEl = document.getElementById('wl-status');
+  if (!lift) {
+    statusEl.className = 'wl-status error';
+    statusEl.textContent = 'Select a lift first.';
+    return;
+  }
+  const rows = document.querySelectorAll('#wl-sets .set-row');
+  if (!rows.length) {
+    statusEl.className = 'wl-status error';
+    statusEl.textContent = 'Add at least one set.';
+    return;
+  }
+  const today = todayISO();
+  let session = STATE.sessions.find(s => s.date === today);
+  let sessionId;
+  if (session) {
+    sessionId = session.id;
+  } else {
+    try {
+      const [newSess] = await dbInsert('sessions', {
+        date: today, session_type: 'Strength', bodyweight: null, nutrition_note: null
+      });
+      session = newSess;
+      STATE.sessions.unshift(newSess);
+      sessionId = newSess.id;
+    } catch(e) {
+      sessionId = 'local-' + Date.now();
+      const localSess = { id: sessionId, date: today, session_type: 'Strength', bodyweight: null };
+      STATE.sessions.unshift(localSess);
+    }
+  }
+
+  const setsToSave = [];
+  rows.forEach((row, i) => {
+    const w = parseFloat(row.querySelector('.wl-weight')?.value) || 0;
+    const r = parseInt(row.querySelector('.wl-reps')?.value) || 0;
+    if (w > 0 || r > 0) {
+      setsToSave.push({ session_id: sessionId, lift_name: lift, set_number: i + 1, weight: w, reps: r });
+    }
+  });
+
+  let saved = 0;
+  for (const setData of setsToSave) {
+    try {
+      const [s] = await dbInsert('sets', setData);
+      STATE.sets.unshift(s);
+      saved++;
+    } catch(e) {
+      const local = { id: 'local-s-' + Date.now() + '-' + saved, ...setData };
+      STATE.sets.unshift(local);
+      saved++;
+    }
+  }
+
+  statusEl.className = 'wl-status';
+  statusEl.textContent = `✓ Saved ${saved} set${saved !== 1 ? 's' : ''} of ${lift}`;
+  document.getElementById('wl-sets').innerHTML = '';
+  document.getElementById('wl-lift').value = '';
+  wlSetCount = 0;
+  toast(`${saved} set${saved !== 1 ? 's' : ''} of ${lift} saved 💪`, 'success');
+  renderAll();
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   TODAY'S ORDERS COCKPIT + DAILY ROUTINES (V4.0)
+   ═══════════════════════════════════════════════════════════════ */
+function getTodayKey() { return new Date().toISOString().slice(0, 10); }
+
+function getDailyOrdersState() {
+  const key = `dailyOrders:${getTodayKey()}`;
+  try { return JSON.parse(localStorage.getItem(key) || '{}'); }
+  catch { return {}; }
+}
+
+function setDailyOrderComplete(orderId, complete) {
+  const key = `dailyOrders:${getTodayKey()}`;
+  const state = getDailyOrdersState();
+  state[orderId] = complete;
+  try { localStorage.setItem(key, JSON.stringify(state)); }
+  catch (e) { /* localStorage full or disabled */ }
+}
+
+function renderTodaysOrders() {
+  const dateEl = document.getElementById('todays-orders-date');
+  const listEl = document.getElementById('todays-orders-list');
+  const ctaEl = document.getElementById('todays-orders-cta');
+  if (!listEl) return;
+
+  const today = new Date();
+  const days = ['SUN','MON','TUE','WED','THU','FRI','SAT'];
+  const months = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+  dateEl.textContent = `${days[today.getDay()]}, ${months[today.getMonth()]} ${today.getDate()}`;
+
+  const state = getDailyOrdersState();
+  const week = currentWeekNumber();
+  const isCheckpointWeek = CLIENT.checkpointWeeks.includes(week);
+  const sessionsThisWeek = countSessionsThisWeek();
+  const photosThisCheckpoint = isCheckpointWeek ? countCheckpointPhotos(week) : 0;
+  const humeThisWeek = isCheckpointWeek ? STATE.measurements.find(m => m.week_number === week) : null;
+
+  const todayDow = today.getDay();
+  const isTrainingDay = (CLIENT.trainingDays || []).includes(todayDow);
+
+  const orders = [];
+
+  if (isTrainingDay) {
+    // Training day with Brad — homework auto-completed (covered in session)
+    orders.push({ id: 'mobility', emoji: '🧘', label: 'Daily mobility (2.5 min)', status: 'done', statusText: 'In session', forceComplete: true });
+    orders.push({ id: 'glutes',   emoji: '🍑', label: 'Daily glute work (~6 min)', status: 'done', statusText: 'In session', forceComplete: true });
+    orders.push({ id: 'core',     emoji: '💪', label: 'Daily core work (~6 min)', status: 'done', statusText: 'In session', forceComplete: true });
+    orders.push({ id: 'training', emoji: '🏋️', label: 'Training day with Brad — no homework', status: 'tap', statusText: 'Show up', action: () => switchTab('performance') });
+  } else {
+    // Off-day — homework unchecked, ready for athlete
+    orders.push({ id: 'mobility', emoji: '🧘', label: 'Daily mobility (2.5 min)', status: state.mobility ? 'done' : 'tap', statusText: state.mobility ? 'Done' : 'Tap to launch', action: () => openDailyRoutineModal('mobility') });
+    orders.push({ id: 'glutes',   emoji: '🍑', label: 'Daily glute work (~6 min)', status: state.glutes ? 'done' : 'tap', statusText: state.glutes ? 'Done' : 'Tap to launch', action: () => openDailyRoutineModal('glutes') });
+    orders.push({ id: 'core',     emoji: '💪', label: 'Daily core work (~6 min)', status: state.core ? 'done' : 'tap', statusText: state.core ? 'Done' : 'Tap to launch', action: () => openDailyRoutineModal('core') });
+    // No "Yeager's Gym training" / "Weekly sessions" row on off-days — keep it simple
+  }
+
+  // Core metrics to test on training days
+  if (isTrainingDay) {
+    orders.push({ id: 'core_metrics', emoji: '🔢', label: 'Log Cable Crunch + Knee Raise', status: state.core_metrics ? 'done' : 'due', statusText: state.core_metrics ? 'Done' : 'Log results', action: () => { switchTab('performance'); setDailyOrderComplete('core_metrics', true); renderTodaysOrders(); } });
+  }
+
+  if (isCheckpointWeek) {
+    orders.push({ id: 'hume',   emoji: '📊', label: `Week ${week} Hume scan`, status: humeThisWeek ? 'done' : 'due', statusText: humeThisWeek ? 'Done' : 'Due', action: () => switchTab('bodycomp') });
+    orders.push({ id: 'photos', emoji: '📸', label: `Week ${week} photos`, status: photosThisCheckpoint >= CLIENT.photoAngles.length ? 'done' : 'due', statusText: photosThisCheckpoint >= CLIENT.photoAngles.length ? 'Done' : `${photosThisCheckpoint}/${CLIENT.photoAngles.length}`, action: () => switchTab('aesthetic') });
+  }
+
+  listEl.innerHTML = orders.map(o => {
+    const completeClass = (o.status === 'done' || o.forceComplete || state[o.id]) ? 'complete' : '';
+    return `<div class="todays-order-row ${completeClass}" data-order="${o.id}">
+      <div class="todays-order-checkbox"></div>
+      <div class="todays-order-emoji">${o.emoji}</div>
+      <div class="todays-order-label">${o.label}</div>
+      <div class="todays-order-status ${o.status}">${o.statusText}</div>
+    </div>`;
+  }).join('');
+
+  // Wire actions
+  listEl.querySelectorAll('.todays-order-row').forEach(row => {
+    const orderId = row.dataset.order;
+    const order = orders.find(o => o.id === orderId);
+    if (order && order.action) row.onclick = order.action;
+  });
+
+  // Smart CTA — priority: scan > photos > daily homework (skip workout-log CTA on training days)
+  let cta = null;
+  if (isCheckpointWeek && !humeThisWeek) cta = { label: `Log Week ${week} Hume Scan →`, action: () => openHumeScanModal() };
+  else if (isCheckpointWeek && photosThisCheckpoint < CLIENT.photoAngles.length) cta = { label: `Upload Week ${week} Photos →`, action: () => switchTab('aesthetic') };
+  else if (!isTrainingDay && !state.mobility) cta = { label: `Start Daily Mobility →`, action: () => openDailyRoutineModal('mobility') };
+  else if (!isTrainingDay && !state.glutes) cta = { label: `Start Today's Glute Work →`, action: () => openDailyRoutineModal('glutes') };
+  else if (!isTrainingDay && !state.core) cta = { label: `Start Today's Core Work →`, action: () => openDailyRoutineModal('core') };
+
+  if (cta) {
+    ctaEl.textContent = cta.label;
+    ctaEl.style.display = '';
+    ctaEl.onclick = cta.action;
+  } else {
+    ctaEl.style.display = 'none';
+  }
+}
+
+function countSessionsThisWeek() {
+  const week = currentWeekNumber();
+  return STATE.sessions.filter(s => {
+    const sw = sessionWeekNumber(s.date);
+    return sw === week;
+  }).length;
+}
+
+function sessionWeekNumber(dateStr) {
+  if (!dateStr) return 0;
+  const start = new Date(CLIENT.startDate);
+  const d = new Date(dateStr);
+  return Math.max(0, Math.floor((d - start) / (1000 * 60 * 60 * 24 * 7)));
+}
+
+function currentWeekNumber() {
+  const start = new Date(CLIENT.startDate);
+  const now = new Date();
+  if (now < start) return 0;
+  return Math.min(CLIENT.weeks, Math.floor((now - start) / (1000 * 60 * 60 * 24 * 7)));
+}
+
+function countCheckpointPhotos(week) {
+  return STATE.photos.filter(p => p.week_number === week && p.url).length;
+}
+
+function openDailyRoutineModal(type) {
+  const dayOfWeek = new Date().getDay();
+  let routine;
+  if (type === 'mobility') {
+    routine = { name: "Daily Mobility — 2.5 Minutes", duration: "~2.5 min", exercises: [
+      { move: "Cat-Cow", reps: "10 slow reps", note: "Move with breath" },
+      { move: "World's Greatest Stretch", reps: "5 / side", note: "Full hip + thoracic opener" },
+      { move: "Thoracic Rotation (open book)", reps: "8 / side", note: "Slow chest rotation, exhale at end range" },
+      { move: "Standing Quad Stretch", reps: "20 sec / side", note: "Posterior tilt the pelvis" },
+      { move: "Hip Flexor Stretch", reps: "20 sec / side", note: "Tuck hips, drive forward" },
+      { move: "Ankle Circles", reps: "10 each direction / side", note: "Mobilizes ankles for squat depth" }
+    ]};
+  } else {
+    routine = CLIENT.dailyRoutines[type][dayOfWeek];
+  }
+  if (!routine) return;
+
+  const modal = document.getElementById('modal-content');
+  modal.innerHTML = `
+    <div class="modal-header">
+      <div>
+        <div class="routine-modal-eyebrow">// ${type.toUpperCase()} HOMEWORK</div>
+        <div class="routine-modal-title">${routine.name}</div>
+        <div class="routine-modal-duration">${routine.duration}</div>
+      </div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div>
+      ${routine.exercises.map(ex => `
+        <div class="routine-exercise-row">
+          <div class="routine-exercise-name">${ex.move}</div>
+          <div class="routine-exercise-reps">${ex.reps}</div>
+          ${ex.note ? `<div class="routine-exercise-note">${ex.note}</div>` : ''}
+        </div>
+      `).join('')}
+    </div>
+    <div class="routine-modal-actions">
+      <button class="btn-secondary" onclick="closeModal()">Close</button>
+      ${type === 'mobility' ? `<a class="btn-secondary" href="mobility.pdf" target="_blank" style="text-decoration:none;text-align:center;flex:0 0 auto;padding:12px 14px">View PDF</a>` : ''}
+      <button class="btn-primary routine-complete-btn" onclick="completeDailyRoutine('${type}')">Mark Complete ✓</button>
+    </div>
+  `;
+  document.getElementById('modal-root').classList.add('active');
+}
+
+function completeDailyRoutine(type) {
+  setDailyOrderComplete(type, true);
+  closeModal();
+  toast(`${type.charAt(0).toUpperCase() + type.slice(1)} done. Stack the days.`, 'success');
+  renderTodaysOrders();
+}
+
+function openHumeScanModal() {
+  switchTab('bodycomp');
+  // Allow tab to render then trigger the hume scan modal
+  setTimeout(() => {
+    const btn = document.getElementById('add-hume-btn');
+    if (btn) btn.click();
+  }, 200);
+}
+
+window.openDailyRoutineModal = openDailyRoutineModal;
+window.completeDailyRoutine = completeDailyRoutine;
+
+window.wlAddSet = wlAddSet;
+window.wlSave = wlSave;
+window.wlStep = wlStep;
+
+// Auto-add first set when lift is selected (and update header for the lift's unit type)
+document.addEventListener('change', (e) => {
+  if (e.target.id !== 'wl-lift') return;
+  const container = document.getElementById('wl-sets');
+  if (!container) return;
+  // Clear existing sets if user switched lifts (different unit types would conflict)
+  container.innerHTML = '';
+  wlSetCount = 0;
+  wlUpdateHeader();
+  if (e.target.value) {
+    wlAddSet();
+  }
+});
+
 window.addEventListener('DOMContentLoaded', init);
+
+// Photo upload live preview (Lisa pattern)
+document.addEventListener('change', (e) => {
+  if (e.target.id !== 'photo-file-input') return;
+  const file = e.target.files[0];
+  if (!file) return;
+  const zone = document.getElementById('photo-upload-zone');
+  if (!zone) return;
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    zone.innerHTML = `<img src="${ev.target.result}" alt="Preview">`;
+    zone.classList.add('has-image');
+    zone.onclick = null;
+  };
+  reader.readAsDataURL(file);
+});
 window.closeModal = closeModal;
 window.nextSplash = nextSplash;
 window.finishSplash = finishSplash;
@@ -2512,3 +3755,4 @@ window.chooseFrequency = chooseFrequency;
 </script>
 </body>
 </html>
+
