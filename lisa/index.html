@@ -3880,51 +3880,47 @@ function renderOrdersCockpit() {
   if (rowsEl) {
     const rows = [];
 
-    // 1. Hume scan (Week 0 / checkpoint) — same visual weight as every other row
-    if ([0,2,5,8,12,16].includes(s.week)) {
-      const scanDone = !!s.scanForWeek;
+    // 1. Daily training — daily-anchored: checked when a session is logged today
+    const sessDoneToday = s.loggedToday;
+    const sessProgressClass = s.sessionsCount >= s.sessionsTarget ? 'done' : (s.sessionsCount >= 3 ? 'on-track' : 'behind');
+    rows.push({
+      icon: '💪',
+      label: `Daily training · ${s.sessionsTarget}x/week`,
+      status: sessDoneToday ? 'Done' : `${s.sessionsCount}/${s.sessionsTarget}`,
+      statusClass: sessDoneToday ? 'done' : sessProgressClass,
+      key: 'sessions'
+    });
+
+    // 2. Hume scan — show until logged for the current week
+    if (!s.scanForWeek) {
+      rows.push({
+        icon: '📊',
+        label: 'Log Hume Scale Data',
+        status: 'Due',
+        statusClass: 'due',
+        action: 'log-scan',
+        key: 'scan'
+      });
+    } else {
       rows.push({
         icon: '📊',
         label: `Week ${s.week} Hume scan`,
-        status: scanDone ? 'Done' : 'Due',
-        statusClass: scanDone ? 'done' : 'due',
-        action: scanDone ? null : 'log-scan',
+        status: 'Done',
+        statusClass: 'done',
         key: 'scan'
       });
     }
 
-    // 2. Photos — bi-weekly check-in (varies by cycle: weeks 0, 2, 5, 8, 12, 16)
-    if ([0,2,5,8,12,16].includes(s.week)) {
-      const photoDone = s.photosForWeek >= 6;
-      const photoStatus = photoDone ? 'Done' : (s.photosForWeek === 0 ? 'Due' : `${s.photosForWeek}/6`);
-      rows.push({
-        icon: '📸',
-        label: `Week ${s.week} photos · check-in`,
-        status: photoStatus,
-        statusClass: photoDone ? 'done' : (s.photosForWeek > 0 ? 'behind' : 'due'),
-        action: photoDone ? null : 'upload-photos',
-        key: 'photos'
-      });
-    } else {
-      rows.push({
-        icon: '📸',
-        label: `Next photos: Week ${s.nextCheckpoint}`,
-        status: `${(s.nextCheckpoint - s.week) * 7}d`,
-        statusClass: 'pending',
-        key: 'photos'
-      });
-    }
-
-    // 3. Daily training (formerly "Weekly sessions")
-    const sessDone = s.sessionsCount >= s.sessionsTarget;
-    const sessStatus = sessDone ? 'done' : (s.sessionsCount >= 3 ? 'on-track' : 'behind');
-    const sessLabel = sessDone ? 'On pace' : `${s.sessionsCount}/${s.sessionsTarget}`;
+    // 3. Photos — log photos for the current week
+    const photoDone = s.photosForWeek >= 6;
+    const photoStatus = photoDone ? 'Done' : (s.photosForWeek === 0 ? 'Due' : `${s.photosForWeek}/6`);
     rows.push({
-      icon: '💪',
-      label: `Daily training · ${s.sessionsTarget}x/week`,
-      status: sessLabel,
-      statusClass: sessStatus,
-      key: 'sessions'
+      icon: '📸',
+      label: `Log photos week ${s.week}`,
+      status: photoStatus,
+      statusClass: photoDone ? 'done' : (s.photosForWeek > 0 ? 'behind' : 'due'),
+      action: photoDone ? null : 'upload-photos',
+      key: 'photos'
     });
 
     // 4. Cardio / 5K prep — clickable, opens 5-week run plan modal, 4x/week
