@@ -587,6 +587,13 @@ input, textarea, select { font-family: inherit; outline: none; border: none; bac
 .qr-card-bordered { border: 1px solid var(--teal) !important; box-shadow: 0 0 0 4px rgba(72,196,204,0.06), 0 4px 24px rgba(72,196,204,0.12); position: relative; }
 .qr-card-title-pink { color: var(--pink) !important; text-align: center; }
 .qr-subtext-pink { font-size: 12px; color: var(--pink); margin-top: 10px; text-align: center; line-height: 1.45; padding: 0 16px; font-weight: 600; letter-spacing: 0.01em; }
+.qr-eyebrow { font-size: 10px; color: var(--pink); font-weight: 700; text-transform: uppercase; letter-spacing: 0.16em; margin-bottom: 6px; }
+.qr-headline { font-family: 'DM Serif Display', serif; font-size: 24px; color: var(--text-primary); line-height: 1.1; margin-bottom: 4px; }
+.qr-tagline { font-size: 12px; color: var(--text-secondary); margin-bottom: 4px; }
+.qr-tagline em { font-style: italic; }
+.qr-sub { font-size: 11px; color: var(--text-muted); margin: 8px 0 4px; line-height: 1.45; max-width: 220px; margin-left: auto; margin-right: auto; }
+.qr-footer-italic { font-size: 11px; color: var(--text-muted); margin-top: 6px; }
+.qr-footer-italic em { font-style: italic; }
 
 /* ═══════ SET ROW HEADER ═══════ */
 .set-row-header { display: grid; grid-template-columns: 22px minmax(0,1fr) minmax(0,1fr) 24px; gap: 6px; align-items: center; padding: 6px 0 4px; border-bottom: 1px solid rgba(72,196,204,0.15); margin-bottom: 4px; }
@@ -860,7 +867,19 @@ input, textarea, select { font-family: inherit; outline: none; border: none; bac
     </div>
   </div>
 
-
+  <div class="divider">// QR CODE</div>
+  <div class="card qr-card qr-card-bordered">
+    <div class="qr-eyebrow">Your Personal Tracker</div>
+    <div class="qr-headline">Take It With You</div>
+    <div class="qr-tagline"><em>Every PR. Every weigh-in. Every glow-up shot.</em></div>
+    <div class="qr-canvas-wrap" id="qr-canvas-wrap"></div>
+    <div class="qr-url" id="qr-url">lisa.yeagersgym.com</div>
+    <div class="qr-sub">Scan to bookmark on your phone.</div>
+    <div class="qr-footer-italic"><em>Synced live — your progress, always in your pocket.</em></div>
+    <div class="qr-actions" style="margin-top:12px">
+      <button class="btn-small" id="qr-download-btn">Download PNG</button>
+    </div>
+  </div>
 </div>
 
 <!-- ═══════ TAB 2 — PERFORMANCE (incl. STRENGTH TESTS) ═══════ -->
@@ -1158,16 +1177,6 @@ input, textarea, select { font-family: inherit; outline: none; border: none; bac
     </div>
   </div>
 
-  <div class="divider">// TAKE IT WITH YOU</div>
-  <div class="card qr-card qr-card-bordered">
-    <div class="card-title qr-card-title-pink">Take it with you</div>
-    <div class="qr-canvas-wrap" id="qr-canvas-wrap"></div>
-    <div class="qr-url" id="qr-url">lisa.yeagersgym.com</div>
-    <div class="qr-subtext-pink">Scan and keep on your phone to track your progress in real time.</div>
-    <div class="qr-actions" style="margin-top:12px">
-      <button class="btn-small" id="qr-download-btn">Download PNG</button>
-    </div>
-  </div>
 </div>
 
 <!-- ═══════ MODAL ROOT ═══════ -->
