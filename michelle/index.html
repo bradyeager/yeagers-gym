@@ -802,8 +802,8 @@ input, textarea, select { font-family: inherit; outline: none; border: none; bac
     <div class="mission-header">The Mission</div>
     <div class="mission-sub">Fuller Glutes · Tighter Waist · Visible Abs</div>
     <div class="mission-narrative">
-      <p>We're not just "growing your glutes". We're building the upper shelf, tightening the lower edge, and turning the horizontal line into more of a smile.</p>
-      <p>We're not just "doing abs". We're building the front wall, tightening the waistline, and turning your core from "flat but hidden" into strong, visible, athletic definition.</p>
+      <p><span style="color: var(--teal); font-weight: 600;">We're not just "growing your glutes".</span> We're building the upper shelf, tightening the lower edge, and turning the horizontal line into more of a smile.</p>
+      <p><span style="color: var(--teal); font-weight: 600;">We're not just "doing abs".</span> We're building the front wall, tightening the waistline, and turning your core from "flat but hidden" into strong, visible, athletic definition.</p>
     </div>
     <div class="mission-metrics-intro">We track results across three metrics:</div>
     <div class="mission-pillars">
@@ -3563,22 +3563,22 @@ function renderTodaysOrders() {
   const orders = [];
 
   if (isTrainingDay) {
-    // Training day with Brad — homework auto-completed (covered in session)
-    orders.push({ id: 'mobility', emoji: '🧘', label: 'Daily mobility (2.5 min)', status: 'done', statusText: 'In session', forceComplete: true });
-    orders.push({ id: 'glutes',   emoji: '🍑', label: 'Daily glute work (~6 min)', status: 'done', statusText: 'In session', forceComplete: true });
-    orders.push({ id: 'core',     emoji: '💪', label: 'Daily core work (~6 min)', status: 'done', statusText: 'In session', forceComplete: true });
+    // Training day with Brad — homework auto-completed (covered in session); rows still tap-to-view exercises.
+    orders.push({ id: 'mobility', emoji: '🧘', label: 'Daily mobility (2.5 min)', status: 'done', statusText: 'In session', forceComplete: true, action: () => openDailyRoutineModal('mobility') });
+    orders.push({ id: 'glutes',   emoji: '🍑', label: 'Daily glute work (~6 min)', status: 'done', statusText: 'In session', forceComplete: true, action: () => openDailyRoutineModal('glutes') });
+    orders.push({ id: 'core',     emoji: '💪', label: 'Daily core work (~6 min)', status: 'done', statusText: 'In session', forceComplete: true, action: () => openDailyRoutineModal('core') });
     orders.push({ id: 'training', emoji: '🏋️', label: 'Training day with Brad — no homework', status: 'tap', statusText: 'Show up', action: () => switchTab('performance') });
   } else {
     // Off-day — homework unchecked, ready for athlete
-    orders.push({ id: 'mobility', emoji: '🧘', label: 'Daily mobility (2.5 min)', status: state.mobility ? 'done' : 'tap', statusText: state.mobility ? 'Done' : 'Tap to launch', action: () => openDailyRoutineModal('mobility') });
-    orders.push({ id: 'glutes',   emoji: '🍑', label: 'Daily glute work (~6 min)', status: state.glutes ? 'done' : 'tap', statusText: state.glutes ? 'Done' : 'Tap to launch', action: () => openDailyRoutineModal('glutes') });
-    orders.push({ id: 'core',     emoji: '💪', label: 'Daily core work (~6 min)', status: state.core ? 'done' : 'tap', statusText: state.core ? 'Done' : 'Tap to launch', action: () => openDailyRoutineModal('core') });
+    orders.push({ id: 'mobility', emoji: '🧘', label: 'Daily mobility (2.5 min)', status: state.mobility ? 'done' : 'tap', statusText: state.mobility ? 'Done' : 'Tap to launch', action: () => openDailyRoutineModal('mobility'), toggle: () => { setDailyOrderComplete('mobility', !state.mobility); renderTodaysOrders(); } });
+    orders.push({ id: 'glutes',   emoji: '🍑', label: 'Daily glute work (~6 min)', status: state.glutes ? 'done' : 'tap', statusText: state.glutes ? 'Done' : 'Tap to launch', action: () => openDailyRoutineModal('glutes'), toggle: () => { setDailyOrderComplete('glutes', !state.glutes); renderTodaysOrders(); } });
+    orders.push({ id: 'core',     emoji: '💪', label: 'Daily core work (~6 min)', status: state.core ? 'done' : 'tap', statusText: state.core ? 'Done' : 'Tap to launch', action: () => openDailyRoutineModal('core'), toggle: () => { setDailyOrderComplete('core', !state.core); renderTodaysOrders(); } });
     // No "Yeager's Gym training" / "Weekly sessions" row on off-days — keep it simple
   }
 
   // Core metrics to test on training days
   if (isTrainingDay) {
-    orders.push({ id: 'core_metrics', emoji: '🔢', label: 'Log Cable Crunch + Knee Raise', status: state.core_metrics ? 'done' : 'due', statusText: state.core_metrics ? 'Done' : 'Log results', action: () => { switchTab('performance'); setDailyOrderComplete('core_metrics', true); renderTodaysOrders(); } });
+    orders.push({ id: 'core_metrics', emoji: '🔢', label: 'Log hollow rock + weighted plank', status: state.core_metrics ? 'done' : 'due', statusText: state.core_metrics ? 'Done' : 'Log results', action: () => { switchTab('performance'); setDailyOrderComplete('core_metrics', true); renderTodaysOrders(); }, toggle: () => { setDailyOrderComplete('core_metrics', !state.core_metrics); renderTodaysOrders(); } });
   }
 
   if (isCheckpointWeek) {
@@ -3589,20 +3589,21 @@ function renderTodaysOrders() {
   // Week 0 baseline measurements — show until checked off, then hide.
   const baselineRow = (STATE.timelineChecklist || []).find(i => i.week_number === 0 && /baseline measurements/i.test(i.item_label || ''));
   if (baselineRow && !baselineRow.checked) {
+    const markBaselineDone = async () => {
+      try {
+        await dbUpdate('timeline_checklist', baselineRow.id, { checked: true, checked_at: new Date().toISOString() });
+        baselineRow.checked = true;
+        renderTodaysOrders();
+      } catch (err) { /* silent */ }
+    };
     orders.push({
       id: 'baseline_measurements',
       emoji: '📏',
       label: 'Week 0 baseline measurements set',
       status: 'due',
       statusText: 'Due',
-      action: async () => {
-        switchTab('bodycomp');
-        try {
-          await dbUpdate('timeline_checklist', baselineRow.id, { checked: true, checked_at: new Date().toISOString() });
-          baselineRow.checked = true;
-          renderTodaysOrders();
-        } catch (err) { /* silent */ }
-      }
+      action: () => { switchTab('bodycomp'); markBaselineDone(); },
+      toggle: markBaselineDone
     });
   }
 
@@ -3616,11 +3617,20 @@ function renderTodaysOrders() {
     </div>`;
   }).join('');
 
-  // Wire actions
+  // Wire actions — checkbox toggles done state without firing the row's primary action.
   listEl.querySelectorAll('.todays-order-row').forEach(row => {
     const orderId = row.dataset.order;
     const order = orders.find(o => o.id === orderId);
-    if (order && order.action) row.onclick = order.action;
+    if (!order) return;
+    const checkbox = row.querySelector('.todays-order-checkbox');
+    if (checkbox) {
+      checkbox.style.cursor = 'pointer';
+      checkbox.onclick = (e) => {
+        e.stopPropagation();
+        if (order.toggle) order.toggle();
+      };
+    }
+    if (order.action) row.onclick = order.action;
   });
 
   // Smart CTA — priority: scan > photos > daily homework (skip workout-log CTA on training days)
