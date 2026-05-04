@@ -802,8 +802,8 @@ input, textarea, select { font-family: inherit; outline: none; border: none; bac
     <div class="mission-header">The Mission</div>
     <div class="mission-sub">Fuller Glutes · Tighter Waist · Visible Abs</div>
     <div class="mission-narrative">
-      <p>We're not just growing your butt. We're building the upper shelf, tightening the lower edge, and turning the horizontal line into more of a smile.</p>
-      <p>We're not just doing abs. We're building the front wall, tightening the waistline, and turning your core from "flat but hidden" into strong, visible, athletic definition.</p>
+      <p>We're not just "growing your glutes". We're building the upper shelf, tightening the lower edge, and turning the horizontal line into more of a smile.</p>
+      <p>We're not just "doing abs". We're building the front wall, tightening the waistline, and turning your core from "flat but hidden" into strong, visible, athletic definition.</p>
     </div>
     <div class="mission-metrics-intro">We track results across three metrics:</div>
     <div class="mission-pillars">
@@ -991,8 +991,6 @@ input, textarea, select { font-family: inherit; outline: none; border: none; bac
       <div class="stat-tile-label">Days to Checkpoint</div>
     </div>
   </div>
-
-  <div id="checklist-container"></div>
 
   <div class="divider">// QR CODE</div>
   <div class="card qr-card qr-card-bordered">
@@ -3225,7 +3223,6 @@ function renderAll() {
   renderAdherence();
   renderStatTiles();
   renderCoachMessage();
-  renderChecklist();
   renderNudge();
   renderPerformanceHero();
   renderLiftTiles();
@@ -3587,6 +3584,26 @@ function renderTodaysOrders() {
   if (isCheckpointWeek) {
     orders.push({ id: 'hume',   emoji: '📊', label: `Week ${week} Hume scan`, status: humeThisWeek ? 'done' : 'due', statusText: humeThisWeek ? 'Done' : 'Due', action: () => switchTab('bodycomp') });
     orders.push({ id: 'photos', emoji: '📸', label: `Week ${week} photos`, status: photosThisCheckpoint >= CLIENT.photoAngles.length ? 'done' : 'due', statusText: photosThisCheckpoint >= CLIENT.photoAngles.length ? 'Done' : `${photosThisCheckpoint}/${CLIENT.photoAngles.length}`, action: () => switchTab('aesthetic') });
+  }
+
+  // Week 0 baseline measurements — show until checked off, then hide.
+  const baselineRow = (STATE.timelineChecklist || []).find(i => i.week_number === 0 && /baseline measurements/i.test(i.item_label || ''));
+  if (baselineRow && !baselineRow.checked) {
+    orders.push({
+      id: 'baseline_measurements',
+      emoji: '📏',
+      label: 'Week 0 baseline measurements set',
+      status: 'due',
+      statusText: 'Due',
+      action: async () => {
+        switchTab('bodycomp');
+        try {
+          await dbUpdate('timeline_checklist', baselineRow.id, { checked: true, checked_at: new Date().toISOString() });
+          baselineRow.checked = true;
+          renderTodaysOrders();
+        } catch (err) { /* silent */ }
+      }
+    });
   }
 
   listEl.innerHTML = orders.map(o => {
