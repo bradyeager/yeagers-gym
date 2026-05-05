@@ -2671,16 +2671,36 @@ function openPhotoModal(week, angle, label) {
     <div class="modal-actions"><button class="btn-secondary" onclick="closeModal()">Cancel</button><button class="btn-primary" id="save-photo-btn">Save</button></div>
   `;
   document.getElementById('modal-root').classList.add('active');
-  document.getElementById('save-photo-btn').onclick = async () => {
+  const saveBtn = document.getElementById('save-photo-btn');
+  const fileInput = document.getElementById('photo-file-input');
+  const zone = document.getElementById('photo-upload-zone');
+  fileInput.onchange = () => {
+    const f = fileInput.files[0];
+    if (!f) return;
+    zone.querySelector('.hume-upload-prompt-icon').textContent = '✓';
+    zone.querySelector('.hume-upload-prompt-text').textContent = f.name;
+    zone.querySelector('.hume-upload-prompt-sub').textContent = `${(f.size / 1024).toFixed(0)} KB · ready to save`;
+  };
+  saveBtn.onclick = async () => {
     const url = document.getElementById('photo-url').value.trim();
-    const file = document.getElementById('photo-file-input').files[0];
+    const file = fileInput.files[0];
+    if (!file && !url) { toast('Take a photo or paste a URL.', 'error'); return; }
+    saveBtn.disabled = true;
+    saveBtn.textContent = file ? 'Uploading…' : 'Saving…';
     let finalUrl = url, finalPath = null;
     if (file) {
       await ensureStorageReady();
-      try { const result = await uploadToStorage(file, week, angle); finalUrl = result.url; finalPath = result.path; }
-      catch (err) { toast('Upload failed. Try again or paste a URL.', 'error'); return; }
+      try {
+        const result = await uploadToStorage(file, week, angle);
+        finalUrl = result.url; finalPath = result.path;
+      } catch (err) {
+        console.error('Upload failed:', err);
+        toast(`Upload failed: ${err.message || 'check connection'}`, 'error');
+        saveBtn.disabled = false; saveBtn.textContent = 'Save';
+        if (!url) return;
+        finalUrl = url;
+      }
     }
-    if (!finalUrl) { toast('Take a photo or paste a URL.', 'error'); return; }
     try {
       if (existing) {
         const updated = await dbUpdate('photos', existing.id, { url: finalUrl, storage_path: finalPath });
@@ -2691,7 +2711,11 @@ function openPhotoModal(week, angle, label) {
         STATE.photos.push(inserted);
       }
       closeModal(); toast('Photo saved.', 'success'); renderAesthetic();
-    } catch (err) { toast('Save failed.', 'error'); }
+    } catch (err) {
+      console.error('Photo save failed:', err);
+      toast(`Save failed: ${err.message || 'unknown error'}`, 'error');
+      saveBtn.disabled = false; saveBtn.textContent = 'Save';
+    }
   };
 }
 async function ensureStorageReady() {
