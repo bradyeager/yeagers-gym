@@ -2662,7 +2662,7 @@ function openPhotoModal(week, angle, label) {
       <div class="hume-upload-prompt-icon">📸</div>
       <div class="hume-upload-prompt-text">Tap to upload photo from camera roll</div>
       <div class="hume-upload-prompt-sub">JPEG or PNG · max 10MB</div>
-      <input type="file" id="photo-file-input" accept="image/*" capture="environment" style="display:none">
+      <input type="file" id="photo-file-input" accept="image/*" style="display:none">
     </div>
     <div class="form-row" style="margin-top:4px">
       <label class="form-label" style="font-size:10px;color:var(--text-muted)">Or paste a URL instead</label>
@@ -3567,7 +3567,7 @@ function renderTodaysOrders() {
     orders.push({ id: 'mobility', emoji: '🧘', label: 'Daily mobility (2.5 min)', status: 'done', statusText: 'In session', forceComplete: true, action: () => openDailyRoutineModal('mobility') });
     orders.push({ id: 'glutes',   emoji: '🍑', label: 'Daily glute work (~6 min)', status: 'done', statusText: 'In session', forceComplete: true, action: () => openDailyRoutineModal('glutes') });
     orders.push({ id: 'core',     emoji: '💪', label: 'Daily core work (~6 min)', status: 'done', statusText: 'In session', forceComplete: true, action: () => openDailyRoutineModal('core') });
-    orders.push({ id: 'training', emoji: '🏋️', label: 'Training day with Brad — no homework', status: 'tap', statusText: 'Show up', action: () => switchTab('performance') });
+    orders.push({ id: 'training', emoji: '🏋️', label: 'Training day with Brad — no homework', status: state.training ? 'done' : 'tap', statusText: state.training ? 'Done' : 'Show up', action: () => switchTab('performance'), toggle: () => { setDailyOrderComplete('training', !state.training); renderTodaysOrders(); } });
   } else {
     // Off-day — homework unchecked, ready for athlete
     orders.push({ id: 'mobility', emoji: '🧘', label: 'Daily mobility (2.5 min)', status: state.mobility ? 'done' : 'tap', statusText: state.mobility ? 'Done' : 'Tap to launch', action: () => openDailyRoutineModal('mobility'), toggle: () => { setDailyOrderComplete('mobility', !state.mobility); renderTodaysOrders(); } });
@@ -3582,8 +3582,14 @@ function renderTodaysOrders() {
   }
 
   if (isCheckpointWeek) {
-    orders.push({ id: 'hume',   emoji: '📊', label: `Week ${week} Hume scan`, status: humeThisWeek ? 'done' : 'due', statusText: humeThisWeek ? 'Done' : 'Due', action: () => switchTab('bodycomp') });
-    orders.push({ id: 'photos', emoji: '📸', label: `Week ${week} photos`, status: photosThisCheckpoint >= CLIENT.photoAngles.length ? 'done' : 'due', statusText: photosThisCheckpoint >= CLIENT.photoAngles.length ? 'Done' : `${photosThisCheckpoint}/${CLIENT.photoAngles.length}`, action: () => switchTab('aesthetic') });
+    const humeManualDone = !!state.hume;
+    const humeDone = !!humeThisWeek || humeManualDone;
+    orders.push({ id: 'hume', emoji: '📊', label: `Week ${week} Hume scan`, status: humeDone ? 'done' : 'due', statusText: humeDone ? 'Done' : 'Due', action: () => switchTab('bodycomp'), toggle: () => { setDailyOrderComplete('hume', !humeManualDone); renderTodaysOrders(); } });
+
+    const photosTargetMet = photosThisCheckpoint >= CLIENT.photoAngles.length;
+    const photosManualDone = !!state.photos;
+    const photosDone = photosTargetMet || photosManualDone;
+    orders.push({ id: 'photos', emoji: '📸', label: `Week ${week} photos`, status: photosDone ? 'done' : 'due', statusText: photosDone ? 'Done' : `${photosThisCheckpoint}/${CLIENT.photoAngles.length}`, action: () => switchTab('aesthetic'), toggle: () => { setDailyOrderComplete('photos', !photosManualDone); renderTodaysOrders(); } });
   }
 
   // Week 0 baseline measurements — show until checked off, then hide.
