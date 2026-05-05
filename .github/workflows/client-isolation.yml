@@ -1,0 +1,15 @@
+name: client-isolation
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  validate:
+    name: Validate Michelle/Lisa client isolation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run client-isolation guardrail
+        run: bash scripts/validate-client-isolation.sh

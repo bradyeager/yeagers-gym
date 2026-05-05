@@ -22,7 +22,7 @@
 - **Single HTML file:** `michelle/index.html` (~2514 lines, all inline)
 - **Vanilla JS** — no framework, no build step, no bundler
 - **CDN libs:** Chart.js, QRCode, canvas-confetti, jsPDF
-- **Supabase** REST API via `fetch()` (project ref `bxyiefzzqcgmnmjvnaax`)
+- **Supabase** REST API via `fetch()` (project ref `qfprpepqzckymbijeexw`)
 - **Hosting:** GitHub Pages on `bradyeager/yeagers-gym` (default branch `main`, CNAME → yeagersgym.com)
 
 ### Hard rules from Brad
@@ -123,8 +123,8 @@ Keys: `sessions`, `sets`, `measurements`, `bodyMeasurements`, `fitnessTests`, `p
 
 ## 6. Supabase
 
-**Project ref:** `bxyiefzzqcgmnmjvnaax`
-**URL:** `https://bxyiefzzqcgmnmjvnaax.supabase.co`
+**Project ref:** `qfprpepqzckymbijeexw`
+**URL:** `https://qfprpepqzckymbijeexw.supabase.co`
 **Auth:** anon key embedded inline (line ~825). RLS allows anon insert/select/update/delete.
 
 ### Tables
