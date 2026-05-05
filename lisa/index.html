@@ -2803,9 +2803,22 @@ function openPhotoModal(week, angle) {
     <div class="modal-actions"><button class="btn-secondary" onclick="closeModal()">Cancel</button><button class="btn-primary" id="save-photo-btn">Save</button></div>
   `;
   document.getElementById('modal-root').classList.add('active');
-  document.getElementById('save-photo-btn').onclick = async () => {
+  const saveBtn = document.getElementById('save-photo-btn');
+  const fileInput = document.getElementById('photo-file-input');
+  const zone = document.getElementById('photo-upload-zone');
+  fileInput.onchange = () => {
+    const f = fileInput.files[0];
+    if (!f) return;
+    zone.querySelector('.hume-upload-prompt-icon').textContent = '✓';
+    zone.querySelector('.hume-upload-prompt-text').textContent = f.name;
+    zone.querySelector('.hume-upload-prompt-sub').textContent = `${(f.size / 1024).toFixed(0)} KB · ready to save`;
+  };
+  saveBtn.onclick = async () => {
     const url = document.getElementById('photo-url').value.trim();
-    const file = document.getElementById('photo-file-input').files[0];
+    const file = fileInput.files[0];
+    if (!file && !url) { toast('Pick a photo or paste a URL first.', 'error'); return; }
+    saveBtn.disabled = true;
+    saveBtn.textContent = file ? 'Uploading…' : 'Saving…';
     let finalUrl = url, finalPath = null;
     if (file) {
       try {
@@ -2813,11 +2826,12 @@ function openPhotoModal(week, angle) {
         finalUrl = result.url; finalPath = result.path;
       } catch (err) {
         console.error('Upload failed:', err);
-        toast('Upload failed — check connection.', 'error');
+        toast(`Upload failed: ${err.message || 'check connection'}`, 'error');
+        saveBtn.disabled = false; saveBtn.textContent = 'Save';
         if (!url) return;
+        finalUrl = url;
       }
     }
-    if (!finalUrl) { toast('Provide a URL or upload a file.', 'error'); return; }
     try {
       if (existing) {
         const updated = await dbUpdate('photos', existing.id, { url: finalUrl, storage_path: finalPath });
@@ -2828,7 +2842,11 @@ function openPhotoModal(week, angle) {
         STATE.photos.push(inserted);
       }
       closeModal(); toast('Photo saved.', 'success'); renderAesthetic();
-    } catch (err) { toast('Save failed.', 'error'); }
+    } catch (err) {
+      console.error('Photo save failed:', err);
+      toast(`Save failed: ${err.message || 'unknown error'}`, 'error');
+      saveBtn.disabled = false; saveBtn.textContent = 'Save';
+    }
   };
 }
 async function uploadToStorage(file, week, angle) {
@@ -3900,22 +3918,14 @@ function renderOrdersCockpit() {
       key: 'sessions'
     });
 
-    // 2. Hume scan — show until logged for the current week
-    if (!s.scanForWeek) {
+    // 2. Hume Scale Data — Mondays and Wednesdays only; pure manual check (Lisa logs in the Hume app)
+    const dow = new Date().getDay(); // Sun=0, Mon=1, Tue=2, Wed=3, ...
+    if (dow === 1 || dow === 3) {
       rows.push({
         icon: '📊',
         label: 'Log Hume Scale Data',
         status: 'Due',
         statusClass: 'due',
-        action: 'log-scan',
-        key: 'scan'
-      });
-    } else {
-      rows.push({
-        icon: '📊',
-        label: `Week ${s.week} Hume scan`,
-        status: 'Done',
-        statusClass: 'done',
         key: 'scan'
       });
     }
@@ -3992,17 +4002,21 @@ function renderOrdersCockpit() {
     `;
 
     rowsEl.innerHTML = mobilityRow + rows.map(r => {
-      const isDone = r.statusClass === 'done' || r.statusClass === 'on-track';
+      const dataDone = r.statusClass === 'done' || r.statusClass === 'on-track';
+      const manualDone = isRowDoneToday(r.key);
+      const isDone = dataDone || manualDone;
       const actionableClass = r.action ? ' actionable' : '';
       const clickAttr = r.action ? `onclick="handleOrdersRowAction('${r.action}')"` : '';
+      const statusText = manualDone ? 'Done' : r.status;
+      const statusClass = manualDone ? 'done' : r.statusClass;
       return `
       <div class="orders-row ${isDone ? 'done' : ''}${actionableClass}" ${clickAttr}>
         <div class="orders-row-left">
-          <div class="orders-check ${isDone ? 'checked' : ''}">${isDone ? '✓' : ''}</div>
+          <div class="mobility-check ${isDone ? 'checked' : ''}" onclick="event.stopPropagation(); toggleRowDone('${r.key}')">${isDone ? '✓' : ''}</div>
           <span class="orders-row-icon">${r.icon}</span>
           <span class="orders-row-label">${r.label}</span>
         </div>
-        <div class="orders-row-status ${r.statusClass}">${r.status}</div>
+        <div class="orders-row-status ${statusClass}">${statusText}</div>
       </div>`;
     }).join('');
   }
@@ -4221,6 +4235,20 @@ function toggleMobilityToday() {
   renderOrdersCockpit();
 }
 window.toggleMobilityToday = toggleMobilityToday;
+
+// ── GENERIC ORDERS-ROW MANUAL CHECKBOX ──────────────────────────────────────
+function getRowDoneKey(key) { return 'order_done_' + key + '_' + todayISO(); }
+function isRowDoneToday(key) { return localStorage.getItem(getRowDoneKey(key)) === '1'; }
+function toggleRowDone(key) {
+  const k = getRowDoneKey(key);
+  if (localStorage.getItem(k) === '1') {
+    localStorage.removeItem(k);
+  } else {
+    localStorage.setItem(k, '1');
+  }
+  renderOrdersCockpit();
+}
+window.toggleRowDone = toggleRowDone;
 
 // ── NAKED 5K READINESS BREAKDOWN ─────────────────────────────────────────────
 function calculate5KReadiness() {
