@@ -394,6 +394,47 @@ input, textarea, select { font-family: inherit; outline: none; border: none; bac
 .sl-closeout-list li:last-child { border-bottom: none; }
 .sl-closeout-list li::before { content: '→'; color: var(--teal); font-weight: 700; position: absolute; left: 0; top: 8px; }
 
+/* ═══════ PROGRESS LOG TAB ═══════ */
+.pl-program-link { display: inline-flex; align-items: center; gap: 6px; background: var(--teal); color: #0F1620; font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; padding: 10px 16px; border-radius: 999px; text-decoration: none; margin-bottom: 18px; transition: transform 0.15s, box-shadow 0.15s; }
+.pl-program-link:hover { transform: translateY(-1px); box-shadow: 0 4px 14px rgba(72,196,204,0.35); }
+.pl-entry { background: var(--card-bg); border: 1px solid var(--border); border-radius: 14px; margin-bottom: 14px; overflow: hidden; }
+.pl-entry-header { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 14px 16px; cursor: pointer; background: var(--card-elevated); border-bottom: 1px solid transparent; transition: background 0.15s; }
+.pl-entry-header:hover { background: rgba(72,196,204,0.05); }
+.pl-entry.open .pl-entry-header { border-bottom-color: var(--border); }
+.pl-entry-title { font-family: 'DM Sans', sans-serif; font-size: 11px; font-weight: 700; color: var(--text-primary); letter-spacing: 0.1em; text-transform: uppercase; line-height: 1.4; }
+.pl-entry-toggle { font-size: 14px; color: var(--teal); transition: transform 0.2s; flex-shrink: 0; }
+.pl-entry.open .pl-entry-toggle { transform: rotate(90deg); }
+.pl-entry-body { display: none; padding: 16px; }
+.pl-entry.open .pl-entry-body { display: block; }
+.pl-photo-card { background: var(--card-elevated); border: 1px solid var(--border); border-radius: 12px; padding: 14px; margin-bottom: 14px; }
+.pl-photo-label-row { margin-bottom: 12px; }
+.pl-photo-num { font-size: 10px; color: var(--pink); font-weight: 700; text-transform: uppercase; letter-spacing: 0.14em; }
+.pl-photo-subtitle { font-family: 'DM Serif Display', serif; font-size: 16px; line-height: 1.2; color: var(--text-primary); margin-top: 2px; }
+.pl-photo-compare { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+@media (max-width: 520px) {
+  .pl-photo-compare { grid-template-columns: 1fr; }
+}
+.pl-photo-cell { background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; display: flex; flex-direction: column; }
+.pl-photo-tag { font-size: 9px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.12em; padding: 6px 10px; background: rgba(255,255,255,0.02); border-bottom: 1px solid var(--border); }
+.pl-photo-img { width: 100%; aspect-ratio: 3/4; object-fit: cover; display: block; background: var(--card-elevated); }
+.pl-photo-empty { width: 100%; aspect-ratio: 3/4; display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; background: var(--card-elevated); }
+.pl-section { margin-top: 12px; }
+.pl-section-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 8px; padding-bottom: 4px; border-bottom: 1px solid var(--border); }
+.pl-section-label.improved { color: var(--teal); border-bottom-color: rgba(72,196,204,0.25); }
+.pl-section-label.building { color: var(--pink); border-bottom-color: rgba(239,50,149,0.25); }
+.pl-section-label.response { color: var(--text-primary); border-bottom-color: var(--border); }
+.pl-section-list { list-style: none; padding: 0; margin: 0; }
+.pl-section-list li { font-size: 13px; line-height: 1.5; color: var(--text-secondary); padding: 4px 0 4px 14px; position: relative; }
+.pl-section-list li::before { content: '·'; color: var(--teal); font-weight: 700; position: absolute; left: 4px; top: 4px; font-size: 16px; line-height: 1; }
+.pl-section-list.building li::before { color: var(--pink); }
+.pl-section-list.response li::before { color: var(--text-muted); }
+.pl-closeout { background: linear-gradient(135deg, rgba(72,196,204,0.06), rgba(239,50,149,0.04)); border: 1px solid var(--border-strong); border-radius: 14px; padding: 16px; margin-top: 4px; }
+.pl-closeout-label { font-size: 10px; font-weight: 700; color: var(--pink); text-transform: uppercase; letter-spacing: 0.14em; margin-bottom: 10px; }
+.pl-closeout-list { list-style: none; padding: 0; margin: 0; }
+.pl-closeout-list li { font-size: 13px; line-height: 1.5; color: var(--text-primary); padding: 8px 0 8px 18px; position: relative; border-bottom: 1px solid rgba(72,196,204,0.1); }
+.pl-closeout-list li:last-child { border-bottom: none; }
+.pl-closeout-list li::before { content: '→'; color: var(--teal); font-weight: 700; position: absolute; left: 0; top: 8px; }
+
 /* V4.3 FIX: Removed @media (min-width: 900px) #tab-aesthetic display:grid block.
    It used an ID selector (higher specificity than .tab-panel:not(.active)),
    which forced Aesthetic content visible on every tab when the viewport hit 900px.
@@ -814,6 +855,7 @@ input, textarea, select { font-family: inherit; outline: none; border: none; bac
 <nav class="tab-nav">
   <button class="tab-btn active" data-tab="mission"><span class="tab-emoji">🎯</span>Mission</button>
   <button class="tab-btn" data-tab="starting-line"><span class="tab-emoji">🏁</span>Week One</button>
+  <button class="tab-btn" data-tab="progress-log"><span class="tab-emoji">📋</span>Progress Log</button>
   <button class="tab-btn" data-tab="performance"><span class="tab-emoji">💪</span>Performance</button>
   <button class="tab-btn" data-tab="bodycomp"><span class="tab-emoji">📊</span>Body Comp</button>
   <button class="tab-btn" data-tab="aesthetic"><span class="tab-emoji">📸</span>Aesthetic</button>
@@ -1606,6 +1648,16 @@ input, textarea, select { font-family: inherit; outline: none; border: none; bac
       <li>Two clean sessions a week beats four messy ones — execution is the whole game</li>
     </ul>
   </div>
+</div>
+
+<!-- ═══════ TAB — PROGRESS LOG ═══════ -->
+<div class="tab-panel" id="tab-progress-log">
+  <div class="page-header-block">
+    <h2 class="page-headline">Progress Log</h2>
+    <div class="page-subhead">Coaches Notes · Photo-by-Photo Read</div>
+  </div>
+  <a class="pl-program-link" href="https://thestrengthlab.yeagersgym.com/michelle" target="_blank" rel="noopener">This Week's Programming →</a>
+  <div id="progress-log-container"></div>
 </div>
 
 <!-- ═══════ TAB 2 — PERFORMANCE (incl. STRENGTH TESTS) ═══════ -->
@@ -3848,6 +3900,261 @@ function renderBiweeklyPill() {
   });
 }
 
+/* ═══════════════════════════════════════════════════════════════
+   PROGRESS LOG TAB
+   ═══════════════════════════════════════════════════════════════ */
+const PROGRESS_LOG_ENTRIES = [
+  {
+    week: 2,
+    date: "MAY 22, 2026",
+    coach: "LISA",
+    leftWeek: 0,
+    leftLabel: "WEEK 0 · MAY 4",
+    rightWeek: 2,
+    rightLabel: "WEEK 2 · MAY 22",
+    open: true,
+    photos: [
+      {
+        num: "PHOTO 01 · FRONT RELAXED", subtitle: "Midsection Response", angle: "front_relaxed",
+        improved: [
+          "Waistline is visibly tighter — more muscle tone through the entire torso",
+          "Oblique lines are starting to emerge where there was smooth tissue at baseline",
+          "Overall body composition reads leaner despite bodyweight likely unchanged"
+        ],
+        building: [
+          "Lower abs below the navel are still smooth — segmentation not visible yet",
+          "Inner thigh / adductor line unchanged from baseline",
+          "Shoulder cap not yet showing distinction in the relaxed front view"
+        ],
+        response: [
+          "Cable crunch is loading correctly — keep progressing load weekly",
+          "Adductor machine starts this block to address the inner thigh line",
+          "Lower-ab work shifts toward more loaded flexion, less bodyweight-only"
+        ]
+      },
+      {
+        num: "PHOTO 02 · SIDE RELAXED", subtitle: "Glute Projection", angle: "side_relaxed",
+        improved: [
+          "Posterior projection from the side has meaningfully increased — the hip-to-glute curve is more pronounced than at baseline",
+          "The \"shelf\" step from hip to glute is starting to appear",
+          "Posture is noticeably better — forward head and shoulder roll from baseline are gone"
+        ],
+        building: [
+          "Upper glute pole still needs more cap to create a clear lifted \"shelf\"",
+          "Lower glute fold is beginning to curve but not yet a \"smile\" line",
+          "Hamstring sweep below the glute is flat — the tie-in needs volume"
+        ],
+        response: [
+          "Hip thrust is driving the projection — keep the strength ramp",
+          "RDL starts this block specifically to address the glute/ham tie-in",
+          "Hip abduction work starts this block to develop the upper pole"
+        ]
+      },
+      {
+        num: "PHOTO 03 · REAR RELAXED", subtitle: "Glute Shape", angle: "back_relaxed",
+        improved: [
+          "Overall glute fullness has increased — mass looks higher and rounder",
+          "Good left/right symmetry maintained — no new asymmetry",
+          "The shape is developing upward, not just outward"
+        ],
+        building: [
+          "Upper glute shelf still the primary gap",
+          "Lower glute fold is still mostly horizontal — goal is a lifted curved shape",
+          "Hamstring tie-in underneath the glute needs more density"
+        ],
+        response: [
+          "Abduction machine and kickback targets the upper pole this block",
+          "RDL targets the tie-in",
+          "Frog pumps added as a volume finisher both sessions"
+        ]
+      },
+      {
+        num: "PHOTO 04 · REAR FLEX", subtitle: "Back and Glute Development", angle: "back_flexed",
+        improved: [
+          "Lats are pulling wider from behind — the back has responded to pulldown work",
+          "Glutes hold shape and show more fullness even in the flexed position",
+          "Overall athletic development more visible than at baseline"
+        ],
+        building: [
+          "Rear delts still underdeveloped — the cap needs direct work",
+          "Lat density through mid-back still thin",
+          "Upper glute needs more cap before the rear flex shows a complete line"
+        ],
+        response: [
+          "Pulldown continues to progress — add one small load increment",
+          "Lateral raise gets added this block for rear delt cap",
+          "Keep upper body volume moderate — glutes are the priority"
+        ]
+      },
+      {
+        num: "PHOTO 05 · FRONT FLEX", subtitle: "Upper Body Shape", angle: "front_flexed",
+        improved: [
+          "Shoulder cap has more separation than baseline when flexed",
+          "Arms look more defined — bicep and tricep lines more distinct",
+          "Core looks tighter when flexed — more abdominal tension visible"
+        ],
+        building: [
+          "Lats from the front still need width — taper from shoulder to waist is the next visual target",
+          "Core tension under flex is better but lower abs are still smooth",
+          "Medial delt still flat at the top"
+        ],
+        response: [
+          "Strict press continues — shoulder cap is starting to respond",
+          "Lat work through pulldown stays consistent — taper takes time",
+          "Core work shifts toward more loaded flexion this block"
+        ]
+      },
+      {
+        num: "PHOTO 06 · OBLIQUE / SIDE WAIST CLOSE-UP", subtitle: "Midsection Detail", angle: "side_flexed",
+        improved: [
+          "Oblique line is visible in this shot where it was not at baseline",
+          "Waist looks tighter and more defined from this angle",
+          "Upper ab line shows through the oblique area"
+        ],
+        building: [
+          "Lower oblique and lower-ab wall still smooth — wall needs more thickness",
+          "Oblique definition at this angle needs anti-rotation strength added",
+          "Waist-to-hip contrast can still improve as glutes grow and core thickens"
+        ],
+        response: [
+          "Cable crunch is the primary driver — keep load progressing",
+          "Pallof press or suitcase carry gets added for anti-rotation strength",
+          "No high-volume twisting — the waist stays where it is"
+        ]
+      },
+      {
+        num: "PHOTO 07 · FRONT ANGLED CORE CLOSE-UP", subtitle: "Ab Visibility", angle: "core_relaxed",
+        improved: [
+          "Serratus and upper-ab line are more defined than baseline",
+          "Mid-section looks more muscular and less smooth overall",
+          "Better visible separation between rib cage and waistband"
+        ],
+        building: [
+          "Lower ab segmentation below the navel is still the primary gap",
+          "Rectus needs more thickness through loaded flexion",
+          "Hip flexor dominance on ab work is still the execution risk to watch"
+        ],
+        response: [
+          "Cable crunch load increases — if 40 lb is clean for 10 × 3, move to 45",
+          "Hanging knee raise progresses by 1–2 reps each session",
+          "Hollow rock adds reps or adds a tempo hold at the end position"
+        ]
+      },
+      {
+        num: "PHOTO 08 · REAR GLUTE CLOSE-UP", subtitle: "Lower Glute Shape", angle: "glutes_relaxed",
+        improved: [
+          "Glutes show more fullness and roundness from this angle",
+          "Infragluteal fold is starting to curve — horizontal line from baseline is softening",
+          "Overall size impression is up from the baseline close-up"
+        ],
+        building: [
+          "The \"smile\" fold is developing but not yet there",
+          "Hamstring density directly below the fold is still flat",
+          "Lateral glute sweep is still the next visual gap from behind"
+        ],
+        response: [
+          "RDL targets the hamstring density below the fold",
+          "Hip thrust back-off volume builds the size that lifts the fold",
+          "Abduction work builds the lateral sweep that widens the shape"
+        ]
+      },
+      {
+        num: "PHOTO 09 · SIDE GLUTE CLOSE-UP", subtitle: "Projection and Density", angle: "glutes_flexed",
+        improved: [
+          "This is the standout improvement angle — glute projection is clearly more than baseline",
+          "Shape looks rounder and more full from this close-up side angle",
+          "Upper pole is starting to show early development"
+        ],
+        building: [
+          "Upper pole still needs more cap — the \"shelf\" step is emerging but not defined",
+          "Hamstring sweep below doesn't yet support the projection with density",
+          "This is the angle to watch hardest at the Week 4 check-in"
+        ],
+        response: [
+          "Everything programmed this block feeds this angle",
+          "Hip thrust for total projection, RDL for the sweep below, abduction for the cap above",
+          "Compare this exact angle at Week 4 — that's where the program shows"
+        ]
+      }
+    ],
+    closeout: {
+      label: "THE FOCUS FOR THE NEXT 2 WEEKS",
+      items: [
+        "Hip thrust strength ramp continues — 235 to 245 if bar speed confirms",
+        "Upper glute cap gets direct work for the first time this block",
+        "Hamstring tie-in work starts — RDL with 3-second eccentric both sessions",
+        "Cable crunch load increases — 40 lb to 45 lb if 3 × 10 is clean",
+        "Side profile is the primary comparison photo at Week 4"
+      ]
+    }
+  }
+];
+
+function plPhotoCell(weekNum, tag, angle) {
+  const photo = STATE.photos.find(p => p.week_number === weekNum && p.angle === angle);
+  const inner = photo?.url
+    ? `<img class="pl-photo-img" src="${photo.url}" alt="Week ${weekNum} ${angle}">`
+    : `<div class="pl-photo-empty">No photo<br>uploaded</div>`;
+  return `<div class="pl-photo-cell"><div class="pl-photo-tag">${tag}</div>${inner}</div>`;
+}
+
+function plListItems(items) {
+  return items.map(i => `<li>${i}</li>`).join('');
+}
+
+function plPhotoCardHtml(p, entry) {
+  return `
+    <div class="pl-photo-card">
+      <div class="pl-photo-label-row">
+        <div class="pl-photo-num">${p.num}</div>
+        <div class="pl-photo-subtitle">${p.subtitle}</div>
+      </div>
+      <div class="pl-photo-compare">
+        ${plPhotoCell(entry.leftWeek, entry.leftLabel, p.angle)}
+        ${plPhotoCell(entry.rightWeek, entry.rightLabel, p.angle)}
+      </div>
+      <div class="pl-section">
+        <div class="pl-section-label improved">WHAT IMPROVED</div>
+        <ul class="pl-section-list improved">${plListItems(p.improved)}</ul>
+      </div>
+      <div class="pl-section">
+        <div class="pl-section-label building">STILL BUILDING</div>
+        <ul class="pl-section-list building">${plListItems(p.building)}</ul>
+      </div>
+      <div class="pl-section">
+        <div class="pl-section-label response">TRAINING RESPONSE</div>
+        <ul class="pl-section-list response">${plListItems(p.response)}</ul>
+      </div>
+    </div>`;
+}
+
+function renderProgressLog() {
+  const c = document.getElementById('progress-log-container');
+  if (!c) return;
+  c.innerHTML = PROGRESS_LOG_ENTRIES.map((entry, idx) => {
+    const photos = entry.photos.map(p => plPhotoCardHtml(p, entry)).join('');
+    const closeout = entry.closeout ? `
+      <div class="pl-closeout">
+        <div class="pl-closeout-label">${entry.closeout.label}</div>
+        <ul class="pl-closeout-list">${plListItems(entry.closeout.items)}</ul>
+      </div>` : '';
+    return `
+      <div class="pl-entry${entry.open ? ' open' : ''}" data-pl-idx="${idx}">
+        <div class="pl-entry-header">
+          <div class="pl-entry-title">WEEK ${entry.week} · ${entry.date} · COACHES NOTES (${entry.coach})</div>
+          <div class="pl-entry-toggle">▶</div>
+        </div>
+        <div class="pl-entry-body">
+          ${photos}
+          ${closeout}
+        </div>
+      </div>`;
+  }).join('');
+  c.querySelectorAll('.pl-entry-header').forEach(h => {
+    h.onclick = () => h.parentElement.classList.toggle('open');
+  });
+}
+
 function renderAll() {
   renderHeader();
   renderTodaysOrders();
@@ -3865,6 +4172,7 @@ function renderAll() {
   renderBodyComp();
   renderStrengthTests();
   renderAesthetic();
+  renderProgressLog();
   renderScorecard();
 }
 
