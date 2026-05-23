@@ -131,8 +131,12 @@ input, textarea, select { font-family: inherit; outline: none; border: none; bac
 
 /* ═══════ PROFILE CARD ═══════ */
 .profile-card { display: flex; gap: 14px; align-items: center; }
-.profile-photo { width: 64px; height: 64px; border-radius: 50%; border: 2px solid var(--teal); object-fit: cover; }
-.profile-photo-fallback { width: 64px; height: 64px; border-radius: 50%; border: 2px solid var(--teal); background: var(--card-elevated); display: flex; align-items: center; justify-content: center; font-family: 'DM Serif Display', serif; font-size: 28px; color: var(--teal); }
+.profile-photo { width: 56px; height: 56px; border-radius: 50%; border: 2px solid var(--teal); box-shadow: 0 0 0 4px rgba(72,196,204,0.18); object-fit: cover; display: block; }
+.profile-photo-fallback { width: 56px; height: 56px; border-radius: 50%; border: 2px solid var(--teal); background: var(--card-elevated); display: flex; align-items: center; justify-content: center; font-family: 'DM Serif Display', serif; font-size: 24px; color: var(--teal); }
+.profile-photo-anchor { position: absolute; top: 14px; right: 14px; z-index: 2; }
+.mission-card .mission-header, .mission-card .mission-sub, .mission-card #mission-rows { padding-right: 64px; }
+.mission-card .mission-progress-wrap { padding-right: 0; }
+@media (max-width: 360px) { .profile-photo, .profile-photo-fallback { width: 48px; height: 48px; } .mission-card .mission-header, .mission-card .mission-sub, .mission-card #mission-rows { padding-right: 56px; } }
 .profile-info { flex: 1; }
 .profile-name { font-family: 'DM Serif Display', serif; font-size: 20px; }
 .profile-meta { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
@@ -479,6 +483,7 @@ input, textarea, select { font-family: inherit; outline: none; border: none; bac
   <div id="nudge-container"></div>
 
   <div class="mission-card">
+    <div id="profile-photo-container" class="profile-photo-anchor"></div>
     <div class="mission-header">The Mission</div>
     <div class="mission-sub">Glutes &amp; Core — 8 Weeks</div>
     <div id="mission-rows"></div>
