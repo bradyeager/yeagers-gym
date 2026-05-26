@@ -1,0 +1,30 @@
+vagaro_name,venmo_handle,venmo_display_name,default_price,pays_cash,notes
+# Schema:
+#   vagaro_name         exact name as it appears in Vagaro/Google Cal events
+#   venmo_handle        @username on Venmo (no @ prefix). Fill in over time.
+#   venmo_display_name  comma-separated list of Venmo display names that match this client
+#                       (e.g. spouse paying on their behalf). Any match counts.
+#   default_price       most-common session price (dollars, integer). Variations trigger NEEDS_REVIEW.
+#   pays_cash           true if payment is OUTSIDE Venmo (cash, check, Zeal). Bot won't expect a receipt.
+#   notes               free text — business rules, exceptions, reminders.
+#
+# Smoothie add-on ($5): bot automatically treats payment = price + $5 as full match.
+# Spouses without their own Vagaro appointments: list their Venmo display name on the spouse's row.
+Lacey James,,Laci James,70,false,1:1 60min
+Danny Duty,,Adriana Duty,100,false,Couple 2:1; $100 together / $70 if one alone. Wife Adriana pays. $5 over = smoothie. $335 was 2 sessions + peptides
+Melissa Rios,,Melissa Rios,100,false,Couple 2:1 with husband Julio; $100 together / $70 if Melissa alone
+Kerry Kreczmer,,Kerry Kreczmer,50,false,2:1 60min
+Peggy Happ,,Peggy Barlow Happ,50,false,2:1 60min
+Celestin Mathieu,,Celestin Mathieu,50,false,Thursdays $50 / $70 if alone. ALSO pays for wife Rachel on Wednesdays
+Jeanette Davey,,,60,true,Pays by check
+Katelin Lowther,,"katie lowther,James Lowther",50,false,Mondays 2:1 w/ Anna ($50). $45 if Dina joins (3:1). Husband James sometimes pays
+michelle Delorenza,,Michelle DeLorenzo,70,false,1 of 2 weekly sessions FREE through ~Aug 2026 (10-wk promo from May 2026). Expect 1 unpaid/week — Accept as paid
+Jacob Bain,,Jacob Bain,70,false,1:1 60min
+Anna Cessna,,Anna Cessna,50,false,Mondays 2:1 w/ Katelin ($50). $45 if Dina joins (3:1)
+Lisa Knievel,,,70,true,Pays via Zeal -> Chase business checking
+Tonnie Dahl,,Tonnie Dahl,70,false,Mixed amounts; $5 over = smoothie
+Stacy Tesler CPY,,,70,true,Pays via Zeal -> personal checking
+Annie Deioma,,Mudroom Backpacks,100,false,Couple 2:1; husband David pays via business Venmo 'Mudroom Backpacks'
+Rachel Bertholino,,Celestin Mathieu,50,false,Wednesday sessions. Husband Mathieu (Venmo: Celestin Mathieu) pays
+Dina Bates,,Dina Bates,45,false,3:1 w/ Katelin+Anna = $45 each. 2:1 = $50
+Danika Elenes,,Danika Elenes,65,false,Discounted flat $65 regardless of session type
