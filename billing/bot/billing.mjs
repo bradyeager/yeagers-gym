@@ -25,8 +25,8 @@ const {
   RECIPIENT_EMAIL = "brad@bradyeager.com",
   SENDER_EMAIL = "brad@yeagersgym.com",
   SENDER_NAME = "Yeager's Gym Billing Bot",
-  LOOKBACK_DAYS = "8",
-  PAYMENT_LOOKBACK_DAYS = "14",
+  LOOKBACK_DAYS = "14",
+  PAYMENT_LOOKBACK_DAYS = "21",
   DRY_RUN = "false",
 } = process.env;
 
@@ -165,7 +165,8 @@ function parseVenmoEmail(msg) {
   const subject = headers["subject"] || "";
   const dateHdr = headers["date"] || "";
   const snippet = msg.snippet || "";
-  const body = extractBody(msg.payload);
+  // Prefer the text/plain MIME part — cleaner than HTML, no DOCTYPE noise.
+  const body = extractBody(msg.payload, "text/plain") || extractBody(msg.payload);
   // Handles both "Name paid you $X" (direct payment) and
   // "Name paid your $X request" (paid a request Brad sent them).
   const subjMatch = subject.match(/^(.+?)\s+paid your?\s+\$([\d,.]+)/i);
@@ -181,16 +182,19 @@ function parseVenmoEmail(msg) {
   // grabbed CSS @media and other false positives.
   const handleMatch = (body + "\n" + snippet).match(/venmo\.com\/u\/([A-Za-z0-9._-]+)/i);
   const sender_handle = handleMatch ? handleMatch[1].toLowerCase() : "";
-  // Note parsing is currently broken (grabs HTML/DOCTYPE strings from the
-  // body). Leaving empty until we have a cleaner regex; doesn't affect
-  // matching logic — sender + amount are what count.
-  const note = "";
+  const note = extractVenmoNote(body);
   const date = dateHdr ? new Date(dateHdr) : new Date();
   return { sender_display_name, sender_handle, amount, note, date, subject };
 }
 
-function extractBody(payload) {
+function extractBody(payload, mimeType = null) {
   if (!payload) return "";
+  // If a specific mimeType requested, find that part exclusively.
+  if (mimeType) {
+    const part = findMimePart(payload, mimeType);
+    return part?.body?.data ? Buffer.from(part.body.data, "base64").toString("utf8") : "";
+  }
+  // Otherwise concatenate every leaf body for legacy fallback.
   const chunks = [];
   const walk = (p) => {
     if (p.body?.data) chunks.push(Buffer.from(p.body.data, "base64").toString("utf8"));
@@ -198,6 +202,46 @@ function extractBody(payload) {
   };
   walk(payload);
   return chunks.join("\n");
+}
+
+function findMimePart(payload, mimeType) {
+  if (payload.mimeType === mimeType && payload.body?.data) return payload;
+  if (payload.parts) {
+    for (const sub of payload.parts) {
+      const found = findMimePart(sub, mimeType);
+      if (found) return found;
+    }
+  }
+  return null;
+}
+
+// Pull the client-supplied note from a Venmo email body. Notes vary:
+//   "Training 5/18"      (quoted)
+//   5/18 😅              (standalone short line, no quotes)
+//   Note: <text>
+// Scan for short standalone lines between the amount line and the
+// transaction-details boilerplate. Skip obvious noise (URLs, headers).
+function extractVenmoNote(body) {
+  if (!body) return "";
+  const lines = body.split(/\r?\n/).map((l) => l.trim());
+  // Find the line that mentions the payment ("paid you" / "paid your")
+  const paidIdx = lines.findIndex((l) => /paid your?/i.test(l));
+  if (paidIdx < 0) return "";
+  const SKIP = /^(see|view|sent to|transaction|venmo|click|https?:\/\/|^>\s|^--|powered by|©|all rights|the venmo|paypal)/i;
+  for (let i = paidIdx + 1; i < Math.min(paidIdx + 12, lines.length); i++) {
+    const raw = lines[i];
+    if (!raw) continue;
+    if (raw.length > 140) continue;
+    if (/^\$?[\d,.]+$/.test(raw)) continue;          // just amount, e.g. "$45.00"
+    if (/^\d{1,2}\/\d{1,2}\/?\d{0,4}$/.test(raw)) {  // pure date-like line e.g. "5/18"
+      return raw;
+    }
+    if (SKIP.test(raw)) continue;
+    if (!/[A-Za-z0-9]/.test(raw)) continue;          // pure punctuation/whitespace
+    // Strip surrounding quotes
+    return raw.replace(/^["']|["']$/g, "").trim();
+  }
+  return "";
 }
 
 // ---- Reconciliation ----
@@ -297,8 +341,13 @@ export function reconcile(appointments, payments, clients, cashLog) {
         return nameMatch || displayMatch;
       })
       .filter(({ p }) => withinDateWindow(p.date, appt.date))
-      .map(({ p, idx }) => ({ p, idx, amountScore: expectedPrice ? amountScore(p.amount, expectedPrice) : 0.5 }))
-      .sort((a, b) => b.amountScore - a.amountScore);
+      .map(({ p, idx }) => ({
+        p, idx,
+        amountScore: expectedPrice ? amountScore(p.amount, expectedPrice) : 0.5,
+        dateGap: Math.abs((new Date(p.date) - new Date(appt.date)) / (24 * 60 * 60 * 1000)),
+      }))
+      // Best amountScore first; ties broken by closer payment date.
+      .sort((a, b) => b.amountScore - a.amountScore || a.dateGap - b.dateGap);
 
     if (candidates.length === 0) {
       results.push({ appt, roster, status: "UNPAID", expectedPrice });
@@ -343,9 +392,11 @@ function sameDay(a, b) {
   return ad.getFullYear() === bd.getFullYear() && ad.getMonth() === bd.getMonth() && ad.getDate() === bd.getDate();
 }
 
+// Payment can be up to 7 days BEFORE session (prepay) or 14 days AFTER
+// (late payment). Tunable if real-world data shows other patterns.
 function withinDateWindow(payDate, apptDate) {
   const diff = (payDate - apptDate) / (24 * 60 * 60 * 1000);
-  return diff >= -3 && diff <= 7;
+  return diff >= -7 && diff <= 14;
 }
 
 // ---- Email building ----
@@ -536,7 +587,8 @@ async function writeLog({ appointments, payments, results, unmatchedPayments }) 
       const ident = r.payment.sender_handle
         ? `@${r.payment.sender_handle}`
         : `"${r.payment.sender_display_name || r.payment.name || "?"}"`;
-      md += ` (matched ${ident}, $${r.payment.amount})`;
+      const noteSuffix = r.payment.note ? `, note: "${r.payment.note}"` : "";
+      md += ` (matched ${ident}, $${r.payment.amount}${noteSuffix})`;
     }
     if (r.note) md += ` — ${r.note}`;
     md += `\n`;
