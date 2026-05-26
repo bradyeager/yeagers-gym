@@ -47,9 +47,8 @@ async function fetchVagaroAppointments() {
   console.log(`iCal: ${all.length} total entries; types:`, typeCounts);
 
   const appts = [];
-  let skippedCancelled = 0, skippedOld = 0, skippedFuture = 0;
+  let skippedCancelled = 0, skippedOld = 0, skippedFuture = 0, skippedNonBillable = 0;
   let addedSingle = 0, addedRecurring = 0;
-  let sampleRaw = [];
 
   for (const ev of all) {
     if (ev.type !== "VEVENT") continue;
@@ -57,6 +56,10 @@ async function fetchVagaroAppointments() {
 
     const summary = (ev.summary || "").trim();
     const description = (ev.description || "").trim();
+
+    // Skip non-billable events (personal tasks, lunch, errands, training blocks).
+    // Billable Vagaro services always include a ratio like "1:1", "2:1", "3:1".
+    if (!isBillableSession(summary)) { skippedNonBillable++; continue; }
 
     if (ev.rrule) {
       const occurrences = ev.rrule.between(WINDOW_START, NOW, true);
@@ -85,7 +88,7 @@ async function fetchVagaroAppointments() {
     addedSingle++;
   }
 
-  console.log(`iCal filter: added ${addedSingle} single + ${addedRecurring} recurring; skipped ${skippedOld} old, ${skippedFuture} future, ${skippedCancelled} cancelled`);
+  console.log(`iCal filter: added ${addedSingle} single + ${addedRecurring} recurring; skipped ${skippedOld} old, ${skippedFuture} future, ${skippedCancelled} cancelled, ${skippedNonBillable} non-billable`);
 
   // Show first 3 events for diagnostics so we can tune extractClientName
   if (appts.length > 0) {
@@ -104,6 +107,14 @@ async function fetchVagaroAppointments() {
 
   appts.sort((a, b) => a.date - b.date);
   return appts;
+}
+
+// Vagaro service names always include a ratio (1:1, 2:1, 3:1) for personal-training
+// sessions. Personal tasks (lunch, errands, training blocks, remote programming
+// subscriptions) don't. This is the cleanest filter we have without a service whitelist.
+function isBillableSession(summary) {
+  if (!summary) return false;
+  return /\b\d+:\d+\b/.test(summary);
 }
 
 function extractClientName(summary, description) {
@@ -210,6 +221,11 @@ export function reconcile(appointments, payments, clients, cashLog) {
       continue;
     }
 
+    if (roster.prepaid) {
+      results.push({ appt, roster, status: "PAID_PREPAID" });
+      continue;
+    }
+
     if (roster.pays_cash) {
       const cashHit = cashLog.find(
         (c) => sameDay(c.date, appt.date) && fuzzyName(c.name, roster.vagaro_name) >= 0.8,
@@ -307,6 +323,7 @@ export function buildEmail({ results, unmatchedPayments, now = NOW, windowStart 
   const unidentified = results.filter((r) => r.status === "UNIDENTIFIED_SLOT");
   const paidVenmo = results.filter((r) => r.status === "PAID_VENMO");
   const paidCash = results.filter((r) => r.status === "PAID_CASH");
+  const paidPrepaid = results.filter((r) => r.status === "PAID_PREPAID");
   const cashPending = results.filter((r) => r.status === "CASH_PENDING");
 
   const weekOf = results.length ? fmtDate(results[0].appt.date) : fmtDate(windowStart);
@@ -318,7 +335,7 @@ export function buildEmail({ results, unmatchedPayments, now = NOW, windowStart 
   body += `<div style="display:flex;flex-wrap:wrap;gap:14px;margin-bottom:20px;">`;
   body += statChip(unpaid.length, "unpaid", unpaid.length ? "pink" : "textMuted");
   body += statChip(review.length, "review", review.length ? "purple" : "textMuted");
-  body += statChip(paidVenmo.length + paidCash.length, "paid", "teal");
+  body += statChip(paidVenmo.length + paidCash.length + paidPrepaid.length, "paid", "teal");
   body += statChip(cashPending.length, "cash pending", cashPending.length ? "purple" : "textMuted");
   if (unidentified.length) body += statChip(unidentified.length, "unidentified", "purple");
   body += `</div>`;
@@ -421,9 +438,13 @@ export function buildEmail({ results, unmatchedPayments, now = NOW, windowStart 
   }
 
   // PAID (collapsed)
-  if (paidVenmo.length || paidCash.length) {
-    body += sectionLabel(`Paid — ${paidVenmo.length + paidCash.length}`, "teal");
-    const names = [...paidVenmo, ...paidCash].map((r) => escapeHtml(r.roster.vagaro_name)).join(", ");
+  const allPaid = [...paidVenmo, ...paidCash, ...paidPrepaid];
+  if (allPaid.length) {
+    body += sectionLabel(`Paid — ${allPaid.length}`, "teal");
+    const names = allPaid.map((r) => {
+      const tag = r.status === "PAID_CASH" ? " (cash)" : r.status === "PAID_PREPAID" ? " (prepaid)" : "";
+      return escapeHtml(r.roster.vagaro_name) + tag;
+    }).join(", ");
     body += `<div style="color:${PALETTE.textMuted};font-size:14px;line-height:1.6;margin-bottom:10px;">${names}</div>`;
   }
 
@@ -478,6 +499,7 @@ async function writeLog({ appointments, payments, results, unmatchedPayments }) 
   const counts = {
     paid_venmo: results.filter((r) => r.status === "PAID_VENMO").length,
     paid_cash: results.filter((r) => r.status === "PAID_CASH").length,
+    paid_prepaid: results.filter((r) => r.status === "PAID_PREPAID").length,
     unpaid: results.filter((r) => r.status === "UNPAID").length,
     needs_review: results.filter((r) => r.status === "NEEDS_REVIEW").length,
     cash_pending: results.filter((r) => r.status === "CASH_PENDING").length,

@@ -75,6 +75,11 @@ export async function loadClients(csvPath) {
   if (!header || !header.startsWith("vagaro_name,")) {
     throw new Error(`Unexpected clients.csv header: ${header}`);
   }
+  // Detect 6-column legacy schema vs 7-column with prepaid.
+  // Header has the column names; figure out which slot holds notes.
+  const headerCells = parseCsvLine(header);
+  const hasPrepaid = headerCells[5]?.trim().toLowerCase() === "prepaid";
+  const notesIdx = hasPrepaid ? 6 : 5;
   return lines.map((line) => {
     const cells = parseCsvLine(line);
     const displayRaw = cells[2] || "";
@@ -87,7 +92,8 @@ export async function loadClients(csvPath) {
         : [],
       default_price: cells[3] ? Number(cells[3]) : null,
       pays_cash: (cells[4] || "").toLowerCase() === "true",
-      notes: cells[5] || "",
+      prepaid: hasPrepaid ? (cells[5] || "").toLowerCase() === "true" : false,
+      notes: cells[notesIdx] || "",
     };
   });
 }

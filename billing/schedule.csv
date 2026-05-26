@@ -1,22 +1,48 @@
 day,time,client_name,notes
-# Maps a recurring weekly time slot to the client(s) who train in it.
-# The bot uses this to infer which client a Google Calendar event belongs to,
-# since Vagaro's calendar sync strips client names from event titles.
+# Maps weekly recurring time slots → client(s). Bot uses this to infer
+# which client a Google Calendar event belongs to, since Vagaro strips
+# client names from synced events.
 #
-# day:         Mon, Tue, Wed, Thu, Fri, Sat, Sun (3-letter, case-insensitive)
-# time:        24-hour LOCAL time (Pacific). HH:MM. e.g. 06:00, 14:30
-# client_name: MUST exactly match a vagaro_name in clients.csv
-# notes:       free text (variable attendance, pricing exceptions, etc.)
+# day:         Mon/Tue/Wed/Thu/Fri/Sat/Sun
+# time:        24-hour LOCAL time (Pacific). HH:MM
+# client_name: MUST match a vagaro_name in clients.csv exactly
+# notes:       free text — variable attendance, pricing exceptions, etc.
 #
-# Multi-person sessions (2:1, 3:1): add one row per attendee, same day+time.
-# Example: Katelin + Anna train together Monday 6:00 AM as a 2:1.
-#   Mon,06:00,Katelin Lowther,
-#   Mon,06:00,Anna Cessna,
-#
-# Clients with occasional attendance (e.g. Dina joins the Mon group sometimes):
-# still add a row — the bot's NEEDS_REVIEW flow handles weeks they don't show.
-#
-# Slots NOT listed here will appear in the email as UNIDENTIFIED_SLOT,
-# showing date/time/service type so you can mentally map them.
-#
-# Add your rows below. Delete this comment block once populated.
+# Multi-person sessions: one row per attendee at the same day+time.
+# Slots not listed here appear as UNIDENTIFIED in the weekly email.
+# Inactive clients (placeholder Vagaro bookings) are intentionally omitted —
+# their slots will show as UNIDENTIFIED and you can ignore.
+
+# --- Monday ---
+Mon,06:00,Jacob Bain,
+Mon,07:00,Lisa Knievel,
+Mon,08:00,Peggy Happ,
+Mon,08:00,michelle Delorenza,
+Mon,09:00,Dina Bates,3:1 group with Anna + sometimes Katelin
+Mon,09:00,Anna Cessna,3:1 group with Dina + sometimes Katelin
+Mon,09:00,Katelin Lowther,joins when in town
+Mon,14:00,Kerry Kreczmer,
+Mon,14:00,Celestin Mathieu,
+Mon,16:00,Danny Duty,2:1 with wife Adriana
+Mon,17:00,Melissa Rios,2:1 with husband Julio
+
+# --- Tuesday ---
+Tue,07:00,Tonnie Dahl,
+Tue,08:00,Jeanette Davey,
+Tue,09:00,Robert Brower,prepaid for all of 2026
+
+# --- Wednesday ---
+Wed,09:00,Rachel Bertholino,husband Mathieu (Venmo: Celestin Mathieu) pays
+Wed,10:00,Annie Deioma,2:1 with husband David (Mudroom Backpacks pays)
+
+# --- Thursday ---
+Thu,08:00,Danika Elenes,
+Thu,09:00,Tonnie Dahl,
+Thu,10:00,Robert Brower,prepaid for all of 2026
+Thu,11:00,Celestin Mathieu,
+
+# --- Friday ---
+Fri,07:00,Lacey James,
+Fri,08:00,Jeanette Davey,
+Fri,08:00,Peggy Happ,
+Fri,09:00,Lisa Knievel,
