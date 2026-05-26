@@ -153,7 +153,12 @@ export function reconcile(appointments, payments, clients, cashLog) {
       .filter(({ idx }) => !usedPayments.has(idx))
       .filter(({ p }) => {
         const nameMatch = roster.venmo_handle && p.sender_handle === roster.venmo_handle.toLowerCase();
-        const displayMatch = fuzzyName(p.sender_display_name, roster.venmo_display_name || roster.vagaro_name) >= 0.8;
+        const namesToCheck = roster.venmo_display_names?.length
+          ? roster.venmo_display_names
+          : [roster.vagaro_name];
+        const displayMatch = namesToCheck.some(
+          (name) => fuzzyName(p.sender_display_name, name) >= 0.8,
+        );
         return nameMatch || displayMatch;
       })
       .filter(({ p }) => withinDateWindow(p.date, appt.date))
@@ -184,12 +189,14 @@ export function reconcile(appointments, payments, clients, cashLog) {
 function amountScore(received, expected) {
   if (!expected) return 0.5;
   if (received === expected) return 1;
+  // Smoothie add-on: exactly $5 over the session price.
+  if (received === expected + 5) return 1;
   const ratio = received / expected;
   // Exact multiple (package pre-pay) counts as full match.
   if (Math.abs(ratio - Math.round(ratio)) < 0.02 && ratio >= 1) return 1;
   // Within a couple dollars (rounding / cents) counts as full match.
   if (Math.abs(received - expected) <= 2) return 1;
-  // Anything else is surface-for-review.
+  // Anything else surfaces for review.
   return 0.5;
 }
 

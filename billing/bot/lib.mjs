@@ -77,10 +77,14 @@ export async function loadClients(csvPath) {
   }
   return lines.map((line) => {
     const cells = parseCsvLine(line);
+    const displayRaw = cells[2] || "";
     return {
       vagaro_name: cells[0],
       venmo_handle: cells[1] || "",
-      venmo_display_name: cells[2] || "",
+      venmo_display_name: displayRaw,
+      venmo_display_names: displayRaw
+        ? displayRaw.split(",").map((s) => s.trim()).filter(Boolean)
+        : [],
       default_price: cells[3] ? Number(cells[3]) : null,
       pays_cash: (cells[4] || "").toLowerCase() === "true",
       notes: cells[5] || "",
