@@ -33,10 +33,9 @@ Wed,07:00,INACTIVE,,1:1 placeholder (Saidah?)
 Wed,08:00,INACTIVE,,1:1 placeholder (Trevor?)
 Wed,10:00,INACTIVE,,2:1 overflow (David partner?)
 Wed,11:00,INACTIVE,,1:1 placeholder
-Thu,06:30,INACTIVE,,1:1 placeholder
 Thu,07:00,INACTIVE,,90 min + 60 min placeholders
 Thu,15:00,INACTIVE,,2:1 placeholder
-Fri,06:30,INACTIVE,,1:1 placeholder
+Fri,07:30,INACTIVE,,1:1 placeholder at same time as Jeanette/Peggy 2:1
 
 # ============================================================
 # ACTIVE SCHEDULE
@@ -68,14 +67,11 @@ Wed,10:00,Annie Deioma,,2:1 w/ husband David (Mudroom Backpacks pays)
 Thu,08:00,Danika Elenes,,Flat $65 regardless
 Thu,09:00,Tonnie Dahl,70,Thursday rate $70 (Tue is $45)
 Thu,10:00,Robert Brower,,Prepaid all of 2026
+Thu,06:30,Stacy Tesler CPY,70,1:1 60min — Zelle to personal
 Thu,11:00,Celestin Mathieu,,Thu $50 normally / $70 if alone
-# Stacy Tesler — Thursday morning, Zelle to personal, $70. UNCOMMENT once Brad confirms time:
-# Thu,HH:MM,Stacy Tesler CPY,70,Pays via Zelle to personal
 
 # --- Friday ---
-# Note: Friday times shifted to 7:30 to match what's actually in Vagaro's iCal.
-# If 7:00 / 8:00 are correct in Vagaro, fix here and the bot will catch up next run.
-Fri,07:30,Lacey James,,1:1 — verify time vs Vagaro
+Fri,06:30,Lacey James,,1:1 60min
 Fri,07:30,Jeanette Davey,50,2:1 by check $50 w/ Peggy
 Fri,07:30,Peggy Happ,,2:1 w/ Jeanette $50
 Fri,09:00,Lisa Knievel,,1:1 — Zeal (business)

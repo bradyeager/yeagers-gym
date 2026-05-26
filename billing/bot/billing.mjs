@@ -26,6 +26,7 @@ const {
   SENDER_EMAIL = "brad@yeagersgym.com",
   SENDER_NAME = "Yeager's Gym Billing Bot",
   LOOKBACK_DAYS = "8",
+  PAYMENT_LOOKBACK_DAYS = "14",
   DRY_RUN = "false",
 } = process.env;
 
@@ -143,7 +144,11 @@ async function fetchVenmoPayments() {
   const oauth2 = new google.auth.OAuth2(GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET);
   oauth2.setCredentials({ refresh_token: GOOGLE_REFRESH_TOKEN });
   const gmail = google.gmail({ version: "v1", auth: oauth2 });
-  const query = `from:venmo@venmo.com "paid you" newer_than:${LOOKBACK_DAYS}d`;
+  // Broader sender match — Venmo sends from venmo@venmo.com,
+  // notifications@venmo.com, no-reply@venmo.com, etc. Use the domain.
+  // Payment window is wider than appointment window to catch late-arriving
+  // emails and boundary cases (~8-day appt window + ~7 day matching slop).
+  const query = `from:venmo.com "paid you" newer_than:${PAYMENT_LOOKBACK_DAYS}d`;
   const list = await gmail.users.messages.list({ userId: "me", q: query, maxResults: 200 });
   const msgs = list.data.messages || [];
   const payments = [];
@@ -195,9 +200,10 @@ function extractBody(payload) {
 // Slots not in the schedule produce one UNIDENTIFIED entry.
 // Group iCal events by exact date+time. Each event = one booking;
 // schedule.csv tells us which clients could be in that slot. Map 1:1
-// in schedule order. Excess iCal events → UNIDENTIFIED. Excess schedule
-// entries → no record (client wasn't booked this week).
-// Slots marked INACTIVE in schedule.csv are skipped entirely.
+// in schedule order. Excess iCal events → UNIDENTIFIED (unless the
+// slot also has an INACTIVE marker — then excess events are silently
+// dropped). Excess schedule entries → no record (client wasn't booked
+// this week).
 export function expandSlots(slots, schedule) {
   const groups = new Map();
   for (const slot of slots) {
@@ -207,13 +213,13 @@ export function expandSlots(slots, schedule) {
   }
   const out = [];
   for (const group of groups.values()) {
-    // Slot explicitly marked as inactive (placeholder Vagaro booking).
-    if (schedule.length && isInactiveSlot(schedule, group[0].date)) continue;
-
     const entries = schedule.length ? findScheduleEntriesForSlot(schedule, group[0].date) : [];
+    const hasInactive = schedule.length ? isInactiveSlot(schedule, group[0].date) : false;
     const n = group.length;
     const k = entries.length;
     const m = Math.min(n, k);
+
+    // Map first m iCal events to active schedule entries.
     for (let i = 0; i < m; i++) {
       out.push({
         ...group[i],
@@ -222,8 +228,13 @@ export function expandSlots(slots, schedule) {
         unidentified: false,
       });
     }
-    for (let i = m; i < n; i++) {
-      out.push({ ...group[i], client_name: null, unidentified: true });
+    // Excess iCal events become UNIDENTIFIED — unless an INACTIVE
+    // marker exists at this slot, in which case we silently drop them
+    // (Brad has already told us these placeholder bookings are noise).
+    if (!hasInactive) {
+      for (let i = m; i < n; i++) {
+        out.push({ ...group[i], client_name: null, unidentified: true });
+      }
     }
   }
   return out;
