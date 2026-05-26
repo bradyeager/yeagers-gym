@@ -10,7 +10,8 @@ import { google } from "googleapis";
 import {
   PALETTE, FONTS, GITHUB_OWNER, GITHUB_REPO, DEFAULT_BRANCH,
   requireEnv, resolveRepoRoot, loadClients, loadCashEntries,
-  fuzzyName, fmtDate, fmtDateIso, slugify,
+  loadSchedule, findClientsForSlot,
+  fuzzyName, fmtDate, fmtDateTime, fmtDateIso, slugify,
   venmoRequestLink, githubNewFileUrl, sendBrevoEmail,
   emailShell, sectionLabel, button, buttonOutline, card,
 } from "./lib.mjs";
@@ -33,6 +34,7 @@ const NOW = new Date();
 const WINDOW_START = new Date(NOW.getTime() - LOOKBACK_MS);
 const REPO_ROOT = resolveRepoRoot(import.meta.url);
 const CLIENTS_CSV = path.join(REPO_ROOT, "billing", "clients.csv");
+const SCHEDULE_CSV = path.join(REPO_ROOT, "billing", "schedule.csv");
 const LOGS_DIR = path.join(REPO_ROOT, "billing", "logs");
 
 // ---- Vagaro iCal ----
@@ -172,12 +174,35 @@ function extractBody(payload) {
 
 // ---- Reconciliation ----
 
+// Expand raw iCal slots into per-client appointments via the schedule.
+// Each slot can produce N entries (one per client in that day+time).
+// Slots not in the schedule produce one UNIDENTIFIED entry.
+export function expandSlots(slots, schedule) {
+  const out = [];
+  for (const slot of slots) {
+    const clientNames = schedule.length ? findClientsForSlot(schedule, slot.date) : [];
+    if (clientNames.length === 0) {
+      out.push({ ...slot, client_name: null, unidentified: true });
+    } else {
+      for (const name of clientNames) {
+        out.push({ ...slot, client_name: name, unidentified: false });
+      }
+    }
+  }
+  return out;
+}
+
 export function reconcile(appointments, payments, clients, cashLog) {
   const byVagaroName = new Map(clients.map((c) => [c.vagaro_name.toLowerCase(), c]));
   const usedPayments = new Set();
   const results = [];
 
   for (const appt of appointments) {
+    if (appt.unidentified) {
+      results.push({ appt, status: "UNIDENTIFIED_SLOT" });
+      continue;
+    }
+
     const roster = byVagaroName.get((appt.client_name || "").toLowerCase());
 
     if (!roster) {
@@ -279,12 +304,13 @@ export function buildEmail({ results, unmatchedPayments, now = NOW, windowStart 
   const unpaid = results.filter((r) => r.status === "UNPAID");
   const review = results.filter((r) => r.status === "NEEDS_REVIEW");
   const unknown = results.filter((r) => r.status === "UNKNOWN");
+  const unidentified = results.filter((r) => r.status === "UNIDENTIFIED_SLOT");
   const paidVenmo = results.filter((r) => r.status === "PAID_VENMO");
   const paidCash = results.filter((r) => r.status === "PAID_CASH");
   const cashPending = results.filter((r) => r.status === "CASH_PENDING");
 
   const weekOf = results.length ? fmtDate(results[0].appt.date) : fmtDate(windowStart);
-  const subject = `Weekly billing — ${unpaid.length} unpaid, ${review.length} needs review (week of ${weekOf})`;
+  const subject = `Weekly billing — ${unpaid.length} unpaid, ${review.length} needs review${unidentified.length ? `, ${unidentified.length} unidentified` : ""} (week of ${weekOf})`;
 
   let body = "";
 
@@ -294,7 +320,21 @@ export function buildEmail({ results, unmatchedPayments, now = NOW, windowStart 
   body += statChip(review.length, "review", review.length ? "purple" : "textMuted");
   body += statChip(paidVenmo.length + paidCash.length, "paid", "teal");
   body += statChip(cashPending.length, "cash pending", cashPending.length ? "purple" : "textMuted");
+  if (unidentified.length) body += statChip(unidentified.length, "unidentified", "purple");
   body += `</div>`;
+
+  // UNIDENTIFIED SLOTS (when schedule.csv doesn't cover a slot)
+  if (unidentified.length) {
+    body += sectionLabel(`Unidentified slots — ${unidentified.length}`, "purple");
+    body += `<div style="font-family:${FONTS.body};font-size:13px;color:${PALETTE.textMuted};margin-bottom:12px;">These slots aren't mapped in billing/schedule.csv. Add the day+time entries there to attribute them automatically.</div>`;
+    for (const r of unidentified) {
+      const summary = r.appt.summary || "(no title)";
+      body += card(
+        `<div style="color:${PALETTE.textPrimary};"><strong>${fmtDateTime(r.appt.date)}</strong></div><div style="font-family:${FONTS.display};font-size:12px;color:${PALETTE.textMuted};margin-top:4px;">${escapeHtml(summary)}</div>`,
+        "purple",
+      );
+    }
+  }
 
   // UNPAID
   if (unpaid.length) {
@@ -418,7 +458,7 @@ async function writeLog({ appointments, payments, results, unmatchedPayments }) 
   md += `Window: ${WINDOW_START.toISOString()} → ${NOW.toISOString()}\n\n`;
   md += `## Appointments (${appointments.length})\n`;
   for (const r of results) {
-    const name = r.roster?.vagaro_name || r.appt.client_name;
+    const name = r.roster?.vagaro_name || r.appt.client_name || `[unidentified: ${r.appt.summary || "?"}]`;
     const price = r.expectedPrice ?? r.roster?.default_price ?? "?";
     md += `- ${fmtDateIso(r.appt.date)} | ${name} | $${price} | ${r.status}`;
     if (r.payment) md += ` (matched @${r.payment.sender_handle || r.payment.name}, $${r.payment.amount})`;
@@ -442,6 +482,7 @@ async function writeLog({ appointments, payments, results, unmatchedPayments }) 
     needs_review: results.filter((r) => r.status === "NEEDS_REVIEW").length,
     cash_pending: results.filter((r) => r.status === "CASH_PENDING").length,
     unknown: results.filter((r) => r.status === "UNKNOWN").length,
+    unidentified: results.filter((r) => r.status === "UNIDENTIFIED_SLOT").length,
   };
   md += `\n## Summary\n`;
   for (const [k, v] of Object.entries(counts)) md += `- ${k}: ${v}\n`;
@@ -458,14 +499,20 @@ async function main() {
   requireEnv("GOOGLE_REFRESH_TOKEN", GOOGLE_REFRESH_TOKEN);
   requireEnv("BREVO_API_KEY", BREVO_API_KEY);
   console.log(`Window: ${WINDOW_START.toISOString()} → ${NOW.toISOString()}`);
-  const [clients, cashLog, appointments, payments] = await Promise.all([
+  const [clients, schedule, cashLog, rawSlots, payments] = await Promise.all([
     loadClients(CLIENTS_CSV),
+    loadSchedule(SCHEDULE_CSV),
     loadCashEntries(REPO_ROOT),
     fetchVagaroAppointments(),
     fetchVenmoPayments(),
   ]);
-  console.log(`Loaded ${clients.length} clients, ${cashLog.length} cash entries`);
-  console.log(`Found ${appointments.length} appointments, ${payments.length} Venmo payments`);
+  console.log(`Loaded ${clients.length} clients, ${schedule.length} schedule rows, ${cashLog.length} cash entries`);
+  console.log(`Found ${rawSlots.length} slots, ${payments.length} Venmo payments`);
+
+  const appointments = expandSlots(rawSlots, schedule);
+  const identified = appointments.filter((a) => !a.unidentified).length;
+  const unidentified = appointments.length - identified;
+  console.log(`Schedule lookup: ${identified} identified + ${unidentified} unidentified slots`);
 
   const { results, unmatchedPayments } = reconcile(appointments, payments, clients, cashLog);
   const { subject, html } = buildEmail({ results, unmatchedPayments });

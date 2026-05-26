@@ -92,6 +92,63 @@ export async function loadClients(csvPath) {
   });
 }
 
+// ---- Weekly schedule (day+time → client_name) ----
+
+const DAY_ALIASES = {
+  sun: 0, sunday: 0,
+  mon: 1, monday: 1,
+  tue: 2, tues: 2, tuesday: 2,
+  wed: 3, weds: 3, wednesday: 3,
+  thu: 4, thur: 4, thurs: 4, thursday: 4,
+  fri: 5, friday: 5,
+  sat: 6, saturday: 6,
+};
+
+export async function loadSchedule(csvPath) {
+  let raw;
+  try {
+    raw = await fs.readFile(csvPath, "utf8");
+  } catch (e) {
+    if (e.code === "ENOENT") return [];
+    throw e;
+  }
+  const lines = raw.split("\n").map((l) => l.trim()).filter((l) => l && !l.startsWith("#"));
+  const header = lines.shift();
+  if (!header || !header.toLowerCase().startsWith("day,")) {
+    throw new Error(`Unexpected schedule.csv header: ${header}`);
+  }
+  return lines.map((line) => {
+    const cells = parseCsvLine(line);
+    const dayNum = DAY_ALIASES[(cells[0] || "").trim().toLowerCase()];
+    return {
+      day_of_week: dayNum,
+      time: (cells[1] || "").trim(),
+      client_name: (cells[2] || "").trim(),
+      notes: (cells[3] || "").trim(),
+    };
+  }).filter((s) => s.day_of_week != null && s.time && s.client_name);
+}
+
+// Given a date and the schedule, return the list of client_names training
+// in the matching Pacific-time slot. Returns [] if no slot matches.
+export function findClientsForSlot(schedule, date, tz = "America/Los_Angeles") {
+  const local = localParts(date, tz);
+  return schedule
+    .filter((s) => s.day_of_week === local.dayNum && s.time === local.hhmm)
+    .map((s) => s.client_name);
+}
+
+function localParts(date, tz) {
+  // Use Intl to get day-of-week + HH:MM in the target tz.
+  const fmt = new Intl.DateTimeFormat("en-US", {
+    timeZone: tz, weekday: "short", hour12: false, hour: "2-digit", minute: "2-digit",
+  });
+  const parts = Object.fromEntries(fmt.formatToParts(date).map((p) => [p.type, p.value]));
+  const dayNum = DAY_ALIASES[parts.weekday?.toLowerCase()] ?? -1;
+  const hh = parts.hour === "24" ? "00" : parts.hour;
+  return { dayNum, hhmm: `${hh}:${parts.minute}` };
+}
+
 // ---- Cash entries (aggregates cash-log.md + cash-entries/ dir) ----
 
 export async function loadCashEntries(repoRoot) {
@@ -154,6 +211,13 @@ export function fuzzyName(a, b) {
 
 export function fmtDate(d) {
   return new Date(d).toLocaleDateString("en-US", { weekday: "short", month: "numeric", day: "numeric" });
+}
+
+export function fmtDateTime(d, tz = "America/Los_Angeles") {
+  return new Date(d).toLocaleString("en-US", {
+    timeZone: tz, weekday: "short", month: "numeric", day: "numeric",
+    hour: "numeric", minute: "2-digit", hour12: true,
+  });
 }
 
 export function fmtDateIso(d) {
