@@ -39,20 +39,67 @@ const LOGS_DIR = path.join(REPO_ROOT, "billing", "logs");
 
 async function fetchVagaroAppointments() {
   const events = await ical.async.fromURL(VAGARO_ICAL_URL);
+  const all = Object.values(events);
+  const typeCounts = {};
+  for (const ev of all) typeCounts[ev.type] = (typeCounts[ev.type] || 0) + 1;
+  console.log(`iCal: ${all.length} total entries; types:`, typeCounts);
+
   const appts = [];
-  for (const ev of Object.values(events)) {
+  let skippedCancelled = 0, skippedOld = 0, skippedFuture = 0;
+  let addedSingle = 0, addedRecurring = 0;
+  let sampleRaw = [];
+
+  for (const ev of all) {
     if (ev.type !== "VEVENT") continue;
-    const start = ev.start instanceof Date ? ev.start : new Date(ev.start);
-    if (start < WINDOW_START || start > NOW) continue;
-    if ((ev.status || "").toUpperCase() === "CANCELLED") continue;
+    if ((ev.status || "").toUpperCase() === "CANCELLED") { skippedCancelled++; continue; }
+
     const summary = (ev.summary || "").trim();
+    const description = (ev.description || "").trim();
+
+    if (ev.rrule) {
+      const occurrences = ev.rrule.between(WINDOW_START, NOW, true);
+      for (const occ of occurrences) {
+        appts.push({
+          date: occ,
+          summary,
+          description,
+          client_name: extractClientName(summary, description),
+        });
+        addedRecurring++;
+      }
+      continue;
+    }
+
+    const start = ev.start instanceof Date ? ev.start : new Date(ev.start);
+    if (start < WINDOW_START) { skippedOld++; continue; }
+    if (start > NOW) { skippedFuture++; continue; }
+
     appts.push({
       date: start,
       summary,
-      description: (ev.description || "").trim(),
-      client_name: extractClientName(summary, ev.description),
+      description,
+      client_name: extractClientName(summary, description),
+    });
+    addedSingle++;
+  }
+
+  console.log(`iCal filter: added ${addedSingle} single + ${addedRecurring} recurring; skipped ${skippedOld} old, ${skippedFuture} future, ${skippedCancelled} cancelled`);
+
+  // Show first 3 events for diagnostics so we can tune extractClientName
+  if (appts.length > 0) {
+    console.log(`First ${Math.min(3, appts.length)} events:`);
+    appts.slice(0, 3).forEach((a) =>
+      console.log(`  ${a.date.toISOString()} | summary="${a.summary}" | desc="${a.description.slice(0, 80)}" | extracted_name="${a.client_name}"`),
+    );
+  } else {
+    // Show first 3 RAW VEVENTs so we can see what they look like
+    const rawVevents = all.filter((e) => e.type === "VEVENT").slice(0, 3);
+    console.log(`No appointments in window. Sample of ${rawVevents.length} raw VEVENTs:`);
+    rawVevents.forEach((e, i) => {
+      console.log(`  [${i}] start=${e.start} status=${e.status || ""} rrule=${!!e.rrule} summary="${(e.summary || "").slice(0, 80)}"`);
     });
   }
+
   appts.sort((a, b) => a.date - b.date);
   return appts;
 }
@@ -433,7 +480,7 @@ async function main() {
     html,
     dryRun: DRY_RUN === "true",
   });
-  console.log(`Sent email: ${subject}`);
+  console.log(DRY_RUN === "true" ? `Dry run — no email sent. Subject: ${subject}` : `Sent email: ${subject}`);
 }
 
 const isDirectRun = process.argv[1] && import.meta.url === `file://${process.argv[1]}`;
