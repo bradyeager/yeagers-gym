@@ -285,6 +285,9 @@ export function reconcile(appointments, payments, clients, cashLog) {
         usedPayments.add(best.idx);
         results.push({ appt, roster, status: "PAID_VENMO", payment: best.p, expectedPrice });
       } else {
+        // Mark as used too — a NEEDS_REVIEW payment is still "spoken for" by
+        // this session. Without this it doubles in the unmatched list.
+        usedPayments.add(best.idx);
         results.push({
           appt, roster, status: "NEEDS_REVIEW",
           payment: best.p, expectedPrice,
@@ -506,7 +509,12 @@ async function writeLog({ appointments, payments, results, unmatchedPayments }) 
     const name = r.roster?.vagaro_name || r.appt.client_name || `[unidentified: ${r.appt.summary || "?"}]`;
     const price = r.expectedPrice ?? r.roster?.default_price ?? "?";
     md += `- ${fmtDateTime(r.appt.date)} | ${name} | $${price} | ${r.status}`;
-    if (r.payment) md += ` (matched @${r.payment.sender_handle || r.payment.name}, $${r.payment.amount})`;
+    if (r.payment) {
+      const ident = r.payment.sender_handle
+        ? `@${r.payment.sender_handle}`
+        : `"${r.payment.sender_display_name || r.payment.name || "?"}"`;
+      md += ` (matched ${ident}, $${r.payment.amount})`;
+    }
     if (r.note) md += ` — ${r.note}`;
     md += `\n`;
   }
