@@ -255,6 +255,7 @@ function extractVenmoNote(body) {
     if (raw.length > 140) continue;
     if (AMOUNT_FRAGMENT.test(raw)) continue;
     if (BOILERPLATE.test(raw)) continue;
+    if (/paid your?\b/i.test(raw)) continue;  // Skip duplicate "X paid you" lines in HTML
     if (!/[A-Za-z0-9]/.test(raw)) continue;
     return raw.replace(/^["']|["']$/g, "").trim();
   }
@@ -266,14 +267,17 @@ function extractVenmoNote(body) {
 // Expand raw iCal slots into per-client appointments via the schedule.
 // Each slot can produce N entries (one per client in that day+time).
 // Slots not in the schedule produce one UNIDENTIFIED entry.
-// Group iCal events by exact date+time. Each booking → 1 iCal event,
-// except for some group sessions (e.g., Senior Games 3:1) where Vagaro
-// creates ONE booking covering multiple attendees. We detect that via
-// the ratio in the SUMMARY ("3:1") and expand to match.
+// Group iCal events by date+time. Schedule.csv is the source of truth
+// for WHO attends a given slot — every active entry there gets billed.
+// iCal events just confirm the session happened. If iCal has more events
+// than schedule entries (a stranger booked into that slot), excess events
+// → UNIDENTIFIED unless an INACTIVE marker covers the slot.
 //
-// Schedule entries map to (iCal events OR ratio-implied attendees),
-// whichever is larger. Excess iCal events beyond schedule → UNIDENTIFIED
-// (unless an INACTIVE marker covers the slot).
+// This handles both:
+//   - Single Vagaro booking covering multiple attendees (Senior Games 3:1)
+//     → 1 iCal event + 3 schedule entries = 3 records, all billed.
+//   - Separate parallel sessions at the same time (Mon 8am Peggy 2:1 +
+//     michelle 1:1) → 2 iCal events + 2 schedule entries = 2 records.
 export function expandSlots(slots, schedule) {
   const groups = new Map();
   for (const slot of slots) {
@@ -288,18 +292,10 @@ export function expandSlots(slots, schedule) {
     const n = group.length;
     const k = entries.length;
 
-    // Group-session size from SUMMARY: "3:1 Semi-Private" → 3 attendees.
-    const maxRatio = Math.max(1, ...group.map((g) => {
-      const m = (g.summary || "").match(/(\d+):1/);
-      return m ? Number(m[1]) : 1;
-    }));
-    // Number of schedule entries to bill = larger of iCal-events or
-    // SUMMARY ratio, capped by schedule rows we have.
-    const billable = Math.min(Math.max(n, maxRatio), k);
-
-    for (let i = 0; i < billable; i++) {
-      // When billable > n (group session with 1 booking, multiple attendees),
-      // multiple entries share the same underlying iCal event.
+    // Bill every active schedule entry. If iCal has fewer events than
+    // entries (e.g. Senior Games 1 booking → 3 attendees), entries share
+    // an iCal event for slot context.
+    for (let i = 0; i < k; i++) {
       const slot = group[Math.min(i, n - 1)];
       out.push({
         ...slot,
@@ -308,7 +304,8 @@ export function expandSlots(slots, schedule) {
         unidentified: false,
       });
     }
-    // Excess iCal events beyond schedule entries → UNIDENTIFIED.
+    // Excess iCal events (more bookings than schedule) → UNIDENTIFIED
+    // (suppressed when an INACTIVE marker is present at the slot).
     if (!hasInactive && n > k) {
       for (let i = k; i < n; i++) {
         out.push({ ...group[i], client_name: null, unidentified: true });
