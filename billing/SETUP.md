@@ -15,13 +15,13 @@ This takes ~15 min. Zero code changes — the bot reads any standard iCal feed, 
 **Important:** use your **primary Google account** (the one that receives Venmo payment emails). That same account will be used for Gmail OAuth in Step 3, and the calendar you create below will live inside it.
 
 ### 1a. Connect Vagaro to Google Calendar
-1. Log into Vagaro Pro.
-2. Go to **Settings → Employees** → click your own profile.
-3. Find the **Google Calendar Sync** tab (naming varies — might be "Calendar Sync" or "External Calendar").
-4. Click to connect Google → authorize with your primary Google account.
-5. When prompted *which* calendar to sync to: **create a new calendar** named `Yeager's Gym Appointments`. Keeps your personal calendar clean.
-6. Enable **Sync appointments to Google Calendar** (one-way: Vagaro → Google).
-7. Wait 5–10 minutes for the initial sync. Confirm by opening Google Calendar — you should see today's appointments appear.
+1. **First, create a dedicated Google Calendar** at https://calendar.google.com signed in as `thebradyeager@gmail.com`. Left sidebar → "Other calendars" → `+` → **Create new calendar** → Name: `Yeager's Gym Appointments` → Create. (Skip if you've already done this.)
+2. Log into Vagaro Pro at https://pro.vagaro.com.
+3. Navigate: **Settings → Employee Profiles → Action (next to your name) → Integrations → Sync Google Calendar**. (Confirmed location per Vagaro support, Apr 2026.)
+4. Click to connect Google → sign in as `thebradyeager@gmail.com` → grant permission.
+5. Enable **Sync Vagaro to Google Calendar** (one-way: Vagaro → Google).
+6. If prompted to choose a target calendar: select `Yeager's Gym Appointments`. If not prompted, the sync may land in your primary calendar — that's fine for now, we can move events later if needed.
+7. Wait 5–10 minutes for the initial sync. Confirm by opening https://calendar.google.com — today's appointments should appear under `Yeager's Gym Appointments`.
 
 ### 1b. Copy the secret iCal URL
 1. Open https://calendar.google.com
