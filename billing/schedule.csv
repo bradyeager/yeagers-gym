@@ -1,48 +1,81 @@
-day,time,client_name,notes
-# Maps weekly recurring time slots → client(s). Bot uses this to infer
-# which client a Google Calendar event belongs to, since Vagaro strips
-# client names from synced events.
+day,time,client_name,price_override,notes
+# See billing/RULES.md for full business logic.
 #
-# day:         Mon/Tue/Wed/Thu/Fri/Sat/Sun
-# time:        24-hour LOCAL time (Pacific). HH:MM
-# client_name: MUST match a vagaro_name in clients.csv exactly
-# notes:       free text — variable attendance, pricing exceptions, etc.
+# Schema:
+#   day:             Mon/Tue/Wed/Thu/Fri/Sat/Sun
+#   time:            24-hour Pacific time. HH:MM
+#   client_name:     MUST match a vagaro_name in clients.csv, OR be "INACTIVE"
+#                    to mark a placeholder Vagaro booking that should be ignored.
+#   price_override:  optional integer; overrides clients.csv default_price for
+#                    this specific slot. Use for variable pricing (group rates,
+#                    day-specific rates, etc.).
+#   notes:           free text.
 #
-# Multi-person sessions: one row per attendee at the same day+time.
-# Slots not listed here appear as UNIDENTIFIED in the weekly email.
-# Inactive clients (placeholder Vagaro bookings) are intentionally omitted —
-# their slots will show as UNIDENTIFIED and you can ignore.
+# INACTIVE slots are silently skipped — no record, no notification.
+# Active slots with no schedule entry surface as UNIDENTIFIED in the email.
+
+# ============================================================
+# INACTIVE — placeholder bookings for clients not currently training
+# (Maria Alvarez, Jill Naharms, Trevor Ramsay, April Mahanal Maschka,
+# Lisa Perez, Saidah Coston, Kate Rubalcava). When a client returns,
+# replace their INACTIVE row with a real entry.
+# ============================================================
+Mon,04:30,INACTIVE,,90 min 1:1 placeholder
+Mon,07:00,INACTIVE,,1:1 placeholder (Maria? Lisa Perez?)
+Mon,10:00,INACTIVE,,2:1 placeholder (Jill?)
+Mon,11:00,INACTIVE,,1:1 placeholder (Trevor?)
+Mon,13:00,INACTIVE,,1:1 placeholder (April?)
+Mon,14:00,INACTIVE,,2:1 overflow placeholder
+Tue,06:00,INACTIVE,,2:1 placeholder
+Tue,10:00,INACTIVE,,1:1 placeholder
+Wed,05:00,INACTIVE,,1:1 placeholder
+Wed,07:00,INACTIVE,,1:1 placeholder (Saidah?)
+Wed,08:00,INACTIVE,,1:1 placeholder (Trevor?)
+Wed,10:00,INACTIVE,,2:1 overflow (David partner?)
+Wed,11:00,INACTIVE,,1:1 placeholder
+Thu,06:30,INACTIVE,,1:1 placeholder
+Thu,07:00,INACTIVE,,90 min + 60 min placeholders
+Thu,15:00,INACTIVE,,2:1 placeholder
+Fri,06:30,INACTIVE,,1:1 placeholder
+
+# ============================================================
+# ACTIVE SCHEDULE
+# ============================================================
 
 # --- Monday ---
-Mon,06:00,Jacob Bain,
-Mon,07:00,Lisa Knievel,
-Mon,08:00,Peggy Happ,
-Mon,08:00,michelle Delorenza,
-Mon,09:00,Dina Bates,3:1 group with Anna + sometimes Katelin
-Mon,09:00,Anna Cessna,3:1 group with Dina + sometimes Katelin
-Mon,09:00,Katelin Lowther,joins when in town
-Mon,14:00,Kerry Kreczmer,
-Mon,14:00,Celestin Mathieu,
-Mon,16:00,Danny Duty,2:1 with wife Adriana
-Mon,17:00,Melissa Rios,2:1 with husband Julio
+Mon,06:00,Jacob Bain,,1:1 60min
+Mon,07:00,Lisa Knievel,,1:1 — pays via Zeal (business)
+Mon,08:00,Peggy Happ,,2:1 60min
+Mon,08:00,michelle Delorenza,,1 of 2 weekly sessions free thru ~Aug 2026
+Mon,09:00,Dina Bates,,3:1 group w/ Anna + Katelin
+Mon,09:00,Anna Cessna,45,3:1 group rate when Dina joins (smoothie tolerance handles $50 when Dina absent)
+Mon,09:00,Katelin Lowther,45,3:1 group rate when Dina joins
+Mon,14:00,Kerry Kreczmer,,2:1 60min
+Mon,14:00,Celestin Mathieu,,2:1 60min (Mon)
+Mon,16:00,Danny Duty,,Couple 2:1; $100 together / $70 if alone (Adriana pays)
+Mon,17:00,Melissa Rios,,Couple 2:1 w/ Julio; $100 together / $70 if alone
 
 # --- Tuesday ---
-Tue,07:00,Tonnie Dahl,
-Tue,08:00,Jeanette Davey,
-Tue,09:00,Robert Brower,prepaid for all of 2026
+Tue,07:00,Tonnie Dahl,45,New Tuesday rate $45 (Thu still $70)
+Tue,08:00,Jeanette Davey,70,1:1 by check $70
+Tue,09:00,Robert Brower,,Prepaid all of 2026
 
 # --- Wednesday ---
-Wed,09:00,Rachel Bertholino,husband Mathieu (Venmo: Celestin Mathieu) pays
-Wed,10:00,Annie Deioma,2:1 with husband David (Mudroom Backpacks pays)
+Wed,09:00,Rachel Bertholino,,Husband Mathieu (Venmo: Celestin Mathieu) pays
+Wed,10:00,Annie Deioma,,2:1 w/ husband David (Mudroom Backpacks pays)
 
 # --- Thursday ---
-Thu,08:00,Danika Elenes,
-Thu,09:00,Tonnie Dahl,
-Thu,10:00,Robert Brower,prepaid for all of 2026
-Thu,11:00,Celestin Mathieu,
+Thu,08:00,Danika Elenes,,Flat $65 regardless
+Thu,09:00,Tonnie Dahl,70,Thursday rate $70 (Tue is $45)
+Thu,10:00,Robert Brower,,Prepaid all of 2026
+Thu,11:00,Celestin Mathieu,,Thu $50 normally / $70 if alone
+# Stacy Tesler — Thursday morning, Zelle to personal, $70. UNCOMMENT once Brad confirms time:
+# Thu,HH:MM,Stacy Tesler CPY,70,Pays via Zelle to personal
 
 # --- Friday ---
-Fri,07:00,Lacey James,
-Fri,08:00,Jeanette Davey,
-Fri,08:00,Peggy Happ,
-Fri,09:00,Lisa Knievel,
+# Note: Friday times shifted to 7:30 to match what's actually in Vagaro's iCal.
+# If 7:00 / 8:00 are correct in Vagaro, fix here and the bot will catch up next run.
+Fri,07:30,Lacey James,,1:1 — verify time vs Vagaro
+Fri,07:30,Jeanette Davey,50,2:1 by check $50 w/ Peggy
+Fri,07:30,Peggy Happ,,2:1 w/ Jeanette $50
+Fri,09:00,Lisa Knievel,,1:1 — Zeal (business)

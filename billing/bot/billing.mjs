@@ -10,7 +10,7 @@ import { google } from "googleapis";
 import {
   PALETTE, FONTS, GITHUB_OWNER, GITHUB_REPO, DEFAULT_BRANCH,
   requireEnv, resolveRepoRoot, loadClients, loadCashEntries,
-  loadSchedule, findClientsForSlot,
+  loadSchedule, findScheduleEntriesForSlot, isInactiveSlot,
   fuzzyName, fmtDate, fmtDateTime, fmtDateIso, slugify,
   venmoRequestLink, githubNewFileUrl, sendBrevoEmail,
   emailShell, sectionLabel, button, buttonOutline, card,
@@ -197,6 +197,7 @@ function extractBody(payload) {
 // schedule.csv tells us which clients could be in that slot. Map 1:1
 // in schedule order. Excess iCal events → UNIDENTIFIED. Excess schedule
 // entries → no record (client wasn't booked this week).
+// Slots marked INACTIVE in schedule.csv are skipped entirely.
 export function expandSlots(slots, schedule) {
   const groups = new Map();
   for (const slot of slots) {
@@ -206,12 +207,20 @@ export function expandSlots(slots, schedule) {
   }
   const out = [];
   for (const group of groups.values()) {
-    const clientNames = schedule.length ? findClientsForSlot(schedule, group[0].date) : [];
+    // Slot explicitly marked as inactive (placeholder Vagaro booking).
+    if (schedule.length && isInactiveSlot(schedule, group[0].date)) continue;
+
+    const entries = schedule.length ? findScheduleEntriesForSlot(schedule, group[0].date) : [];
     const n = group.length;
-    const k = clientNames.length;
+    const k = entries.length;
     const m = Math.min(n, k);
     for (let i = 0; i < m; i++) {
-      out.push({ ...group[i], client_name: clientNames[i], unidentified: false });
+      out.push({
+        ...group[i],
+        client_name: entries[i].client_name,
+        price_override: entries[i].price_override,
+        unidentified: false,
+      });
     }
     for (let i = m; i < n; i++) {
       out.push({ ...group[i], client_name: null, unidentified: true });
@@ -243,16 +252,19 @@ export function reconcile(appointments, payments, clients, cashLog) {
       continue;
     }
 
+    // Schedule's price_override beats clients.csv default_price for
+    // slot-specific pricing (e.g. group rate, Tuesday vs Thursday,
+    // Jeanette $70 on Tue vs $50 on Fri).
+    const expectedPrice = appt.price_override ?? roster.default_price;
+
     if (roster.pays_cash) {
       const cashHit = cashLog.find(
         (c) => sameDay(c.date, appt.date) && fuzzyName(c.name, roster.vagaro_name) >= 0.8,
       );
-      if (cashHit) results.push({ appt, roster, status: "PAID_CASH", payment: cashHit });
-      else results.push({ appt, roster, status: "CASH_PENDING" });
+      if (cashHit) results.push({ appt, roster, status: "PAID_CASH", payment: cashHit, expectedPrice });
+      else results.push({ appt, roster, status: "CASH_PENDING", expectedPrice });
       continue;
     }
-
-    const expectedPrice = roster.default_price;
     const candidates = payments
       .map((p, idx) => ({ p, idx }))
       .filter(({ idx }) => !usedPayments.has(idx))
@@ -447,7 +459,7 @@ export function buildEmail({ results, unmatchedPayments, now = NOW, windowStart 
   if (cashPending.length) {
     body += sectionLabel(`Cash pending — ${cashPending.length}`, "teal");
     for (const r of cashPending) {
-      const price = r.roster.default_price || "?";
+      const price = r.expectedPrice ?? r.roster.default_price ?? "?";
       const cashUrl = cashEntryLink({ date: r.appt.date, name: r.roster.vagaro_name, amount: price });
       let inner = `<div style="color:${PALETTE.textPrimary};"><strong>${escapeHtml(r.roster.vagaro_name)}</strong> — ${fmtDate(r.appt.date)} — expected $${price}</div>`;
       inner += `<div style="margin-top:10px;">`;

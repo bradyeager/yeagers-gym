@@ -123,25 +123,47 @@ export async function loadSchedule(csvPath) {
   if (!header || !header.toLowerCase().startsWith("day,")) {
     throw new Error(`Unexpected schedule.csv header: ${header}`);
   }
+  // Detect schema: legacy 4-col (day,time,client,notes) or new 5-col with price_override
+  const headerCells = parseCsvLine(header);
+  const hasPriceOverride = headerCells[3]?.trim().toLowerCase() === "price_override";
+  const notesIdx = hasPriceOverride ? 4 : 3;
   return lines.map((line) => {
     const cells = parseCsvLine(line);
     const dayNum = DAY_ALIASES[(cells[0] || "").trim().toLowerCase()];
+    const priceRaw = hasPriceOverride ? (cells[3] || "").trim() : "";
     return {
       day_of_week: dayNum,
       time: (cells[1] || "").trim(),
       client_name: (cells[2] || "").trim(),
-      notes: (cells[3] || "").trim(),
+      price_override: priceRaw ? Number(priceRaw) : null,
+      notes: (cells[notesIdx] || "").trim(),
     };
   }).filter((s) => s.day_of_week != null && s.time && s.client_name);
 }
 
-// Given a date and the schedule, return the list of client_names training
-// in the matching Pacific-time slot. Returns [] if no slot matches.
-export function findClientsForSlot(schedule, date, tz = "America/Los_Angeles") {
+// Given a date and the schedule, return the list of schedule entries
+// (active only; INACTIVE markers excluded) matching the Pacific-time slot.
+export function findScheduleEntriesForSlot(schedule, date, tz = "America/Los_Angeles") {
   const local = localParts(date, tz);
   return schedule
     .filter((s) => s.day_of_week === local.dayNum && s.time === local.hhmm)
-    .map((s) => s.client_name);
+    .filter((s) => s.client_name.toUpperCase() !== "INACTIVE");
+}
+
+export function findClientsForSlot(schedule, date, tz = "America/Los_Angeles") {
+  return findScheduleEntriesForSlot(schedule, date, tz).map((s) => s.client_name);
+}
+
+// True if the schedule has any INACTIVE marker at this day+time.
+// Used to suppress entire slots from the UNIDENTIFIED bucket.
+export function isInactiveSlot(schedule, date, tz = "America/Los_Angeles") {
+  const local = localParts(date, tz);
+  return schedule.some(
+    (s) =>
+      s.day_of_week === local.dayNum &&
+      s.time === local.hhmm &&
+      s.client_name.toUpperCase() === "INACTIVE",
+  );
 }
 
 function localParts(date, tz) {
