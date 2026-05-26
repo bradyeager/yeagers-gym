@@ -540,6 +540,10 @@ async function main() {
   const { subject, html } = buildEmail({ results, unmatchedPayments });
   const logFile = await writeLog({ appointments, payments, results, unmatchedPayments });
   console.log(`Wrote log: ${logFile}`);
+  // Dump log to console for easy review (dry-run never commits the file).
+  console.log("\n=== LOG FILE CONTENTS ===");
+  console.log(await fs.readFile(logFile, "utf8"));
+  console.log("=== END LOG ===\n");
   await sendBrevoEmail({
     apiKey: BREVO_API_KEY,
     to: RECIPIENT_EMAIL,
