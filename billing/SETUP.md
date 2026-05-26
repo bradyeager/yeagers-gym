@@ -99,9 +99,13 @@ The bot reads your Gmail (specifically, emails from `venmo@venmo.com`) to see wh
 
 ### 3d. Create OAuth credentials
 
+> **Important:** create a **Web application** client (not Desktop). The OAuth Playground in Step 3e sends `https://developers.google.com/oauthplayground` as the redirect URI; that URI can only be registered on a Web application client. A Desktop client will fail with `Error 400: redirect_uri_mismatch`.
+
 1. Left menu → **APIs & Services** → **Credentials** → **+ Create Credentials** → **OAuth client ID**.
-2. Application type: **Desktop app**. Name: `billing-bot`. Create.
-3. Download the JSON (or copy the **Client ID** and **Client secret**). You'll need both.
+2. Application type: **Web application**. Name: `billing-bot`.
+3. Under **Authorized redirect URIs**, click **+ Add URI** and paste exactly: `https://developers.google.com/oauthplayground`
+4. Click **Create**.
+5. Copy the **Client ID** and **Client secret** from the popup. (You can also click "Download JSON" — the file contains both in plaintext.) You'll need both for Step 3e.
 
 ### 3e. Generate a refresh token
 
