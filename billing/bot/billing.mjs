@@ -22,7 +22,7 @@ const {
   GOOGLE_CLIENT_SECRET,
   GOOGLE_REFRESH_TOKEN,
   BREVO_API_KEY,
-  RECIPIENT_EMAIL = "brad@yeagersgym.com",
+  RECIPIENT_EMAIL = "brad@bradyeager.com",
   SENDER_EMAIL = "brad@yeagersgym.com",
   SENDER_NAME = "Yeager's Gym Billing Bot",
   LOOKBACK_DAYS = "8",
