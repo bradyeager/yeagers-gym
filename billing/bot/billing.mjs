@@ -166,8 +166,15 @@ function parseVenmoEmail(msg) {
   const dateHdr = headers["date"] || "";
   const snippet = msg.snippet || "";
   const body = extractBody(msg.payload);
-  const subjMatch = subject.match(/^(.+?)\s+paid you\s+\$([\d,.]+)/i);
-  if (!subjMatch) return null;
+  // Handles both "Name paid you $X" (direct payment) and
+  // "Name paid your $X request" (paid a request Brad sent them).
+  const subjMatch = subject.match(/^(.+?)\s+paid your?\s+\$([\d,.]+)/i);
+  if (!subjMatch) {
+    if (subject.toLowerCase().includes("paid")) {
+      console.log(`Venmo parser: skipping unrecognized subject "${subject}"`);
+    }
+    return null;
+  }
   const sender_display_name = subjMatch[1].trim();
   const amount = Number(subjMatch[2].replace(/,/g, ""));
   // Only match the canonical Venmo profile URL. The "@username" fallback
@@ -585,7 +592,14 @@ async function main() {
   console.log(`Schedule lookup: ${identified} identified + ${unidentified} unidentified slots`);
 
   const { results, unmatchedPayments } = reconcile(appointments, payments, clients, cashLog);
-  const { subject, html } = buildEmail({ results, unmatchedPayments });
+
+  // The Gmail window is wider than the appointment window to catch
+  // late-arriving emails near the boundary. Payments older than the
+  // appointment window legitimately won't match any session here, so
+  // suppress them from the email (still kept in the log for audit).
+  const unmatchedInWindow = unmatchedPayments.filter((p) => new Date(p.date) >= WINDOW_START);
+
+  const { subject, html } = buildEmail({ results, unmatchedPayments: unmatchedInWindow });
   const logFile = await writeLog({ appointments, payments, results, unmatchedPayments });
   console.log(`Wrote log: ${logFile}`);
   // Dump log to console for easy review (dry-run never commits the file).
