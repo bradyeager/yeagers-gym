@@ -201,15 +201,29 @@ export function fuzzyName(a, b) {
   const nb = b.toLowerCase().replace(/[^a-z ]/g, "").trim();
   if (!na || !nb) return 0;
   if (na === nb) return 1;
+
+  // Prefix match handles business names: "Mudroom" matches "Mudroom Backpacks"
+  if (na.startsWith(nb + " ") || nb.startsWith(na + " ")) return 0.9;
+
   const aParts = na.split(/\s+/);
   const bParts = nb.split(/\s+/);
-  if (aParts[0] === bParts[0]) {
-    const aLast = aParts[aParts.length - 1];
-    const bLast = bParts[bParts.length - 1];
+  const aFirst = aParts[0], bFirst = bParts[0];
+  const aLast = aParts[aParts.length - 1];
+  const bLast = bParts[bParts.length - 1];
+
+  if (aFirst === bFirst) {
     if (aLast === bLast) return 1;
     if (aLast[0] === bLast[0]) return 0.8;
     return 0.6;
   }
+
+  // Nickname / alt spelling tolerance: same last name + similar first
+  // ("Laci James" / "Lacey James", "katie lowther" / "Katelin Lowther")
+  if (aLast && bLast && aLast === bLast) {
+    if (aFirst.slice(0, 3) === bFirst.slice(0, 3)) return 0.9;
+    if (aFirst.startsWith(bFirst) || bFirst.startsWith(aFirst)) return 0.9;
+  }
+
   return 0;
 }
 

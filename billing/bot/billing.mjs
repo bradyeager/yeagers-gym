@@ -90,6 +90,25 @@ async function fetchVagaroAppointments() {
 
   console.log(`iCal filter: added ${addedSingle} single + ${addedRecurring} recurring; skipped ${skippedOld} old, ${skippedFuture} future, ${skippedCancelled} cancelled, ${skippedNonBillable} non-billable`);
 
+  // Dedupe identical slots — Vagaro creates a separate iCal event per booked
+  // client per slot, so 3 clients in a 3:1 = 3 iCal events with the same
+  // date+time+summary. We collapse those to a single slot and let the
+  // schedule lookup re-expand to attendees.
+  const seen = new Set();
+  const deduped = [];
+  let droppedDupes = 0;
+  for (const a of appts) {
+    const key = `${a.date.toISOString()}|${a.summary}`;
+    if (seen.has(key)) { droppedDupes++; continue; }
+    seen.add(key);
+    deduped.push(a);
+  }
+  if (droppedDupes > 0) {
+    console.log(`iCal dedupe: collapsed ${droppedDupes} duplicate slot events (multi-attendee bookings)`);
+  }
+  appts.length = 0;
+  appts.push(...deduped);
+
   // Show first 3 events for diagnostics so we can tune extractClientName
   if (appts.length > 0) {
     console.log(`First ${Math.min(3, appts.length)} events:`);
@@ -109,12 +128,14 @@ async function fetchVagaroAppointments() {
   return appts;
 }
 
-// Vagaro service names always include a ratio (1:1, 2:1, 3:1) for personal-training
-// sessions. Personal tasks (lunch, errands, training blocks, remote programming
-// subscriptions) don't. This is the cleanest filter we have without a service whitelist.
+// Whitelist Vagaro service-type keywords. Ratio-only checks ("1:1", "2:1")
+// were too lax — "Get Forrest & Aspen @ 2:40" slipped through. If Brad adds
+// new service types in Vagaro, extend the keyword list here.
 function isBillableSession(summary) {
   if (!summary) return false;
-  return /\b\d+:\d+\b/.test(summary);
+  if (/personal training/i.test(summary)) return true;
+  if (/semi[-\s]?private/i.test(summary)) return true;
+  return false;
 }
 
 function extractClientName(summary, description) {
@@ -163,11 +184,14 @@ function parseVenmoEmail(msg) {
   if (!subjMatch) return null;
   const sender_display_name = subjMatch[1].trim();
   const amount = Number(subjMatch[2].replace(/,/g, ""));
-  const handleMatch = (body + "\n" + snippet).match(/venmo\.com\/u\/([A-Za-z0-9._-]+)/i)
-    || (body + "\n" + snippet).match(/@([A-Za-z0-9._-]+)/);
+  // Only match the canonical Venmo profile URL. The "@username" fallback
+  // grabbed CSS @media and other false positives.
+  const handleMatch = (body + "\n" + snippet).match(/venmo\.com\/u\/([A-Za-z0-9._-]+)/i);
   const sender_handle = handleMatch ? handleMatch[1].toLowerCase() : "";
-  const noteMatch = body.match(/"([^"\n]{1,140})"/);
-  const note = noteMatch ? noteMatch[1].trim() : "";
+  // Note parsing is currently broken (grabs HTML/DOCTYPE strings from the
+  // body). Leaving empty until we have a cleaner regex; doesn't affect
+  // matching logic — sender + amount are what count.
+  const note = "";
   const date = dateHdr ? new Date(dateHdr) : new Date();
   return { sender_display_name, sender_handle, amount, note, date, subject };
 }
@@ -481,7 +505,7 @@ async function writeLog({ appointments, payments, results, unmatchedPayments }) 
   for (const r of results) {
     const name = r.roster?.vagaro_name || r.appt.client_name || `[unidentified: ${r.appt.summary || "?"}]`;
     const price = r.expectedPrice ?? r.roster?.default_price ?? "?";
-    md += `- ${fmtDateIso(r.appt.date)} | ${name} | $${price} | ${r.status}`;
+    md += `- ${fmtDateTime(r.appt.date)} | ${name} | $${price} | ${r.status}`;
     if (r.payment) md += ` (matched @${r.payment.sender_handle || r.payment.name}, $${r.payment.amount})`;
     if (r.note) md += ` — ${r.note}`;
     md += `\n`;
