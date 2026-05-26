@@ -90,25 +90,6 @@ async function fetchVagaroAppointments() {
 
   console.log(`iCal filter: added ${addedSingle} single + ${addedRecurring} recurring; skipped ${skippedOld} old, ${skippedFuture} future, ${skippedCancelled} cancelled, ${skippedNonBillable} non-billable`);
 
-  // Dedupe identical slots — Vagaro creates a separate iCal event per booked
-  // client per slot, so 3 clients in a 3:1 = 3 iCal events with the same
-  // date+time+summary. We collapse those to a single slot and let the
-  // schedule lookup re-expand to attendees.
-  const seen = new Set();
-  const deduped = [];
-  let droppedDupes = 0;
-  for (const a of appts) {
-    const key = `${a.date.toISOString()}|${a.summary}`;
-    if (seen.has(key)) { droppedDupes++; continue; }
-    seen.add(key);
-    deduped.push(a);
-  }
-  if (droppedDupes > 0) {
-    console.log(`iCal dedupe: collapsed ${droppedDupes} duplicate slot events (multi-attendee bookings)`);
-  }
-  appts.length = 0;
-  appts.push(...deduped);
-
   // Show first 3 events for diagnostics so we can tune extractClientName
   if (appts.length > 0) {
     console.log(`First ${Math.min(3, appts.length)} events:`);
@@ -212,16 +193,28 @@ function extractBody(payload) {
 // Expand raw iCal slots into per-client appointments via the schedule.
 // Each slot can produce N entries (one per client in that day+time).
 // Slots not in the schedule produce one UNIDENTIFIED entry.
+// Group iCal events by exact date+time. Each event = one booking;
+// schedule.csv tells us which clients could be in that slot. Map 1:1
+// in schedule order. Excess iCal events → UNIDENTIFIED. Excess schedule
+// entries → no record (client wasn't booked this week).
 export function expandSlots(slots, schedule) {
-  const out = [];
+  const groups = new Map();
   for (const slot of slots) {
-    const clientNames = schedule.length ? findClientsForSlot(schedule, slot.date) : [];
-    if (clientNames.length === 0) {
-      out.push({ ...slot, client_name: null, unidentified: true });
-    } else {
-      for (const name of clientNames) {
-        out.push({ ...slot, client_name: name, unidentified: false });
-      }
+    const key = slot.date.toISOString();
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key).push(slot);
+  }
+  const out = [];
+  for (const group of groups.values()) {
+    const clientNames = schedule.length ? findClientsForSlot(schedule, group[0].date) : [];
+    const n = group.length;
+    const k = clientNames.length;
+    const m = Math.min(n, k);
+    for (let i = 0; i < m; i++) {
+      out.push({ ...group[i], client_name: clientNames[i], unidentified: false });
+    }
+    for (let i = m; i < n; i++) {
+      out.push({ ...group[i], client_name: null, unidentified: true });
     }
   }
   return out;
