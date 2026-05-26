@@ -189,12 +189,10 @@ function parseVenmoEmail(msg) {
 
 function extractBody(payload, mimeType = null) {
   if (!payload) return "";
-  // If a specific mimeType requested, find that part exclusively.
   if (mimeType) {
     const part = findMimePart(payload, mimeType);
     return part?.body?.data ? Buffer.from(part.body.data, "base64").toString("utf8") : "";
   }
-  // Otherwise concatenate every leaf body for legacy fallback.
   const chunks = [];
   const walk = (p) => {
     if (p.body?.data) chunks.push(Buffer.from(p.body.data, "base64").toString("utf8"));
@@ -215,30 +213,49 @@ function findMimePart(payload, mimeType) {
   return null;
 }
 
-// Pull the client-supplied note from a Venmo email body. Notes vary:
-//   "Training 5/18"      (quoted)
-//   5/18 😅              (standalone short line, no quotes)
-//   Note: <text>
-// Scan for short standalone lines between the amount line and the
-// transaction-details boilerplate. Skip obvious noise (URLs, headers).
+// Strip HTML tags + decode the most common entities. Block-level tags become
+// newlines so a single-line HTML email turns into readable lines.
+function stripHtml(s) {
+  if (!s.includes("<")) return s;
+  return s
+    .replace(/<br\s*\/?>/gi, "\n")
+    .replace(/<\/(p|div|tr|td|li|h[1-6]|section|article)>/gi, "\n")
+    .replace(/<[^>]+>/g, "")
+    .replace(/&nbsp;/g, " ")
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'");
+}
+
+// Pull the client-supplied note from a Venmo email body.
+// Venmo splits the amount display across lines like:
+//     "<sender> paid you"
+//     "$"
+//     "50"       (dollars)
+//     "00"       (cents)
+//     "<note>"   ← what we want
+//     "See transaction"
+// We strip HTML, then walk past the amount fragments and return the first
+// non-fragment line that isn't transaction boilerplate.
 function extractVenmoNote(body) {
   if (!body) return "";
-  const lines = body.split(/\r?\n/).map((l) => l.trim());
-  // Find the line that mentions the payment ("paid you" / "paid your")
-  const paidIdx = lines.findIndex((l) => /paid your?/i.test(l));
+  const text = stripHtml(body);
+  const lines = text.split(/\r?\n/).map((l) => l.trim()).filter((l) => l !== "");
+  const paidIdx = lines.findIndex((l) => /paid your?\b/i.test(l));
   if (paidIdx < 0) return "";
-  const SKIP = /^(see|view|sent to|transaction|venmo|click|https?:\/\/|^>\s|^--|powered by|©|all rights|the venmo|paypal)/i;
-  for (let i = paidIdx + 1; i < Math.min(paidIdx + 12, lines.length); i++) {
+
+  const AMOUNT_FRAGMENT = /^(\$|\$?\d{1,4}|\d{2})$/;  // "$", "50", "100", "00"
+  const BOILERPLATE = /^(see (transaction|details|payment)|view|sent to|transaction|venmo|click|powered by|©|all rights|the venmo|paypal|money credited|estimated arrival|destination|date$|transaction id|@yeagersgym)/i;
+
+  for (let i = paidIdx + 1; i < Math.min(paidIdx + 15, lines.length); i++) {
     const raw = lines[i];
     if (!raw) continue;
     if (raw.length > 140) continue;
-    if (/^\$?[\d,.]+$/.test(raw)) continue;          // just amount, e.g. "$45.00"
-    if (/^\d{1,2}\/\d{1,2}\/?\d{0,4}$/.test(raw)) {  // pure date-like line e.g. "5/18"
-      return raw;
-    }
-    if (SKIP.test(raw)) continue;
-    if (!/[A-Za-z0-9]/.test(raw)) continue;          // pure punctuation/whitespace
-    // Strip surrounding quotes
+    if (AMOUNT_FRAGMENT.test(raw)) continue;
+    if (BOILERPLATE.test(raw)) continue;
+    if (!/[A-Za-z0-9]/.test(raw)) continue;
     return raw.replace(/^["']|["']$/g, "").trim();
   }
   return "";
@@ -249,12 +266,14 @@ function extractVenmoNote(body) {
 // Expand raw iCal slots into per-client appointments via the schedule.
 // Each slot can produce N entries (one per client in that day+time).
 // Slots not in the schedule produce one UNIDENTIFIED entry.
-// Group iCal events by exact date+time. Each event = one booking;
-// schedule.csv tells us which clients could be in that slot. Map 1:1
-// in schedule order. Excess iCal events → UNIDENTIFIED (unless the
-// slot also has an INACTIVE marker — then excess events are silently
-// dropped). Excess schedule entries → no record (client wasn't booked
-// this week).
+// Group iCal events by exact date+time. Each booking → 1 iCal event,
+// except for some group sessions (e.g., Senior Games 3:1) where Vagaro
+// creates ONE booking covering multiple attendees. We detect that via
+// the ratio in the SUMMARY ("3:1") and expand to match.
+//
+// Schedule entries map to (iCal events OR ratio-implied attendees),
+// whichever is larger. Excess iCal events beyond schedule → UNIDENTIFIED
+// (unless an INACTIVE marker covers the slot).
 export function expandSlots(slots, schedule) {
   const groups = new Map();
   for (const slot of slots) {
@@ -268,22 +287,30 @@ export function expandSlots(slots, schedule) {
     const hasInactive = schedule.length ? isInactiveSlot(schedule, group[0].date) : false;
     const n = group.length;
     const k = entries.length;
-    const m = Math.min(n, k);
 
-    // Map first m iCal events to active schedule entries.
-    for (let i = 0; i < m; i++) {
+    // Group-session size from SUMMARY: "3:1 Semi-Private" → 3 attendees.
+    const maxRatio = Math.max(1, ...group.map((g) => {
+      const m = (g.summary || "").match(/(\d+):1/);
+      return m ? Number(m[1]) : 1;
+    }));
+    // Number of schedule entries to bill = larger of iCal-events or
+    // SUMMARY ratio, capped by schedule rows we have.
+    const billable = Math.min(Math.max(n, maxRatio), k);
+
+    for (let i = 0; i < billable; i++) {
+      // When billable > n (group session with 1 booking, multiple attendees),
+      // multiple entries share the same underlying iCal event.
+      const slot = group[Math.min(i, n - 1)];
       out.push({
-        ...group[i],
+        ...slot,
         client_name: entries[i].client_name,
         price_override: entries[i].price_override,
         unidentified: false,
       });
     }
-    // Excess iCal events become UNIDENTIFIED — unless an INACTIVE
-    // marker exists at this slot, in which case we silently drop them
-    // (Brad has already told us these placeholder bookings are noise).
-    if (!hasInactive) {
-      for (let i = m; i < n; i++) {
+    // Excess iCal events beyond schedule entries → UNIDENTIFIED.
+    if (!hasInactive && n > k) {
+      for (let i = k; i < n; i++) {
         out.push({ ...group[i], client_name: null, unidentified: true });
       }
     }

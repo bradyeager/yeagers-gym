@@ -78,9 +78,16 @@ Exceptions and per-client overrides below.
 - ALSO pays for wife Rachel's Wed sessions.
 
 ### Tonnie Dahl (changing schedule)
-- **Tue 7am: $45** (new lower Tuesday rate)
-- **Thu 9am: $70** (existing rate, unchanged)
+- **Tue 8am: $45** — Senior Games group (3:1 with Peggy + Robert; see below)
+- **Thu 9am: $70** — regular 1:1, unchanged
 - $5-over = smoothie
+
+### San Diego Senior Games (Tue 8am, 3:1 group)
+- Started 5/19/2026
+- Attendees: **Peggy Happ**, **Tonnie Dahl**, **Robert Brower**
+- **$45 each per session**
+- Robert's seat is covered by his 2026 prepay (no payment expected from him)
+- Vagaro may create ONE iCal booking for the whole group — the bot detects the "3:1" ratio in the SUMMARY and bills all 3 attendees from `schedule.csv`. If only one Vagaro booking exists, no further action needed.
 
 ### Jeanette Davey
 - **Pays by check** every time
