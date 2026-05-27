@@ -246,7 +246,8 @@ function extractVenmoNote(body) {
   const paidIdx = lines.findIndex((l) => /paid your?\b/i.test(l));
   if (paidIdx < 0) return "";
 
-  const AMOUNT_FRAGMENT = /^(\$|\$?\d{1,4}|\d{2})$/;  // "$", "50", "100", "00"
+  // Matches Venmo's split-amount fragments: "$", "50", "100", "00", ".00", ".25"
+  const AMOUNT_FRAGMENT = /^(\$|\$?\d{1,4}|\.?\d{1,2})$/;
   const BOILERPLATE = /^(see (transaction|details|payment)|view|sent to|transaction|venmo|click|powered by|©|all rights|the venmo|paypal|money credited|estimated arrival|destination|date$|transaction id|@yeagersgym)/i;
 
   for (let i = paidIdx + 1; i < Math.min(paidIdx + 15, lines.length); i++) {
