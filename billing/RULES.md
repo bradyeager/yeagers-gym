@@ -20,16 +20,57 @@ Exceptions and per-client overrides below.
 
 ---
 
+## Variable pricing — `valid_prices`
+
+When a client's price legitimately varies (couple together vs one spouse solo,
+group vs alone), list every acceptable amount in the `valid_prices` column of
+`clients.csv`, slash-separated: e.g. `70/100`. The bot treats a payment as
+**paid in full** if it equals ANY of those amounts (or that amount + $5 for a
+smoothie). This is how we stop flagging legit variants as "needs review."
+
+Examples in the roster:
+- **Danny / Melissa** `70/100` — couple together $100, one spouse alone $70.
+- **Peggy** `40/45/50/70` — Fri 2:1 $50, solo $70, Senior Games $45, Thu team $40.
+- **Celestin / Rachel** `50/70` — 2:1 $50, solo $70.
+- **Tonnie** `40/45/70` — Thu team $40, Senior Games $45, Thu 1:1 $70.
+
+A payment that matches none of a client's valid prices → NEEDS_REVIEW (eyeball).
+
+## Note-date matching
+
+Clients often write the session date in the Venmo memo ("5/19", "Missed
+session 5/19"). The bot parses that date and uses it to pin a late payment to
+the correct past session when a client has more than one in the window.
+
 ## Payment methods
 
 | Method | Bot behavior |
 |---|---|
-| **Venmo** (default) | Bot reads Venmo emails from `venmo@venmo.com`, matches sender to roster, marks PAID_VENMO when amount matches. |
-| **Cash** | `pays_cash=true` in clients.csv. Bot generates "Log $X cash" button each session; you click weekly to record. |
-| **Check** | Same as cash (`pays_cash=true`). Add `notes="Pays by check"`. |
-| **Zeal → Chase Business** | Same as cash. Currently: Lisa Knievel. |
-| **Zeal → Personal** | Same as cash. Currently: Stacy Tesler. |
-| **Prepaid** | `prepaid=true` in clients.csv. Bot marks PAID_PREPAID, never bills, never asks. Currently: Robert Brower (paid all of 2026). |
+| **Venmo** (default) | Reads Venmo emails (`from:venmo.com`), matches sender + amount, marks PAID_VENMO. |
+| **Cash / Check / Zeal / Zelle** | `pays_cash=true`. Shown as a calm **"Expected via check/Zeal/cash"** FYI list — **no action needed**, no buttons. Only matters if someone who usually pays this way didn't. Currently: Lisa Knievel (Zeal→Chase business), Stacy Tesler (Zelle→personal), Jeanette Davey (check). |
+| **Prepaid** | `prepaid=true`. Marks PAID_PREPAID, never bills. Currently: Robert Brower (all of 2026). |
+
+## Email sections (what you act on)
+
+1. **⚠ Lagging Indicators** — open items carried over from a prior week. Clear first.
+2. **Unpaid** (this week) — pink "Request on Venmo" button.
+3. **Needs review** — amount didn't match any valid price; eyeball, or tap "Request balance" if short.
+4. **Expected via check/Zeal/cash** — FYI only, no action.
+5. **Paid** — collapsed confirmation list.
+6. **Unmatched Venmo payments** — payments with memos the bot couldn't auto-assign; hand-match.
+
+> The only button that opens GitHub is "Log as cash" on an unpaid client. Sign
+> into github.com once (check "keep me signed in") and it works thereafter.
+> Everything else opens Venmo.
+
+## OPEN QUESTION — Thursday 8am team session
+
+Brad: confirm how this one works. On Thu 5/28, **Mudroom (David) paid $80** and
+you said it was for the 8am team (Tonnie, Robert, Peggy) at $40/person. But
+$40 × 3 = $120, and Robert is prepaid (so 2 paying seats = $80). Did David
+cover Tonnie's and Peggy's seats through the one $80 Mudroom payment? If so the
+bot needs a rule ("Mudroom covers the Thu team"). Right now Tonnie/Peggy are
+set to pay their own $40 each — tell me which it is.
 
 ---
 

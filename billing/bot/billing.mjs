@@ -11,7 +11,7 @@ import {
   PALETTE, FONTS, GITHUB_OWNER, GITHUB_REPO, DEFAULT_BRANCH,
   requireEnv, resolveRepoRoot, loadClients, loadCashEntries,
   loadSchedule, findScheduleEntriesForSlot, isInactiveSlot,
-  fuzzyName, fmtDate, fmtDateTime, fmtDateIso, slugify,
+  fuzzyName, fmtDate, fmtDateTime, fmtDateIso, slugify, parseNoteDate,
   venmoRequestLink, githubNewFileUrl, sendBrevoEmail,
   emailShell, sectionLabel, button, buttonOutline, card,
 } from "./lib.mjs";
@@ -184,7 +184,11 @@ function parseVenmoEmail(msg) {
   const sender_handle = handleMatch ? handleMatch[1].toLowerCase() : "";
   const note = extractVenmoNote(body);
   const date = dateHdr ? new Date(dateHdr) : new Date();
-  return { sender_display_name, sender_handle, amount, note, date, subject };
+  // Many clients write the session date in the memo ("5/19", "Missed session
+  // 5/19", "Training w/Jeanette 5/8/26"). Extract it to pin late payments to
+  // the right session.
+  const noteDate = parseNoteDate(note, date.getUTCFullYear());
+  return { sender_display_name, sender_handle, amount, note, noteDate, date, subject };
 }
 
 function extractBody(payload, mimeType = null) {
@@ -343,6 +347,14 @@ export function reconcile(appointments, payments, clients, cashLog) {
     // slot-specific pricing (e.g. group rate, Tuesday vs Thursday,
     // Jeanette $70 on Tue vs $50 on Fri).
     const expectedPrice = appt.price_override ?? roster.default_price;
+    // Every amount the bot should treat as paid-in-full for this client:
+    // the slot's expected price + any client-level valid_prices (couple solo
+    // vs together, group vs alone). A $5 smoothie on top of any of these is
+    // also accepted (handled in amountScore).
+    const acceptablePrices = [...new Set([
+      expectedPrice,
+      ...(roster.acceptable_prices || []),
+    ].filter((n) => n != null))];
 
     if (roster.pays_cash) {
       const cashHit = cashLog.find(
@@ -368,11 +380,17 @@ export function reconcile(appointments, payments, clients, cashLog) {
       .filter(({ p }) => withinDateWindow(p.date, appt.date))
       .map(({ p, idx }) => ({
         p, idx,
-        amountScore: expectedPrice ? amountScore(p.amount, expectedPrice) : 0.5,
+        amountScore: acceptablePrices.length ? amountScore(p.amount, acceptablePrices) : 0.5,
+        // 1 if the client wrote this session's date in the memo, else 0.
+        noteDateMatch: p.noteDate && sameDay(p.noteDate, appt.date) ? 1 : 0,
         dateGap: Math.abs((new Date(p.date) - new Date(appt.date)) / (24 * 60 * 60 * 1000)),
       }))
-      // Best amountScore first; ties broken by closer payment date.
-      .sort((a, b) => b.amountScore - a.amountScore || a.dateGap - b.dateGap);
+      // Best amount first; then a memo that names this exact session date;
+      // then the payment closest in time to the session.
+      .sort((a, b) =>
+        b.amountScore - a.amountScore ||
+        b.noteDateMatch - a.noteDateMatch ||
+        a.dateGap - b.dateGap);
 
     if (candidates.length === 0) {
       results.push({ appt, roster, status: "UNPAID", expectedPrice });
@@ -398,17 +416,20 @@ export function reconcile(appointments, payments, clients, cashLog) {
   return { results, unmatchedPayments };
 }
 
-function amountScore(received, expected) {
-  if (!expected) return 0.5;
-  if (received === expected) return 1;
-  // Smoothie add-on: exactly $5 over the session price.
-  if (received === expected + 5) return 1;
-  const ratio = received / expected;
-  // Exact multiple (package pre-pay) counts as full match.
-  if (Math.abs(ratio - Math.round(ratio)) < 0.02 && ratio >= 1) return 1;
-  // Within a couple dollars (rounding / cents) counts as full match.
-  if (Math.abs(received - expected) <= 2) return 1;
-  // Anything else surfaces for review.
+// `acceptable` is an array of valid full-payment amounts for this session.
+// Returns 1 (paid in full) if `received` equals any acceptable amount, that
+// amount + $5 (protein smoothie), an exact multiple (package pre-pay), or is
+// within $2 (rounding). Otherwise 0.5 → NEEDS_REVIEW.
+function amountScore(received, acceptable) {
+  const prices = Array.isArray(acceptable) ? acceptable : [acceptable];
+  for (const expected of prices) {
+    if (!expected) continue;
+    if (received === expected) return 1;
+    if (received === expected + 5) return 1;           // smoothie add-on
+    const ratio = received / expected;
+    if (Math.abs(ratio - Math.round(ratio)) < 0.02 && ratio >= 1) return 1; // package
+    if (Math.abs(received - expected) <= 2) return 1;  // rounding
+  }
   return 0.5;
 }
 
@@ -443,8 +464,14 @@ function reviewResolutionLink({ date, name, disposition, detail }) {
 }
 
 export function buildEmail({ results, unmatchedPayments, now = NOW, windowStart = WINDOW_START }) {
-  const unpaid = results.filter((r) => r.status === "UNPAID");
-  const review = results.filter((r) => r.status === "NEEDS_REVIEW");
+  // "This week" = the 7 days ending at the run (last Sat → this Fri for a
+  // Friday run). Anything older that's still open is a carryover from a
+  // prior week → surfaced first under "Lagging Indicators".
+  const THIS_WEEK_START = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+  const isLagging = (r) => new Date(r.appt.date) < THIS_WEEK_START;
+
+  const unpaidAll = results.filter((r) => r.status === "UNPAID");
+  const reviewAll = results.filter((r) => r.status === "NEEDS_REVIEW");
   const unknown = results.filter((r) => r.status === "UNKNOWN");
   const unidentified = results.filter((r) => r.status === "UNIDENTIFIED_SLOT");
   const paidVenmo = results.filter((r) => r.status === "PAID_VENMO");
@@ -452,89 +479,115 @@ export function buildEmail({ results, unmatchedPayments, now = NOW, windowStart 
   const paidPrepaid = results.filter((r) => r.status === "PAID_PREPAID");
   const cashPending = results.filter((r) => r.status === "CASH_PENDING");
 
-  const weekOf = results.length ? fmtDate(results[0].appt.date) : fmtDate(windowStart);
-  const subject = `Weekly billing — ${unpaid.length} unpaid, ${review.length} needs review${unidentified.length ? `, ${unidentified.length} unidentified` : ""} (week of ${weekOf})`;
+  // Split open items into carryover (lagging) vs current week.
+  const lagging = [...unpaidAll, ...reviewAll].filter(isLagging)
+    .sort((a, b) => new Date(a.appt.date) - new Date(b.appt.date));
+  const unpaid = unpaidAll.filter((r) => !isLagging(r));
+  const review = reviewAll.filter((r) => !isLagging(r));
+
+  const weekLabel = `${fmtDate(THIS_WEEK_START)} – ${fmtDate(now)}`;
+  const subjParts = [];
+  if (lagging.length) subjParts.push(`${lagging.length} carryover`);
+  subjParts.push(`${unpaid.length} unpaid`);
+  subjParts.push(`${review.length} review`);
+  const subject = `Weekly billing — week ending ${fmtDate(now)} — ${subjParts.join(", ")}`;
+
+  // ---- Reusable card renderers ----
+
+  // Genuinely-short amount = below every acceptable price.
+  const shortfall = (r) => {
+    const accept = (r.roster?.acceptable_prices?.length ? r.roster.acceptable_prices : [r.expectedPrice]).filter((n) => n != null);
+    const minAccept = accept.length ? Math.min(...accept) : (r.expectedPrice || 0);
+    const recv = r.payment?.amount || 0;
+    return minAccept - recv; // >0 means short
+  };
+
+  const unpaidCard = (r) => {
+    const price = r.expectedPrice || r.roster?.default_price || "?";
+    const handle = r.roster?.venmo_handle;
+    const noteText = `Training ${fmtDate(r.appt.date)} — Yeager's Gym`;
+    const requestUrl = handle ? venmoRequestLink(handle, price, noteText) : "";
+    const cashUrl = cashEntryLink({ date: r.appt.date, name: r.roster.vagaro_name, amount: price });
+    let inner = `<div style="font-family:${FONTS.body};font-size:15px;color:${PALETTE.textPrimary};margin-bottom:4px;"><strong>${escapeHtml(r.roster.vagaro_name)}</strong> — ${fmtDate(r.appt.date)} — $${price}</div>`;
+    inner += `<div style="margin-top:10px;">`;
+    if (requestUrl) inner += button({ href: requestUrl, label: `Request $${price} on Venmo`, color: "pink" });
+    else inner += `<span style="color:${PALETTE.textMuted};font-family:${FONTS.display};font-size:12px;">Add Venmo handle in clients.csv to enable request</span> `;
+    inner += buttonOutline({ href: cashUrl, label: "Log as cash", color: "teal" });
+    inner += `</div>`;
+    return card(inner, "pink");
+  };
+
+  const reviewCard = (r) => {
+    const expected = r.expectedPrice || r.roster?.default_price || 0;
+    const received = r.payment?.amount || 0;
+    const name = r.roster.vagaro_name;
+    const handle = r.roster?.venmo_handle;
+    const short = shortfall(r);
+    let inner = `<div style="font-family:${FONTS.body};font-size:15px;color:${PALETTE.textPrimary};margin-bottom:4px;"><strong>${escapeHtml(name)}</strong> — ${fmtDate(r.appt.date)}</div>`;
+    inner += `<div style="font-family:${FONTS.display};font-size:12px;color:${PALETTE.textMuted};margin-bottom:10px;">Expected $${expected} · received $${received}${r.payment?.note ? ` · "${escapeHtml(r.payment.note)}"` : ""}${short > 0 ? ` · short $${short}` : received > expected ? ` · over $${received - expected}` : ""}</div>`;
+    // Only actionable button: request the shortfall via Venmo (no GitHub).
+    if (short > 0 && handle) {
+      inner += `<div>` + button({
+        href: venmoRequestLink(handle, short, `Balance from training ${fmtDate(r.appt.date)} — Yeager's Gym`),
+        label: `Request $${short} balance`,
+        color: "pink",
+      }) + `</div>`;
+    } else {
+      inner += `<div style="font-family:${FONTS.display};font-size:11px;color:${PALETTE.textDim};">Eyeball only — no action needed if this looks right.</div>`;
+    }
+    return card(inner, "purple");
+  };
 
   let body = "";
 
   // Top-line summary strip
   body += `<div style="display:flex;flex-wrap:wrap;gap:14px;margin-bottom:20px;">`;
+  if (lagging.length) body += statChip(lagging.length, "carryover", "pink");
   body += statChip(unpaid.length, "unpaid", unpaid.length ? "pink" : "textMuted");
   body += statChip(review.length, "review", review.length ? "purple" : "textMuted");
   body += statChip(paidVenmo.length + paidCash.length + paidPrepaid.length, "paid", "teal");
-  body += statChip(cashPending.length, "cash pending", cashPending.length ? "purple" : "textMuted");
   if (unidentified.length) body += statChip(unidentified.length, "unidentified", "purple");
   body += `</div>`;
 
-  // UNIDENTIFIED SLOTS (when schedule.csv doesn't cover a slot)
+  // One-time UX hint: pink "Request" buttons open Venmo; teal "Log as cash"
+  // buttons open GitHub (sign in once, check "keep me signed in").
+  if (lagging.length || unpaid.length) {
+    body += `<div style="font-family:${FONTS.display};font-size:11px;color:${PALETTE.textDim};margin-bottom:18px;">Pink buttons open Venmo. Teal "Log as cash" opens GitHub — sign in once and it remembers you.</div>`;
+  }
+
+  // ---- LAGGING INDICATORS (carryover from prior weeks) ----
+  if (lagging.length) {
+    body += sectionLabel(`⚠ Lagging Indicators — ${lagging.length} (from last week)`, "pink");
+    body += `<div style="font-family:${FONTS.body};font-size:13px;color:${PALETTE.textMuted};margin-bottom:12px;">Open items carried over from a prior week. Clear these first.</div>`;
+    for (const r of lagging) {
+      body += r.status === "UNPAID" ? unpaidCard(r) : reviewCard(r);
+    }
+    body += `<hr class="glow" style="border:none;border-top:1px solid ${PALETTE.border};margin:24px 0;">`;
+  }
+
+  // ---- THIS WEEK ----
+  // UNPAID
+  if (unpaid.length) {
+    body += sectionLabel(`Unpaid — ${unpaid.length}`, "pink");
+    for (const r of unpaid) body += unpaidCard(r);
+  }
+
+  // NEEDS REVIEW
+  if (review.length) {
+    body += sectionLabel(`Needs review — ${review.length}`, "purple");
+    for (const r of review) body += reviewCard(r);
+  }
+
+  // UNIDENTIFIED SLOTS
   if (unidentified.length) {
     body += sectionLabel(`Unidentified slots — ${unidentified.length}`, "purple");
-    body += `<div style="font-family:${FONTS.body};font-size:13px;color:${PALETTE.textMuted};margin-bottom:12px;">These slots aren't mapped in billing/schedule.csv. Add the day+time entries there to attribute them automatically.</div>`;
+    body += `<div style="font-family:${FONTS.body};font-size:13px;color:${PALETTE.textMuted};margin-bottom:12px;">A session ran at a time not mapped in schedule.csv. If it's a real client, add them; otherwise ignore.</div>`;
     for (const r of unidentified) {
       const summary = r.appt.summary || "(no title)";
       body += card(
         `<div style="color:${PALETTE.textPrimary};"><strong>${fmtDateTime(r.appt.date)}</strong></div><div style="font-family:${FONTS.display};font-size:12px;color:${PALETTE.textMuted};margin-top:4px;">${escapeHtml(summary)}</div>`,
         "purple",
       );
-    }
-  }
-
-  // UNPAID
-  if (unpaid.length) {
-    body += sectionLabel(`Unpaid — ${unpaid.length}`, "pink");
-    for (const r of unpaid) {
-      const price = r.expectedPrice || r.roster?.default_price || "?";
-      const handle = r.roster?.venmo_handle;
-      const noteText = `Training ${fmtDate(r.appt.date)} — Yeager's Gym`;
-      const requestUrl = handle ? venmoRequestLink(handle, price, noteText) : "";
-      const cashUrl = cashEntryLink({ date: r.appt.date, name: r.roster.vagaro_name, amount: price });
-
-      let inner = `<div style="font-family:${FONTS.body};font-size:15px;color:${PALETTE.textPrimary};margin-bottom:4px;"><strong>${escapeHtml(r.roster.vagaro_name)}</strong> — ${fmtDate(r.appt.date)} — $${price}</div>`;
-      inner += `<div style="margin-top:10px;">`;
-      if (requestUrl) inner += button({ href: requestUrl, label: `Request $${price} on Venmo`, color: "pink" });
-      else inner += `<span style="color:${PALETTE.textMuted};font-family:${FONTS.display};font-size:12px;">No Venmo handle in clients.csv</span> `;
-      inner += buttonOutline({ href: cashUrl, label: "Log as cash", color: "teal" });
-      inner += `</div>`;
-      body += card(inner, "pink");
-    }
-  }
-
-  // NEEDS REVIEW
-  if (review.length) {
-    body += sectionLabel(`Needs review — ${review.length}`, "purple");
-    for (const r of review) {
-      const expected = r.expectedPrice || r.roster?.default_price || 0;
-      const received = r.payment?.amount || 0;
-      const diff = expected - received;
-      const name = r.roster.vagaro_name;
-      const noteText = `Balance from training ${fmtDate(r.appt.date)} — Yeager's Gym`;
-      const handle = r.roster?.venmo_handle;
-
-      let inner = `<div style="font-family:${FONTS.body};font-size:15px;color:${PALETTE.textPrimary};margin-bottom:4px;"><strong>${escapeHtml(name)}</strong> — ${fmtDate(r.appt.date)}</div>`;
-      inner += `<div style="font-family:${FONTS.display};font-size:12px;color:${PALETTE.textMuted};margin-bottom:10px;">Session $${expected} · received $${received} from @${escapeHtml(r.payment?.sender_handle || "?")}${diff > 0 ? ` · short $${diff}` : diff < 0 ? ` · over $${-diff}` : ""}</div>`;
-      inner += `<div>`;
-      // Accept as-is
-      inner += buttonOutline({
-        href: reviewResolutionLink({ date: r.appt.date, name, disposition: "accepted", detail: `Accepted $${received} of $${expected}` }),
-        label: "Accept as paid",
-        color: "teal",
-      });
-      // Request the diff (only if short)
-      if (diff > 0 && handle) {
-        inner += button({
-          href: venmoRequestLink(handle, diff, noteText),
-          label: `Request $${diff} diff`,
-          color: "pink",
-        });
-      }
-      // Dispute
-      inner += buttonOutline({
-        href: reviewResolutionLink({ date: r.appt.date, name, disposition: "disputed", detail: `Disputed — received $${received}, expected $${expected}` }),
-        label: "Mark disputed",
-        color: "purple",
-      });
-      inner += `</div>`;
-      body += card(inner, "purple");
     }
   }
 
@@ -549,17 +602,14 @@ export function buildEmail({ results, unmatchedPayments, now = NOW, windowStart 
     }
   }
 
-  // CASH PENDING
+  // CASH / CHECK / ZEAL — informational, no action needed (these clients pay
+  // outside Venmo on a regular cadence; only the exception matters).
   if (cashPending.length) {
-    body += sectionLabel(`Cash pending — ${cashPending.length}`, "teal");
+    body += sectionLabel(`Expected via check / Zeal / cash — ${cashPending.length}`, "teal");
+    body += `<div style="font-family:${FONTS.body};font-size:13px;color:${PALETTE.textMuted};margin-bottom:10px;">No action needed — these clients pay outside Venmo. Listed so you can spot anyone who didn't.</div>`;
     for (const r of cashPending) {
       const price = r.expectedPrice ?? r.roster.default_price ?? "?";
-      const cashUrl = cashEntryLink({ date: r.appt.date, name: r.roster.vagaro_name, amount: price });
-      let inner = `<div style="color:${PALETTE.textPrimary};"><strong>${escapeHtml(r.roster.vagaro_name)}</strong> — ${fmtDate(r.appt.date)} — expected $${price}</div>`;
-      inner += `<div style="margin-top:10px;">`;
-      inner += button({ href: cashUrl, label: `Log $${price} cash`, color: "teal" });
-      inner += `</div>`;
-      body += card(inner, "teal");
+      body += `<div style="font-family:${FONTS.display};font-size:12px;color:${PALETTE.textMuted};padding:4px 0;border-bottom:1px solid ${PALETTE.border};">${fmtDate(r.appt.date)} · ${escapeHtml(r.roster.vagaro_name)} · $${price}</div>`;
     }
   }
 
@@ -574,7 +624,7 @@ export function buildEmail({ results, unmatchedPayments, now = NOW, windowStart 
     body += `<div style="color:${PALETTE.textMuted};font-size:14px;line-height:1.6;margin-bottom:10px;">${names}</div>`;
   }
 
-  // UNMATCHED PAYMENTS
+  // UNMATCHED PAYMENTS (with their memos, so Brad can hand-assign)
   if (unmatchedPayments.length) {
     body += sectionLabel(`Unmatched Venmo payments — ${unmatchedPayments.length}`, "textMuted");
     for (const p of unmatchedPayments) {
@@ -582,8 +632,8 @@ export function buildEmail({ results, unmatchedPayments, now = NOW, windowStart 
     }
   }
 
-  const footer = `Log committed to billing/logs/${fmtDateIso(now)}.md · Repo: ${GITHUB_OWNER}/${GITHUB_REPO}`;
-  const html = emailShell({ title: `Week of ${weekOf}`, bodyHtml: body, footerNote: footer });
+  const footer = `Week ${weekLabel} · log: billing/logs/${fmtDateIso(now)}.md · ${GITHUB_OWNER}/${GITHUB_REPO}`;
+  const html = emailShell({ title: `Week ending ${fmtDate(now)}`, bodyHtml: body, footerNote: footer });
   return { subject, html };
 }
 

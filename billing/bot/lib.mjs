@@ -68,34 +68,83 @@ export function parseCsvLine(line) {
   return cells;
 }
 
+// Header-driven parser: column order doesn't matter, missing columns are fine.
+// Recognized columns: vagaro_name, venmo_handle, venmo_display_name,
+// default_price, valid_prices, pays_cash, prepaid, notes.
+// valid_prices is a SLASH-separated list (e.g. "70/100") of all acceptable
+// amounts for a client whose price legitimately varies (couple solo vs together,
+// group vs alone). Comma can't be used — it's the CSV delimiter.
 export async function loadClients(csvPath) {
   const raw = await fs.readFile(csvPath, "utf8");
   const lines = raw.split("\n").map((l) => l.trim()).filter((l) => l && !l.startsWith("#"));
   const header = lines.shift();
-  if (!header || !header.startsWith("vagaro_name,")) {
+  if (!header || !header.toLowerCase().startsWith("vagaro_name,")) {
     throw new Error(`Unexpected clients.csv header: ${header}`);
   }
-  // Detect 6-column legacy schema vs 7-column with prepaid.
-  // Header has the column names; figure out which slot holds notes.
-  const headerCells = parseCsvLine(header);
-  const hasPrepaid = headerCells[5]?.trim().toLowerCase() === "prepaid";
-  const notesIdx = hasPrepaid ? 6 : 5;
+  const cols = parseCsvLine(header).map((c) => c.trim().toLowerCase());
+  const idx = (name) => cols.indexOf(name);
+  const iName = idx("vagaro_name");
+  const iHandle = idx("venmo_handle");
+  const iDisplay = idx("venmo_display_name");
+  const iDefault = idx("default_price");
+  const iValid = idx("valid_prices");
+  const iCash = idx("pays_cash");
+  const iPrepaid = idx("prepaid");
+  const iNotes = idx("notes");
+  const at = (cells, i) => (i >= 0 && i < cells.length ? cells[i] : "");
+
   return lines.map((line) => {
     const cells = parseCsvLine(line);
-    const displayRaw = cells[2] || "";
+    const displayRaw = at(cells, iDisplay) || "";
+    const defaultPrice = at(cells, iDefault) ? Number(at(cells, iDefault)) : null;
+    const validRaw = at(cells, iValid) || "";
+    const validPrices = validRaw
+      ? validRaw.split("/").map((s) => Number(s.trim())).filter((n) => !Number.isNaN(n))
+      : [];
+    // Acceptable prices always include default + any explicit valid_prices.
+    const acceptablePrices = [...new Set([defaultPrice, ...validPrices].filter((n) => n != null))];
     return {
-      vagaro_name: cells[0],
-      venmo_handle: cells[1] || "",
+      vagaro_name: at(cells, iName),
+      venmo_handle: at(cells, iHandle) || "",
       venmo_display_name: displayRaw,
       venmo_display_names: displayRaw
         ? displayRaw.split(",").map((s) => s.trim()).filter(Boolean)
         : [],
-      default_price: cells[3] ? Number(cells[3]) : null,
-      pays_cash: (cells[4] || "").toLowerCase() === "true",
-      prepaid: hasPrepaid ? (cells[5] || "").toLowerCase() === "true" : false,
-      notes: cells[notesIdx] || "",
+      default_price: defaultPrice,
+      valid_prices: validPrices,
+      acceptable_prices: acceptablePrices,
+      pays_cash: (at(cells, iCash) || "").toLowerCase() === "true",
+      prepaid: (at(cells, iPrepaid) || "").toLowerCase() === "true",
+      notes: at(cells, iNotes) || "",
     };
   });
+}
+
+// Pull a M/D (optionally M/D/YY) date out of a free-text Venmo note.
+// Handles "5/19", "5/19/26", "5.19", "5-19", "May 19", "May 19, 2026".
+// Returns a Date (UTC noon to dodge tz edges) or null. refYear seeds the
+// year when the note omits it.
+const MONTHS = { jan:0,feb:1,mar:2,apr:3,may:4,jun:5,jul:6,aug:7,sep:8,oct:9,nov:10,dec:11 };
+export function parseNoteDate(note, refYear) {
+  if (!note) return null;
+  const text = String(note);
+  // Numeric: M/D, M/D/YY, M/D/YYYY, M.D, M-D
+  let m = text.match(/\b(\d{1,2})[\/.\-](\d{1,2})(?:[\/.\-](\d{2,4}))?\b/);
+  if (m) {
+    const mo = Number(m[1]) - 1, d = Number(m[2]);
+    let y = m[3] ? Number(m[3]) : refYear;
+    if (y < 100) y += 2000;
+    if (mo >= 0 && mo <= 11 && d >= 1 && d <= 31) return new Date(Date.UTC(y, mo, d, 12));
+  }
+  // Month name: "May 19", "May 19, 2026"
+  m = text.match(/\b([A-Za-z]{3,9})\s+(\d{1,2})(?:,\s*(\d{4}))?\b/);
+  if (m) {
+    const mo = MONTHS[m[1].slice(0, 3).toLowerCase()];
+    const d = Number(m[2]);
+    const y = m[3] ? Number(m[3]) : refYear;
+    if (mo != null && d >= 1 && d <= 31) return new Date(Date.UTC(y, mo, d, 12));
+  }
+  return null;
 }
 
 // ---- Weekly schedule (day+time → client_name) ----
