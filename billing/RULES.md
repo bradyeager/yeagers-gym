@@ -63,14 +63,19 @@ the correct past session when a client has more than one in the window.
 > into github.com once (check "keep me signed in") and it works thereafter.
 > Everything else opens Venmo.
 
-## OPEN QUESTION — Thursday 8am team session
+## Tuesday 8am TEAM (resolved 5/30)
 
-Brad: confirm how this one works. On Thu 5/28, **Mudroom (David) paid $80** and
-you said it was for the 8am team (Tonnie, Robert, Peggy) at $40/person. But
-$40 × 3 = $120, and Robert is prepaid (so 2 paying seats = $80). Did David
-cover Tonnie's and Peggy's seats through the one $80 Mudroom payment? If so the
-bot needs a rule ("Mudroom covers the Thu team"). Right now Tonnie/Peggy are
-set to pay their own $40 each — tell me which it is.
+The Tue 8am group grew to **5 people at $40/person** (was a 3-person group at
+$45). Seats:
+- **Peggy** $40 (own Venmo) · **Tonnie** $40 (own Venmo)
+- **Robert Brower** — prepaid 2026, no payment expected
+- **Annie + David Deioma** — ONE **$80** Mudroom payment covers both spouses
+  (2 seats × $40). David owns Mudroom Backpacks; Venmo shows "Mudroom Backpacks".
+  Modeled as a single Annie Tue-8am entry expecting $80 (valid_prices 80/100).
+
+There is **no Thursday team** — earlier "Thursday" was a mix-up; it's Tuesday.
+Tonnie/Peggy keep both 40 and 45 in valid_prices so historical $45 payments
+(the 3-person era) still reconcile.
 
 ---
 
