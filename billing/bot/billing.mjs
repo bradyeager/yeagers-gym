@@ -339,7 +339,8 @@ export function reconcile(appointments, payments, clients, cashLog) {
     }
 
     if (roster.prepaid) {
-      results.push({ appt, roster, status: "PAID_PREPAID" });
+      const ppPrice = appt.price_override ?? roster.default_price;
+      results.push({ appt, roster, status: "PAID_PREPAID", expectedPrice: ppPrice, checkoutAmount: ppPrice });
       continue;
     }
 
@@ -360,8 +361,8 @@ export function reconcile(appointments, payments, clients, cashLog) {
       const cashHit = cashLog.find(
         (c) => sameDay(c.date, appt.date) && fuzzyName(c.name, roster.vagaro_name) >= 0.8,
       );
-      if (cashHit) results.push({ appt, roster, status: "PAID_CASH", payment: cashHit, expectedPrice });
-      else results.push({ appt, roster, status: "CASH_PENDING", expectedPrice });
+      if (cashHit) results.push({ appt, roster, status: "PAID_CASH", payment: cashHit, expectedPrice, checkoutAmount: expectedPrice });
+      else results.push({ appt, roster, status: "CASH_PENDING", expectedPrice, checkoutAmount: expectedPrice });
       continue;
     }
     const candidates = payments
@@ -398,7 +399,8 @@ export function reconcile(appointments, payments, clients, cashLog) {
       const best = candidates[0];
       if (best.amountScore >= 0.8) {
         usedPayments.add(best.idx);
-        results.push({ appt, roster, status: "PAID_VENMO", payment: best.p, expectedPrice });
+        const checkoutAmount = matchedSessionPrice(best.p.amount, acceptablePrices);
+        results.push({ appt, roster, status: "PAID_VENMO", payment: best.p, expectedPrice, checkoutAmount });
       } else {
         // Mark as used too — a NEEDS_REVIEW payment is still "spoken for" by
         // this session. Without this it doubles in the unmatched list.
@@ -446,11 +448,22 @@ export function reconcile(appointments, payments, clients, cashLog) {
     pairedSlots.add(ri);
     usedPayments.add(idx);
     const exp = accept.find((a) => amountScore(p.amount, [a]) >= 0.8) ?? client.default_price;
-    results[ri] = { appt: r.appt, roster: client, status: "PAID_VENMO", payment: p, expectedPrice: exp, inferred: true };
+    results[ri] = { appt: r.appt, roster: client, status: "PAID_VENMO", payment: p, expectedPrice: exp, checkoutAmount: exp, inferred: true };
   });
 
   const unmatchedPayments = payments.filter((_, idx) => !usedPayments.has(idx));
   return { results, unmatchedPayments };
+}
+
+// Which acceptable price did this payment actually satisfy? Strips the $5
+// smoothie and snaps to the real session price (e.g. $75 → $70, $50 → $50).
+// This is the amount Brad must enter in Vagaro's checkout. Returns null if
+// nothing matched.
+function matchedSessionPrice(received, acceptable) {
+  const prices = (Array.isArray(acceptable) ? acceptable : [acceptable]).filter((n) => n != null);
+  // Prefer an exact / smoothie / rounding match; fall back to closest.
+  for (const p of prices) if (amountScore(received, [p]) >= 0.8) return p;
+  return prices.length ? prices.reduce((a, b) => (Math.abs(b - received) < Math.abs(a - received) ? b : a)) : null;
 }
 
 // `acceptable` is an array of valid full-payment amounts for this session.
@@ -725,24 +738,32 @@ function buildCheckoutPrompt(results, now) {
     byDate.get(key).sort((a, b) => new Date(a.appt.date) - new Date(b.appt.date));
     for (const r of byDate.get(key)) {
       const name = r.roster.vagaro_name;
-      const amt = r.expectedPrice ?? r.roster.default_price ?? "?";
+      // Amount Brad must ENTER in Vagaro = the real session price the client
+      // paid (solo vs together), smoothie stripped. Falls back to expected.
+      const amt = r.checkoutAmount ?? r.expectedPrice ?? r.roster.default_price ?? "?";
       const time = new Date(r.appt.date).toLocaleTimeString("en-US", {
         timeZone: "America/Los_Angeles", hour: "numeric", minute: "2-digit",
       });
-      let ctx = "";
-      if (r.status === "PAID_PREPAID") ctx = "  (Robert is prepaid — still check off in Vagaro, use Vagaro's shown amount)";
-      else if (r.inferred) ctx = "  (rescheduled — verify name on calendar matches)";
+      const notes = [];
+      // Vagaro likely shows the slot's configured price; if the amount-to-enter
+      // differs (2:1 client trained solo, couple where one came), Claude must
+      // EDIT Vagaro's total first or Vagaro blocks the checkout.
+      const configured = r.expectedPrice ?? r.roster.default_price;
+      if (typeof amt === "number" && typeof configured === "number" && amt !== configured) {
+        notes.push(`⚠ ADJUST TOTAL: Vagaro likely shows $${configured}; change the total to $${amt} before entering cash`);
+      }
+      if (r.status === "PAID_PREPAID") notes.push("prepaid — still check off; use Vagaro's shown amount or $0");
+      else if (r.inferred) notes.push("rescheduled — verify the calendar name matches before checkout");
       else if (r.payment?.sender_display_name) {
         const sender = r.payment.sender_display_name;
         const senderFirst = sender.split(" ")[0].toLowerCase();
         const clientFirst = name.split(" ")[0].toLowerCase();
-        // Only call out the payer when it's clearly not the client themselves
-        // (e.g. Adriana paying for Danny, Mudroom for Annie).
         if (senderFirst !== clientFirst && !sender.toLowerCase().includes(clientFirst)) {
-          ctx = `  (paid by ${sender})`;
+          notes.push(`paid by ${sender}`);
         }
       }
-      lines.push(`  • ${time}  ${name} — $${amt}${ctx}`);
+      const ctx = notes.length ? "\n      ↳ " + notes.join("\n      ↳ ") : "";
+      lines.push(`  • ${time}  ${name} — enter $${amt}${ctx}`);
     }
   }
 
@@ -765,10 +786,18 @@ order). Use the calendar's < arrow to step back one day at a time.
 
 ═══ HARD RULES ═══
 1. Payment method is ALWAYS "Cash". Never ask, never use any other method.
-2. Enter the AMOUNT shown in this list (sessions vary: $40, $45, $50, $65,
-   $70, $80, $100). If Vagaro's "Amount Due" screen shows a DIFFERENT amount
-   than the list, enter the LIST amount and continue — list is the source of
-   truth (it accounts for solo-vs-couple rates, group discounts, etc.).
+2. The "enter $X" amount in the list is the SOURCE OF TRUTH. Vagaro's
+   checkout screen often shows a DIFFERENT default total — most commonly when
+   a 2:1 / couple client trained SOLO that day (Vagaro shows the $50 pair
+   rate, but they owe $70 alone). When the list amount differs from Vagaro's
+   shown total you MUST CHANGE VAGARO'S TOTAL FIRST, then pay:
+     a. On the checkout screen, edit the line-item/price (or the Total) so the
+        total equals the list amount. Do NOT change the service TYPE — Brad
+        doesn't care that it still says "2:1"; only the dollar total matters.
+     b. Then enter that same amount in the Cash field.
+     c. Confirm Total = Cash = Amount Paid = list amount, Change Due = $0.00.
+   If you skip step (a), Vagaro records an over/under-payment and WON'T let
+   you finish. Lines needing this are flagged "⚠ ADJUST TOTAL" below.
 3. Do NOT delete any appointments. Brad handles deletions.
 4. Do NOT touch sessions that aren't on the list. If a calendar slot exists
    but isn't on the list, leave it alone — it's either unpaid (Brad will

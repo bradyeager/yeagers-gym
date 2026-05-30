@@ -58,10 +58,17 @@ order). Use the calendar's < arrow to step back one day at a time.
 
 ═══ HARD RULES ═══
 1. Payment method is ALWAYS "Cash". Never ask, never use any other method.
-2. Enter the AMOUNT shown in this list (sessions vary: $40, $45, $50, $65,
-   $70, $80, $100). If Vagaro's "Amount Due" screen shows a DIFFERENT amount
-   than the list, enter the LIST amount and continue — list is the source of
-   truth (it accounts for solo-vs-couple rates, group discounts, etc.).
+2. The "enter $X" amount in the list is the SOURCE OF TRUTH. Vagaro's
+   checkout screen often shows a DIFFERENT default total — most commonly when
+   a 2:1 / couple client trained SOLO that day (Vagaro shows the $50 pair
+   rate, but they owe $70 alone). When the list amount differs from Vagaro's
+   shown total you MUST CHANGE VAGARO'S TOTAL FIRST, then pay:
+     a. Edit the line-item/price (or Total) so the total equals the list
+        amount. Do NOT change the service TYPE — only the dollar total matters.
+     b. Then enter that same amount in the Cash field.
+     c. Confirm Total = Cash = Amount Paid = list amount, Change Due = $0.00.
+   Skipping (a) makes Vagaro record an over/under-payment and it WON'T let you
+   finish. Lines needing this are flagged "⚠ ADJUST TOTAL".
 3. Do NOT delete any appointments. Brad handles deletions.
 4. Do NOT touch sessions that aren't on the list. If a calendar slot exists
    but isn't on the list, leave it alone — it's either unpaid (Brad will
