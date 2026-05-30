@@ -412,6 +412,43 @@ export function reconcile(appointments, payments, clients, cashLog) {
     }
   }
 
+  // ── SECOND PASS: reschedule auto-pairing ──
+  // A client who moved to a non-standard time leaves an UNIDENTIFIED_SLOT
+  // (a session with no schedule mapping) AND an unmatched payment (named, but
+  // no session matched it). Pair them: for each leftover payment from a known
+  // roster client, find an unidentified slot that same week whose amount fits
+  // that client. This catches most reschedules without the Vagaro API.
+  const resolveClient = (p) => clients.find((c) => {
+    const handleMatch = c.venmo_handle && p.sender_handle === c.venmo_handle.toLowerCase();
+    const names = c.venmo_display_names?.length ? c.venmo_display_names : [c.vagaro_name];
+    return handleMatch || names.some((n) => fuzzyName(p.sender_display_name, n) >= 0.8);
+  });
+  const pairedSlots = new Set();
+  payments.forEach((p, idx) => {
+    if (usedPayments.has(idx)) return;
+    const client = resolveClient(p);
+    if (!client) return;
+    const accept = client.acceptable_prices?.length ? client.acceptable_prices : [client.default_price];
+    // Candidate unidentified slots this client's payment could cover.
+    const cand = results
+      .map((r, ri) => ({ r, ri }))
+      .filter(({ r, ri }) => r.status === "UNIDENTIFIED_SLOT" && !pairedSlots.has(ri))
+      .filter(({ r }) => withinDateWindow(p.date, r.appt.date))
+      .filter(({ r }) => amountScore(p.amount, accept) >= 0.8 || (p.noteDate && sameDay(p.noteDate, r.appt.date)))
+      .map(({ r, ri }) => ({
+        r, ri,
+        noteDateMatch: p.noteDate && sameDay(p.noteDate, r.appt.date) ? 1 : 0,
+        dateGap: Math.abs((new Date(p.date) - new Date(r.appt.date)) / 86400000),
+      }))
+      .sort((a, b) => b.noteDateMatch - a.noteDateMatch || a.dateGap - b.dateGap);
+    if (cand.length === 0) return;
+    const { r, ri } = cand[0];
+    pairedSlots.add(ri);
+    usedPayments.add(idx);
+    const exp = accept.find((a) => amountScore(p.amount, [a]) >= 0.8) ?? client.default_price;
+    results[ri] = { appt: r.appt, roster: client, status: "PAID_VENMO", payment: p, expectedPrice: exp, inferred: true };
+  });
+
   const unmatchedPayments = payments.filter((_, idx) => !usedPayments.has(idx));
   return { results, unmatchedPayments };
 }
@@ -613,12 +650,23 @@ export function buildEmail({ results, unmatchedPayments, now = NOW, windowStart 
     }
   }
 
+  // RESCHEDULED — auto-matched a known client's payment to a session that ran
+  // at a non-standard time. Shown separately so Brad can confirm at a glance.
+  const inferred = [...paidVenmo].filter((r) => r.inferred);
+  if (inferred.length) {
+    body += sectionLabel(`Rescheduled — auto-matched ${inferred.length} (confirm)`, "teal");
+    body += `<div style="font-family:${FONTS.body};font-size:13px;color:${PALETTE.textMuted};margin-bottom:10px;">A session ran at a non-standard time; the bot paired it to this client's payment by name + amount. Glance to confirm.</div>`;
+    for (const r of inferred) {
+      body += `<div style="font-family:${FONTS.display};font-size:13px;color:${PALETTE.textPrimary};padding:5px 0;border-bottom:1px solid ${PALETTE.border};">${escapeHtml(r.roster.vagaro_name)} · ${fmtDateTime(r.appt.date)} · $${r.payment?.amount} <span style="color:${PALETTE.textMuted};">${escapeHtml(r.appt.summary || "")}${r.payment?.note ? ` · "${escapeHtml(r.payment.note)}"` : ""}</span></div>`;
+    }
+  }
+
   // PAID (collapsed)
   const allPaid = [...paidVenmo, ...paidCash, ...paidPrepaid];
   if (allPaid.length) {
     body += sectionLabel(`Paid — ${allPaid.length}`, "teal");
     const names = allPaid.map((r) => {
-      const tag = r.status === "PAID_CASH" ? " (cash)" : r.status === "PAID_PREPAID" ? " (prepaid)" : "";
+      const tag = r.status === "PAID_CASH" ? " (cash)" : r.status === "PAID_PREPAID" ? " (prepaid)" : r.inferred ? " (moved)" : "";
       return escapeHtml(r.roster.vagaro_name) + tag;
     }).join(", ");
     body += `<div style="color:${PALETTE.textMuted};font-size:14px;line-height:1.6;margin-bottom:10px;">${names}</div>`;
@@ -665,6 +713,7 @@ async function writeLog({ appointments, payments, results, unmatchedPayments }) 
       const noteSuffix = r.payment.note ? `, note: "${r.payment.note}"` : "";
       md += ` (matched ${ident}, $${r.payment.amount}${noteSuffix})`;
     }
+    if (r.inferred) md += ` [INFERRED reschedule]`;
     if (r.note) md += ` — ${r.note}`;
     md += `\n`;
   }
