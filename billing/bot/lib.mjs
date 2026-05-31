@@ -423,11 +423,10 @@ export function emailShell({ title, bodyHtml, footerNote = "", subtitle = "Weekl
     <!-- HERO -->
     <div style="border-radius:16px;overflow:hidden;border:1px solid ${P.border};background:linear-gradient(150deg,${P.bgPanel} 0%,${P.bgSoft} 55%,#1c1330 100%);box-shadow:0 0 30px rgba(72,196,204,0.12),0 18px 50px -22px rgba(239,50,149,0.40);">
       <div style="height:5px;background:${NEON_GRADIENT};"></div>
-      <div style="padding:22px 24px 22px;">
-        <img src="${LOGO_URL}" alt="Yeager's Gym" width="72" height="72" style="display:block;width:72px;height:72px;border:0;outline:none;margin-bottom:14px;" />
-        <div style="font-family:${FONTS.display};color:${P.teal};font-size:11px;letter-spacing:0.32em;text-transform:uppercase;font-weight:600;">YEAGER'S GYM</div>
-        <div style="font-family:${FONTS.display};font-size:25px;line-height:1.15;font-weight:700;color:#FFFFFF;margin-top:10px;">${subtitle}</div>
-        <div style="font-family:${FONTS.display};font-size:13px;color:${P.teal};margin-top:10px;font-weight:600;">${title}</div>
+      <div style="padding:26px 24px 22px;">
+        <div style="font-family:${FONTS.display};font-size:34px;line-height:1;font-weight:800;color:#FFFFFF;letter-spacing:0.01em;">YEAGER'S GYM</div>
+        <div style="font-family:${FONTS.display};font-size:13px;color:${P.teal};font-weight:600;letter-spacing:0.04em;margin-top:9px;">${subtitle}</div>
+        <div style="font-family:${FONTS.display};font-size:12px;color:${P.textMuted};margin-top:5px;">${title}</div>
       </div>
     </div>
 

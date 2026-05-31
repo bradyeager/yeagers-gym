@@ -590,7 +590,7 @@ export function buildEmail({ results, unmatchedPayments, now = NOW, windowStart 
     const noteText = `Training ${fmtDate(r.appt.date)} — Yeager's Gym`;
     const requestUrl = handle ? venmoRequestLink(handle, price, noteText) : "";
     const cashUrl = cashEntryLink({ date: r.appt.date, name: r.roster.vagaro_name, amount: price });
-    let inner = `<div style="font-family:${FONTS.body};font-size:15px;color:${PALETTE.textPrimary};margin-bottom:4px;"><strong>${escapeHtml(r.roster.vagaro_name)}</strong> — ${fmtDate(r.appt.date)} — $${price}</div>`;
+    let inner = `<div style="font-family:${FONTS.body};font-size:13px;color:${PALETTE.textPrimary};margin-bottom:4px;"><strong>${escapeHtml(r.roster.vagaro_name)}</strong> — ${fmtDate(r.appt.date)} — $${price}</div>`;
     inner += `<div style="margin-top:10px;">`;
     if (requestUrl) inner += button({ href: requestUrl, label: `Request $${price} on Venmo`, color: "pink" });
     else inner += `<span style="color:${PALETTE.textMuted};font-family:${FONTS.display};font-size:12px;">Add Venmo handle in clients.csv to enable request</span> `;
@@ -605,7 +605,7 @@ export function buildEmail({ results, unmatchedPayments, now = NOW, windowStart 
     const name = r.roster.vagaro_name;
     const handle = r.roster?.venmo_handle;
     const short = shortfall(r);
-    let inner = `<div style="font-family:${FONTS.body};font-size:15px;color:${PALETTE.textPrimary};margin-bottom:4px;"><strong>${escapeHtml(name)}</strong> — ${fmtDate(r.appt.date)}</div>`;
+    let inner = `<div style="font-family:${FONTS.body};font-size:13px;color:${PALETTE.textPrimary};margin-bottom:4px;"><strong>${escapeHtml(name)}</strong> — ${fmtDate(r.appt.date)}</div>`;
     inner += `<div style="font-family:${FONTS.display};font-size:12px;color:${PALETTE.textMuted};margin-bottom:10px;">Expected $${expected} · received $${received}${r.payment?.note ? ` · "${escapeHtml(r.payment.note)}"` : ""}${short > 0 ? ` · short $${short}` : received > expected ? ` · over $${received - expected}` : ""}</div>`;
     // Only actionable button: request the shortfall via Venmo (no GitHub).
     if (short > 0 && handle) {
@@ -629,11 +629,11 @@ export function buildEmail({ results, unmatchedPayments, now = NOW, windowStart 
 
   // Top-line summary strip
   body += `<div style="display:flex;flex-wrap:wrap;gap:14px;margin-bottom:20px;">`;
-  if (lagging.length) body += statChip(lagging.length, "carryover", "pink");
-  body += statChip(unpaid.length, "unpaid", unpaid.length ? "pink" : "textMuted");
-  body += statChip(review.length, "review", review.length ? "teal" : "textMuted");
-  body += statChip(paidVenmo.length + paidCash.length + paidPrepaid.length, "paid", "teal");
-  if (unidentified.length) body += statChip(unidentified.length, "unidentified", "teal");
+  if (lagging.length) body += statChip(lagging.length, "Carryover", "pink");
+  body += statChip(unpaid.length, "Unpaid", unpaid.length ? "pink" : "textMuted");
+  body += statChip(review.length, "Review", review.length ? "teal" : "textMuted");
+  body += statChip(paidVenmo.length + paidCash.length + paidPrepaid.length, "Paid", "teal");
+  if (unidentified.length) body += statChip(unidentified.length, "Unidentified", "teal");
   body += `</div>`;
 
   // One-time UX hint: pink "Request" buttons open Venmo; teal "Log as cash"
@@ -699,7 +699,7 @@ export function buildEmail({ results, unmatchedPayments, now = NOW, windowStart 
       const price = r.checkoutAmount ?? r.expectedPrice ?? r.roster.default_price ?? "?";
       const bank = bankVerify(r.roster);
       const cashUrl = cashEntryLink({ date: r.appt.date, name: r.roster.vagaro_name, amount: price });
-      let inner = `<div style="font-family:${FONTS.body};font-size:15px;color:${PALETTE.textPrimary};margin-bottom:4px;"><strong>${escapeHtml(r.roster.vagaro_name)}</strong> — ${fmtDate(r.appt.date)} — $${price} <span style="font-family:${FONTS.display};font-size:11px;color:${PALETTE.textMuted};">${escapeHtml(paymentMethodHint(r.roster))}</span></div>`;
+      let inner = `<div style="font-family:${FONTS.body};font-size:13px;color:${PALETTE.textPrimary};margin-bottom:4px;"><strong>${escapeHtml(r.roster.vagaro_name)}</strong> — ${fmtDate(r.appt.date)} — $${price} <span style="font-family:${FONTS.display};font-size:11px;color:${PALETTE.textMuted};">${escapeHtml(paymentMethodHint(r.roster))}</span></div>`;
       inner += `<div style="margin-top:10px;">`;
       if (bank) inner += button({ href: bank.url, label: bank.label, color: "pink" });
       inner += buttonOutline({ href: cashUrl, label: "Confirm paid", color: "teal" });
@@ -798,7 +798,7 @@ export function buildEmail({ results, unmatchedPayments, now = NOW, windowStart 
   const checkoutPrompt = buildCheckoutPrompt(results, now);
   body += sectionLabel(`Vagaro Checkout — copy block below into Claude for Chrome`, "teal");
   body += `<div style="font-family:${FONTS.body};font-size:13px;color:${PALETTE.textMuted};margin-bottom:8px;">Triple-click inside the box, ⌘A, ⌘C, then paste into a new Claude for Chrome session. Full rules + this week's paid clients are baked in.</div>`;
-  body += `<pre style="background:${PALETTE.bgPanel};border:1px solid ${PALETTE.border};border-radius:6px;padding:14px;font-family:${FONTS.display};font-size:12px;line-height:1.45;color:${PALETTE.textPrimary};white-space:pre-wrap;overflow-x:auto;">${escapeHtml(checkoutPrompt)}</pre>`;
+  body += `<pre style="background:${PALETTE.bgPanel};border:1px solid ${PALETTE.border};border-radius:6px;padding:12px;font-family:${FONTS.display};font-size:8px;line-height:1.4;color:${PALETTE.textPrimary};white-space:pre-wrap;overflow-x:auto;">${escapeHtml(checkoutPrompt)}</pre>`;
 
   const footer = `Week ${weekLabel} · log: billing/logs/${fmtDateIso(now)}.md · ${GITHUB_OWNER}/${GITHUB_REPO}`;
   const html = emailShell({ title: `Week ending ${fmtDate(now)}`, bodyHtml: body, footerNote: footer });
@@ -968,9 +968,9 @@ Brad will review and handle exceptions manually.`;
 function statChip(n, label, color = "teal") {
   const c = PALETTE[color] || PALETTE.teal;
   const glow = n > 0 ? `box-shadow:0 0 0 1px ${c}22, 0 8px 24px -14px ${c};` : "";
-  return `<div style="flex:1;min-width:104px;background:linear-gradient(155deg,${PALETTE.bgPanel} 0%,#101018 100%);border:1px solid ${PALETTE.border};border-top:3px solid ${c};border-radius:9px;padding:13px 15px;${glow}">`
-    + `<div style="font-family:${FONTS.display};font-size:30px;font-weight:800;color:${c};line-height:1;text-shadow:0 0 14px ${c}55;">${n}</div>`
-    + `<div style="font-family:${FONTS.display};font-size:10px;text-transform:uppercase;letter-spacing:0.18em;color:${PALETTE.textMuted};margin-top:7px;">${label}</div></div>`;
+  return `<div style="flex:1;min-width:92px;background:linear-gradient(155deg,${PALETTE.bgPanel} 0%,#101018 100%);border:1px solid ${PALETTE.border};border-top:3px solid ${c};border-radius:9px;padding:11px 13px;${glow}">`
+    + `<div style="font-family:${FONTS.display};font-size:22px;font-weight:800;color:${c};line-height:1;text-shadow:0 0 14px ${c}55;">${n}</div>`
+    + `<div style="font-family:${FONTS.display};font-size:11px;letter-spacing:0.02em;color:${PALETTE.textMuted};margin-top:6px;">${label}</div></div>`;
 }
 
 // Warns 14 days before the Google OAuth token expires (set GOOGLE_TOKEN_EXPIRES
