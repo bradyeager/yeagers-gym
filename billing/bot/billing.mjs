@@ -627,14 +627,14 @@ export function buildEmail({ results, unmatchedPayments, now = NOW, windowStart 
   // The bot warns starting 14 days out so there's time to re-auth.
   body += tokenExpiryNotice(now);
 
-  // Top-line summary strip
-  body += `<div style="display:flex;flex-wrap:wrap;gap:14px;margin-bottom:20px;">`;
-  if (lagging.length) body += statChip(lagging.length, "Carryover", "pink");
-  body += statChip(unpaid.length, "Unpaid", unpaid.length ? "pink" : "textMuted");
-  body += statChip(review.length, "Review", review.length ? "teal" : "textMuted");
-  body += statChip(paidVenmo.length + paidCash.length + paidPrepaid.length, "Paid", "teal");
-  if (unidentified.length) body += statChip(unidentified.length, "Unidentified", "teal");
-  body += `</div>`;
+  // Top-line summary strip (table-based for Outlook)
+  const chips = [];
+  if (lagging.length) chips.push({ n: lagging.length, label: "Carryover", color: "pink" });
+  chips.push({ n: unpaid.length, label: "Unpaid", color: unpaid.length ? "pink" : "textMuted" });
+  chips.push({ n: review.length, label: "Review", color: review.length ? "teal" : "textMuted" });
+  chips.push({ n: paidVenmo.length + paidCash.length + paidPrepaid.length, label: "Paid", color: "teal" });
+  if (unidentified.length) chips.push({ n: unidentified.length, label: "Unidentified", color: "teal" });
+  body += statStrip(chips);
 
   // One-time UX hint: pink "Request" buttons open Venmo; teal "Log as cash"
   // buttons open GitHub (sign in once, check "keep me signed in").
@@ -779,16 +779,17 @@ export function buildEmail({ results, unmatchedPayments, now = NOW, windowStart 
       .reduce((s, r) => s + (r.checkoutAmount ?? r.expectedPrice ?? r.roster?.default_price ?? 0), 0)
     + [...review, ...lagging.filter((r) => r.status === "NEEDS_REVIEW")]
       .reduce((s, r) => s + Math.max(0, shortfall(r)), 0);
-  body += `<div style="margin-top:30px;border:1px solid ${PALETTE.border};border-radius:12px;overflow:hidden;">`;
-  body += `<div style="height:4px;background:${NEON_GRADIENT};"></div>`;
-  body += `<div style="display:flex;flex-wrap:wrap;">`;
-  body += `<div style="flex:1;min-width:200px;padding:18px 20px;border-right:1px solid ${PALETTE.border};">`
-    + `<div style="font-family:${FONTS.display};font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:${PALETTE.textMuted};">Venmo collected this week</div>`
-    + `<div style="font-family:${FONTS.display};font-size:32px;font-weight:800;color:${PALETTE.teal};margin-top:8px;text-shadow:0 0 18px rgba(72,196,204,0.30);">$${venmoCollected.toLocaleString()}</div></div>`;
-  body += `<div style="flex:1;min-width:200px;padding:18px 20px;">`
-    + `<div style="font-family:${FONTS.display};font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:${PALETTE.textMuted};">Outstanding — not yet in</div>`
-    + `<div style="font-family:${FONTS.display};font-size:32px;font-weight:800;color:${outstanding > 0 ? PALETTE.pink : PALETTE.teal};margin-top:8px;text-shadow:0 0 18px ${outstanding > 0 ? "rgba(239,50,149,0.30)" : "rgba(72,196,204,0.30)"};">$${outstanding.toLocaleString()}</div></div>`;
-  body += `</div></div>`;
+  const outColor = outstanding > 0 ? PALETTE.pink : PALETTE.teal;
+  body += `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="${PALETTE.bgPanel}" style="background-color:${PALETTE.bgPanel};border:1px solid ${PALETTE.border};border-radius:12px;margin-top:26px;">`
+    + `<tr><td colspan="2" bgcolor="${PALETTE.teal}" height="4" style="height:4px;line-height:4px;font-size:0;background:${NEON_GRADIENT};">&nbsp;</td></tr>`
+    + `<tr>`
+    + `<td width="50%" valign="top" style="padding:18px 20px;border-right:1px solid ${PALETTE.border};">`
+      + `<div style="font-family:${FONTS.display};font-size:11px;color:${PALETTE.textMuted};">Venmo Collected This Week</div>`
+      + `<div style="font-family:${FONTS.display};font-size:30px;font-weight:800;color:${PALETTE.teal};margin-top:8px;">$${venmoCollected.toLocaleString()}</div></td>`
+    + `<td width="50%" valign="top" style="padding:18px 20px;">`
+      + `<div style="font-family:${FONTS.display};font-size:11px;color:${PALETTE.textMuted};">Outstanding — Not Yet In</div>`
+      + `<div style="font-family:${FONTS.display};font-size:30px;font-weight:800;color:${outColor};margin-top:8px;">$${outstanding.toLocaleString()}</div></td>`
+    + `</tr></table>`;
 
   // ── VAGARO CHECKOUT PROMPT — auto-generated for Claude for Chrome ──
   // Brad uses Vagaro's calendar "checkout" UI as a visual paid-checkmark.
@@ -965,12 +966,21 @@ Summarize:
 
 Brad will review and handle exceptions manually.`;
 
-function statChip(n, label, color = "teal") {
-  const c = PALETTE[color] || PALETTE.teal;
-  const glow = n > 0 ? `box-shadow:0 0 0 1px ${c}22, 0 8px 24px -14px ${c};` : "";
-  return `<div style="flex:1;min-width:92px;background:linear-gradient(155deg,${PALETTE.bgPanel} 0%,#101018 100%);border:1px solid ${PALETTE.border};border-top:3px solid ${c};border-radius:9px;padding:11px 13px;${glow}">`
-    + `<div style="font-family:${FONTS.display};font-size:22px;font-weight:800;color:${c};line-height:1;text-shadow:0 0 14px ${c}55;">${n}</div>`
-    + `<div style="font-family:${FONTS.display};font-size:11px;letter-spacing:0.02em;color:${PALETTE.textMuted};margin-top:6px;">${label}</div></div>`;
+// Summary stat cards as a single table row (Outlook-safe; no flexbox).
+function statStrip(items) {
+  if (!items.length) return "";
+  const w = Math.floor(100 / items.length);
+  const cells = items.map((it, i) => {
+    const c = PALETTE[it.color] || PALETTE.teal;
+    const padl = i === 0 ? "0" : "5px";
+    return `<td width="${w}%" valign="top" style="padding:0 0 0 ${padl};">`
+      + `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="${PALETTE.bgPanel}" style="background-color:${PALETTE.bgPanel};border:1px solid ${PALETTE.border};border-top:3px solid ${c};border-radius:8px;">`
+      + `<tr><td style="padding:11px 12px;">`
+      + `<div style="font-family:${FONTS.display};font-size:22px;font-weight:800;color:${c};line-height:1;">${it.n}</div>`
+      + `<div style="font-family:${FONTS.display};font-size:11px;color:${PALETTE.textMuted};margin-top:6px;">${it.label}</div>`
+      + `</td></tr></table></td>`;
+  }).join("");
+  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:18px;"><tr>${cells}</tr></table>`;
 }
 
 // Warns 14 days before the Google OAuth token expires (set GOOGLE_TOKEN_EXPIRES

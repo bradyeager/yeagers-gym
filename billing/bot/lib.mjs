@@ -415,32 +415,39 @@ export const NEON_GRADIENT = "linear-gradient(90deg, #48C4CC 0%, #9B6FD4 50%, #E
 
 export function emailShell({ title, bodyHtml, footerNote = "", subtitle = "Weekly Revenue Transmission" }) {
   const P = PALETTE;
+  // Table-based layout: Outlook (Windows) renders email with the MS Word
+  // engine — no flexbox, gradients, shadows, or max-width on divs. Everything
+  // structural is tables with width/bgcolor attributes so it holds up there.
   return `<!doctype html>
-<html><head><meta charset="utf-8"><meta name="color-scheme" content="dark"><meta name="supported-color-schemes" content="dark"></head>
-<body style="margin:0;padding:0;background:${P.bg};background-image:radial-gradient(1100px 460px at 82% -10%, rgba(239,50,149,0.10), transparent 60%),radial-gradient(900px 420px at -8% 0%, rgba(72,196,204,0.12), transparent 55%);color:${P.textPrimary};font-family:${FONTS.body};-webkit-font-smoothing:antialiased;">
-  <div style="max-width:640px;margin:0 auto;padding:22px 18px 40px;">
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="dark"></head>
+<body style="margin:0;padding:0;background-color:${P.bg};font-family:${FONTS.body};">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="${P.bg}" style="background-color:${P.bg};">
+<tr><td align="center" style="padding:20px 10px 36px;">
+  <table role="presentation" width="640" cellpadding="0" cellspacing="0" border="0" style="width:640px;max-width:640px;">
 
     <!-- HERO -->
-    <div style="border-radius:16px;overflow:hidden;border:1px solid ${P.border};background:linear-gradient(150deg,${P.bgPanel} 0%,${P.bgSoft} 55%,#1c1330 100%);box-shadow:0 0 30px rgba(72,196,204,0.12),0 18px 50px -22px rgba(239,50,149,0.40);">
-      <div style="height:5px;background:${NEON_GRADIENT};"></div>
-      <div style="padding:26px 24px 22px;">
-        <div style="font-family:${FONTS.display};font-size:34px;line-height:1;font-weight:800;color:#FFFFFF;letter-spacing:0.01em;">YEAGER'S GYM</div>
-        <div style="font-family:${FONTS.display};font-size:13px;color:${P.teal};font-weight:600;letter-spacing:0.04em;margin-top:9px;">${subtitle}</div>
-        <div style="font-family:${FONTS.display};font-size:12px;color:${P.textMuted};margin-top:5px;">${title}</div>
-      </div>
-    </div>
+    <tr><td bgcolor="${P.bgPanel}" style="background-color:${P.bgPanel};border:1px solid ${P.border};border-radius:14px;">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr><td bgcolor="${P.teal}" height="5" style="height:5px;line-height:5px;font-size:0;background:${NEON_GRADIENT};">&nbsp;</td></tr>
+        <tr><td style="padding:24px 24px 20px;">
+          <div style="font-family:${FONTS.display};font-size:32px;line-height:1;font-weight:800;color:#FFFFFF;">YEAGER'S GYM</div>
+          <div style="font-family:${FONTS.display};font-size:13px;color:${P.teal};font-weight:bold;margin-top:9px;">${subtitle}</div>
+          <div style="font-family:${FONTS.display};font-size:12px;color:${P.textMuted};margin-top:5px;">${title}</div>
+        </td></tr>
+      </table>
+    </td></tr>
 
-    <div style="margin-top:22px;">
-      ${bodyHtml}
-    </div>
+    <tr><td style="padding-top:20px;font-family:${FONTS.body};color:${P.textPrimary};">${bodyHtml}</td></tr>
 
-    <div style="margin-top:34px;border-top:1px solid ${P.border};padding-top:14px;">
-      <div style="height:3px;width:100%;background:${NEON_GRADIENT};opacity:0.55;border-radius:2px;margin-bottom:12px;"></div>
-      <div style="font-family:${FONTS.display};font-size:10px;color:${P.textDim};letter-spacing:0.14em;">${footerNote || ""}</div>
-      <div style="font-family:${FONTS.display};font-size:10px;color:${P.textMuted};letter-spacing:0.16em;margin-top:8px;">YEAGER'S GYM &#183; San Diego, CA &#183; brad@yeagersgym.com</div>
-      <div style="font-family:${FONTS.display};font-size:10px;color:${P.textDim};letter-spacing:0.14em;margin-top:4px;">// end transmission &#183; automated by the YG billing engine</div>
-    </div>
-  </div>
+    <!-- FOOTER -->
+    <tr><td style="padding-top:26px;">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td bgcolor="${P.teal}" height="3" style="height:3px;line-height:3px;font-size:0;background:${NEON_GRADIENT};">&nbsp;</td></tr></table>
+      <div style="font-family:${FONTS.display};font-size:11px;color:${P.textDim};line-height:1.7;margin-top:12px;">${footerNote || ""}<br>YEAGER'S GYM &#183; San Diego, CA &#183; brad@yeagersgym.com</div>
+    </td></tr>
+
+  </table>
+</td></tr>
+</table>
 </body></html>`;
 }
 
@@ -474,7 +481,10 @@ export function card(innerHtml, accent = "border") {
 }
 
 export function kv(label, value, valueColor = PALETTE.textPrimary) {
-  return `<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid ${PALETTE.border};"><span style="font-family:${FONTS.display};color:${PALETTE.textMuted};font-size:12px;text-transform:uppercase;letter-spacing:0.1em;">${label}</span><span style="color:${valueColor};font-weight:600;">${value}</span></div>`;
+  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border-bottom:1px solid ${PALETTE.border};"><tr>`
+    + `<td style="padding:6px 0;font-family:${FONTS.display};color:${PALETTE.textMuted};font-size:12px;">${label}</td>`
+    + `<td align="right" style="padding:6px 0;color:${valueColor};font-weight:bold;">${value}</td>`
+    + `</tr></table>`;
 }
 
 // ---- Log parsing (for monthly summary) ----
