@@ -13,7 +13,7 @@ import {
   loadSchedule, findScheduleEntriesForSlot, isInactiveSlot,
   fuzzyName, fmtDate, fmtDateTime, fmtDateIso, slugify, parseNoteDate, withRetry,
   venmoRequestLink, githubNewFileUrl, sendBrevoEmail,
-  emailShell, sectionLabel, button, buttonOutline, card,
+  emailShell, sectionLabel, button, buttonOutline, card, NEON_GRADIENT,
 } from "./lib.mjs";
 
 const {
@@ -505,6 +505,35 @@ function cashEntryLink({ date, name, amount, note = "per weekly billing email" }
   return githubNewFileUrl({ filename, value, message: `Cash: ${name} $${amount} ${iso}` });
 }
 
+// Deep links that launch the bank app on a phone where the non-Venmo money
+// lands. These are mobile URL schemes — if one doesn't open the app on Brad's
+// device, edit it here (e.g. a universal https:// link).
+const BANK_APP_LINKS = {
+  chase: "chase://",
+  capitalone: "capitalone://",
+};
+
+// Short payment-method label from the client's notes.
+function paymentMethodHint(roster) {
+  const n = (roster.notes || "").toLowerCase();
+  if (n.includes("zelle") || n.includes("zeal")) {
+    if (n.includes("chase")) return "Zelle · Chase";
+    if (n.includes("capital one") || n.includes("capitalone")) return "Zelle · Capital One";
+    return "Zelle";
+  }
+  if (n.includes("check")) return n.includes("cash") ? "check / cash" : "check";
+  return "cash";
+}
+
+// Returns { label, url } for the "Verify in <bank>" button, or null when the
+// client pays by check/cash (no app to open).
+function bankVerify(roster) {
+  const n = (roster.notes || "").toLowerCase();
+  if (n.includes("chase")) return { label: "Verify in Chase", url: BANK_APP_LINKS.chase };
+  if (n.includes("capital one") || n.includes("capitalone")) return { label: "Verify in Capital One", url: BANK_APP_LINKS.capitalone };
+  return null;
+}
+
 function reviewResolutionLink({ date, name, disposition, detail }) {
   const iso = fmtDateIso(date);
   const slug = slugify(name);
@@ -590,6 +619,11 @@ export function buildEmail({ results, unmatchedPayments, now = NOW, windowStart 
 
   let body = "";
 
+  // ── TOKEN EXPIRY WARNING (top, impossible to miss) ──
+  // Set the GOOGLE_TOKEN_EXPIRES secret (YYYY-MM-DD) when you issue a token.
+  // The bot warns starting 14 days out so there's time to re-auth.
+  body += tokenExpiryNotice(now);
+
   // Top-line summary strip
   body += `<div style="display:flex;flex-wrap:wrap;gap:14px;margin-bottom:20px;">`;
   if (lagging.length) body += statChip(lagging.length, "carryover", "pink");
@@ -652,14 +686,22 @@ export function buildEmail({ results, unmatchedPayments, now = NOW, windowStart 
     }
   }
 
-  // CASH / CHECK / ZEAL — informational, no action needed (these clients pay
-  // outside Venmo on a regular cadence; only the exception matters).
+  // CHECK / ZELLE / CASH — these clients pay outside Venmo. "Verify" deep-links
+  // to the bank app where the money lands (Chase / Capital One) so Brad can
+  // confirm it arrived; "Confirm paid" logs it so it won't reappear next week.
   if (cashPending.length) {
-    body += sectionLabel(`Expected via check / Zeal / cash — ${cashPending.length}`, "teal");
-    body += `<div style="font-family:${FONTS.body};font-size:13px;color:${PALETTE.textMuted};margin-bottom:10px;">No action needed — these clients pay outside Venmo. Listed so you can spot anyone who didn't.</div>`;
+    body += sectionLabel(`Expected via check / Zelle / cash — ${cashPending.length}`, "teal");
+    body += `<div style="font-family:${FONTS.body};font-size:13px;color:${PALETTE.textMuted};margin-bottom:10px;">These pay outside Venmo. Tap Verify to open the bank app and confirm it landed, then Confirm paid to log it.</div>`;
     for (const r of cashPending) {
-      const price = r.expectedPrice ?? r.roster.default_price ?? "?";
-      body += `<div style="font-family:${FONTS.display};font-size:12px;color:${PALETTE.textMuted};padding:4px 0;border-bottom:1px solid ${PALETTE.border};">${fmtDate(r.appt.date)} · ${escapeHtml(r.roster.vagaro_name)} · $${price}</div>`;
+      const price = r.checkoutAmount ?? r.expectedPrice ?? r.roster.default_price ?? "?";
+      const bank = bankVerify(r.roster);
+      const cashUrl = cashEntryLink({ date: r.appt.date, name: r.roster.vagaro_name, amount: price });
+      let inner = `<div style="font-family:${FONTS.body};font-size:15px;color:${PALETTE.textPrimary};margin-bottom:4px;"><strong>${escapeHtml(r.roster.vagaro_name)}</strong> — ${fmtDate(r.appt.date)} — $${price} <span style="font-family:${FONTS.display};font-size:11px;color:${PALETTE.textMuted};">${escapeHtml(paymentMethodHint(r.roster))}</span></div>`;
+      inner += `<div style="margin-top:10px;">`;
+      if (bank) inner += button({ href: bank.url, label: bank.label, color: "pink" });
+      inner += buttonOutline({ href: cashUrl, label: "Confirm paid", color: "teal" });
+      inner += `</div>`;
+      body += card(inner, "teal");
     }
   }
 
@@ -692,6 +734,26 @@ export function buildEmail({ results, unmatchedPayments, now = NOW, windowStart 
       body += `<div style="font-family:${FONTS.display};font-size:12px;color:${PALETTE.textMuted};padding:4px 0;border-bottom:1px solid ${PALETTE.border};">${fmtDate(p.date)} · ${escapeHtml(p.sender_display_name)} · $${p.amount} · "${escapeHtml(p.note || "")}"</div>`;
     }
   }
+
+  // ── WEEK LEDGER — the two numbers Brad cares about most ──
+  // Venmo collected = actual $ that hit Venmo for matched sessions this run.
+  // Outstanding = money owed but not yet in (unpaid sessions + short balances).
+  const venmoCollected = paidVenmo.reduce((s, r) => s + (r.payment?.amount || 0), 0);
+  const outstanding =
+    [...unpaid, ...lagging.filter((r) => r.status === "UNPAID")]
+      .reduce((s, r) => s + (r.checkoutAmount ?? r.expectedPrice ?? r.roster?.default_price ?? 0), 0)
+    + [...review, ...lagging.filter((r) => r.status === "NEEDS_REVIEW")]
+      .reduce((s, r) => s + Math.max(0, shortfall(r)), 0);
+  body += `<div style="margin-top:30px;border:1px solid ${PALETTE.border};border-radius:12px;overflow:hidden;">`;
+  body += `<div style="height:4px;background:${NEON_GRADIENT};"></div>`;
+  body += `<div style="display:flex;flex-wrap:wrap;">`;
+  body += `<div style="flex:1;min-width:200px;padding:18px 20px;border-right:1px solid ${PALETTE.border};">`
+    + `<div style="font-family:${FONTS.display};font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:${PALETTE.textMuted};">Venmo collected this week</div>`
+    + `<div style="font-family:${FONTS.display};font-size:32px;font-weight:800;color:${PALETTE.teal};margin-top:8px;text-shadow:0 0 18px rgba(72,196,204,0.30);">$${venmoCollected.toLocaleString()}</div></div>`;
+  body += `<div style="flex:1;min-width:200px;padding:18px 20px;">`
+    + `<div style="font-family:${FONTS.display};font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:${PALETTE.textMuted};">Outstanding — not yet in</div>`
+    + `<div style="font-family:${FONTS.display};font-size:32px;font-weight:800;color:${outstanding > 0 ? PALETTE.pink : PALETTE.teal};margin-top:8px;text-shadow:0 0 18px ${outstanding > 0 ? "rgba(239,50,149,0.30)" : "rgba(72,196,204,0.30)"};">$${outstanding.toLocaleString()}</div></div>`;
+  body += `</div></div>`;
 
   // ── VAGARO CHECKOUT PROMPT — auto-generated for Claude for Chrome ──
   // Brad uses Vagaro's calendar "checkout" UI as a visual paid-checkmark.
@@ -776,7 +838,7 @@ const CHECKOUT_RULES = `WEEKLY VAGARO CHECKOUT — YEAGER'S GYM
 ROLE: You are Claude in Brad's Chrome browser. Brad is logged into Vagaro.
 TASK: Mark each paid client below as "checked out" in Vagaro's calendar so
 they show as paid. Brad uses cash as a universal paid-marker (intentional —
-the real money already came via Venmo / check / Zeal; Vagaro's payment-method
+the real money already came via Venmo / check / Zelle; Vagaro's payment-method
 field is just a visual checkmark for him).
 
 URL: https://us05.vagaro.com/merchants/calendar/v3
@@ -874,6 +936,32 @@ function statChip(n, label, color = "teal") {
   return `<div style="flex:1;min-width:104px;background:linear-gradient(155deg,${PALETTE.bgPanel} 0%,#101018 100%);border:1px solid ${PALETTE.border};border-top:3px solid ${c};border-radius:9px;padding:13px 15px;${glow}">`
     + `<div style="font-family:${FONTS.display};font-size:30px;font-weight:800;color:${c};line-height:1;text-shadow:0 0 14px ${c}55;">${n}</div>`
     + `<div style="font-family:${FONTS.display};font-size:10px;text-transform:uppercase;letter-spacing:0.18em;color:${PALETTE.textMuted};margin-top:7px;">${label}</div></div>`;
+}
+
+// Warns 14 days before the Google OAuth token expires (set GOOGLE_TOKEN_EXPIRES
+// = YYYY-MM-DD when you issue/refresh a token). Returns "" when not set or
+// more than 14 days out. Includes the exact re-auth steps so Brad never has to
+// hunt for them. (Better long-term fix: publish the OAuth app to Production so
+// tokens stop expiring — see SETUP.md.)
+function tokenExpiryNotice(now) {
+  const raw = process.env.GOOGLE_TOKEN_EXPIRES;
+  if (!raw) return "";
+  const exp = new Date(raw + "T12:00:00Z");
+  if (Number.isNaN(exp.getTime())) return "";
+  const days = Math.ceil((exp - now) / 86400000);
+  if (days > 14) return "";
+  const expired = days < 0;
+  const secretsUrl = `https://github.com/${GITHUB_OWNER}/${GITHUB_REPO}/settings/secrets/actions`;
+  const headline = expired
+    ? `GOOGLE ACCESS EXPIRED ${-days} day${-days === 1 ? "" : "s"} ago — the bot can't read Venmo emails until you re-auth`
+    : `GOOGLE ACCESS EXPIRES IN ${days} DAY${days === 1 ? "" : "S"} (${raw}) — re-auth before then or the bot goes blind`;
+  return `<div style="border:1px solid ${PALETTE.pink};border-radius:12px;overflow:hidden;margin-bottom:20px;box-shadow:0 0 30px rgba(239,50,149,0.20);">`
+    + `<div style="height:4px;background:${PALETTE.pink};"></div>`
+    + `<div style="padding:16px 18px;">`
+    + `<div style="font-family:${FONTS.display};font-size:13px;font-weight:700;color:${PALETTE.pink};letter-spacing:0.06em;">&#9888; ${headline}</div>`
+    + `<div style="font-family:${FONTS.body};font-size:13px;color:${PALETTE.textPrimary};line-height:1.55;margin-top:10px;">Fix (~5 min): open <b>developers.google.com/oauthplayground</b> &rarr; gear icon &rarr; "Use your own OAuth credentials" (paste Client ID + Secret) &rarr; authorize scope <b>gmail.readonly</b> as <b>thebradyeager@gmail.com</b> &rarr; "Exchange authorization code for tokens" &rarr; copy the <b>refresh token</b>. Then update the <b>GOOGLE_REFRESH_TOKEN</b> and <b>GOOGLE_TOKEN_EXPIRES</b> secrets here: ${secretsUrl}</div>`
+    + `<div style="font-family:${FONTS.display};font-size:11px;color:${PALETTE.textMuted};margin-top:10px;">Permanent fix: publish the OAuth app to Production (Google Cloud Console &rarr; OAuth consent screen) so tokens stop expiring. See billing/SETUP.md.</div>`
+    + `</div></div>`;
 }
 
 function escapeHtml(s) {

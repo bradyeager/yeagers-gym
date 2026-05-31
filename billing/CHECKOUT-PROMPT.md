@@ -48,7 +48,7 @@ WEEKLY VAGARO CHECKOUT — YEAGER'S GYM
 ROLE: You are Claude in Brad's Chrome browser. Brad is logged into Vagaro.
 TASK: Mark each paid client below as "checked out" in Vagaro's calendar so
 they show as paid. Brad uses cash as a universal paid-marker (intentional —
-the real money already came via Venmo / check / Zeal; Vagaro's payment-method
+the real money already came via Venmo / check / Zelle; Vagaro's payment-method
 field is just a visual checkmark for him).
 
 URL: https://us05.vagaro.com/merchants/calendar/v3

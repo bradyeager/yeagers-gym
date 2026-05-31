@@ -10,7 +10,7 @@ vagaro_name,venmo_handle,venmo_display_name,default_price,valid_prices,pays_cash
 #                       one spouse alone, group vs solo). e.g. 70/100.
 #                       Any of these (or +$5 smoothie) counts as paid in full.
 #                       Leave blank if price never varies.
-#   pays_cash           true if payment is OUTSIDE Venmo (cash, check, Zeal/Zelle).
+#   pays_cash           true if payment is OUTSIDE Venmo (cash, check, Zelle).
 #   prepaid             true if client pre-paid a bulk amount; bot won't bill.
 #   notes               free text — business rules, exceptions, reminders.
 #
@@ -21,14 +21,14 @@ Melissa Rios,,Melissa Rios,100,70/100,false,false,Couple 2:1 w/ husband Julio; $
 Kerry Kreczmer,,Kerry Kreczmer,50,,false,false,2:1 60min (Mon w/ Mathieu)
 Peggy Happ,,Peggy Barlow Happ,50,40/45/50/70,false,false,Fri 2:1 w/ Jeanette ($50) or solo ($70); Tue Senior Games 3:1 ($45) / team ($40)
 Celestin Mathieu,,Celestin Mathieu,50,50/70,false,false,Mon 2:1 w/ Kerry ($50) / solo ($70); can move to Fri. Tue 7am 1:1 ($70). ALSO pays wife Rachel's Wed session. $5 over = shake
-Jeanette Davey,,,70,50/70,true,false,Pays by check. Tue 1:1 $70 / Fri 2:1 w/ Peggy $50
+Jeanette Davey,,,70,50/70,true,false,Pays by check (sometimes cash). Tue 1:1 $70 / Fri 2:1 w/ Peggy $50
 Katelin Lowther,,"katie lowther,James Lowther",45,45/50,false,false,Mon w/ Anna: $50 (2:1) or $45 (3:1 w/ Dina). Husband James sometimes pays
 michelle Delorenza,,Michelle DeLorenzo,70,,false,false,1 of 2 weekly sessions FREE through ~Aug 2026 (10-wk promo). Expect 1 unpaid/week
 Jacob Bain,,Jacob Bain,70,,false,false,1:1 60min
 Anna Cessna,,Anna Cessna,45,45/50,false,false,Mon w/ Katelin: $50 (2:1) or $45 (3:1 w/ Dina)
-Lisa Knievel,,,70,,true,false,Pays via Zeal -> Chase business checking
+Lisa Knievel,,,70,,true,false,Pays via Zelle -> Chase business checking
 Tonnie Dahl,,Tonnie Dahl,45,40/45/70,false,false,Tue 8am Senior Games 3:1 ($45) / Thu 8am team ($40) / Thu 9am 1:1 ($70). $5 over = smoothie
-Stacy Tesler CPY,,,70,,true,false,Thu 6:30am 1:1. Pays via Zelle -> personal checking
+Stacy Tesler CPY,,,70,,true,false,Thu 6:30am 1:1. Pays via Zelle -> Capital One personal checking
 Annie Deioma,,Mudroom Backpacks,100,80/100,false,false,Wed couple 2:1 $100; Tue 8am team $80 (covers Annie+David). David pays via business Venmo 'Mudroom Backpacks'
 Rachel Bertholino,,Celestin Mathieu,50,50/70,false,false,Wed session. Husband Mathieu (Venmo: Celestin Mathieu) pays. $50 (2:1) / $70 (solo)
 Dina Bates,dinambates357,Dina Bates,45,45/50,false,false,3:1 w/ Katelin+Anna ($45) or 2:1 ($50)

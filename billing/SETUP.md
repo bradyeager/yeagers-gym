@@ -149,9 +149,33 @@ You already use Brevo on the site (`brevo.js`), so you have an account.
 | `GOOGLE_CLIENT_ID` | From Step 3d |
 | `GOOGLE_CLIENT_SECRET` | From Step 3d |
 | `GOOGLE_REFRESH_TOKEN` | From Step 3e |
+| `GOOGLE_TOKEN_EXPIRES` | The date the refresh token stops working, `YYYY-MM-DD` (see Step 5b) |
 | `BREVO_API_KEY` | From Step 4 |
 
 Order matters only for your sanity. Names must match exactly.
+
+### Step 5b — Stop the Google token from expiring (IMPORTANT)
+
+Google OAuth refresh tokens behave differently depending on the app's
+publishing status:
+
+- **Testing mode (default): the token EXPIRES EVERY 7 DAYS.** The bot will
+  silently stop reading Venmo emails after a week.
+- **Production mode: the token does not expire** (unless unused 6 months or
+  you change your Google password).
+
+**Do this once:** Google Cloud Console → **APIs & Services → OAuth consent
+screen → Publish App → Confirm.** It may warn "unverified app" — that's fine,
+you're the only user reading your own Gmail. Re-issue the refresh token
+(Step 3e) after publishing so you get a non-expiring one.
+
+**Set `GOOGLE_TOKEN_EXPIRES`** to:
+- A far-future date (e.g. `2030-01-01`) once you've published to Production, OR
+- The issue date **+ 7 days** if you stay in Testing mode.
+
+The weekly email shows a loud pink warning starting **14 days** before that
+date, with the exact re-auth steps — so you'll never be caught off guard. When
+you re-issue a token, bump this date.
 
 ---
 

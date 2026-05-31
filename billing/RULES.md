@@ -47,7 +47,7 @@ the correct past session when a client has more than one in the window.
 | Method | Bot behavior |
 |---|---|
 | **Venmo** (default) | Reads Venmo emails (`from:venmo.com`), matches sender + amount, marks PAID_VENMO. |
-| **Cash / Check / Zeal / Zelle** | `pays_cash=true`. Shown as a calm **"Expected via check/Zeal/cash"** FYI list — **no action needed**, no buttons. Only matters if someone who usually pays this way didn't. Currently: Lisa Knievel (Zeal→Chase business), Stacy Tesler (Zelle→personal), Jeanette Davey (check). |
+| **Cash / Check / Zelle** | `pays_cash=true`. Shown as a calm **"Expected via check/Zelle/cash"** FYI list — **no action needed**, no buttons. Only matters if someone who usually pays this way didn't. Currently: Lisa Knievel (Zelle→Chase business), Stacy Tesler (Zelle→personal), Jeanette Davey (check). |
 | **Prepaid** | `prepaid=true`. Marks PAID_PREPAID, never bills. Currently: Robert Brower (all of 2026). |
 
 ## Email sections (what you act on)
@@ -55,7 +55,7 @@ the correct past session when a client has more than one in the window.
 1. **⚠ Lagging Indicators** — open items carried over from a prior week. Clear first.
 2. **Unpaid** (this week) — pink "Request on Venmo" button.
 3. **Needs review** — amount didn't match any valid price; eyeball, or tap "Request balance" if short.
-4. **Expected via check/Zeal/cash** — FYI only, no action.
+4. **Expected via check/Zelle/cash** — FYI only, no action.
 5. **Paid** — collapsed confirmation list.
 6. **Unmatched Venmo payments** — payments with memos the bot couldn't auto-assign; hand-match.
 
@@ -156,12 +156,12 @@ Tonnie/Peggy keep both 40 and 45 in valid_prices so historical $45 payments
 
 ### Lisa Knievel
 - Mon 7am 1:1 + Fri 9am 1:1: **$70 each**
-- **Pays via Zeal → Chase Business checking**
+- **Pays via Zelle → Chase Business checking**
 - Bot expects you to log via cash-pending button
 
 ### Stacy Tesler
 - **Thu morning** (time TBD): **$70**
-- **Pays via Zeal → Personal checking**
+- **Pays via Zelle → Personal checking**
 
 ### Robert Brower
 - Tue 9am + Thu 10am: $70 each
