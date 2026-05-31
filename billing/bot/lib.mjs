@@ -34,11 +34,18 @@ export const PALETTE = {
 
 // Email-safe fonts (brand ref §3/§9): data + headings = monospace
 // (JetBrains Mono → Courier New fallback since email can't @font-face),
-// body = Arial/Helvetica system-safe stack.
+// Single clean sans throughout (renders natively on every device: SF on
+// Apple, Segoe on Windows, Roboto on Android; falls back to Helvetica/Arial).
+// Brad disliked the monospace look, so display + body share this stack.
 export const FONTS = {
-  display: `'JetBrains Mono', 'Courier New', Consolas, monospace`,
-  body: `Arial, Helvetica, sans-serif`,
+  display: `-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif`,
+  body: `-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif`,
 };
+
+// Logo shown in the email hero. Served via GitHub Pages from the repo's
+// assets/ folder. Drop a dark-background PNG at this path to override.
+// If the image is missing/blocked, the alt text + wordmark still render.
+export const LOGO_URL = "https://bradyeager.github.io/yeagers-gym/assets/yg-logo-email.png";
 
 // ---- Env helpers ----
 
@@ -416,11 +423,11 @@ export function emailShell({ title, bodyHtml, footerNote = "", subtitle = "Weekl
     <!-- HERO -->
     <div style="border-radius:16px;overflow:hidden;border:1px solid ${P.border};background:linear-gradient(150deg,${P.bgPanel} 0%,${P.bgSoft} 55%,#1c1330 100%);box-shadow:0 0 30px rgba(72,196,204,0.12),0 18px 50px -22px rgba(239,50,149,0.40);">
       <div style="height:5px;background:${NEON_GRADIENT};"></div>
-      <div style="padding:24px 24px 20px;">
-        <div style="font-family:${FONTS.display};color:${P.teal};font-size:11px;letter-spacing:0.42em;text-transform:uppercase;">&#9650;&nbsp; YEAGER'S GYM</div>
-        <div style="font-family:${FONTS.display};font-size:26px;line-height:1.12;font-weight:700;color:#FFFFFF;letter-spacing:0.01em;text-transform:uppercase;margin-top:12px;text-shadow:0 0 22px rgba(72,196,204,0.25);">${subtitle}</div>
-        <div style="font-family:${FONTS.display};font-size:12px;color:${P.teal};letter-spacing:0.12em;margin-top:12px;">${title} <span style="color:${P.pink};">&#9646;</span></div>
-        <div style="font-family:${FONTS.display};font-size:10px;color:${P.textMuted};letter-spacing:0.26em;text-transform:uppercase;margin-top:14px;">Coached by Data &nbsp;&#183;&nbsp; Built on Strength</div>
+      <div style="padding:22px 24px 22px;">
+        <img src="${LOGO_URL}" alt="Yeager's Gym" width="72" height="72" style="display:block;width:72px;height:72px;border:0;outline:none;margin-bottom:14px;" />
+        <div style="font-family:${FONTS.display};color:${P.teal};font-size:11px;letter-spacing:0.32em;text-transform:uppercase;font-weight:600;">YEAGER'S GYM</div>
+        <div style="font-family:${FONTS.display};font-size:25px;line-height:1.15;font-weight:700;color:#FFFFFF;margin-top:10px;">${subtitle}</div>
+        <div style="font-family:${FONTS.display};font-size:13px;color:${P.teal};margin-top:10px;font-weight:600;">${title}</div>
       </div>
     </div>
 

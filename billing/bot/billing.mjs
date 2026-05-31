@@ -430,19 +430,20 @@ export function reconcile(appointments, payments, clients, cashLog) {
     if (usedPayments.has(idx)) return;
     const client = resolveClient(p);
     if (!client) return;
+    if (!p.noteDate) return; // require date evidence — no amount-only guessing
     const accept = client.acceptable_prices?.length ? client.acceptable_prices : [client.default_price];
-    // Candidate unidentified slots this client's payment could cover.
+    // HIGH-CONFIDENCE ONLY: pair a leftover payment to an unidentified slot
+    // ONLY when the payment's memo names that slot's exact date AND the amount
+    // is acceptable for this client. (Earlier amount-only pairing produced a
+    // false "Lacey Thu noon" — never again.)
     const cand = results
       .map((r, ri) => ({ r, ri }))
       .filter(({ r, ri }) => r.status === "UNIDENTIFIED_SLOT" && !pairedSlots.has(ri))
-      .filter(({ r }) => withinDateWindow(p.date, r.appt.date))
-      .filter(({ r }) => amountScore(p.amount, accept) >= 0.8 || (p.noteDate && sameDay(p.noteDate, r.appt.date)))
-      .map(({ r, ri }) => ({
-        r, ri,
-        noteDateMatch: p.noteDate && sameDay(p.noteDate, r.appt.date) ? 1 : 0,
-        dateGap: Math.abs((new Date(p.date) - new Date(r.appt.date)) / 86400000),
-      }))
-      .sort((a, b) => b.noteDateMatch - a.noteDateMatch || a.dateGap - b.dateGap);
+      .filter(({ r }) => sameDay(p.noteDate, r.appt.date))
+      .filter(({ }) => amountScore(p.amount, accept) >= 0.8)
+      .sort((a, b) =>
+        Math.abs(new Date(p.date) - new Date(a.r.appt.date)) -
+        Math.abs(new Date(p.date) - new Date(b.r.appt.date)));
     if (cand.length === 0) return;
     const { r, ri } = cand[0];
     pairedSlots.add(ri);
@@ -508,9 +509,11 @@ function cashEntryLink({ date, name, amount, note = "per weekly billing email" }
 // Deep links that launch the bank app on a phone where the non-Venmo money
 // lands. These are mobile URL schemes — if one doesn't open the app on Brad's
 // device, edit it here (e.g. a universal https:// link).
+// HTTPS links (custom schemes like chase:// break Brevo's click-tracking →
+// 404). On a phone these open the bank app via universal links, else the site.
 const BANK_APP_LINKS = {
-  chase: "chase://",
-  capitalone: "capitalone://",
+  chase: "https://secure.chase.com/web/auth/dashboard",
+  capitalone: "https://verified.capitalone.com/auth/signin",
 };
 
 // Short payment-method label from the client's notes.
@@ -716,15 +719,47 @@ export function buildEmail({ results, unmatchedPayments, now = NOW, windowStart 
     }
   }
 
-  // PAID (collapsed)
-  const allPaid = [...paidVenmo, ...paidCash, ...paidPrepaid];
-  if (allPaid.length) {
-    body += sectionLabel(`Paid — ${allPaid.length}`, "teal");
-    const names = allPaid.map((r) => {
-      const tag = r.status === "PAID_CASH" ? " (cash)" : r.status === "PAID_PREPAID" ? " (prepaid)" : r.inferred ? " (moved)" : "";
-      return escapeHtml(r.roster.vagaro_name) + tag;
-    }).join(", ");
-    body += `<div style="color:${PALETTE.textMuted};font-size:14px;line-height:1.6;margin-bottom:10px;">${names}</div>`;
+  // THIS WEEK — full session roster, grouped by day, ✅ paid / ❌ unpaid.
+  // The at-a-glance "who's square" view Brad asked for.
+  const dayName = (d) => new Date(d).toLocaleDateString("en-US", {
+    timeZone: "America/Los_Angeles", weekday: "long", month: "numeric", day: "numeric",
+  });
+  const dayKey = (d) => new Intl.DateTimeFormat("en-CA", {
+    timeZone: "America/Los_Angeles", year: "numeric", month: "2-digit", day: "2-digit",
+  }).format(new Date(d));
+  const timeOf = (d) => new Date(d).toLocaleTimeString("en-US", {
+    timeZone: "America/Los_Angeles", hour: "numeric", minute: "2-digit",
+  });
+  const markFor = (r) => {
+    if (r.status === "PAID_VENMO") return { icon: "&#9989;", red: false, tag: r.inferred ? " (moved)" : "" };
+    if (r.status === "PAID_CASH") return { icon: "&#9989;", red: false, tag: " (cash)" };
+    if (r.status === "PAID_PREPAID") return { icon: "&#9989;", red: false, tag: " (prepaid)" };
+    if (r.status === "NEEDS_REVIEW") return { icon: "&#9989;", red: false, tag: ` (review &#183; $${r.payment?.amount})` };
+    if (r.status === "CASH_PENDING") return { icon: "&#9203;", red: false, tag: ` (${escapeHtml(paymentMethodHint(r.roster))})` };
+    if (r.status === "UNPAID") return { icon: "&#10060;", red: true, tag: "" };
+    if (r.status === "UNIDENTIFIED_SLOT") return { icon: "&#10067;", red: true, tag: ` &#183; ${escapeHtml(r.appt.summary || "unknown")}` };
+    return { icon: "&#8226;", red: false, tag: "" };
+  };
+
+  const byDay = new Map();
+  for (const r of results) {
+    const k = dayKey(r.appt.date);
+    if (!byDay.has(k)) byDay.set(k, []);
+    byDay.get(k).push(r);
+  }
+  if (byDay.size) {
+    body += sectionLabel("This Week — Session Ledger", "teal");
+    body += `<div style="font-family:${FONTS.body};font-size:12px;color:${PALETTE.textMuted};margin-bottom:12px;">&#9989; paid &#160;&#183;&#160; &#10060; unpaid &#160;&#183;&#160; &#9203; expected (check/Zelle) &#160;&#183;&#160; &#10067; unidentified</div>`;
+    for (const k of [...byDay.keys()].sort()) {
+      const rows = byDay.get(k).sort((a, b) => new Date(a.appt.date) - new Date(b.appt.date));
+      body += `<div style="margin:14px 0 6px;font-family:${FONTS.display};font-size:13px;font-weight:700;color:${PALETTE.teal};">${dayName(k + "T20:00:00Z")}</div>`;
+      for (const r of rows) {
+        const m = markFor(r);
+        const name = r.roster?.vagaro_name || "(unidentified)";
+        const color = m.red ? PALETTE.pink : PALETTE.textPrimary;
+        body += `<div style="font-size:14px;color:${color};padding:3px 0;">${m.icon}&#160; <span style="color:${PALETTE.textMuted};font-size:12px;">${timeOf(r.appt.date)}</span>&#160; ${escapeHtml(name)}<span style="color:${PALETTE.textMuted};font-size:12px;">${m.tag}</span></div>`;
+      }
+    }
   }
 
   // UNMATCHED PAYMENTS (with their memos, so Brad can hand-assign)
