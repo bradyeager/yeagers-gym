@@ -82,7 +82,7 @@ function card(inner, accent = V2.border) {
 function tile({ label, value, color, mono = false }) {
   const valFont = mono ? FONT_MONO : FONT_BODY;
   return `<td valign="top" style="padding:5px;">`
-    + `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="${V2.card}" style="background-color:${V2.card};border:1px solid ${V2.border};border-radius:10px;">`
+    + `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="${V2.card}" style="background-color:${V2.card};border:1px solid ${V2.border};border-top:3px solid ${color};border-radius:10px;">`
     + `<tr><td style="padding:14px 16px;">`
     + `<div style="font-family:${valFont};font-size:26px;font-weight:800;color:${color};line-height:1;">${value}</div>`
     + `<div style="font-family:${FONT_BODY};font-size:11px;color:${V2.mutedText};margin-top:9px;letter-spacing:0.03em;">${label}</div>`
@@ -222,49 +222,52 @@ function buildActionQueue(cats) {
 
 function ledgerRow(r) {
   const time = timeOf(r.appt.date);
-  let icon, color, tag = "";
+  // Status color rides ONLY on the icon and (when informational) the tag.
+  // Time + name stay neutral so the row reads calmly.
+  let icon, iconColor, tag = "", tagColor = V2.mutedText;
   switch (r.status) {
     case "PAID_VENMO":
-      icon = "&#9989;"; color = V2.green;
-      if (r.inferred) tag = `<span style="color:${V2.mutedText};font-size:11px;"> &middot; rescheduled</span>`;
+      icon = "&#9989;"; iconColor = V2.green;
+      if (r.inferred) tag = "rescheduled";
       break;
     case "PAID_CASH":
-      icon = "&#9989;"; color = V2.green;
-      tag = `<span style="color:${V2.mutedText};font-size:11px;"> &middot; cash</span>`;
+      icon = "&#9989;"; iconColor = V2.green; tag = "cash";
       break;
     case "PAID_PREPAID":
-      icon = "&#9989;"; color = V2.green;
-      tag = `<span style="color:${V2.mutedText};font-size:11px;"> &middot; prepaid</span>`;
+      icon = "&#9989;"; iconColor = V2.green; tag = "prepaid";
       break;
     case "NEEDS_REVIEW":
-      icon = "&#9203;"; color = V2.yellow;
-      tag = `<span style="color:${V2.yellow};font-size:11px;font-family:${FONT_MONO};"> &middot; review &middot; ${money(r.payment?.amount)}</span>`;
+      icon = "&#9203;"; iconColor = V2.yellow;
+      tag = `review &middot; ${money(r.payment?.amount)}`;
+      tagColor = V2.yellow;
       break;
     case "CASH_PENDING":
-      icon = "&#9203;"; color = V2.yellow;
-      tag = `<span style="color:${V2.mutedText};font-size:11px;"> &middot; expected check/Zelle</span>`;
+      icon = "&#9203;"; iconColor = V2.yellow; tag = "expected check/Zelle";
       break;
     case "UNPAID":
-      icon = "&#10060;"; color = V2.red;
-      tag = `<span style="color:${V2.red};font-size:11px;font-family:${FONT_MONO};"> &middot; ${money(r.expectedPrice ?? r.roster?.default_price)} unpaid</span>`;
+      icon = "&#10060;"; iconColor = V2.red;
+      tag = `${money(r.expectedPrice ?? r.roster?.default_price)} unpaid`;
+      tagColor = V2.red;
       break;
     case "UNIDENTIFIED_SLOT":
-      icon = "&#10067;"; color = V2.purple;
-      tag = `<span style="color:${V2.mutedText};font-size:11px;"> &middot; ${esc(r.appt.summary || "unknown")}</span>`;
+      icon = "&#10067;"; iconColor = V2.purple; tag = esc(r.appt.summary || "unknown");
       break;
     case "UNKNOWN":
-      icon = "&#10067;"; color = V2.purple;
-      tag = `<span style="color:${V2.mutedText};font-size:11px;"> &middot; not in roster</span>`;
+      icon = "&#10067;"; iconColor = V2.purple; tag = "not in roster";
       break;
     default:
-      icon = "&bull;"; color = V2.bodyText;
+      icon = "&bull;"; iconColor = V2.bodyText;
   }
   const name = r.roster?.vagaro_name || r.appt.client_name || "(unidentified)";
-  return `<tr><td style="padding:5px 0;font-family:${FONT_BODY};font-size:14px;color:${color};">`
-    + `<span style="display:inline-block;width:22px;color:${color};">${icon}</span>`
-    + `<span style="display:inline-block;width:74px;font-family:${FONT_MONO};font-size:12px;color:${V2.mutedText};">${time}</span>`
-    + `<span style="color:${V2.bodyText};">${esc(name)}</span>${tag}`
-    + `</td></tr>`;
+  // Table cells (not inline-block spans) — Outlook/Gmail render colors
+  // reliably on <td>; some clients ignore color on display:inline-block spans.
+  return `<tr>`
+    + `<td valign="middle" width="26" align="center" style="padding:6px 0;font-size:16px;color:${iconColor};line-height:1;">${icon}</td>`
+    + `<td valign="middle" width="72" style="padding:6px 0;font-family:${FONT_MONO};font-size:12px;color:${V2.mutedText};white-space:nowrap;">${time}</td>`
+    + `<td valign="middle" style="padding:6px 0;font-family:${FONT_BODY};font-size:14px;color:${V2.bodyText};">${esc(name)}`
+      + (tag ? `<span style="color:${tagColor};font-size:12px;"> &middot; ${tag}</span>` : "")
+    + `</td>`
+    + `</tr>`;
 }
 
 function ledger(results) {
@@ -404,7 +407,9 @@ export function buildEmailV2({ results, unmatchedPayments, now, windowStart, che
   }
 
   // ── Assemble shell ──
-  const headerAccent = level === "red" ? V2.red : level === "yellow" ? V2.yellow : V2.green;
+  // Header bar is ALWAYS teal — brand-anchor. Status pill (right side) carries
+  // the alarm so we don't lead with a giant red horizontal stripe.
+  const headerAccent = V2.teal;
   const html = `<!doctype html>
 <html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="dark"><title>${esc(subject)}</title></head>
 <body style="margin:0;padding:0;background-color:${V2.bg};font-family:${FONT_BODY};">
