@@ -20,6 +20,12 @@ on:
 permissions:
   contents: write
 
+# Never let a manual dispatch overlap the scheduled run (double-send +
+# log-commit race). Let an in-progress run finish rather than cancel it.
+concurrency:
+  group: weekly-billing
+  cancel-in-progress: false
+
 jobs:
   run:
     runs-on: ubuntu-latest
@@ -34,7 +40,7 @@ jobs:
 
       - name: Install dependencies
         working-directory: billing/bot
-        run: npm install --omit=dev --no-audit --no-fund
+        run: npm ci --omit=dev --no-audit --no-fund
 
       - name: Run billing reconciliation
         working-directory: billing/bot

@@ -11,7 +11,7 @@ import {
   PALETTE, FONTS, GITHUB_OWNER, GITHUB_REPO, DEFAULT_BRANCH,
   requireEnv, resolveRepoRoot, loadClients, loadCashEntries,
   loadSchedule, findScheduleEntriesForSlot, isInactiveSlot,
-  fuzzyName, fmtDate, fmtDateTime, fmtDateIso, slugify, parseNoteDate,
+  fuzzyName, fmtDate, fmtDateTime, fmtDateIso, slugify, parseNoteDate, withRetry,
   venmoRequestLink, githubNewFileUrl, sendBrevoEmail,
   emailShell, sectionLabel, button, buttonOutline, card,
 } from "./lib.mjs";
@@ -41,7 +41,7 @@ const LOGS_DIR = path.join(REPO_ROOT, "billing", "logs");
 // ---- Vagaro iCal ----
 
 async function fetchVagaroAppointments() {
-  const events = await ical.async.fromURL(VAGARO_ICAL_URL);
+  const events = await withRetry(() => ical.async.fromURL(VAGARO_ICAL_URL), { label: "Vagaro iCal fetch" });
   const all = Object.values(events);
   const typeCounts = {};
   for (const ev of all) typeCounts[ev.type] = (typeCounts[ev.type] || 0) + 1;
@@ -870,7 +870,10 @@ Brad will review and handle exceptions manually.`;
 
 function statChip(n, label, color = "teal") {
   const c = PALETTE[color] || PALETTE.teal;
-  return `<div style="flex:1;min-width:120px;background:${PALETTE.bgPanel};border:1px solid ${PALETTE.border};border-top:3px solid ${c};border-radius:6px;padding:12px 14px;"><div style="font-family:${FONTS.display};font-size:28px;font-weight:700;color:${c};line-height:1;">${n}</div><div style="font-family:${FONTS.display};font-size:11px;text-transform:uppercase;letter-spacing:0.15em;color:${PALETTE.textMuted};margin-top:6px;">${label}</div></div>`;
+  const glow = n > 0 ? `box-shadow:0 0 0 1px ${c}22, 0 8px 24px -14px ${c};` : "";
+  return `<div style="flex:1;min-width:104px;background:linear-gradient(155deg,${PALETTE.bgPanel} 0%,#101018 100%);border:1px solid ${PALETTE.border};border-top:3px solid ${c};border-radius:9px;padding:13px 15px;${glow}">`
+    + `<div style="font-family:${FONTS.display};font-size:30px;font-weight:800;color:${c};line-height:1;text-shadow:0 0 14px ${c}55;">${n}</div>`
+    + `<div style="font-family:${FONTS.display};font-size:10px;text-transform:uppercase;letter-spacing:0.18em;color:${PALETTE.textMuted};margin-top:7px;">${label}</div></div>`;
 }
 
 function escapeHtml(s) {

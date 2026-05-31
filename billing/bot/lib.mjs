@@ -327,6 +327,26 @@ export function slugify(str) {
     .slice(0, 60);
 }
 
+// Retry an async fn with exponential backoff. For flaky external calls
+// (Vagaro iCal 403s, Gmail/Google transient 5xx). Throws the last error
+// after `tries` attempts.
+export async function withRetry(fn, { tries = 3, baseMs = 1500, label = "op" } = {}) {
+  let lastErr;
+  for (let i = 1; i <= tries; i++) {
+    try {
+      return await fn();
+    } catch (err) {
+      lastErr = err;
+      if (i < tries) {
+        const wait = baseMs * 2 ** (i - 1);
+        console.log(`${label}: attempt ${i}/${tries} failed (${err.message || err}); retrying in ${wait}ms`);
+        await new Promise((r) => setTimeout(r, wait));
+      }
+    }
+  }
+  throw lastErr;
+}
+
 // ---- Deep links / URLs ----
 
 export function venmoRequestLink(handle, amount, note) {
@@ -374,25 +394,47 @@ export async function sendBrevoEmail({ apiKey, to, from, fromName, subject, html
 
 // ---- YG email building blocks ----
 
-export function emailShell({ title, bodyHtml, footerNote = "" }) {
+// Neon sunset — the YG gradient (teal → purple → pink). Miami-at-night.
+export const NEON_GRADIENT = "linear-gradient(90deg, #1EC8B0 0%, #9B6FD4 50%, #F0448A 100%)";
+
+export function emailShell({ title, bodyHtml, footerNote = "", subtitle = "Weekly Revenue Transmission" }) {
   const P = PALETTE;
   return `<!doctype html>
-<html><head><meta charset="utf-8"><meta name="color-scheme" content="dark"></head>
-<body style="margin:0;padding:0;background:${P.bg};color:${P.textPrimary};font-family:${FONTS.body};">
-  <div style="max-width:640px;margin:0 auto;padding:24px 20px;">
-    <div style="border-bottom:1px solid ${P.border};padding-bottom:16px;margin-bottom:24px;">
-      <div style="font-family:${FONTS.display};color:${P.teal};font-size:11px;letter-spacing:0.15em;text-transform:uppercase;margin-bottom:6px;">Yeager's Gym — Billing</div>
-      <h1 style="margin:0;font-family:${FONTS.body};font-size:22px;font-weight:600;color:${P.textPrimary};">${title}</h1>
+<html><head><meta charset="utf-8"><meta name="color-scheme" content="dark"><meta name="supported-color-schemes" content="dark"></head>
+<body style="margin:0;padding:0;background:#070709;background-image:radial-gradient(1200px 480px at 80% -10%, rgba(240,68,138,0.10), transparent 60%),radial-gradient(900px 420px at -10% 0%, rgba(30,200,176,0.10), transparent 55%);color:${P.textPrimary};font-family:${FONTS.body};-webkit-font-smoothing:antialiased;">
+  <div style="max-width:640px;margin:0 auto;padding:22px 18px 40px;">
+
+    <!-- HERO -->
+    <div style="border-radius:16px;overflow:hidden;border:1px solid #23232b;background:linear-gradient(150deg,#0b0b12 0%,#141320 55%,#1c0f1c 100%);box-shadow:0 0 0 1px rgba(30,200,176,0.06),0 18px 50px -20px rgba(240,68,138,0.35);">
+      <div style="height:5px;background:${NEON_GRADIENT};"></div>
+      <div style="padding:24px 24px 20px;">
+        <div style="font-family:${FONTS.display};color:${P.teal};font-size:11px;letter-spacing:0.42em;text-transform:uppercase;">&#9650;&nbsp; YEAGER'S GYM</div>
+        <div style="font-family:${FONTS.body};font-size:27px;line-height:1.1;font-weight:800;color:#ffffff;letter-spacing:-0.01em;margin-top:12px;">${subtitle}</div>
+        <div style="font-family:${FONTS.display};font-size:12px;color:${P.pink};letter-spacing:0.12em;margin-top:10px;">${title} <span style="color:${P.textDim};">&#9646;</span></div>
+        <div style="font-family:${FONTS.display};font-size:10px;color:${P.textDim};letter-spacing:0.28em;text-transform:uppercase;margin-top:14px;">Coached by Data &nbsp;&#183;&nbsp; Built on Strength</div>
+      </div>
     </div>
-    ${bodyHtml}
-    ${footerNote ? `<div style="margin-top:32px;padding-top:16px;border-top:1px solid ${P.border};font-family:${FONTS.display};font-size:11px;color:${P.textDim};">${footerNote}</div>` : ""}
+
+    <div style="margin-top:22px;">
+      ${bodyHtml}
+    </div>
+
+    <div style="margin-top:34px;border-top:1px solid ${P.border};padding-top:14px;">
+      <div style="height:3px;width:100%;background:${NEON_GRADIENT};opacity:0.5;border-radius:2px;margin-bottom:12px;"></div>
+      <div style="font-family:${FONTS.display};font-size:10px;color:${P.textDim};letter-spacing:0.14em;">${footerNote || ""}</div>
+      <div style="font-family:${FONTS.display};font-size:10px;color:${P.textDim};letter-spacing:0.14em;margin-top:6px;">// end transmission &#183; automated by the YG billing engine</div>
+    </div>
   </div>
 </body></html>`;
 }
 
 export function sectionLabel(text, color = "teal") {
   const c = PALETTE[color] || PALETTE.teal;
-  return `<div style="font-family:${FONTS.display};color:${c};font-size:11px;letter-spacing:0.15em;text-transform:uppercase;margin:28px 0 10px 0;">${text}</div>`;
+  // Neon "spine" bar + uppercase mono label — HUD section header.
+  return `<div style="display:flex;align-items:center;gap:9px;margin:30px 0 12px 0;">`
+    + `<span style="display:inline-block;width:3px;height:15px;background:${c};border-radius:2px;box-shadow:0 0 8px ${c};"></span>`
+    + `<span style="font-family:${FONTS.display};color:${c};font-size:12px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;">${text}</span>`
+    + `</div>`;
 }
 
 export function button({ href, label, color = "pink", size = "md" }) {
@@ -442,19 +484,30 @@ export async function readWeeklyLogs(logsDir, { start, end }) {
 }
 
 function parseWeeklyLog(md) {
-  // Pull appointment lines like:
-  // "- 2026-04-14 | Alice Chen | $100 | PAID_VENMO (matched @alice-chen-2021, $100)"
+  // Appointment lines look like (pipe-delimited):
+  //   - Mon, 5/25, 6:00 AM | Jacob Bain | $70 | PAID_VENMO (matched "Jacob Bain", $70, note: "5/21")
+  //   - Tue, 5/26, 8:00 AM | Annie Deioma | $80 | PAID_VENMO (matched "Mudroom", $80, note: "...")
+  // We split on "|" rather than one mega-regex so the format can drift a bit
+  // without silently parsing zero rows (which would zero out the monthly total).
   const out = { appointments: [] };
-  for (const line of md.split("\n")) {
-    const m = line.match(/^-\s+(\d{4}-\d{2}-\d{2})\s*\|\s*([^|]+?)\s*\|\s*\$?([\d.?]+|\?)\s*\|\s*(\w+)/);
-    if (!m) continue;
-    const amountMatch = line.match(/\$(\d+(?:\.\d+)?)\)/);
+  for (const raw of md.split("\n")) {
+    if (!raw.startsWith("- ")) continue;
+    const parts = raw.slice(2).split("|");
+    if (parts.length < 4) continue;
+    const dateStr = parts[0].trim();
+    const name = parts[1].trim();
+    const priceTok = (parts[2].match(/[\d.]+/) || [])[0];
+    const rest = parts.slice(3).join("|").trim();
+    const status = (rest.match(/^([A-Z_]+)/) || [])[1] || "";
+    if (!status) continue;
+    // Amount actually received = first "$N" after the word "matched".
+    const paidM = rest.match(/matched[^$]*\$(\d+(?:\.\d+)?)/);
     out.appointments.push({
-      date: m[1],
-      name: m[2].trim(),
-      price: m[3] === "?" ? null : Number(m[3]),
-      status: m[4],
-      paidAmount: amountMatch ? Number(amountMatch[1]) : null,
+      date: dateStr,                                   // human string; used only as a dedup key
+      name,
+      price: priceTok ? Number(priceTok) : null,
+      status,
+      paidAmount: paidM ? Number(paidM[1]) : null,
     });
   }
   return out;
