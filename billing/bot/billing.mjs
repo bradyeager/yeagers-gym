@@ -585,7 +585,7 @@ export function buildEmail({ results, unmatchedPayments, now = NOW, windowStart 
     } else {
       inner += `<div style="font-family:${FONTS.display};font-size:11px;color:${PALETTE.textDim};">Eyeball only — no action needed if this looks right.</div>`;
     }
-    return card(inner, "purple");
+    return card(inner, "teal");
   };
 
   let body = "";
@@ -594,9 +594,9 @@ export function buildEmail({ results, unmatchedPayments, now = NOW, windowStart 
   body += `<div style="display:flex;flex-wrap:wrap;gap:14px;margin-bottom:20px;">`;
   if (lagging.length) body += statChip(lagging.length, "carryover", "pink");
   body += statChip(unpaid.length, "unpaid", unpaid.length ? "pink" : "textMuted");
-  body += statChip(review.length, "review", review.length ? "purple" : "textMuted");
+  body += statChip(review.length, "review", review.length ? "teal" : "textMuted");
   body += statChip(paidVenmo.length + paidCash.length + paidPrepaid.length, "paid", "teal");
-  if (unidentified.length) body += statChip(unidentified.length, "unidentified", "purple");
+  if (unidentified.length) body += statChip(unidentified.length, "unidentified", "teal");
   body += `</div>`;
 
   // One-time UX hint: pink "Request" buttons open Venmo; teal "Log as cash"
@@ -624,30 +624,30 @@ export function buildEmail({ results, unmatchedPayments, now = NOW, windowStart 
 
   // NEEDS REVIEW
   if (review.length) {
-    body += sectionLabel(`Needs review — ${review.length}`, "purple");
+    body += sectionLabel(`Needs review — ${review.length}`, "teal");
     for (const r of review) body += reviewCard(r);
   }
 
   // UNIDENTIFIED SLOTS
   if (unidentified.length) {
-    body += sectionLabel(`Unidentified slots — ${unidentified.length}`, "purple");
+    body += sectionLabel(`Unidentified slots — ${unidentified.length}`, "teal");
     body += `<div style="font-family:${FONTS.body};font-size:13px;color:${PALETTE.textMuted};margin-bottom:12px;">A session ran at a time not mapped in schedule.csv. If it's a real client, add them; otherwise ignore.</div>`;
     for (const r of unidentified) {
       const summary = r.appt.summary || "(no title)";
       body += card(
         `<div style="color:${PALETTE.textPrimary};"><strong>${fmtDateTime(r.appt.date)}</strong></div><div style="font-family:${FONTS.display};font-size:12px;color:${PALETTE.textMuted};margin-top:4px;">${escapeHtml(summary)}</div>`,
-        "purple",
+        "teal",
       );
     }
   }
 
   // UNKNOWN
   if (unknown.length) {
-    body += sectionLabel(`Unknown clients — ${unknown.length}`, "purple");
+    body += sectionLabel(`Unknown clients — ${unknown.length}`, "teal");
     for (const r of unknown) {
       body += card(
         `<div style="color:${PALETTE.textPrimary};">${fmtDate(r.appt.date)} — "${escapeHtml(r.appt.summary)}"</div><div style="font-family:${FONTS.display};font-size:12px;color:${PALETTE.textMuted};margin-top:4px;">${escapeHtml(r.note || "")}. Add to clients.csv.</div>`,
-        "purple",
+        "teal",
       );
     }
   }

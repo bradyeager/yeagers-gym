@@ -10,27 +10,34 @@ export const GITHUB_OWNER = process.env.GITHUB_OWNER || "bradyeager";
 export const GITHUB_REPO = process.env.GITHUB_REPO || "yeagers-gym";
 export const DEFAULT_BRANCH = process.env.DEFAULT_BRANCH || "main";
 
-// ---- YG colorway (CLAUDE.md) ----
-
+// ---- YG colorway (canonical per YG-Brand-Style-Reference.md §2) ----
+// Teal is dominant (structure/data/trust). Pink is action/urgency ONLY.
+// Purple is a sparing accent. Max 2 brand colors per view + neutrals.
 export const PALETTE = {
-  bg: "#0a0a0a",
-  bgPanel: "#141414",
-  bgSoft: "#1a1a1a",
-  border: "#2a2a2a",
-  textPrimary: "#eaeaea",
-  textMuted: "#9a9a9a",
-  textDim: "#6a6a6a",
-  teal: "#1EC8B0",
-  pink: "#F0448A",
+  bg: "#0A0E17",          // dark base
+  bgPanel: "#0F1420",     // surface 1 (cards)
+  bgSoft: "#151B2A",      // surface 2 (nested)
+  surface3: "#1A2235",    // surface 3 (hover)
+  border: "rgba(255,255,255,0.12)",
+  divider: "rgba(255,255,255,0.08)",
+  textPrimary: "#E8E6E3",
+  textMuted: "#8A8D93",
+  textDim: "#4A4D55",
+  teal: "#48C4CC",
+  tealHover: "#35ADB5",
+  pink: "#EF3295",
+  pinkHover: "#D42582",
   purple: "#9B6FD4",
-  danger: "#ff6b6b",
-  success: "#1EC8B0",
+  danger: "#EF3295",      // pink = warnings per brand
+  success: "#48C4CC",
 };
 
-// Email-safe font stacks (most clients ignore @font-face).
+// Email-safe fonts (brand ref §3/§9): data + headings = monospace
+// (JetBrains Mono → Courier New fallback since email can't @font-face),
+// body = Arial/Helvetica system-safe stack.
 export const FONTS = {
-  display: `ui-monospace, "JetBrains Mono", "SF Mono", Menlo, Consolas, monospace`,
-  body: `-apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, "Helvetica Neue", sans-serif`,
+  display: `'JetBrains Mono', 'Courier New', Consolas, monospace`,
+  body: `Arial, Helvetica, sans-serif`,
 };
 
 // ---- Env helpers ----
@@ -394,24 +401,26 @@ export async function sendBrevoEmail({ apiKey, to, from, fromName, subject, html
 
 // ---- YG email building blocks ----
 
-// Neon sunset — the YG gradient (teal → purple → pink). Miami-at-night.
-export const NEON_GRADIENT = "linear-gradient(90deg, #1EC8B0 0%, #9B6FD4 50%, #F0448A 100%)";
+// Neon sunset — the YG signature gradient (teal → purple → pink).
+// The one place all three brand colors appear together; treated as a single
+// decorative "neon sign" flourish (per the Velocity Method logo aesthetic).
+export const NEON_GRADIENT = "linear-gradient(90deg, #48C4CC 0%, #9B6FD4 50%, #EF3295 100%)";
 
 export function emailShell({ title, bodyHtml, footerNote = "", subtitle = "Weekly Revenue Transmission" }) {
   const P = PALETTE;
   return `<!doctype html>
 <html><head><meta charset="utf-8"><meta name="color-scheme" content="dark"><meta name="supported-color-schemes" content="dark"></head>
-<body style="margin:0;padding:0;background:#070709;background-image:radial-gradient(1200px 480px at 80% -10%, rgba(240,68,138,0.10), transparent 60%),radial-gradient(900px 420px at -10% 0%, rgba(30,200,176,0.10), transparent 55%);color:${P.textPrimary};font-family:${FONTS.body};-webkit-font-smoothing:antialiased;">
+<body style="margin:0;padding:0;background:${P.bg};background-image:radial-gradient(1100px 460px at 82% -10%, rgba(239,50,149,0.10), transparent 60%),radial-gradient(900px 420px at -8% 0%, rgba(72,196,204,0.12), transparent 55%);color:${P.textPrimary};font-family:${FONTS.body};-webkit-font-smoothing:antialiased;">
   <div style="max-width:640px;margin:0 auto;padding:22px 18px 40px;">
 
     <!-- HERO -->
-    <div style="border-radius:16px;overflow:hidden;border:1px solid #23232b;background:linear-gradient(150deg,#0b0b12 0%,#141320 55%,#1c0f1c 100%);box-shadow:0 0 0 1px rgba(30,200,176,0.06),0 18px 50px -20px rgba(240,68,138,0.35);">
+    <div style="border-radius:16px;overflow:hidden;border:1px solid ${P.border};background:linear-gradient(150deg,${P.bgPanel} 0%,${P.bgSoft} 55%,#1c1330 100%);box-shadow:0 0 30px rgba(72,196,204,0.12),0 18px 50px -22px rgba(239,50,149,0.40);">
       <div style="height:5px;background:${NEON_GRADIENT};"></div>
       <div style="padding:24px 24px 20px;">
         <div style="font-family:${FONTS.display};color:${P.teal};font-size:11px;letter-spacing:0.42em;text-transform:uppercase;">&#9650;&nbsp; YEAGER'S GYM</div>
-        <div style="font-family:${FONTS.body};font-size:27px;line-height:1.1;font-weight:800;color:#ffffff;letter-spacing:-0.01em;margin-top:12px;">${subtitle}</div>
-        <div style="font-family:${FONTS.display};font-size:12px;color:${P.pink};letter-spacing:0.12em;margin-top:10px;">${title} <span style="color:${P.textDim};">&#9646;</span></div>
-        <div style="font-family:${FONTS.display};font-size:10px;color:${P.textDim};letter-spacing:0.28em;text-transform:uppercase;margin-top:14px;">Coached by Data &nbsp;&#183;&nbsp; Built on Strength</div>
+        <div style="font-family:${FONTS.display};font-size:26px;line-height:1.12;font-weight:700;color:#FFFFFF;letter-spacing:0.01em;text-transform:uppercase;margin-top:12px;text-shadow:0 0 22px rgba(72,196,204,0.25);">${subtitle}</div>
+        <div style="font-family:${FONTS.display};font-size:12px;color:${P.teal};letter-spacing:0.12em;margin-top:12px;">${title} <span style="color:${P.pink};">&#9646;</span></div>
+        <div style="font-family:${FONTS.display};font-size:10px;color:${P.textMuted};letter-spacing:0.26em;text-transform:uppercase;margin-top:14px;">Coached by Data &nbsp;&#183;&nbsp; Built on Strength</div>
       </div>
     </div>
 
@@ -420,9 +429,10 @@ export function emailShell({ title, bodyHtml, footerNote = "", subtitle = "Weekl
     </div>
 
     <div style="margin-top:34px;border-top:1px solid ${P.border};padding-top:14px;">
-      <div style="height:3px;width:100%;background:${NEON_GRADIENT};opacity:0.5;border-radius:2px;margin-bottom:12px;"></div>
+      <div style="height:3px;width:100%;background:${NEON_GRADIENT};opacity:0.55;border-radius:2px;margin-bottom:12px;"></div>
       <div style="font-family:${FONTS.display};font-size:10px;color:${P.textDim};letter-spacing:0.14em;">${footerNote || ""}</div>
-      <div style="font-family:${FONTS.display};font-size:10px;color:${P.textDim};letter-spacing:0.14em;margin-top:6px;">// end transmission &#183; automated by the YG billing engine</div>
+      <div style="font-family:${FONTS.display};font-size:10px;color:${P.textMuted};letter-spacing:0.16em;margin-top:8px;">YEAGER'S GYM &#183; San Diego, CA &#183; brad@yeagersgym.com</div>
+      <div style="font-family:${FONTS.display};font-size:10px;color:${P.textDim};letter-spacing:0.14em;margin-top:4px;">// end transmission &#183; automated by the YG billing engine</div>
     </div>
   </div>
 </body></html>`;
@@ -431,9 +441,9 @@ export function emailShell({ title, bodyHtml, footerNote = "", subtitle = "Weekl
 export function sectionLabel(text, color = "teal") {
   const c = PALETTE[color] || PALETTE.teal;
   // Neon "spine" bar + uppercase mono label — HUD section header.
-  return `<div style="display:flex;align-items:center;gap:9px;margin:30px 0 12px 0;">`
-    + `<span style="display:inline-block;width:3px;height:15px;background:${c};border-radius:2px;box-shadow:0 0 8px ${c};"></span>`
-    + `<span style="font-family:${FONTS.display};color:${c};font-size:12px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;">${text}</span>`
+  return `<div style="margin:30px 0 12px 0;">`
+    + `<span style="display:inline-block;width:18px;height:3px;background:${c};border-radius:2px;box-shadow:0 0 8px ${c};vertical-align:middle;margin-right:10px;"></span>`
+    + `<span style="font-family:${FONTS.display};color:${c};font-size:12px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;vertical-align:middle;">${text}</span>`
     + `</div>`;
 }
 
