@@ -8,8 +8,9 @@ import path from "node:path";
 import { resolveRepoRoot } from "./lib.mjs";
 
 // Dynamic imports after faking env so module-level env reads succeed.
-const { reconcile, buildEmail: buildWeekly } = await import("./billing.mjs");
+const { reconcile, buildEmail: buildWeekly, buildCheckoutPrompt } = await import("./billing.mjs");
 const { buildEmail: buildMonthly, totalsFromLogs } = await import("./monthly.mjs");
+const { buildEmailV2 } = await import("./email-v2.mjs");
 
 const REPO_ROOT = resolveRepoRoot(import.meta.url);
 const OUT_DIR = path.join(REPO_ROOT, "billing", "preview");
@@ -60,6 +61,12 @@ const { results, unmatchedPayments } = reconcile(appointments, payments, clients
 const windowStart = day(8);
 const { subject: weeklySubject, html: weeklyHtml } = buildWeekly({
   results, unmatchedPayments, now: today, windowStart,
+});
+
+// v2 (command-center) preview — parallel template, not live yet
+const checkoutPrompt = buildCheckoutPrompt(results, today);
+const { subject: weeklyV2Subject, html: weeklyV2Html, preheader: weeklyV2Preheader } = buildEmailV2({
+  results, unmatchedPayments, now: today, windowStart, checkoutPrompt,
 });
 
 // ---- Synthetic monthly data ----
@@ -132,11 +139,15 @@ const { subject: monthlySubject, html: monthlyHtml } = buildMonthly({
 
 await fs.mkdir(OUT_DIR, { recursive: true });
 await fs.writeFile(path.join(OUT_DIR, "weekly.html"), weeklyHtml, "utf8");
+await fs.writeFile(path.join(OUT_DIR, "weekly-v2.html"), weeklyV2Html, "utf8");
 await fs.writeFile(path.join(OUT_DIR, "monthly.html"), monthlyHtml, "utf8");
 
 console.log("Wrote:");
-console.log(`  ${path.join(OUT_DIR, "weekly.html")}   → subject: ${weeklySubject}`);
-console.log(`  ${path.join(OUT_DIR, "monthly.html")}  → subject: ${monthlySubject}`);
+console.log(`  ${path.join(OUT_DIR, "weekly.html")}      → subject: ${weeklySubject}`);
+console.log(`  ${path.join(OUT_DIR, "weekly-v2.html")}   → subject: ${weeklyV2Subject}`);
+console.log(`     preheader: ${weeklyV2Preheader}`);
+console.log(`  ${path.join(OUT_DIR, "monthly.html")}     → subject: ${monthlySubject}`);
 console.log("\nView via htmlpreview.github.io after push:");
-console.log("  https://htmlpreview.github.io/?https://github.com/bradyeager/yeagers-gym/blob/claude/automate-venmo-billing-pR6HL/billing/preview/weekly.html");
-console.log("  https://htmlpreview.github.io/?https://github.com/bradyeager/yeagers-gym/blob/claude/automate-venmo-billing-pR6HL/billing/preview/monthly.html");
+console.log("  https://htmlpreview.github.io/?https://github.com/bradyeager/yeagers-gym/blob/main/billing/preview/weekly.html");
+console.log("  https://htmlpreview.github.io/?https://github.com/bradyeager/yeagers-gym/blob/main/billing/preview/weekly-v2.html");
+console.log("  https://htmlpreview.github.io/?https://github.com/bradyeager/yeagers-gym/blob/main/billing/preview/monthly.html");

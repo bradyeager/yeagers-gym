@@ -809,7 +809,7 @@ export function buildEmail({ results, unmatchedPayments, now = NOW, windowStart 
 // ── Vagaro checkout prompt for Claude for Chrome ──
 // Returns the full prompt (rules + this week's paid client list) as plain
 // text so Brad can copy-paste a single block into a fresh chat each week.
-function buildCheckoutPrompt(results, now) {
+export function buildCheckoutPrompt(results, now) {
   const paid = results.filter((r) =>
     r.status === "PAID_VENMO" || r.status === "PAID_CASH" || r.status === "PAID_PREPAID",
   );
@@ -1094,7 +1094,19 @@ async function main() {
   // suppress them from the email (still kept in the log for audit).
   const unmatchedInWindow = unmatchedPayments.filter((p) => new Date(p.date) >= WINDOW_START);
 
-  const { subject, html } = buildEmail({ results, unmatchedPayments: unmatchedInWindow });
+  // EMAIL_STYLE selects the template. Default is the current proven layout;
+  // "command-center" uses the v2 / Strength Lab design (see email-v2.mjs).
+  // Live Friday email stays on the default unless this env var is explicitly set.
+  let subject, html;
+  if (process.env.EMAIL_STYLE === "command-center") {
+    const { buildEmailV2 } = await import("./email-v2.mjs");
+    const checkoutPrompt = buildCheckoutPrompt(results, NOW);
+    ({ subject, html } = buildEmailV2({
+      results, unmatchedPayments: unmatchedInWindow, now: NOW, windowStart: WINDOW_START, checkoutPrompt,
+    }));
+  } else {
+    ({ subject, html } = buildEmail({ results, unmatchedPayments: unmatchedInWindow }));
+  }
   const logFile = await writeLog({ appointments, payments, results, unmatchedPayments });
   console.log(`Wrote log: ${logFile}`);
   // Dump log to console for easy review (dry-run never commits the file).
