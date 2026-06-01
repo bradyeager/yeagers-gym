@@ -84,10 +84,14 @@ export function parseCsvLine(line) {
 
 // Header-driven parser: column order doesn't matter, missing columns are fine.
 // Recognized columns: vagaro_name, venmo_handle, venmo_display_name,
-// default_price, valid_prices, pays_cash, prepaid, notes.
+// default_price, valid_prices, pays_cash, prepaid, note_keywords, notes.
 // valid_prices is a SLASH-separated list (e.g. "70/100") of all acceptable
 // amounts for a client whose price legitimately varies (couple solo vs together,
 // group vs alone). Comma can't be used — it's the CSV delimiter.
+// note_keywords is a PIPE-separated list (e.g. "rachael|rachel"). When a
+// Venmo memo contains any of these (case-insensitive), the payment is
+// CLAIMED by this client even if the sender display name matches a different
+// roster row. Disambiguates one-payer-multiple-clients cases.
 export async function loadClients(csvPath) {
   const raw = await fs.readFile(csvPath, "utf8");
   const lines = raw.split("\n").map((l) => l.trim()).filter((l) => l && !l.startsWith("#"));
@@ -104,6 +108,7 @@ export async function loadClients(csvPath) {
   const iValid = idx("valid_prices");
   const iCash = idx("pays_cash");
   const iPrepaid = idx("prepaid");
+  const iKeywords = idx("note_keywords");
   const iNotes = idx("notes");
   const at = (cells, i) => (i >= 0 && i < cells.length ? cells[i] : "");
 
@@ -117,6 +122,7 @@ export async function loadClients(csvPath) {
       : [];
     // Acceptable prices always include default + any explicit valid_prices.
     const acceptablePrices = [...new Set([defaultPrice, ...validPrices].filter((n) => n != null))];
+    const keywordsRaw = at(cells, iKeywords) || "";
     return {
       vagaro_name: at(cells, iName),
       venmo_handle: at(cells, iHandle) || "",
@@ -127,6 +133,9 @@ export async function loadClients(csvPath) {
       default_price: defaultPrice,
       valid_prices: validPrices,
       acceptable_prices: acceptablePrices,
+      note_keywords: keywordsRaw
+        ? keywordsRaw.split("|").map((s) => s.trim().toLowerCase()).filter(Boolean)
+        : [],
       pays_cash: (at(cells, iCash) || "").toLowerCase() === "true",
       prepaid: (at(cells, iPrepaid) || "").toLowerCase() === "true",
       notes: at(cells, iNotes) || "",
@@ -238,6 +247,32 @@ function localParts(date, tz) {
   const dayNum = DAY_ALIASES[parts.weekday?.toLowerCase()] ?? -1;
   const hh = parts.hour === "24" ? "00" : parts.hour;
   return { dayNum, hhmm: `${hh}:${parts.minute}` };
+}
+
+// ---- Cancellations (sessions Brad didn't actually train — vacation, sick) ----
+//
+// Pattern mirrors cash-entries/: a single file per cancellation in
+// billing/cancellations/, name `YYYY-MM-DD-clientslug.md`, contents like
+// `YYYY-MM-DD | Client Name | reason`. The bot drops matching iCal slots
+// from the run so the client doesn't get billed for sessions they missed.
+
+export async function loadCancellations(repoRoot) {
+  const entries = [];
+  const dirPath = path.join(repoRoot, "billing", "cancellations");
+  try {
+    const files = await fs.readdir(dirPath);
+    for (const f of files) {
+      if (!f.endsWith(".md")) continue;
+      const raw = await fs.readFile(path.join(dirPath, f), "utf8");
+      for (const line of raw.split("\n")) {
+        const parsed = parseCashLine(line); // same `YYYY-MM-DD | Name | …` shape
+        if (parsed) entries.push({ date: parsed.date, name: parsed.name, reason: parsed.notes || parsed.amount?.toString() || "", source: `cancellations/${f}` });
+      }
+    }
+  } catch (e) {
+    if (e.code !== "ENOENT") throw e;
+  }
+  return entries;
 }
 
 // ---- Cash entries (aggregates cash-log.md + cash-entries/ dir) ----

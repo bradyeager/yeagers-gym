@@ -9,7 +9,7 @@ import ical from "node-ical";
 import { google } from "googleapis";
 import {
   PALETTE, FONTS, GITHUB_OWNER, GITHUB_REPO, DEFAULT_BRANCH,
-  requireEnv, resolveRepoRoot, loadClients, loadCashEntries,
+  requireEnv, resolveRepoRoot, loadClients, loadCashEntries, loadCancellations,
   loadSchedule, findScheduleEntriesForSlot, isInactiveSlot,
   fuzzyName, fmtDate, fmtDateTime, fmtDateIso, slugify, parseNoteDate, withRetry,
   venmoRequestLink, githubNewFileUrl, sendBrevoEmail,
@@ -320,10 +320,33 @@ export function expandSlots(slots, schedule) {
   return out;
 }
 
-export function reconcile(appointments, payments, clients, cashLog) {
+export function reconcile(appointments, payments, clients, cashLog, cancellations = []) {
   const byVagaroName = new Map(clients.map((c) => [c.vagaro_name.toLowerCase(), c]));
   const usedPayments = new Set();
   const results = [];
+
+  // ── Note-keyword routing (Mathieu/Rachel disambiguation) ──
+  // For each payment, figure out which roster client (if any) explicitly
+  // claims it via a note_keywords match. A claimed payment is reserved for
+  // that client even if the sender display name matches a sibling row
+  // (e.g. Mathieu's "$70 Rachael" sender=Mathieu but claimed by Rachel).
+  const noteClaimedBy = new Map(); // payment index → roster client
+  payments.forEach((p, idx) => {
+    const note = (p.note || "").toLowerCase();
+    if (!note) return;
+    for (const c of clients) {
+      const kws = c.note_keywords || [];
+      if (!kws.length) continue;
+      if (kws.some((kw) => kw && note.includes(kw))) {
+        noteClaimedBy.set(idx, c);
+        break;
+      }
+    }
+  });
+
+  // ── Cancellations (Brad didn't actually train — vacation, sick, etc.) ──
+  const cancelKey = (date, name) => `${fmtDateIso(date)}__${(name || "").toLowerCase()}`;
+  const cancelledSet = new Set(cancellations.map((c) => cancelKey(c.date, c.name)));
 
   for (const appt of appointments) {
     if (appt.unidentified) {
@@ -335,6 +358,14 @@ export function reconcile(appointments, payments, clients, cashLog) {
 
     if (!roster) {
       results.push({ appt, status: "UNKNOWN", note: `Client "${appt.client_name}" not in roster` });
+      continue;
+    }
+
+    // Honor cancellations BEFORE prepaid/pays_cash gates so a vacation week
+    // for any client type drops cleanly.
+    if (cancelledSet.has(cancelKey(appt.date, roster.vagaro_name))) {
+      const cxl = cancellations.find((c) => cancelKey(c.date, c.name) === cancelKey(appt.date, roster.vagaro_name));
+      results.push({ appt, roster, status: "CANCELLED", note: cxl?.reason || "" });
       continue;
     }
 
@@ -368,6 +399,14 @@ export function reconcile(appointments, payments, clients, cashLog) {
     const candidates = payments
       .map((p, idx) => ({ p, idx }))
       .filter(({ idx }) => !usedPayments.has(idx))
+      // Note-keyword claim: if the payment's memo explicitly names someone
+      // else (e.g. "Rachael" routes to Rachel), don't let other clients
+      // grab it. A payment NOT claimed by anyone falls through to the
+      // sender-match logic below — unchanged behavior for the 95% case.
+      .filter(({ idx }) => {
+        const claimed = noteClaimedBy.get(idx);
+        return !claimed || claimed.vagaro_name === roster.vagaro_name;
+      })
       .filter(({ p }) => {
         const nameMatch = roster.venmo_handle && p.sender_handle === roster.venmo_handle.toLowerCase();
         const namesToCheck = roster.venmo_display_names?.length
@@ -1071,14 +1110,15 @@ async function main() {
   requireEnv("GOOGLE_REFRESH_TOKEN", GOOGLE_REFRESH_TOKEN);
   requireEnv("BREVO_API_KEY", BREVO_API_KEY);
   console.log(`Window: ${WINDOW_START.toISOString()} → ${NOW.toISOString()}`);
-  const [clients, schedule, cashLog, rawSlots, payments] = await Promise.all([
+  const [clients, schedule, cashLog, cancellations, rawSlots, payments] = await Promise.all([
     loadClients(CLIENTS_CSV),
     loadSchedule(SCHEDULE_CSV),
     loadCashEntries(REPO_ROOT),
+    loadCancellations(REPO_ROOT),
     fetchVagaroAppointments(),
     fetchVenmoPayments(),
   ]);
-  console.log(`Loaded ${clients.length} clients, ${schedule.length} schedule rows, ${cashLog.length} cash entries`);
+  console.log(`Loaded ${clients.length} clients, ${schedule.length} schedule rows, ${cashLog.length} cash entries, ${cancellations.length} cancellations`);
   console.log(`Found ${rawSlots.length} slots, ${payments.length} Venmo payments`);
 
   const appointments = expandSlots(rawSlots, schedule);
@@ -1086,7 +1126,7 @@ async function main() {
   const unidentified = appointments.length - identified;
   console.log(`Schedule lookup: ${identified} identified + ${unidentified} unidentified slots`);
 
-  const { results, unmatchedPayments } = reconcile(appointments, payments, clients, cashLog);
+  const { results, unmatchedPayments } = reconcile(appointments, payments, clients, cashLog, cancellations);
 
   // The Gmail window is wider than the appointment window to catch
   // late-arriving emails near the boundary. Payments older than the

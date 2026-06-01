@@ -87,6 +87,7 @@ function categorize(results, now) {
     paidCash: results.filter((r) => r.status === "PAID_CASH"),
     paidPrepaid: results.filter((r) => r.status === "PAID_PREPAID"),
     cashPending: results.filter((r) => r.status === "CASH_PENDING"),
+    cancelled: results.filter((r) => r.status === "CANCELLED"),
   };
 }
 
@@ -162,6 +163,16 @@ export function buildMoneyLine({ results, unmatchedPayments, now, windowStart, c
       return `https://github.com/${GITHUB_OWNER}/${GITHUB_REPO}/new/main/billing/cash-entries?filename=${iso}-${slug}.md&value=${encodeURIComponent(value)}`;
     };
 
+    // "Wasn't trained" — drops the slot from billing entirely (vacation, sick,
+    // no-show). Creates a file in billing/cancellations/ that the bot will
+    // honor on the next run. Filename: YYYY-MM-DD-clientslug.md.
+    const skipHref = (date, name) => {
+      const iso = fmtDateIso(date);
+      const slug = (name || "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+      const value = `${iso} | ${name} | wasn't trained\n`;
+      return `https://github.com/${GITHUB_OWNER}/${GITHUB_REPO}/new/main/billing/cancellations?filename=${iso}-${slug}.md&value=${encodeURIComponent(value)}`;
+    };
+
     const items = [];
     for (const r of cats.unpaid) {
       const handle = r.roster?.venmo_handle;
@@ -169,13 +180,14 @@ export function buildMoneyLine({ results, unmatchedPayments, now, windowStart, c
       const expected = r.checkoutAmount ?? r.expectedPrice ?? r.roster?.default_price;
       const requestBtn = handle ? btnPink({ href: `https://venmo.com/${handle}?txn=charge&amount=${expected}&note=Training%20${encodeURIComponent(fmtDateIso(r.appt.date))}`, label: `Request ${money(expected)} on Venmo` }) : "";
       const logBtn = btnTeal({ href: cashHref(r.appt.date, name, expected), label: "Log as cash" });
+      const skipBtn = btnTeal({ href: skipHref(r.appt.date, name), label: "Wasn't trained" });
       // Fallback when no handle: explain it + still give Brad a way to clear
       // the line. Otherwise a "Tap to send a Venmo request" instruction
       // pointed at nothing (the bug Brad saw on Celestin).
       const fix = handle
-        ? "Tap pink to request, or teal to log as cash if collected offline."
-        : "No Venmo handle on file. Add one to clients.csv, or log as cash if paid offline.";
-      items.push({ priority: 1, type: "Unpaid", accent: T.unpaid, client: name, when: fmtShort(r.appt.date) + " · " + timeOf(r.appt.date), expected, received: null, method: r.roster?.notes?.toLowerCase().includes("zelle") ? "Zelle" : "Venmo", issue: "No payment received this week.", fix, action: requestBtn + logBtn });
+        ? "Tap pink to request, teal to log as cash, or Wasn't trained to skip."
+        : "No Venmo handle on file. Add one to clients.csv, log as cash if paid offline, or skip if not trained.";
+      items.push({ priority: 1, type: "Unpaid", accent: T.unpaid, client: name, when: fmtShort(r.appt.date) + " · " + timeOf(r.appt.date), expected, received: null, method: r.roster?.notes?.toLowerCase().includes("zelle") ? "Zelle" : "Venmo", issue: "No payment received this week.", fix, action: requestBtn + logBtn + skipBtn });
     }
     for (const r of cats.lagging) {
       const isUnp = r.status === "UNPAID";
@@ -204,7 +216,7 @@ export function buildMoneyLine({ results, unmatchedPayments, now, windowStart, c
       else if (notes.includes("capital one") || notes.includes("capitalone")) { bankHref = "https://verified.capitalone.com/auth/signin"; bankLabel = "Verify in Capital One"; }
       const method = notes.includes("zelle") ? (notes.includes("chase") ? "Zelle · Chase" : notes.includes("capital one") ? "Zelle · Capital One" : "Zelle") : notes.includes("check") ? "Check / cash" : "Cash";
       const confirmHref = `https://github.com/${GITHUB_OWNER}/${GITHUB_REPO}/new/main/billing/cash-entries?filename=${fmtDateIso(r.appt.date)}-${(r.roster?.vagaro_name || "").toLowerCase().replace(/[^a-z0-9]+/g, "-")}.md&value=${encodeURIComponent(`${fmtDateIso(r.appt.date)} | ${r.roster?.vagaro_name} | $${expected} | per weekly billing email\n`)}`;
-      items.push({ priority: 3, type: "External Payment Verification", accent: T.teal, client: r.roster?.vagaro_name, when: fmtShort(r.appt.date) + " · " + timeOf(r.appt.date), expected, received: null, method, issue: `${method} not yet confirmed.`, fix: "Verify it landed in your bank app, then tap Confirm paid.", action: (bankHref ? btnPink({ href: bankHref, label: bankLabel }) : "") + btnTeal({ href: confirmHref, label: "Confirm paid" }) });
+      items.push({ priority: 3, type: "External Payment Verification", accent: T.teal, client: r.roster?.vagaro_name, when: fmtShort(r.appt.date) + " · " + timeOf(r.appt.date), expected, received: null, method, issue: `${method} not yet confirmed.`, fix: "Verify it landed in your bank app, then tap Confirm paid. Or tap Wasn't trained if the session didn't happen.", action: (bankHref ? btnPink({ href: bankHref, label: bankLabel }) : "") + btnTeal({ href: confirmHref, label: "Confirm paid" }) + btnTeal({ href: skipHref(r.appt.date, r.roster?.vagaro_name), label: "Wasn't trained" }) });
     }
     for (const r of cats.unidentified) {
       items.push({ priority: 4, type: "Unidentified Slot", accent: T.unid, client: "Unidentified session", when: fmtShort(r.appt.date) + " · " + timeOf(r.appt.date), expected: null, received: null, method: null, issue: `Vagaro slot not mapped to a client — ${esc(r.appt.summary || "unknown")}.`, fix: "If it's a real client, add them to schedule.csv. Otherwise mark INACTIVE." });
@@ -250,6 +262,7 @@ export function buildMoneyLine({ results, unmatchedPayments, now, windowStart, c
       case "UNPAID": icon = "&#10060;"; iconColor = T.unpaid; tag = `${money(r.expectedPrice ?? r.roster?.default_price)} unpaid`; tagColor = T.unpaid; break;
       case "UNIDENTIFIED_SLOT": icon = "&#10067;"; iconColor = T.unid; tag = esc(r.appt.summary || "unknown"); break;
       case "UNKNOWN": icon = "&#10067;"; iconColor = T.unid; tag = "not in roster"; break;
+      case "CANCELLED": icon = "&#8856;"; iconColor = T.dim; tag = "cancelled" + (r.note ? ` · ${esc(r.note)}` : ""); tagColor = T.dim; break;
       default: icon = "&bull;"; iconColor = T.body;
     }
     const name = r.roster?.vagaro_name || r.appt.client_name || "(unidentified)";
@@ -428,10 +441,9 @@ export function buildMoneyLine({ results, unmatchedPayments, now, windowStart, c
   </o:OfficeDocumentSettings>
 </xml>
 <style type="text/css">
-  body, table, td, div, span, p, a { mso-color-scheme:dark !important; background-color:${T.bg} !important; color:${T.body} !important; }
-  .mso-card { background-color:${T.cardBg} !important; }
-  .mso-hero { background-color:${T.heroBg} !important; }
-  .mso-panel { background-color:${T.panelBg || T.cardBg} !important; }
+  /* Surgical: lock the page background only. Forcing color: on all elements
+     here would override the inline neon colors and flatten the email. */
+  body { background-color:${T.bg} !important; }
 </style>
 <![endif]-->
 <style>
