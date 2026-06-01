@@ -474,22 +474,6 @@
   color: var(--color-text);
 }
 
-.shelf-warning {
-  display: none;
-  margin-top: var(--space-3);
-  padding: var(--space-3);
-  background: rgba(239, 50, 149, 0.08);
-  border: 1px solid rgba(239, 50, 149, 0.2);
-  border-radius: var(--radius-md);
-  font-size: var(--text-xs);
-  color: var(--color-pink);
-  font-family: var(--font-body);
-  line-height: 1.5;
-  position: relative;
-}
-
-.shelf-warning.visible { display: block; }
-
 /* ── Syringe Visual ── */
 .syringe-card {
   background: var(--color-surface);
@@ -1065,9 +1049,6 @@
             <span class="duration-label">Days Supply</span>
             <span class="duration-value" id="durDaysSupply">0 days</span>
           </div>
-          <div class="shelf-warning" id="shelfWarning">
-            ⚠️ This exceeds the typical 30-day reconstitution shelf life. Consider using less BAC water for a higher concentration, or splitting into smaller vials.
-          </div>
         </div>
 
       </div>
@@ -1382,7 +1363,6 @@
   var resTotalDoses = $('resTotalDoses');
   var durTotalDoses = $('durTotalDoses');
   var durDaysSupply = $('durDaysSupply');
-  var shelfWarning = $('shelfWarning');
   var syringeWarning = $('syringeWarning');
 
   // ══════════════════════════════════════════════════════════
@@ -1470,13 +1450,6 @@
     // Duration card
     durTotalDoses.textContent = dosesPerVial > 0 ? Math.floor(dosesPerVial) : '0';
     durDaysSupply.textContent = daysSupply > 0 ? Math.floor(daysSupply) + ' days' : '0 days';
-
-    // Shelf life warning
-    if (daysSupply > 30 && daysSupply > 0) {
-      shelfWarning.classList.add('visible');
-    } else {
-      shelfWarning.classList.remove('visible');
-    }
 
     // Syringe exceeds warning
     if (drawMl > state.syringeSize && drawMl > 0) {
