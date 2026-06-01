@@ -104,7 +104,7 @@ export function buildMoneyLine({ results, unmatchedPayments, now, windowStart, c
   function sectionLabel(text, color = T.teal) {
     return `<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:32px 0 13px;"><tr>`
       + `<td valign="middle" style="padding-right:11px;"><div style="width:22px;height:3px;${T.gradient ? `background:linear-gradient(90deg,${T.teal},${color});` : `background:${color};`}font-size:0;line-height:0;">&nbsp;</div></td>`
-      + `<td valign="middle" style="font-family:${FONT_BODY};color:${color};font-size:12px;font-weight:800;letter-spacing:0.24em;text-transform:uppercase;">${text}</td>`
+      + `<td valign="middle" class="yg-section" style="font-family:${FONT_BODY};color:${color};font-size:13px;font-weight:800;letter-spacing:0.22em;text-transform:uppercase;">${text}</td>`
       + `</tr></table>`;
   }
 
@@ -120,7 +120,7 @@ export function buildMoneyLine({ results, unmatchedPayments, now, windowStart, c
       green: { bg: T.paid, text: "ALL CLEAR", fg: T.gradient ? "#04201f" : "#062810" },
     }[level];
     const glow = T.glow ? `box-shadow:0 0 16px ${map.bg}66;` : "";
-    return `<span style="display:inline-block;padding:6px 12px;background:${map.bg};color:${map.fg};font-family:${FONT_BODY};font-size:11px;font-weight:800;letter-spacing:0.1em;border-radius:4px;${glow}">&#9679;&nbsp; ${map.text}</span>`;
+    return `<span class="yg-pill" style="display:inline-block;padding:7px 13px;background:${map.bg};color:${map.fg};font-family:${FONT_BODY};font-size:12px;font-weight:800;letter-spacing:0.1em;border-radius:4px;${glow}">&#9679;&nbsp; ${map.text}</span>`;
   }
 
   function priorityChip(priority, accent) {
@@ -132,8 +132,8 @@ export function buildMoneyLine({ results, unmatchedPayments, now, windowStart, c
   function moneyLedger({ expected, received, delta, method, accent }) {
     let rows = "";
     const line = (lbl, val, valColor = T.white) =>
-      `<tr><td align="right" style="padding:1px 0;font-family:${FONT_BODY};font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:${T.muted};">${lbl}&nbsp;&nbsp;</td>`
-      + `<td align="right" style="padding:1px 0;font-family:${FONT_MONO};font-size:14px;font-weight:700;color:${valColor};white-space:nowrap;">${val}</td></tr>`;
+      `<tr><td align="right" class="yg-micro" style="padding:2px 0;font-family:${FONT_BODY};font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:${T.muted};">${lbl}&nbsp;&nbsp;</td>`
+      + `<td align="right" class="yg-mono" style="padding:2px 0;font-family:${FONT_MONO};font-size:15px;font-weight:700;color:${valColor};white-space:nowrap;">${val}</td></tr>`;
     if (expected != null) rows += line("Expected", money(expected));
     if (received != null) rows += line("Received", money(received));
     if (delta != null && delta !== 0) rows += line("Delta", `${delta > 0 ? "+" : "\u2212"}${money(Math.abs(delta))}`, accent);
@@ -143,29 +143,49 @@ export function buildMoneyLine({ results, unmatchedPayments, now, windowStart, c
   }
 
   function btnPink({ href, label }) {
-    return `<a href="${href}" style="display:inline-block;padding:9px 16px;background:${T.action};color:${T.bg};text-decoration:none;border-radius:6px;font-family:${FONT_BODY};font-size:13px;font-weight:800;letter-spacing:0.01em;margin-right:7px;${T.btnGlow}">${esc(label)}</a>`;
+    return `<a href="${href}" style="display:inline-block;padding:10px 17px;background:${T.action};color:${T.bg};text-decoration:none;border-radius:6px;font-family:${FONT_BODY};font-size:14px;font-weight:800;letter-spacing:0.01em;margin:0 7px 6px 0;${T.btnGlow}">${esc(label)}</a>`;
   }
   function btnTeal({ href, label }) {
     const glow = T.glow ? `box-shadow:0 0 14px ${T.teal}3a;` : "";
-    return `<a href="${href}" style="display:inline-block;padding:8px 15px;background:transparent;color:${T.teal};text-decoration:none;border:1px solid ${T.teal};border-radius:6px;font-family:${FONT_BODY};font-size:13px;font-weight:700;letter-spacing:0.01em;margin-right:7px;${glow}">${esc(label)}</a>`;
+    return `<a href="${href}" style="display:inline-block;padding:9px 16px;background:transparent;color:${T.teal};text-decoration:none;border:1px solid ${T.teal};border-radius:6px;font-family:${FONT_BODY};font-size:14px;font-weight:700;letter-spacing:0.01em;margin:0 7px 6px 0;${glow}">${esc(label)}</a>`;
   }
 
   // ── action queue (data) ──
   function buildActionQueue() {
+    // GitHub "create file" deep-link for a cash entry — same pattern used by
+    // the P3 builder below. Lifted into a helper so unpaid rows without a
+    // Venmo handle always get an actionable button.
+    const cashHref = (date, name, amount) => {
+      const iso = fmtDateIso(date);
+      const slug = (name || "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+      const value = `${iso} | ${name} | $${amount} | per weekly billing email\n`;
+      return `https://github.com/${GITHUB_OWNER}/${GITHUB_REPO}/new/main/billing/cash-entries?filename=${iso}-${slug}.md&value=${encodeURIComponent(value)}`;
+    };
+
     const items = [];
     for (const r of cats.unpaid) {
       const handle = r.roster?.venmo_handle;
+      const name = r.roster?.vagaro_name;
       const expected = r.checkoutAmount ?? r.expectedPrice ?? r.roster?.default_price;
-      const action = handle ? btnPink({ href: `https://venmo.com/${handle}?txn=charge&amount=${expected}&note=Training%20${encodeURIComponent(fmtDateIso(r.appt.date))}`, label: `Request ${money(expected)} on Venmo` }) : "";
-      items.push({ priority: 1, type: "Unpaid", accent: T.unpaid, client: r.roster?.vagaro_name, when: fmtShort(r.appt.date) + " · " + timeOf(r.appt.date), expected, received: null, method: r.roster?.notes?.toLowerCase().includes("zelle") ? "Zelle" : "Venmo", issue: "No payment received this week.", fix: "Tap to send a Venmo request.", action });
+      const requestBtn = handle ? btnPink({ href: `https://venmo.com/${handle}?txn=charge&amount=${expected}&note=Training%20${encodeURIComponent(fmtDateIso(r.appt.date))}`, label: `Request ${money(expected)} on Venmo` }) : "";
+      const logBtn = btnTeal({ href: cashHref(r.appt.date, name, expected), label: "Log as cash" });
+      // Fallback when no handle: explain it + still give Brad a way to clear
+      // the line. Otherwise a "Tap to send a Venmo request" instruction
+      // pointed at nothing (the bug Brad saw on Celestin).
+      const fix = handle
+        ? "Tap pink to request, or teal to log as cash if collected offline."
+        : "No Venmo handle on file. Add one to clients.csv, or log as cash if paid offline.";
+      items.push({ priority: 1, type: "Unpaid", accent: T.unpaid, client: name, when: fmtShort(r.appt.date) + " · " + timeOf(r.appt.date), expected, received: null, method: r.roster?.notes?.toLowerCase().includes("zelle") ? "Zelle" : "Venmo", issue: "No payment received this week.", fix, action: requestBtn + logBtn });
     }
     for (const r of cats.lagging) {
       const isUnp = r.status === "UNPAID";
       const handle = r.roster?.venmo_handle;
+      const name = r.roster?.vagaro_name;
       const expected = r.checkoutAmount ?? r.expectedPrice ?? r.roster?.default_price;
       const received = r.payment?.amount ?? null;
-      const action = handle && isUnp ? btnPink({ href: `https://venmo.com/${handle}?txn=charge&amount=${expected}&note=Training%20${encodeURIComponent(fmtDateIso(r.appt.date))}`, label: `Request ${money(expected)} on Venmo` }) : "";
-      items.push({ priority: 1, type: isUnp ? "Unpaid (carryover)" : "Review (carryover)", accent: isUnp ? T.unpaid : T.review, client: r.roster?.vagaro_name, when: fmtShort(r.appt.date) + " · " + timeOf(r.appt.date), expected, received, method: r.payment ? "Venmo" : null, issue: "Carried over from a prior week — clear first.", fix: isUnp ? "Send a Venmo request, or accept as cash if collected." : "Review the amount mismatch; accept or chase the balance.", action });
+      const requestBtn = handle && isUnp ? btnPink({ href: `https://venmo.com/${handle}?txn=charge&amount=${expected}&note=Training%20${encodeURIComponent(fmtDateIso(r.appt.date))}`, label: `Request ${money(expected)} on Venmo` }) : "";
+      const logBtn = isUnp ? btnTeal({ href: cashHref(r.appt.date, name, expected), label: "Log as cash" }) : "";
+      items.push({ priority: 1, type: isUnp ? "Unpaid (carryover)" : "Review (carryover)", accent: isUnp ? T.unpaid : T.review, client: name, when: fmtShort(r.appt.date) + " · " + timeOf(r.appt.date), expected, received, method: r.payment ? "Venmo" : null, issue: "Carried over from a prior week — clear first.", fix: isUnp ? (handle ? "Send a Venmo request, or accept as cash if collected." : "No Venmo handle on file. Log as cash if collected, or add the handle to clients.csv.") : "Review the amount mismatch; accept or chase the balance.", action: requestBtn + logBtn });
     }
     for (const r of cats.review) {
       const handle = r.roster?.venmo_handle;
@@ -201,16 +221,16 @@ export function buildMoneyLine({ results, unmatchedPayments, now, windowStart, c
     let inner = `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr>`
       + `<td valign="top" width="34" style="padding-right:13px;">${priorityChip(priority, accent)}</td>`
       + `<td valign="top">`
-        + `<div style="font-family:${FONT_BODY};font-size:10px;color:${accent};font-weight:800;letter-spacing:0.14em;text-transform:uppercase;">${esc(type)}</div>`
-        + `<div style="font-family:${FONT_BODY};font-size:17px;color:${T.white};font-weight:700;margin-top:5px;line-height:1.1;">${esc(client)}</div>`
-        + `<div style="font-family:${FONT_MONO};font-size:12px;color:${T.muted};margin-top:4px;">${esc(when)}</div>`
+        + `<div class="yg-label" style="font-family:${FONT_BODY};font-size:11px;color:${accent};font-weight:800;letter-spacing:0.14em;text-transform:uppercase;">${esc(type)}</div>`
+        + `<div class="yg-name" style="font-family:${FONT_BODY};font-size:19px;color:${T.white};font-weight:700;margin-top:6px;line-height:1.15;">${esc(client)}</div>`
+        + `<div class="yg-mono" style="font-family:${FONT_MONO};font-size:13px;color:${T.muted};margin-top:5px;">${esc(when)}</div>`
       + `</td>`
       + (ledger ? `<td valign="top" align="right" style="padding-left:12px;">${ledger}</td>` : "")
       + `</tr></table>`;
     if (issue || fix || action) {
       inner += `<div style="border-top:1px dashed ${T.hair};margin-top:13px;padding-top:11px;">`;
-      if (issue) inner += `<div style="font-family:${FONT_BODY};font-size:13px;color:${T.body};line-height:1.5;">${micro("Why", T.muted)} &nbsp;${esc(issue)}</div>`;
-      if (fix) inner += `<div style="font-family:${FONT_BODY};font-size:13px;color:${T.body};margin-top:6px;line-height:1.5;">${micro("The Move", T.action)} &nbsp;${esc(fix)}</div>`;
+      if (issue) inner += `<div class="yg-body" style="font-family:${FONT_BODY};font-size:14px;color:${T.body};line-height:1.5;">${micro("Why", T.muted)} &nbsp;${esc(issue)}</div>`;
+      if (fix) inner += `<div class="yg-body" style="font-family:${FONT_BODY};font-size:14px;color:${T.body};margin-top:7px;line-height:1.5;">${micro("The Move", T.action)} &nbsp;${esc(fix)}</div>`;
       if (action) inner += `<div style="margin-top:13px;">${action}</div>`;
       inner += `</div>`;
     }
@@ -236,10 +256,10 @@ export function buildMoneyLine({ results, unmatchedPayments, now, windowStart, c
     const bg = zebra ? T.rowAlt : T.card;
     const cellBg = `bgcolor="${bg}" style="background-color:${bg};`;
     return `<tr>`
-      + `<td valign="middle" width="30" align="center" ${cellBg}padding:8px 0 8px 10px;font-size:16px;color:${iconColor};line-height:1;">${icon}</td>`
-      + `<td valign="middle" width="76" ${cellBg}padding:8px 0;font-family:${FONT_MONO};font-size:12px;color:${T.muted};white-space:nowrap;">${time}</td>`
-      + `<td valign="middle" ${cellBg}padding:8px 0;font-family:${FONT_BODY};font-size:14px;font-weight:600;color:${T.body};">${esc(name)}</td>`
-      + `<td valign="middle" align="right" ${cellBg}padding:8px 12px 8px 8px;font-family:${FONT_MONO};font-size:12px;color:${tagColor};white-space:nowrap;">${tag}</td>`
+      + `<td valign="middle" width="30" align="center" ${cellBg}padding:9px 0 9px 10px;font-size:17px;color:${iconColor};line-height:1;">${icon}</td>`
+      + `<td valign="middle" width="80" class="yg-mono" ${cellBg}padding:9px 0;font-family:${FONT_MONO};font-size:13px;color:${T.muted};white-space:nowrap;">${time}</td>`
+      + `<td valign="middle" class="yg-body" ${cellBg}padding:9px 0;font-family:${FONT_BODY};font-size:15px;font-weight:600;color:${T.body};">${esc(name)}</td>`
+      + `<td valign="middle" align="right" class="yg-mono" ${cellBg}padding:9px 12px 9px 8px;font-family:${FONT_MONO};font-size:13px;color:${tagColor};white-space:nowrap;">${tag}</td>`
       + `</tr>`;
   }
   function ledger() {
@@ -252,8 +272,8 @@ export function buildMoneyLine({ results, unmatchedPayments, now, windowStart, c
       const dayName = new Date(k + "T20:00:00Z").toLocaleDateString("en-US", { timeZone: "America/Los_Angeles", weekday: "long", month: "numeric", day: "numeric" });
       const count = rows.length;
       html += `<div style="margin:16px 0 7px;">`
-        + `<span style="font-family:${FONT_BODY};font-size:12px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:${T.white};">${esc(dayName)}</span>`
-        + `<span style="font-family:${FONT_MONO};font-size:11px;color:${T.dim};">&nbsp;&nbsp;${count} session${count === 1 ? "" : "s"}</span>`
+        + `<span class="yg-section" style="font-family:${FONT_BODY};font-size:14px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:${T.white};">${esc(dayName)}</span>`
+        + `<span class="yg-mono" style="font-family:${FONT_MONO};font-size:12px;color:${T.dim};">&nbsp;&nbsp;${count} session${count === 1 ? "" : "s"}</span>`
         + `</div>`;
       html += `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="${T.card}" style="background-color:${T.card};border:1px solid ${T.border};border-radius:8px;">${rows.map((r, i) => ledgerRow(r, i % 2 === 1)).join("")}</table>`;
     }
@@ -261,7 +281,7 @@ export function buildMoneyLine({ results, unmatchedPayments, now, windowStart, c
   }
 
   function legendChip(icon, color, label) {
-    return `<span style="font-family:${FONT_BODY};font-size:11px;color:${T.muted};white-space:nowrap;"><span style="color:${color};font-size:13px;">${icon}</span>&nbsp; ${label}</span>`;
+    return `<span class="yg-body" style="font-family:${FONT_BODY};font-size:13px;color:${T.muted};white-space:nowrap;"><span style="color:${color};font-size:15px;">${icon}</span>&nbsp; ${label}</span>`;
   }
 
   // ── totals + status ──
@@ -306,8 +326,8 @@ export function buildMoneyLine({ results, unmatchedPayments, now, windowStart, c
 
   // ── record strip (paid · unpaid · review · unidentified) ──
   const recPart = (n, label, color) =>
-    `<span style="font-family:${FONT_MONO};font-size:13px;font-weight:700;color:${n > 0 ? color : T.dim};">${n}</span>`
-    + `<span style="font-family:${FONT_BODY};font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:${n > 0 ? T.body : T.dim};">&nbsp;${label}</span>`;
+    `<span class="yg-mono" style="font-family:${FONT_MONO};font-size:15px;font-weight:700;color:${n > 0 ? color : T.dim};">${n}</span>`
+    + `<span class="yg-label" style="font-family:${FONT_BODY};font-size:12px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:${n > 0 ? T.body : T.dim};">&nbsp;${label}</span>`;
   const recordStrip = [
     recPart(paidCount, "Paid", T.paid),
     recPart(unpaidCount, "Unpaid", T.unpaid),
@@ -318,7 +338,7 @@ export function buildMoneyLine({ results, unmatchedPayments, now, windowStart, c
   // ── big money number cell ──
   const moneyStat = (label, value, color, glow, alignRight) =>
     `<td width="50%" valign="top" style="padding:${alignRight ? "0 0 0 12px" : "0 12px 0 0"};">`
-      + `<div style="${micro(label, T.muted, "0.18em") ? "" : ""}font-family:${FONT_BODY};font-size:11px;font-weight:800;letter-spacing:0.18em;text-transform:uppercase;color:${T.muted};">${label}</div>`
+      + `<div class="yg-label" style="font-family:${FONT_BODY};font-size:12px;font-weight:800;letter-spacing:0.18em;text-transform:uppercase;color:${T.muted};">${label}</div>`
       + `<div style="font-family:${FONT_MONO};font-size:58px;line-height:1.02;font-weight:800;color:${color};letter-spacing:-0.02em;margin-top:6px;${glow}">${value}</div>`
     + `</td>`;
 
@@ -348,9 +368,9 @@ export function buildMoneyLine({ results, unmatchedPayments, now, windowStart, c
     if (cats.unidentified.length) {
       for (const r of cats.unidentified) {
         body += card(
-          `<div style="font-family:${FONT_MONO};font-size:13px;color:${T.white};font-weight:700;">${fmtShort(r.appt.date)} · ${timeOf(r.appt.date)}</div>`
-            + `<div style="font-family:${FONT_BODY};font-size:13px;color:${T.body};margin-top:5px;">${esc(r.appt.summary || "Unknown service")}</div>`
-            + `<div style="font-family:${FONT_BODY};font-size:12px;color:${T.muted};margin-top:7px;line-height:1.5;">${micro("Suggested", T.unid)} &nbsp;Map this slot in schedule.csv, or mark INACTIVE.</div>`,
+          `<div class="yg-mono" style="font-family:${FONT_MONO};font-size:14px;color:${T.white};font-weight:700;">${fmtShort(r.appt.date)} · ${timeOf(r.appt.date)}</div>`
+            + `<div class="yg-body" style="font-family:${FONT_BODY};font-size:14px;color:${T.body};margin-top:6px;">${esc(r.appt.summary || "Unknown service")}</div>`
+            + `<div class="yg-body" style="font-family:${FONT_BODY};font-size:13px;color:${T.muted};margin-top:7px;line-height:1.5;">${micro("Suggested", T.unid)} &nbsp;Map this slot in schedule.csv, or mark INACTIVE.</div>`,
           T.unid,
         );
       }
@@ -360,7 +380,7 @@ export function buildMoneyLine({ results, unmatchedPayments, now, windowStart, c
       let list = "";
       unmatchedPayments.forEach((p, i) => {
         const bg = i % 2 === 1 ? T.rowAlt : T.card;
-        list += `<tr><td bgcolor="${bg}" style="background-color:${bg};padding:8px 12px;font-family:${FONT_MONO};font-size:12px;color:${T.muted};">`
+        list += `<tr><td bgcolor="${bg}" class="yg-mono" style="background-color:${bg};padding:9px 12px;font-family:${FONT_MONO};font-size:13px;color:${T.muted};">`
           + `<span style="color:${T.body};">${esc(p.sender_display_name)}</span> &middot; <span style="color:${T.white};font-weight:700;">${money(p.amount)}</span> &middot; ${fmtDate(p.date)} &middot; "${esc(p.note || "")}"`
           + `</td></tr>`;
       });
@@ -371,7 +391,7 @@ export function buildMoneyLine({ results, unmatchedPayments, now, windowStart, c
   // THE PLAYBOOK (Vagaro checkout — VERBATIM)
   if (checkoutPrompt) {
     body += sectionLabel("The Playbook — Vagaro Checkout", T.teal);
-    body += `<div style="font-family:${FONT_BODY};font-size:12px;color:${T.muted};margin-bottom:8px;line-height:1.5;">Use this block exactly when checking out sessions in Vagaro. Triple-click inside, &#8984;A, &#8984;C, paste into a new Claude for Chrome session.</div>`;
+    body += `<div class="yg-body" style="font-family:${FONT_BODY};font-size:13px;color:${T.muted};margin-bottom:8px;line-height:1.5;">Use this block exactly when checking out sessions in Vagaro. Triple-click inside, &#8984;A, &#8984;C, paste into a new Claude for Chrome session.</div>`;
     body += `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="${T.panel}" style="background-color:${T.panel};border:1px solid ${T.border};border-radius:8px;">`;
     body += `<tr><td style="padding:9px 12px;border-bottom:1px dashed ${T.hair};">${micro("Copy-Paste Payload", T.teal)}</td></tr>`;
     body += `<tr><td style="padding:12px;">`;
@@ -380,9 +400,48 @@ export function buildMoneyLine({ results, unmatchedPayments, now, windowStart, c
   }
 
   // ── shell ──
+  // Outlook-desktop dark-mode defense: Outlook on Windows will INVERT a dark
+  // email to light unless we explicitly opt out. Layered defenses:
+  //   1. color-scheme meta tags + :root rule → Apple Mail, Gmail, modern clients honor "dark only"
+  //   2. MSO conditional <style> → Outlook 2016+ desktop background lock
+  //   3. [data-ogsc]/[data-ogsb] selectors → Outlook.com web
+  //   4. bgcolor attribute on <body> itself → Word engine respects it most reliably
+  // Sharp corners in Outlook are still inevitable (Word engine doesn't render
+  // border-radius) — color/background recovery is the achievable win.
   const html = `<!doctype html>
-<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="dark"><title>${esc(subject)}</title></head>
-<body style="margin:0;padding:0;background-color:${T.bg};font-family:${FONT_BODY};">
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="dark only">
+<meta name="supported-color-schemes" content="dark only">
+<title>${esc(subject)}</title>
+<style>
+  :root { color-scheme: dark only; supported-color-schemes: dark only; }
+  body, table, td, div, p, span, a { -webkit-text-size-adjust:100%; -ms-text-size-adjust:100%; }
+  /* Outlook.com web dark mode lock */
+  [data-ogsc] body, [data-ogsb] body { background-color:${T.bg} !important; color:${T.body} !important; }
+  [data-ogsc] .yg-card { background-color:${T.cardBg} !important; }
+  [data-ogsc] .yg-hero { background-color:${T.heroBg} !important; }
+  [data-ogsc] .yg-text { color:${T.body} !important; }
+  /* Mobile: bump readability without touching The Playbook (<pre>) */
+  @media only screen and (max-width:520px) {
+    .yg-body  { font-size:15px !important; line-height:1.5 !important; }
+    .yg-mono  { font-size:13px !important; }
+    .yg-micro { font-size:12px !important; }
+    .yg-label { font-size:13px !important; }
+    .yg-name  { font-size:18px !important; }
+    .yg-pill  { font-size:12px !important; }
+    .yg-section { font-size:14px !important; }
+  }
+</style>
+<!--[if mso]>
+<style>
+  body, table, td { background-color:${T.bg} !important; color:${T.body} !important; }
+  .mso-bg { background-color:${T.bg} !important; }
+</style>
+<![endif]-->
+</head>
+<body bgcolor="${T.bg}" style="margin:0;padding:0;background-color:${T.bg};color:${T.body};font-family:${FONT_BODY};">
 <div style="display:none;max-height:0;overflow:hidden;font-size:1px;line-height:1px;color:${T.bg};opacity:0;">${esc(preheader)}</div>
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="${T.bg}" style="background-color:${T.bg};">
   <tr><td align="center" style="padding:22px 12px 40px;">
