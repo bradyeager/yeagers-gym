@@ -400,23 +400,42 @@ export function buildMoneyLine({ results, unmatchedPayments, now, windowStart, c
   }
 
   // ── shell ──
-  // Outlook-desktop dark-mode defense: Outlook on Windows will INVERT a dark
-  // email to light unless we explicitly opt out. Layered defenses:
-  //   1. color-scheme meta tags + :root rule → Apple Mail, Gmail, modern clients honor "dark only"
-  //   2. MSO conditional <style> → Outlook 2016+ desktop background lock
-  //   3. [data-ogsc]/[data-ogsb] selectors → Outlook.com web
-  //   4. bgcolor attribute on <body> itself → Word engine respects it most reliably
-  // Sharp corners in Outlook are still inevitable (Word engine doesn't render
-  // border-radius) — color/background recovery is the achievable win.
+  // Outlook-desktop dark-mode defense (LAYERED — Windows Outlook in light
+  // mode aggressively re-themes dark emails). Strongest known defenses:
+  //   1. VML namespaces on <html> so <v:*> elements parse in Outlook
+  //   2. <o:OfficeDocumentSettings> tells Word engine "honor declared colors"
+  //   3. mso-color-scheme: dark inside MSO conditional CSS
+  //   4. <v:background> + <v:rect> vector backdrop — VML isn't auto-themed
+  //   5. color-scheme meta (Apple Mail, Gmail, Outlook.com web)
+  //   6. [data-ogsc]/[data-ogsb] selectors for Outlook.com web
+  //   7. bgcolor attribute on <body> and outer tables
+  //
+  // Realistic caveat: even with all of this, Outlook desktop in light mode
+  // may still soft-invert. The "View in Browser" link Outlook auto-injects
+  // is the bulletproof escape hatch — webmail clients honor our colors.
   const html = `<!doctype html>
-<html lang="en"><head>
+<html lang="en" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office"><head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="color-scheme" content="dark only">
-<meta name="supported-color-schemes" content="dark only">
+<meta name="color-scheme" content="dark">
+<meta name="supported-color-schemes" content="dark">
 <title>${esc(subject)}</title>
+<!--[if mso]>
+<xml>
+  <o:OfficeDocumentSettings>
+    <o:AllowPNG/>
+    <o:PixelsPerInch>96</o:PixelsPerInch>
+  </o:OfficeDocumentSettings>
+</xml>
+<style type="text/css">
+  body, table, td, div, span, p, a { mso-color-scheme:dark !important; background-color:${T.bg} !important; color:${T.body} !important; }
+  .mso-card { background-color:${T.cardBg} !important; }
+  .mso-hero { background-color:${T.heroBg} !important; }
+  .mso-panel { background-color:${T.panelBg || T.cardBg} !important; }
+</style>
+<![endif]-->
 <style>
-  :root { color-scheme: dark only; supported-color-schemes: dark only; }
+  :root { color-scheme: dark; supported-color-schemes: dark; }
   body, table, td, div, p, span, a { -webkit-text-size-adjust:100%; -ms-text-size-adjust:100%; }
   /* Outlook.com web dark mode lock */
   [data-ogsc] body, [data-ogsb] body { background-color:${T.bg} !important; color:${T.body} !important; }
@@ -434,14 +453,13 @@ export function buildMoneyLine({ results, unmatchedPayments, now, windowStart, c
     .yg-section { font-size:14px !important; }
   }
 </style>
-<!--[if mso]>
-<style>
-  body, table, td { background-color:${T.bg} !important; color:${T.body} !important; }
-  .mso-bg { background-color:${T.bg} !important; }
-</style>
-<![endif]-->
 </head>
 <body bgcolor="${T.bg}" style="margin:0;padding:0;background-color:${T.bg};color:${T.body};font-family:${FONT_BODY};">
+<!--[if mso | IE]>
+<v:background xmlns:v="urn:schemas-microsoft-com:vml" fill="t">
+  <v:fill type="tile" color="${T.bg}"/>
+</v:background>
+<![endif]-->
 <div style="display:none;max-height:0;overflow:hidden;font-size:1px;line-height:1px;color:${T.bg};opacity:0;">${esc(preheader)}</div>
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="${T.bg}" style="background-color:${T.bg};">
   <tr><td align="center" style="padding:22px 12px 40px;">
