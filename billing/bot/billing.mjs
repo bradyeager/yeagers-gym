@@ -1097,8 +1097,10 @@ async function main() {
   // EMAIL_STYLE selects the template. Default is the current proven layout;
   // "command-center" uses the v2 / Strength Lab design (see email-v2.mjs).
   // Live Friday email stays on the default unless this env var is explicitly set.
+  const style = process.env.EMAIL_STYLE === "command-center" ? "command-center" : "default";
+  console.log(`Email template: ${style}`);
   let subject, html;
-  if (process.env.EMAIL_STYLE === "command-center") {
+  if (style === "command-center") {
     const { buildEmailV2 } = await import("./email-v2.mjs");
     const checkoutPrompt = buildCheckoutPrompt(results, NOW);
     ({ subject, html } = buildEmailV2({
