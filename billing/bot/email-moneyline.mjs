@@ -143,12 +143,21 @@ export function buildMoneyLine({ results, unmatchedPayments, now, windowStart, c
     return `<table role="presentation" cellpadding="0" cellspacing="0" border="0" align="right">${rows}</table>`;
   }
 
+  // Buttons return <td>s, not raw <a>s, so they compose into a single row
+  // table inside the action card. Outlook desktop reliably strips margin on
+  // display:inline-block <a> elements (the bleed Brad saw — "Log as cashWasn't
+  // trained" sitting flush together). Table cell padding is the one spacing
+  // primitive every email client honors.
   function btnPink({ href, label }) {
-    return `<a href="${href}" style="display:inline-block;padding:10px 17px;background:${T.action};color:${T.bg};text-decoration:none;border-radius:6px;font-family:${FONT_BODY};font-size:14px;font-weight:800;letter-spacing:0.01em;margin:0 7px 6px 0;${T.btnGlow}">${esc(label)}</a>`;
+    return `<td class="yg-btn-cell" valign="top" style="padding:0 10px 8px 0;mso-padding-alt:0 10px 8px 0;">`
+      + `<a href="${href}" style="display:inline-block;padding:10px 17px;background:${T.action};color:${T.bg};text-decoration:none;border-radius:6px;font-family:${FONT_BODY};font-size:14px;font-weight:800;letter-spacing:0.01em;${T.btnGlow}">${esc(label)}</a>`
+      + `</td>`;
   }
   function btnTeal({ href, label }) {
     const glow = T.glow ? `box-shadow:0 0 14px ${T.teal}3a;` : "";
-    return `<a href="${href}" style="display:inline-block;padding:9px 16px;background:transparent;color:${T.teal};text-decoration:none;border:1px solid ${T.teal};border-radius:6px;font-family:${FONT_BODY};font-size:14px;font-weight:700;letter-spacing:0.01em;margin:0 7px 6px 0;${glow}">${esc(label)}</a>`;
+    return `<td class="yg-btn-cell" valign="top" style="padding:0 10px 8px 0;mso-padding-alt:0 10px 8px 0;">`
+      + `<a href="${href}" style="display:inline-block;padding:9px 16px;background:transparent;color:${T.teal};text-decoration:none;border:1px solid ${T.teal};border-radius:6px;font-family:${FONT_BODY};font-size:14px;font-weight:700;letter-spacing:0.01em;${glow}">${esc(label)}</a>`
+      + `</td>`;
   }
 
   // ── action queue (data) ──
@@ -243,7 +252,7 @@ export function buildMoneyLine({ results, unmatchedPayments, now, windowStart, c
       inner += `<div style="border-top:1px dashed ${T.hair};margin-top:13px;padding-top:11px;">`;
       if (issue) inner += `<div class="yg-body" style="font-family:${FONT_BODY};font-size:14px;color:${T.body};line-height:1.5;">${micro("Why", T.muted)} &nbsp;${esc(issue)}</div>`;
       if (fix) inner += `<div class="yg-body" style="font-family:${FONT_BODY};font-size:14px;color:${T.body};margin-top:7px;line-height:1.5;">${micro("The Move", T.action)} &nbsp;${esc(fix)}</div>`;
-      if (action) inner += `<div style="margin-top:13px;">${action}</div>`;
+      if (action) inner += `<table role="presentation" cellpadding="0" cellspacing="0" border="0" class="yg-btnrow" style="margin-top:13px;"><tr>${action}</tr></table>`;
       inner += `</div>`;
     }
     return card(inner, accent);
@@ -463,6 +472,11 @@ export function buildMoneyLine({ results, unmatchedPayments, now, windowStart, c
     .yg-name  { font-size:18px !important; }
     .yg-pill  { font-size:12px !important; }
     .yg-section { font-size:14px !important; }
+    /* Stack action buttons vertically on phones — 3 buttons won't fit
+       side-by-side in a 320–420px viewport. */
+    .yg-btnrow, .yg-btnrow tbody, .yg-btnrow tr { display:block !important; width:100% !important; }
+    .yg-btn-cell { display:block !important; width:100% !important; padding:0 0 9px 0 !important; }
+    .yg-btn-cell a { display:block !important; text-align:center !important; }
   }
 </style>
 </head>
