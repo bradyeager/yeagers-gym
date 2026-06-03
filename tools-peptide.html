@@ -42,7 +42,7 @@
       "name": "How do I calculate the draw volume for a peptide dose?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "First, calculate your concentration: divide the vial size (in mcg) by the amount of BAC water you added (in mL). Then divide your desired dose (in mcg) by that concentration. The result is your draw volume in mL. Multiply by 100 to get syringe units on a U-100 insulin syringe. For example, a 5 mg vial reconstituted with 2 mL of BAC water gives a concentration of 2,500 mcg/mL. A 250 mcg dose would be 0.10 mL, or 10 units."
+        "text": "First, calculate your concentration: divide the vial size (in mg) by the amount of BAC water you added (in mL). Then divide your desired dose (in mg) by that concentration. The result is your draw volume in mL. Multiply by 100 to get syringe units on a U-100 insulin syringe. For example, a 5 mg vial reconstituted with 2 mL of BAC water gives a concentration of 2.5 mg/mL. A 0.25 mg dose would be 0.10 mL, or 10 units."
       }
     },
     {
@@ -66,7 +66,7 @@
       "name": "How much bacteriostatic water should I add to a peptide vial?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "The amount of BAC water depends on the vial size and your preferred concentration. Common choices are 1–2 mL. Less water means a more concentrated solution (smaller injection volume), while more water means a more dilute solution (easier to measure small doses). For a 5 mg vial, 1 mL gives 5,000 mcg/mL; 2 mL gives 2,500 mcg/mL. Choose based on your dose — you want the draw volume to be easy to read on your syringe."
+        "text": "The amount of BAC water depends on the vial size and your preferred concentration. Common choices are 1–2 mL. Less water means a more concentrated solution (smaller injection volume), while more water means a more dilute solution (easier to measure small doses). For a 5 mg vial, 1 mL gives 5 mg/mL; 2 mL gives 2.5 mg/mL. Choose based on your dose — you want the draw volume to be easy to read on your syringe."
       }
     },
     {
@@ -958,8 +958,8 @@
 
         <!-- Desired Dose -->
         <div class="field-group">
-          <label for="desiredDose">Desired Dose (mcg)</label>
-          <input type="number" id="desiredDose" placeholder="250" min="1" max="100000" step="any" inputmode="decimal">
+          <label for="desiredDose">Desired Dose (mg)</label>
+          <input type="number" id="desiredDose" placeholder="0.25" min="0.001" max="100" step="any" inputmode="decimal">
         </div>
 
         <!-- Syringe Size -->
@@ -992,7 +992,7 @@
           <h3>Dosing Results</h3>
           <div class="result-row">
             <span class="result-label">Concentration</span>
-            <span class="result-value" id="resConcentration">0<span class="unit">mcg/mL</span></span>
+            <span class="result-value" id="resConcentration">0<span class="unit">mg/mL</span></span>
           </div>
           <div class="result-row">
             <span class="result-label">Draw Volume</span>
@@ -1150,7 +1150,7 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
         </button>
         <div class="faq-answer">
-          <p>First, calculate your concentration: divide the vial size (in mcg) by the amount of BAC water you added (in mL). Then divide your desired dose (in mcg) by that concentration. The result is your draw volume in mL. Multiply by 100 to get syringe units on a U-100 insulin syringe. For example, a 5 mg vial reconstituted with 2 mL of BAC water gives a concentration of 2,500 mcg/mL. A 250 mcg dose would be 0.10 mL, or 10 units.</p>
+          <p>First, calculate your concentration: divide the vial size (in mg) by the amount of BAC water you added (in mL). Then divide your desired dose (in mg) by that concentration. The result is your draw volume in mL. Multiply by 100 to get syringe units on a U-100 insulin syringe. For example, a 5 mg vial reconstituted with 2 mL of BAC water gives a concentration of 2.5 mg/mL. A 0.25 mg dose would be 0.10 mL, or 10 units.</p>
         </div>
       </div>
 
@@ -1183,7 +1183,7 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
         </button>
         <div class="faq-answer">
-          <p>The amount of BAC water depends on the vial size and your preferred concentration. Common choices are 1–2 mL. Less water means a more concentrated solution (smaller injection volume), while more water means a more dilute solution (easier to measure small doses). For a 5 mg vial, 1 mL gives 5,000 mcg/mL; 2 mL gives 2,500 mcg/mL. Choose based on your dose — you want the draw volume to fall in an easy-to-read range on your syringe (typically 10–50 units).</p>
+          <p>The amount of BAC water depends on the vial size and your preferred concentration. Common choices are 1–2 mL. Less water means a more concentrated solution (smaller injection volume), while more water means a more dilute solution (easier to measure small doses). For a 5 mg vial, 1 mL gives 5 mg/mL; 2 mL gives 2.5 mg/mL. Choose based on your dose — you want the draw volume to fall in an easy-to-read range on your syringe (typically 10–50 units).</p>
         </div>
       </div>
 
@@ -1227,7 +1227,7 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
         </button>
         <div class="faq-answer">
-          <p>IU stands for International Unit — a measure of biological activity rather than weight. It's most commonly used for growth hormone (GH), where 1 IU ≈ 333 mcg. For most other peptides (BPC-157, TB-500, semaglutide, tirzepatide), doses are expressed in micrograms (mcg) or milligrams (mg). This calculator uses mcg for dose input because it's the most precise unit for peptide calculations. If your protocol lists a dose in IU (e.g., GH), check with your provider for the equivalent in mcg before using this calculator.</p>
+          <p>IU stands for International Unit — a measure of biological activity rather than weight. It's most commonly used for growth hormone (GH), where 1 IU ≈ 333 mcg. For most other peptides (BPC-157, TB-500, semaglutide, tirzepatide), doses are expressed in micrograms (mcg) or milligrams (mg). This calculator uses milligrams (mg) for dose input. If your protocol lists a dose in IU (e.g., GH), check with your provider for the equivalent in mg before using this calculator.</p>
         </div>
       </div>
 
@@ -1419,7 +1419,7 @@
   function calculate() {
     var vialMg = parseFloat(vialInput.value) || 0;
     var waterMl = parseFloat(waterInput.value) || 0;
-    var doseMcg = parseFloat(doseInput.value) || 0;
+    var doseMg = parseFloat(doseInput.value) || 0;
 
     var concentration = 0;
     var drawMl = 0;
@@ -1428,13 +1428,13 @@
     var daysSupply = 0;
 
     if (vialMg > 0 && waterMl > 0) {
-      concentration = (vialMg * 1000) / waterMl;
+      concentration = vialMg / waterMl;
     }
 
-    if (concentration > 0 && doseMcg > 0) {
-      drawMl = doseMcg / concentration;
+    if (concentration > 0 && doseMg > 0) {
+      drawMl = doseMg / concentration;
       syringeUnits = drawMl * 100;
-      dosesPerVial = (vialMg * 1000) / doseMcg;
+      dosesPerVial = vialMg / doseMg;
     }
 
     if (dosesPerVial > 0 && state.frequency > 0) {
@@ -1442,7 +1442,7 @@
     }
 
     // Update results
-    resConcentration.innerHTML = formatNumber(concentration) + '<span class="unit">mcg/mL</span>';
+    resConcentration.innerHTML = formatNumber(concentration) + '<span class="unit">mg/mL</span>';
     resDrawVol.innerHTML = (drawMl > 0 ? drawMl.toFixed(3) : '0') + '<span class="unit">mL</span>';
     resSyringeUnits.innerHTML = (syringeUnits > 0 ? syringeUnits.toFixed(1) : '0') + '<span class="unit">U-100</span>';
     resTotalDoses.innerHTML = (dosesPerVial > 0 ? Math.floor(dosesPerVial) : '0') + '<span class="unit">doses</span>';
