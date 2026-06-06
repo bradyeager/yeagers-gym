@@ -53,7 +53,7 @@ Retry up to 4× on network errors with backoff (2s, 4s, 8s, 16s).
 
 ## 3. Trigger the workflow
 
-Use `mcp__github__actions_run_trigger`:
+Try `mcp__github__actions_run_trigger` first:
 - owner: `bradyeager`
 - repo: `yeagers-gym`
 - workflow_id: `weekly-billing.yml`
@@ -63,8 +63,22 @@ Use `mcp__github__actions_run_trigger`:
   - `lookback_days`: `"8"`
   - `email_style`: `"command-center"`
 
-Capture the run id (or, if the API doesn't return one directly,
-list recent runs immediately after and grab the newest).
+**If it returns 403 "Resource not accessible by integration"** — the
+GitHub App install doesn't have `actions: write`. Fall back:
+
+1. Capture the current HEAD sha (`git rev-parse HEAD`) — call it BASELINE.
+2. Tell the user, in one line:
+   > "Tap **Run workflow** at
+   > https://github.com/bradyeager/yeagers-gym/actions/workflows/weekly-billing.yml
+   > with `email_style = command-center`. I'll poll and report when it
+   > finishes."
+3. Wait. Begin polling step 4 once they confirm they tapped (or just start
+   polling immediately and trust they will).
+
+Capture the run id either from the trigger response or, in fallback mode,
+from `mcp__github__actions_list` (`list_workflow_runs`, branch=main,
+event=workflow_dispatch) — pick the newest run whose head_sha == BASELINE
+AND created_at > now-when-you-started-polling.
 
 ## 4. Poll
 
