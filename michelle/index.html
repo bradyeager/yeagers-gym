@@ -3345,6 +3345,7 @@ function openPhotoModal(week, angle, label) {
       await ensureStorageReady();
       try {
         const result = await uploadToStorage(file, week, angle);
+        if (!result) { saveBtn.disabled = false; saveBtn.textContent = 'Save'; return; }
         finalUrl = result.url; finalPath = result.path;
       } catch (err) {
         console.error('Upload failed:', err);
@@ -3387,7 +3388,7 @@ async function ensureStorageReady() {
     if (probe.status === 404) {
       const create = await fetch(`${SUPABASE_URL}/storage/v1/bucket`, {
         method: 'POST', headers: SB_HEADERS,
-        body: JSON.stringify({ id: 'michelle-progress', name: 'michelle-progress', public: true })
+        body: JSON.stringify({ id: 'michelle-progress', name: 'michelle-progress', public: true, fileSizeLimit: 10485760 })
       });
       if (create.ok || create.status === 409) {
         STATE.storageInitialized = true;
@@ -3397,6 +3398,13 @@ async function ensureStorageReady() {
   } catch (err) { /* silent */ }
 }
 async function uploadToStorage(file, week, angle) {
+  if (file.size > 10 * 1024 * 1024) {
+    toast(
+      'Photo too large (max 10MB). Share a compressed version from your Photos app and retry.',
+      'error'
+    );
+    return null;
+  }
   // Map MIME type → safe storage extension. iPhone HEIC uploads sometimes 400 on
   // Supabase Storage when the path ends in .heic; falling back to .jpg keeps the
   // raw bytes intact and the URL universally serveable.
@@ -3419,7 +3427,7 @@ async function initStorage() {
   try {
     const r = await fetch(`${SUPABASE_URL}/storage/v1/bucket`, {
       method: 'POST', headers: SB_HEADERS,
-      body: JSON.stringify({ id: 'michelle-progress', name: 'michelle-progress', public: true })
+      body: JSON.stringify({ id: 'michelle-progress', name: 'michelle-progress', public: true, fileSizeLimit: 10485760 })
     });
     if (r.ok || r.status === 409) {
       STATE.storageInitialized = true;
