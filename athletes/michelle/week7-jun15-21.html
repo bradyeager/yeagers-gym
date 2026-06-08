@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Week 7 — Jun 15–21, 2026 | Michelle | Yeager's Gym</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --teal: #48C4CC;
+      --pink: #EF3295;
+      --purple: #9B6FD4;
+      --charcoal: #0F1620;
+      --surface: #151F2E;
+      --surface-2: #1C2A3D;
+      --surface-3: #111927;
+      --text: #E8EBF0;
+      --text-dim: #7A8A9E;
+      --green: #22C55E;
+      --yellow: #EAB308;
+      --orange: #F97316;
+      --red: #EF4444;
+      --border: rgba(255,255,255,0.06);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { background: var(--charcoal); color: var(--text); font-family: 'DM Sans', system-ui, sans-serif; line-height: 1.55; font-size: 15px; }
+
+    a { color: var(--teal); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    .container { max-width: 900px; margin: 0 auto; padding: 0 1rem; }
+
+    .nav { background: var(--surface); border-bottom: 1px solid rgba(72,196,204,0.18); padding: 0.65rem 0; position: sticky; top: 0; z-index: 100; }
+    .nav-inner { display: flex; align-items: center; justify-content: space-between; }
+    .nav-brand { font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; letter-spacing: 0.16em; color: var(--teal); text-transform: uppercase; }
+    .nav-right { font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.1em; }
+
+    .week-header { padding: 2rem 0 1.5rem; border-bottom: 1px solid var(--border); }
+    .week-eyebrow { font-family: 'JetBrains Mono', monospace; font-size: 0.6rem; letter-spacing: 0.22em; color: var(--teal); text-transform: uppercase; margin-bottom: 0.4rem; }
+    .week-title { font-family: 'DM Serif Display', serif; font-size: 2.4rem; color: var(--text); line-height: 1.1; margin-bottom: 0.65rem; }
+    .week-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+    .tag { font-family: 'JetBrains Mono', monospace; font-size: 0.58rem; letter-spacing: 0.08em; text-transform: uppercase; padding: 0.22rem 0.55rem; border-radius: 3px; }
+    .tag-theme { background: rgba(239,50,149,0.08); color: var(--pink); border: 1px solid rgba(239,50,149,0.2); }
+    .tag-default { background: var(--surface-2); color: var(--text-dim); border: 1px solid var(--border); }
+    .tag-teal { background: rgba(72,196,204,0.07); color: var(--teal); border: 1px solid rgba(72,196,204,0.2); }
+
+    .section { padding: 1.5rem 0; border-bottom: 1px solid var(--border); }
+    .section-label { font-family: 'JetBrains Mono', monospace; font-size: 0.58rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 0.75rem; }
+    .e1rm-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 0.5rem; }
+    .e1rm-card { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 0.65rem 0.8rem; }
+    .e1rm-name { font-family: 'JetBrains Mono', monospace; font-size: 0.55rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 0.3rem; }
+    .e1rm-val { font-family: 'JetBrains Mono', monospace; font-size: 1.4rem; font-weight: 700; color: var(--teal); line-height: 1; }
+    .e1rm-unit { font-size: 0.6rem; color: var(--text-dim); font-family: 'JetBrains Mono', monospace; }
+    .e1rm-note { font-size: 0.72rem; color: var(--text-dim); font-style: italic; margin-top: 0.4rem; }
+
+    .session-block { padding: 1.5rem 0; border-bottom: 1px solid var(--border); }
+    .session-hd { background: var(--surface-2); border-left: 3px solid var(--teal); padding: 0.9rem 1.1rem; border-radius: 0 6px 6px 0; margin-bottom: 1.25rem; }
+    .session-num { font-family: 'JetBrains Mono', monospace; font-size: 0.58rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--teal); margin-bottom: 0.2rem; }
+    .session-title { font-family: 'DM Serif Display', serif; font-size: 1.45rem; color: var(--text); }
+    .session-meta-row { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.45rem; }
+
+    .lift-wrap { margin-bottom: 1.25rem; }
+    .lift-hd { display: flex; align-items: flex-start; justify-content: space-between; gap: 0.75rem; padding: 0.85rem 1rem 0.75rem; background: var(--surface); border: 1px solid var(--border); border-bottom: none; border-radius: 6px 6px 0 0; }
+    .lift-hd-left { flex: 1; min-width: 0; }
+    .lift-order-label { font-family: 'JetBrains Mono', monospace; font-size: 0.55rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 0.15rem; }
+    .lift-name { font-family: 'DM Serif Display', serif; font-size: 1.2rem; color: var(--text); }
+    .badge-row { display: flex; flex-wrap: wrap; gap: 0.3rem; flex-shrink: 0; }
+    .badge { font-family: 'JetBrains Mono', monospace; font-size: 0.5rem; letter-spacing: 0.08em; text-transform: uppercase; padding: 0.18rem 0.42rem; border-radius: 3px; white-space: nowrap; }
+    .b-compound { background: rgba(72,196,204,0.08); color: var(--teal); border: 1px solid rgba(72,196,204,0.25); }
+    .b-volume { background: rgba(239,50,149,0.08); color: var(--pink); border: 1px solid rgba(239,50,149,0.25); }
+    .b-accessory { background: rgba(255,255,255,0.04); color: var(--text-dim); border: 1px solid rgba(255,255,255,0.1); }
+    .b-vitruve { background: rgba(72,196,204,0.05); color: #6DD8DE; border: 1px solid rgba(72,196,204,0.18); }
+    .b-lower { background: rgba(155,111,212,0.08); color: var(--purple); border: 1px solid rgba(155,111,212,0.22); }
+    .b-upper { background: rgba(239,50,149,0.06); color: #F472B6; border: 1px solid rgba(239,50,149,0.15); }
+    .b-e1rm { background: rgba(72,196,204,0.05); color: var(--text-dim); border: 1px solid var(--border); }
+
+    .lift-body { background: var(--surface); border: 1px solid var(--border); border-top: 1px solid rgba(255,255,255,0.03); border-radius: 0 0 6px 6px; padding: 0 1rem 1rem; }
+
+    .coach-flag { margin: 0.75rem 0; padding: 0.6rem 0.8rem; background: rgba(239,50,149,0.05); border-left: 2px solid var(--pink); border-radius: 0 4px 4px 0; }
+    .coach-flag-lbl { font-family: 'JetBrains Mono', monospace; font-size: 0.52rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--pink); margin-bottom: 0.25rem; }
+    .coach-flag-txt { font-size: 0.8rem; color: var(--text); line-height: 1.55; }
+
+    .sub { margin-top: 0.9rem; }
+    .sub-lbl { font-family: 'JetBrains Mono', monospace; font-size: 0.52rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-dim); border-bottom: 1px solid var(--border); padding-bottom: 0.25rem; margin-bottom: 0.5rem; }
+
+    table.wu { width: 100%; border-collapse: collapse; font-size: 0.78rem; }
+    table.wu th { font-family: 'JetBrains Mono', monospace; font-size: 0.5rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-dim); text-align: left; padding: 0.25rem 0.5rem; border-bottom: 1px solid var(--border); }
+    table.wu td { padding: 0.3rem 0.5rem; border-bottom: 1px solid rgba(255,255,255,0.025); vertical-align: top; }
+    table.wu tr:last-child td { border-bottom: none; }
+    .wu-load { font-family: 'JetBrains Mono', monospace; font-weight: 600; color: var(--text); }
+    .wu-vel { font-family: 'JetBrains Mono', monospace; font-size: 0.73rem; color: var(--teal); }
+    .wu-pct { font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: var(--text-dim); }
+    .wu-note { font-size: 0.72rem; color: var(--text-dim); font-style: italic; }
+
+    .readiness-box { display: flex; align-items: center; flex-wrap: wrap; gap: 0.75rem; padding: 0.6rem 0.8rem; background: rgba(72,196,204,0.03); border: 1px solid rgba(72,196,204,0.15); border-radius: 6px; }
+    .r-load { font-family: 'JetBrains Mono', monospace; font-size: 1.2rem; font-weight: 700; color: var(--teal); white-space: nowrap; }
+    .r-detail { font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; color: var(--text-dim); }
+    .r-note { font-size: 0.75rem; color: var(--text-dim); font-style: italic; width: 100%; }
+
+    .decision { display: flex; flex-direction: column; gap: 0.3rem; }
+    .d-row { display: flex; align-items: baseline; gap: 0.55rem; padding: 0.38rem 0.65rem; border-radius: 4px; font-size: 0.8rem; line-height: 1.45; }
+    .d-green  { background: rgba(34,197,94,0.06);  border-left: 2px solid var(--green); }
+    .d-yellow { background: rgba(234,179,8,0.06);  border-left: 2px solid var(--yellow); }
+    .d-orange { background: rgba(249,115,22,0.06); border-left: 2px solid var(--orange); }
+    .d-red    { background: rgba(239,68,68,0.06);  border-left: 2px solid var(--red); }
+    .d-key { font-family: 'JetBrains Mono', monospace; font-size: 0.62rem; font-weight: 700; flex-shrink: 0; text-transform: uppercase; letter-spacing: 0.04em; }
+    .d-green  .d-key { color: var(--green); }
+    .d-yellow .d-key { color: var(--yellow); }
+    .d-orange .d-key { color: var(--orange); }
+    .d-red    .d-key { color: var(--red); }
+    .d-txt { color: var(--text); }
+
+    .ws-box { background: rgba(72,196,204,0.04); border: 1px solid rgba(72,196,204,0.18); border-radius: 6px; padding: 0.8rem 1rem; }
+    .ws-main { font-family: 'JetBrains Mono', monospace; font-size: 1.35rem; font-weight: 700; color: var(--text); margin-bottom: 0.35rem; }
+    .ws-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+    .ws-tag { font-family: 'JetBrains Mono', monospace; font-size: 0.6rem; padding: 0.18rem 0.5rem; background: rgba(72,196,204,0.07); color: var(--teal); border-radius: 3px; }
+    .ws-note { font-size: 0.74rem; color: var(--text-dim); font-style: italic; margin-top: 0.4rem; }
+
+    .cap-row { display: flex; gap: 0.4rem; margin-top: 0.45rem; flex-wrap: wrap; }
+    .cap { font-family: 'JetBrains Mono', monospace; font-size: 0.56rem; letter-spacing: 0.06em; text-transform: uppercase; padding: 0.18rem 0.5rem; border-radius: 3px; }
+    .cap-vl    { background: rgba(234,179,8,0.07);  color: var(--yellow); border: 1px solid rgba(234,179,8,0.2); }
+    .cap-stop  { background: rgba(239,68,68,0.07);  color: var(--red);    border: 1px solid rgba(239,68,68,0.2); }
+    .cap-floor { background: rgba(234,179,8,0.07);  color: var(--yellow); border: 1px solid rgba(234,179,8,0.2); }
+
+    .key-list, .ok-list { list-style: none; display: flex; flex-direction: column; gap: 0.3rem; padding: 0; }
+    .key-list li, .ok-list li { padding-left: 1.1rem; position: relative; font-size: 0.81rem; color: var(--text); line-height: 1.5; }
+    .key-list li::before { content: '→'; position: absolute; left: 0; top: 0; font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; color: var(--teal); }
+    .ok-list  li::before { content: '✓'; position: absolute; left: 0; top: 0; font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; color: var(--green); }
+
+    .traj { font-size: 0.8rem; color: var(--text-dim); line-height: 1.7; padding: 0.55rem 0.8rem; background: rgba(255,255,255,0.015); border-left: 2px solid rgba(72,196,204,0.25); border-radius: 0 4px 4px 0; font-style: italic; }
+    .protocol-pill { display: inline-block; font-family: 'JetBrains Mono', monospace; font-size: 0.55rem; letter-spacing: 0.1em; text-transform: uppercase; padding: 0.18rem 0.55rem; background: rgba(239,50,149,0.07); color: var(--pink); border-radius: 3px; margin: 0.6rem 0 0.2rem; }
+    .vel-floor { font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; padding: 0.3rem 0.6rem; background: rgba(234,179,8,0.05); border: 1px solid rgba(234,179,8,0.15); border-radius: 4px; color: var(--yellow); margin-top: 0.4rem; }
+    .acc-rx { font-family: 'JetBrains Mono', monospace; font-size: 1.2rem; font-weight: 700; color: var(--pink); padding: 0.4rem 0 0.2rem; }
+    .acc-note { font-size: 0.8rem; color: var(--text-dim); line-height: 1.6; margin-bottom: 0.5rem; }
+
+    .footer { padding: 1.5rem 0 3rem; text-align: center; font-family: 'JetBrains Mono', monospace; font-size: 0.6rem; color: rgba(255,255,255,0.15); letter-spacing: 0.06em; }
+
+    @media (max-width: 520px) {
+      .week-title { font-size: 1.7rem; }
+      .lift-hd { flex-direction: column; }
+      .badge-row { flex-direction: row; }
+      .ws-main { font-size: 1.1rem; }
+    }
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="container nav-inner">
+    <span class="nav-brand">Yeager's Gym</span>
+    <span class="nav-right">Michelle · Week 7</span>
+  </div>
+</nav>
+
+<div id="root"></div>
+
+<script>
+const WEEK = {
+  schema_version: "2.2.1",
+  meta: {
+    week: 7,
+    dates: "Jun 15–21, 2026",
+    theme: "Intensification Continues",
+    athlete: "Michelle",
+    block: "12-Week Recomp Block",
+    generated: "2026-06-07",
+    velocity_source: "Vitruve — Week 5 individual profile, projected forward",
+    e1rm_note: "Same e1RMs as Week 6 — no new data until session logs come in."
+  },
+  e1rms: [
+    { name: "Hip Thrust",    val: 275 },
+    { name: "Bench Press",   val: 80  },
+    { name: "Back Squat",    val: 150 },
+    { name: "Strict Press",  val: 65  },
+    { name: "Deadlift",      val: 170 },
+    { name: "Lat Pulldown",  val: 155 }
+  ],
+  sessions: [
+    {
+      number: 1,
+      day: "Monday",
+      date: "Jun 15, 2026",
+      type: "Strength + Posterior Build",
+      order_note: "Lower → Upper → Lower",
+      lifts: [
+        {
+          name: "Barbell Hip Thrust",
+          order: 1, type: "compound", pattern: "lower",
+          e1rm: 275, bar_weight: 135, vitruve: true,
+          warm_up: [
+            { load: 135, reps: 10, target: "≥0.37 m/s", pct: "49%" },
+            { load: 185, reps: 8,  target: "≥0.34 m/s", pct: "67%" },
+            { load: 225, reps: 6,  target: "≥0.29 m/s", pct: "82%" },
+            { load: 250, reps: 4,  target: "≥0.23 m/s", pct: "91%" }
+          ],
+          readiness: { load: 265, reps: 1, velocity: "≥0.22 m/s", pct: "96%", note: "Week 6 working weight becomes Week 7 readiness single." },
+          decision: {
+            green:  "≥0.22 → run 275 × 3–4 as prescribed",
+            yellow: "0.19–0.21 → drop to 265, run 3×4",
+            orange: "0.16–0.18 → drop to 255, run 3×3",
+            red:    "<0.16 → end hip thrust. Accessories only."
+          },
+          working_sets: { load: 275, reps: "3–4", sets: 3, velocity_range: "0.20–0.24 m/s", pct: "100%" },
+          vl_cap: "15%",
+          hard_stop: "<0.16 m/s — terminate set immediately",
+          execution_keys: [
+            "275 is current e1RM. Every rep needs to be deliberate and technically clean.",
+            "Do not chase reps. Four is the cap. Three clean reps at 0.22 beats four ugly ones at 0.18.",
+            "Controlled descent. Full hip extension at top. No half-reps."
+          ],
+          success_looks_like: [
+            "275 × 3 or 4 at 0.20 or better.",
+            "Readiness single at 265 comes in at 0.22+ — confirms she's topped the Week 6 load cleanly.",
+            "Velocity does not collapse on Set 3 — 15% cap is the floor."
+          ],
+          trajectory: "275 is the current e1RM. Moving at the e1RM load in working sets at Week 7 puts her weeks ahead of the original table. The Week 12 goal of 325 now looks conservative. After midblock check-in, expect to revise upward."
+        },
+        {
+          name: "Bench Press",
+          order: 2, type: "compound", pattern: "upper",
+          e1rm: 80, bar_weight: 35, vitruve: true,
+          coach_flag: "72.5 × 4 — smallest increment load, smallest increment reps. Protect this lift.",
+          warm_up: [
+            { load: 35,   reps: 10, target: "≥0.53 m/s", pct: "44%" },
+            { load: 50,   reps: 8,  target: "≥0.45 m/s", pct: "62%" },
+            { load: 60,   reps: 6,  target: "≥0.36 m/s", pct: "75%" },
+            { load: 67.5, reps: 4,  target: "≥0.27 m/s", pct: "84%" }
+          ],
+          readiness: { load: 70, reps: 2, velocity: "≥0.22 m/s", pct: "87%", note: "Week 6 working weight as readiness double." },
+          decision: {
+            green:  "≥0.22 → run 72.5 × 4 as prescribed",
+            yellow: "0.18–0.21 → run 70 × 4 × 3 sets, do not advance",
+            orange: "0.15–0.17 → drop to 65 × 4 × 2 sets",
+            red:    "<0.15 → end bench. Flag for Brad."
+          },
+          working_sets: { load: 72.5, reps: 4, sets: 3, velocity_range: "0.18–0.24 m/s", pct: "91%" },
+          vl_cap: "15%",
+          hard_stop: "<0.14 m/s — rack immediately",
+          execution_keys: [
+            "Four reps. No bonus reps. This lift is on a tight trajectory — do not overcook it.",
+            "Arch, shoulder blades, feet — same setup every set. Consistency is the work.",
+            "Touch the chest every rep. No floaters."
+          ],
+          success_looks_like: [
+            "72.5 × 4 at 0.18 or better all three sets.",
+            "Week 7 velocity at 72.5 exceeds Week 5 velocity at 67.5 — that's strength gain visible in the numbers.",
+            "No breakdown on the 4th rep. Clean finish."
+          ],
+          trajectory: "Bench is 12.5 lb from Week 12 goal with 5 weeks of load programming left after Week 7. The reps will drop further in Weeks 8–9 to allow load progression. Hold the line here."
+        },
+        {
+          name: "Transformer Bar Back Squat",
+          order: 3, type: "compound", pattern: "lower",
+          e1rm: 150, bar_weight: 55, vitruve: true,
+          warm_up: [
+            { load: 55,   reps: 10, target: "≥0.65 m/s", pct: "37%" },
+            { load: 82.5, reps: 8,  target: "≥0.52 m/s", pct: "55%" },
+            { load: 97.5, reps: 6,  target: "≥0.43 m/s", pct: "65%" },
+            { load: 110,  reps: 4,  target: "≥0.36 m/s", pct: "73%" }
+          ],
+          readiness: { load: 115, reps: 2, velocity: "≥0.30 m/s", pct: "77%", note: "Week 6 working weight as readiness double." },
+          decision: {
+            green:  "≥0.30 → run 120 × 4 as prescribed",
+            yellow: "0.26–0.29 → run 115 × 4 × 3 sets",
+            orange: "0.22–0.25 → run 110 × 4 × 3 sets",
+            red:    "<0.22 → end squats"
+          },
+          working_sets: { load: 120, reps: 4, sets: 3, velocity_range: "0.27–0.32 m/s", pct: "80%" },
+          vl_cap: "15%",
+          hard_stop: "<0.20 m/s",
+          execution_keys: [
+            "120 is new territory. Treat rep 1 of Set 1 as a technical calibration — not a PR attempt.",
+            "Same depth standard as every week. Velocity from a partial does not count.",
+            "Rest fully between sets. Squat is third in session — she may be closer to limit than she feels."
+          ],
+          success_looks_like: [
+            "120 × 4 at 0.27 or better.",
+            "All three sets hit consistent depth — no fade on reps 3–4.",
+            "Week 7 squat velocity at 120 tells us whether the Week 12 goal of 150 needs revision."
+          ],
+          trajectory: "120 this week puts her at 80% of her current 150 lb e1RM. By the data, she's already at or near Week 12 goal capacity. Week 8 will start to tell the real story as loads approach 90%."
+        },
+        {
+          name: "Cable Crunch",
+          order: 4, type: "accessory",
+          prescription: "3 × 12 @ 45 lb",
+          notes: "Small load increase from Week 6. Continue progressive overload toward Week 12 test (70 lb goal).",
+          execution_keys: [
+            "Hips fixed — crunch at the spine.",
+            "Hold 1 second at bottom contraction."
+          ]
+        },
+        {
+          name: "Weighted Plank",
+          order: 5, type: "accessory",
+          prescription: "2 × 50 sec @ 10 lb",
+          notes: "Duration increase from Week 6 (45→50 sec). Same load.",
+          execution_keys: [
+            "Neutral spine throughout.",
+            "Active glute squeeze — full body tension."
+          ]
+        },
+        {
+          name: "Frog Pumps",
+          order: 6, type: "accessory",
+          prescription: "3 × 20",
+          notes: "Week 7 glute finisher (Week B rotation — alternates with Hip Abduction Machine). Supine, soles of feet together, pulse at top of hip extension. MMC focus.",
+          execution_keys: [
+            "Squeeze at the top of every rep. This is glute medius and lower maximus — not a hip thrust.",
+            "Move deliberately. 20 reps of intentional squeeze beats 50 fast pulses."
+          ]
+        }
+      ]
+    },
+    {
+      number: 2,
+      day: "Thursday",
+      date: "Jun 19, 2026",
+      type: "Volume + Frame",
+      order_note: "Lower → Upper → Lower → Upper",
+      lifts: [
+        {
+          name: "Barbell Hip Thrust — Volume",
+          order: 1, type: "volume", pattern: "lower",
+          e1rm: 275, bar_weight: 135, vitruve: true,
+          protocol: "MMC — controlled eccentric, pause at top",
+          warm_up: [
+            { load: 135, reps: 10, target: "≥0.37 m/s", pct: "49%" }
+          ],
+          working_sets: { load: 195, reps: 8, sets: 3, velocity_range: "0.33–0.40 m/s", pct: "71%", note: "Velocity informational. Load up from Week 6 per locked table." },
+          velocity_floor: "0.25 m/s — rest longer, do not reduce load",
+          execution_keys: [
+            "MMC protocol every rep. Two-second descent, one-second squeeze at top.",
+            "195 lb is working load — do not drop to 135 pump sets. Hit the prescription."
+          ]
+        },
+        {
+          name: "Strict Press",
+          order: 2, type: "compound", pattern: "upper",
+          e1rm: 65, bar_weight: 35, vitruve: true,
+          warm_up: [
+            { load: 35,   reps: 10, target: "≥0.51 m/s", pct: "54%" },
+            { load: 45,   reps: 8,  target: "≥0.42 m/s", pct: "69%" },
+            { load: 52.5, reps: 4,  target: "≥0.36 m/s", pct: "81%" },
+            { load: 55,   reps: 2,  target: "≥0.33 m/s", pct: "85%" }
+          ],
+          readiness: { load: 57.5, reps: 1, velocity: "≥0.31 m/s", pct: "88%", note: "Working weight as readiness single — same protocol as Week 6." },
+          decision: {
+            green:  "≥0.31 → run 57.5 × 5 × 3 sets",
+            yellow: "0.27–0.30 → run 55 × 5 × 3 sets",
+            orange: "0.22–0.26 → run 52.5 × 5 × 2 sets",
+            red:    "<0.22 → end pressing"
+          },
+          working_sets: { load: 57.5, reps: 5, sets: 3, velocity_range: "0.28–0.33 m/s", pct: "88%" },
+          vl_cap: "20%",
+          hard_stop: "<0.20 m/s",
+          execution_keys: [
+            "Same technical setup as Week 6. Consistency beats novelty here.",
+            "If velocity drops set to set, rest fully — up to 3 minutes between sets in Session 2 position.",
+            "Full lockout. Partial reps at this load make the VL cap meaningless."
+          ],
+          success_looks_like: [
+            "57.5 × 5 at 0.28 or better across all three sets.",
+            "Week-over-week velocity improvement at 55 lb — even if the load moved up, the same weight should be faster.",
+            "No redline sets — if it crashes, take the yellow gate and reset next week."
+          ],
+          trajectory: "If Week 7 runs cleanly at 57.5, the strict press is back on a rational trajectory. Week 8 moves to 60 × 4 — that's where the original table picks back up."
+        },
+        {
+          name: "Deadlift",
+          order: 3, type: "compound", pattern: "lower",
+          e1rm: 170, bar_weight: 45, vitruve: true,
+          warm_up: [
+            { load: 45,  reps: 10, target: "≥0.65 m/s", pct: "26%" },
+            { load: 80,  reps: 8,  target: "≥0.55 m/s", pct: "47%" },
+            { load: 100, reps: 6,  target: "≥0.46 m/s", pct: "59%" },
+            { load: 115, reps: 4,  target: "≥0.40 m/s", pct: "68%" },
+            { load: 125, reps: 2,  target: "≥0.36 m/s", pct: "74%" }
+          ],
+          readiness: { load: 135, reps: 1, velocity: "≥0.33 m/s", pct: "79%" },
+          decision: {
+            green:  "≥0.33 → run 140 × 4 as prescribed",
+            yellow: "0.28–0.32 → run 130 × 4 × 3 sets",
+            orange: "0.23–0.27 → run 120 × 4 × 2 sets",
+            red:    "<0.23 → end deadlifts"
+          },
+          working_sets: { load: 140, reps: 4, sets: 3, velocity_range: "0.29–0.36 m/s", pct: "82%" },
+          vl_cap: "20%",
+          hard_stop: "<0.20 m/s",
+          execution_keys: [
+            "Allow the potentiation pattern. Expect velocity to hold or improve across sets — that's her profile.",
+            "Lat engagement before the bar breaks floor. She earned this load.",
+            "140 is meaningful weight — breath and brace before every rep."
+          ],
+          success_looks_like: [
+            "140 × 4 at 0.29 or better.",
+            "Velocity does not drop below 0.26 on any set.",
+            "Week 7 deadlift velocity at 140 will give a clearer e1RM read — log every set."
+          ],
+          trajectory: "Deadlift is approaching the Week 12 goal of 175 at Week 7. The original goal will be exceeded. Week 9 data will confirm how far above 175 the real ceiling sits."
+        },
+        {
+          name: "Lat Pulldown",
+          order: 4, type: "compound", pattern: "upper",
+          e1rm: 155, vitruve: false,
+          grip_week: "A — underhand",
+          warm_up: [
+            { load: 75,    reps: 10, target: "≥0.55 m/s (est.)", pct: "48%" },
+            { load: 97.5,  reps: 8,  target: "≥0.48 m/s (est.)", pct: "63%" },
+            { load: 117.5, reps: 6,  target: "≥0.40 m/s (est.)", pct: "76%" },
+            { load: 127.5, reps: 4,  target: "≥0.37 m/s (est.)", pct: "82%" }
+          ],
+          readiness: { load: 130, reps: 2, velocity: "≥0.35 m/s (est.)", pct: "84%" },
+          decision: {
+            green:  "≥0.35 → run 135 × 6",
+            yellow: "0.30–0.34 → run 130 × 6 × 3 sets",
+            orange: "0.25–0.29 → run 120 × 6 × 2 sets",
+            red:    "<0.25 → end pulldown"
+          },
+          working_sets: { load: 135, reps: 6, sets: 3, velocity_range: "0.33–0.40 m/s (est.)", pct: "87%" },
+          vl_cap: "20%",
+          hard_stop: "<0.22 m/s",
+          execution_keys: [
+            "Underhand grip (Week A). Supinated grip engages biceps more — feel the difference.",
+            "Pull to upper chest. Full range — elbows travel behind the ribcage at the bottom.",
+            "Slow return. Lat stays loaded on the way up."
+          ],
+          success_looks_like: [
+            "135 × 6 clean across three sets.",
+            "Grip alternation feels noticeably different from Week 6 — she's building awareness of the pulldown cue.",
+            "By Week 7 we start to see individual velocity data emerge on the pulldown — begin logging."
+          ],
+          trajectory: "Pulldown goal is 125 lb confirmed 1RM by Week 12. At 135 as a 6-rep working weight she's well past the goal already. Week 9 will drop to singles range — that will give the true ceiling."
+        },
+        {
+          name: "Lying Leg Curl",
+          order: 5, type: "accessory",
+          prescription: "3 × 12 @ Week 6 working weight",
+          notes: "Week 7 continues from established baseline. Apply 5% load increase from Week 6 if all three sets were clean. Hamstring belly development — the tie-in gap.",
+          execution_keys: [
+            "Three-second eccentric. The belly adapts to the stretch, not the squeeze.",
+            "Both legs up, one leg down. Single-leg eccentrics can be introduced if bilateral feels too easy."
+          ]
+        },
+        {
+          name: "Cable Pull-Through",
+          order: 6, type: "accessory",
+          prescription: "3 × 15 @ light-moderate cable",
+          notes: "New movement Week 7 — replaces lateral lunge. Stand facing away from cable stack, rope attachment between legs. Hip hinge, push hips forward to standing, squeeze glutes at top. Targets glute-ham junction from a standing hinge angle.",
+          execution_keys: [
+            "Soft knee, hip-dominant hinge. This is not a squat — push the hips back, not down.",
+            "Drive hips through at the top — full hip extension, glutes contract hard.",
+            "Cable should stay between the legs throughout. If it's pulling up to your waist, you're not hinging."
+          ]
+        },
+        {
+          name: "Chest-Supported Cable Row",
+          order: 7, type: "accessory",
+          prescription: "3 × 12 @ working weight",
+          notes: "Week 7 — cable version (she tried this last session and liked it). Same mid-back target as Week 6 DB row, different stability demand. Set cable to chest height, press chest against pad, row handle to lower chest.",
+          execution_keys: [
+            "Chest stays on the pad. No pulling yourself off the support.",
+            "Elbows drive back and slightly down — mid-back engagement, not upper trap."
+          ]
+        },
+        {
+          name: "Adductor Machine",
+          order: 8, type: "accessory",
+          prescription: "3 × 15 @ working weight",
+          notes: "Continue progressive overload. Small load increase from Week 6 if all sets were clean.",
+          execution_keys: [
+            "Full range, controlled squeeze at close.",
+            "Do not use momentum — slow the tempo if the weight allows bouncing."
+          ]
+        },
+        {
+          name: "Pallof Press",
+          order: 9, type: "accessory",
+          prescription: "3 × 12 each side @ moderate cable",
+          notes: "Locked. Exempt from rotation every Session 2.",
+          execution_keys: [
+            "Press out, hold 1 second, return.",
+            "Hips square to the cable throughout."
+          ]
+        },
+        {
+          name: "Hanging Leg Raise",
+          order: 10, type: "accessory",
+          prescription: "3 × 10",
+          notes: "Locked end-of-cycle test. Small rep increase from Week 6 (8→10). Strict form — no kipping.",
+          execution_keys: [
+            "Dead hang start every rep.",
+            "Legs to parallel minimum. Control the descent."
+          ]
+        }
+      ]
+    }
+  ]
+};
+
+// ─── RENDER HELPERS ──────────────────────────────────────────────────────────
+
+function esc(s) {
+  return String(s)
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;');
+}
+
+function badgeHtml(lift) {
+  const t = lift.type;
+  const typeCls = t === 'compound' ? 'b-compound' : t === 'volume' ? 'b-volume' : 'b-accessory';
+  const typeLabel = t === 'compound' ? 'Compound' : t === 'volume' ? 'Volume / MMC' : 'Accessory';
+  let out = `<span class="badge ${typeCls}">${typeLabel}</span>`;
+  if (lift.pattern) {
+    const patCls = lift.pattern === 'lower' ? 'b-lower' : 'b-upper';
+    out += `<span class="badge ${patCls}">${lift.pattern}</span>`;
+  }
+  if (lift.vitruve) out += `<span class="badge b-vitruve">Vitruve</span>`;
+  if (lift.e1rm)   out += `<span class="badge b-e1rm">e1RM ${lift.e1rm} lb</span>`;
+  if (lift.grip_week) out += `<span class="badge b-accessory">Grip: ${esc(lift.grip_week)}</span>`;
+  return out;
+}
+
+function warmupHtml(rows) {
+  if (!rows || !rows.length) return '';
+  const trs = rows.map(r => `
+    <tr>
+      <td class="wu-load">${r.load} lb</td>
+      <td>${r.reps} reps</td>
+      <td class="wu-vel">${esc(r.target)}</td>
+      <td class="wu-pct">${r.pct}</td>
+      ${r.note ? `<td class="wu-note">${esc(r.note)}</td>` : '<td></td>'}
+    </tr>`).join('');
+  return `
+    <div class="sub">
+      <div class="sub-lbl">Warm-Up</div>
+      <table class="wu">
+        <thead><tr><th>Load</th><th>Reps</th><th>Target Velocity</th><th>% e1RM</th><th></th></tr></thead>
+        <tbody>${trs}</tbody>
+      </table>
+    </div>`;
+}
+
+function readinessHtml(r) {
+  if (!r) return '';
+  return `
+    <div class="sub">
+      <div class="sub-lbl">Readiness Single / Double</div>
+      <div class="readiness-box">
+        <span class="r-load">${r.load} lb × ${r.reps}</span>
+        <span class="r-detail">${esc(r.velocity)}</span>
+        <span class="r-detail">${r.pct} of e1RM</span>
+        ${r.note ? `<span class="r-note">${esc(r.note)}</span>` : ''}
+      </div>
+    </div>`;
+}
+
+function decisionHtml(d) {
+  if (!d) return '';
+  return `
+    <div class="sub">
+      <div class="sub-lbl">Decision Tree</div>
+      <div class="decision">
+        <div class="d-row d-green"><span class="d-key">Green</span><span class="d-txt">${esc(d.green)}</span></div>
+        <div class="d-row d-yellow"><span class="d-key">Yellow</span><span class="d-txt">${esc(d.yellow)}</span></div>
+        <div class="d-row d-orange"><span class="d-key">Orange</span><span class="d-txt">${esc(d.orange)}</span></div>
+        <div class="d-row d-red"><span class="d-key">Red</span><span class="d-txt">${esc(d.red)}</span></div>
+      </div>
+    </div>`;
+}
+
+function workingSetsHtml(ws, vl_cap, hard_stop, velocity_floor) {
+  if (!ws) return '';
+  const main = `${ws.load} lb × ${ws.reps} — ${ws.sets} sets`;
+  let capsHtml = '';
+  if (vl_cap)         capsHtml += `<span class="cap cap-vl">VL Cap ${vl_cap}</span>`;
+  if (hard_stop)      capsHtml += `<span class="cap cap-stop">Hard Stop: ${esc(hard_stop)}</span>`;
+  if (velocity_floor) capsHtml += `<span class="cap cap-floor">Vel Floor: ${esc(velocity_floor)}</span>`;
+  return `
+    <div class="sub">
+      <div class="sub-lbl">Working Sets</div>
+      <div class="ws-box">
+        <div class="ws-main">${main}</div>
+        <div class="ws-tags">
+          <span class="ws-tag">${esc(ws.velocity_range)}</span>
+          <span class="ws-tag">${ws.pct} of e1RM</span>
+        </div>
+        ${ws.note ? `<div class="ws-note">${esc(ws.note)}</div>` : ''}
+      </div>
+      ${capsHtml ? `<div class="cap-row">${capsHtml}</div>` : ''}
+    </div>`;
+}
+
+function listHtml(items, cls) {
+  return `<ul class="${cls}">${items.map(i => `<li>${esc(i)}</li>`).join('')}</ul>`;
+}
+
+function compoundLiftHtml(lift) {
+  return `
+    <div class="lift-wrap">
+      <div class="lift-hd">
+        <div class="lift-hd-left">
+          <div class="lift-order-label">Lift ${lift.order}</div>
+          <div class="lift-name">${esc(lift.name)}</div>
+        </div>
+        <div class="badge-row">${badgeHtml(lift)}</div>
+      </div>
+      <div class="lift-body">
+        ${lift.coach_flag ? `<div class="coach-flag"><div class="coach-flag-lbl">Coach Flag</div><div class="coach-flag-txt">${esc(lift.coach_flag)}</div></div>` : ''}
+        ${warmupHtml(lift.warm_up)}
+        ${readinessHtml(lift.readiness)}
+        ${decisionHtml(lift.decision)}
+        ${workingSetsHtml(lift.working_sets, lift.vl_cap, lift.hard_stop, null)}
+        ${lift.execution_keys ? `<div class="sub"><div class="sub-lbl">Execution Keys</div>${listHtml(lift.execution_keys, 'key-list')}</div>` : ''}
+        ${lift.success_looks_like ? `<div class="sub"><div class="sub-lbl">Success Looks Like</div>${listHtml(lift.success_looks_like, 'ok-list')}</div>` : ''}
+        ${lift.trajectory ? `<div class="sub"><div class="sub-lbl">Trajectory</div><div class="traj">${esc(lift.trajectory)}</div></div>` : ''}
+      </div>
+    </div>`;
+}
+
+function volumeLiftHtml(lift) {
+  return `
+    <div class="lift-wrap">
+      <div class="lift-hd">
+        <div class="lift-hd-left">
+          <div class="lift-order-label">Lift ${lift.order}</div>
+          <div class="lift-name">${esc(lift.name)}</div>
+        </div>
+        <div class="badge-row">${badgeHtml(lift)}</div>
+      </div>
+      <div class="lift-body">
+        ${lift.coach_flag ? `<div class="coach-flag"><div class="coach-flag-lbl">Coach Flag</div><div class="coach-flag-txt">${esc(lift.coach_flag)}</div></div>` : ''}
+        ${lift.protocol ? `<div class="protocol-pill">${esc(lift.protocol)}</div>` : ''}
+        ${warmupHtml(lift.warm_up)}
+        ${workingSetsHtml(lift.working_sets, null, null, lift.velocity_floor)}
+        ${lift.execution_keys ? `<div class="sub"><div class="sub-lbl">Execution Keys</div>${listHtml(lift.execution_keys, 'key-list')}</div>` : ''}
+      </div>
+    </div>`;
+}
+
+function accessoryLiftHtml(lift) {
+  return `
+    <div class="lift-wrap">
+      <div class="lift-hd">
+        <div class="lift-hd-left">
+          <div class="lift-order-label">Lift ${lift.order}</div>
+          <div class="lift-name">${esc(lift.name)}</div>
+        </div>
+        <div class="badge-row"><span class="badge b-accessory">Accessory</span></div>
+      </div>
+      <div class="lift-body">
+        <div class="acc-rx">${esc(lift.prescription)}</div>
+        ${lift.notes ? `<div class="acc-note">${esc(lift.notes)}</div>` : ''}
+        ${lift.execution_keys ? `<div class="sub"><div class="sub-lbl">Execution Keys</div>${listHtml(lift.execution_keys, 'key-list')}</div>` : ''}
+      </div>
+    </div>`;
+}
+
+function liftHtml(lift) {
+  if (lift.type === 'compound') return compoundLiftHtml(lift);
+  if (lift.type === 'volume')   return volumeLiftHtml(lift);
+  return accessoryLiftHtml(lift);
+}
+
+function sessionHtml(s) {
+  return `
+    <div class="session-block">
+      <div class="session-hd">
+        <div class="session-num">Session ${s.number}</div>
+        <div class="session-title">${esc(s.day)}, ${esc(s.date)} &mdash; ${esc(s.type)}</div>
+        <div class="session-meta-row">
+          <span class="tag tag-default">Order: ${esc(s.order_note)}</span>
+        </div>
+      </div>
+      ${s.lifts.map(liftHtml).join('')}
+    </div>`;
+}
+
+function e1rmGridHtml(e1rms) {
+  return e1rms.map(e => `
+    <div class="e1rm-card">
+      <div class="e1rm-name">${esc(e.name)}</div>
+      <div class="e1rm-val">${e.val}<span class="e1rm-unit"> lb</span></div>
+    </div>`).join('');
+}
+
+function renderPage() {
+  const m = WEEK.meta;
+  document.getElementById('root').innerHTML = `
+    <div class="container">
+      <div class="week-header">
+        <div class="week-eyebrow">Week ${m.week} &middot; ${esc(m.block)} &middot; ${esc(m.athlete)}</div>
+        <div class="week-title">${esc(m.dates)}</div>
+        <div class="week-tags">
+          <span class="tag tag-theme">${esc(m.theme)}</span>
+          <span class="tag tag-teal">VBT &mdash; Vitruve</span>
+          <span class="tag tag-default">Generated ${esc(m.generated)}</span>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-label">Current e1RM Snapshot</div>
+        <div class="e1rm-grid">${e1rmGridHtml(WEEK.e1rms)}</div>
+        <div class="e1rm-note">${esc(m.e1rm_note)}</div>
+      </div>
+
+      ${WEEK.sessions.map(sessionHtml).join('')}
+
+      <div class="footer">
+        Generated ${esc(m.generated)} &middot; Velocity source: ${esc(m.velocity_source)} &middot; Schema ${esc(WEEK.schema_version)}
+      </div>
+    </div>`;
+}
+
+renderPage();
+</script>
+</body>
+</html>
