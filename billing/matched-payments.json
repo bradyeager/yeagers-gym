@@ -690,5 +690,21 @@
       "date": "2026-06-01"
     },
     "backfilled": true
+  },
+  {
+    "gmail_id": "manual-kerry-sg-0602",
+    "matched_at": "2026-06-10T02:30:00Z",
+    "matched_to": {
+      "date": "2026-06-02",
+      "client": "Kerry Kreczmer",
+      "status": "PAID_VENMO"
+    },
+    "payment": {
+      "sender": "Kerry Kreczmer",
+      "amount": 50,
+      "note": "Senior games training",
+      "date": "2026-06-02"
+    },
+    "corrected_by": "Brad walkthrough 6/9 \u2014 Kerry attended Tue team instead of her Mon slot"
   }
 ]
