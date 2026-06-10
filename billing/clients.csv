@@ -23,7 +23,7 @@ vagaro_name,venmo_handle,venmo_display_name,default_price,valid_prices,pays_cash
 #
 # Smoothie add-on ($5): payment = (any valid price) + $5 is auto-accepted.
 Lacey James,,Laci James,70,,false,false,,1:1 60min
-Danny Duty,,Adriana Duty,100,70/100,false,false,,Couple 2:1; $100 together / $70 if one spouse alone. Wife Adriana pays. $335 was 2 sessions + peptides
+Danny Duty,,Adriana Duty,100,70/100/110,false,false,,Couple 2:1; $100 together / $70 if one spouse alone. Both buying smoothies (+$5 each) → $110 also valid. Wife Adriana pays. $335 was 2 sessions + peptides
 Melissa Rios,,Melissa Rios,100,70/100,false,false,,Couple 2:1 w/ husband Julio; $100 together / $70 if Melissa alone (or cancels but still pays solo rate)
 Kerry Kreczmer,,Kerry Kreczmer,50,,false,false,,2:1 60min (Mon w/ Mathieu)
 Peggy Happ,,Peggy Barlow Happ,50,40/45/50/70,false,false,,Fri 2:1 w/ Jeanette ($50) or solo ($70); Tue Senior Games 3:1 ($45) / team ($40)
