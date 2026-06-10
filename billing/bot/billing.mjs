@@ -10,6 +10,7 @@ import { google } from "googleapis";
 import {
   PALETTE, FONTS, GITHUB_OWNER, GITHUB_REPO, DEFAULT_BRANCH,
   requireEnv, resolveRepoRoot, loadClients, loadCashEntries, loadCancellations,
+  loadMatchedLedger, saveMatchedLedger,
   loadSchedule, findScheduleEntriesForSlot, isInactiveSlot,
   fuzzyName, fmtDate, fmtDateTime, fmtDateIso, slugify, parseNoteDate, withRetry,
   venmoRequestLink, githubNewFileUrl, sendBrevoEmail,
@@ -188,7 +189,7 @@ function parseVenmoEmail(msg) {
   // 5/19", "Training w/Jeanette 5/8/26"). Extract it to pin late payments to
   // the right session.
   const noteDate = parseNoteDate(note, date.getUTCFullYear());
-  return { sender_display_name, sender_handle, amount, note, noteDate, date, subject };
+  return { gmail_id: msg.id, sender_display_name, sender_handle, amount, note, noteDate, date, subject };
 }
 
 function extractBody(payload, mimeType = null) {
@@ -320,10 +321,16 @@ export function expandSlots(slots, schedule) {
   return out;
 }
 
-export function reconcile(appointments, payments, clients, cashLog, cancellations = []) {
+export function reconcile(appointments, payments, clients, cashLog, cancellations = [], priorMatches = []) {
   const byVagaroName = new Map(clients.map((c) => [c.vagaro_name.toLowerCase(), c]));
   const usedPayments = new Set();
   const results = [];
+  // Payments locked by prior weekly runs — can never be matched again. This
+  // is the only durable defense against the Jacob $70 "5/27" → Mon 6/1
+  // double-count bug. Gmail message-id is the unique key.
+  const priorMatchIds = new Set(priorMatches.map((m) => m.gmail_id).filter(Boolean));
+  // New matches made by THIS run — main() will append to the ledger.
+  const newMatches = [];
 
   // ── Note-keyword routing (Mathieu/Rachel disambiguation) ──
   // For each payment, figure out which roster client (if any) explicitly
@@ -399,6 +406,9 @@ export function reconcile(appointments, payments, clients, cashLog, cancellation
     const candidates = payments
       .map((p, idx) => ({ p, idx }))
       .filter(({ idx }) => !usedPayments.has(idx))
+      // Ledger filter: if a prior weekly run already claimed this exact
+      // Gmail message, it's locked — can never be matched again.
+      .filter(({ p }) => !p.gmail_id || !priorMatchIds.has(p.gmail_id))
       // Note-keyword claim: if the payment's memo explicitly names someone
       // else (e.g. "Rachael" routes to Rachel), don't let other clients
       // grab it. A payment NOT claimed by anyone falls through to the
@@ -407,6 +417,12 @@ export function reconcile(appointments, payments, clients, cashLog, cancellation
         const claimed = noteClaimedBy.get(idx);
         return !claimed || claimed.vagaro_name === roster.vagaro_name;
       })
+      // Note-date strictness: a memo with a parseable date (e.g. "5/27",
+      // "5.25", "May 25, 2026", "Workout 5/29") only matches sessions on
+      // THAT date. Kills the cross-week false positives where a payment
+      // for last week's session got grabbed for this week's same-slot
+      // session. Payments with no date in the note fall through normally.
+      .filter(({ p }) => !p.noteDate || sameDay(p.noteDate, appt.date))
       .filter(({ p }) => {
         const nameMatch = roster.venmo_handle && p.sender_handle === roster.venmo_handle.toLowerCase();
         const namesToCheck = roster.venmo_display_names?.length
@@ -436,14 +452,36 @@ export function reconcile(appointments, payments, clients, cashLog, cancellation
       results.push({ appt, roster, status: "UNPAID", expectedPrice });
     } else {
       const best = candidates[0];
+      // Record the match in the ledger so a future run can never re-grab
+      // this Gmail message for a different session.
+      const recordMatch = (status) => {
+        if (!best.p.gmail_id) return;
+        newMatches.push({
+          gmail_id: best.p.gmail_id,
+          matched_at: new Date().toISOString(),
+          matched_to: {
+            date: fmtDateIso(appt.date),
+            client: roster.vagaro_name,
+            status,
+          },
+          payment: {
+            sender: best.p.sender_display_name,
+            amount: best.p.amount,
+            note: best.p.note,
+            date: fmtDateIso(best.p.date),
+          },
+        });
+      };
       if (best.amountScore >= 0.8) {
         usedPayments.add(best.idx);
+        recordMatch("PAID_VENMO");
         const checkoutAmount = matchedSessionPrice(best.p.amount, acceptablePrices);
         results.push({ appt, roster, status: "PAID_VENMO", payment: best.p, expectedPrice, checkoutAmount });
       } else {
         // Mark as used too — a NEEDS_REVIEW payment is still "spoken for" by
         // this session. Without this it doubles in the unmatched list.
         usedPayments.add(best.idx);
+        recordMatch("NEEDS_REVIEW");
         results.push({
           appt, roster, status: "NEEDS_REVIEW",
           payment: best.p, expectedPrice,
@@ -467,6 +505,7 @@ export function reconcile(appointments, payments, clients, cashLog, cancellation
   const pairedSlots = new Set();
   payments.forEach((p, idx) => {
     if (usedPayments.has(idx)) return;
+    if (p.gmail_id && priorMatchIds.has(p.gmail_id)) return; // ledger lock
     const client = resolveClient(p);
     if (!client) return;
     if (!p.noteDate) return; // require date evidence — no amount-only guessing
@@ -487,12 +526,20 @@ export function reconcile(appointments, payments, clients, cashLog, cancellation
     const { r, ri } = cand[0];
     pairedSlots.add(ri);
     usedPayments.add(idx);
+    if (p.gmail_id) {
+      newMatches.push({
+        gmail_id: p.gmail_id,
+        matched_at: new Date().toISOString(),
+        matched_to: { date: fmtDateIso(r.appt.date), client: client.vagaro_name, status: "PAID_VENMO", inferred: true },
+        payment: { sender: p.sender_display_name, amount: p.amount, note: p.note, date: fmtDateIso(p.date) },
+      });
+    }
     const exp = accept.find((a) => amountScore(p.amount, [a]) >= 0.8) ?? client.default_price;
     results[ri] = { appt: r.appt, roster: client, status: "PAID_VENMO", payment: p, expectedPrice: exp, checkoutAmount: exp, inferred: true };
   });
 
   const unmatchedPayments = payments.filter((_, idx) => !usedPayments.has(idx));
-  return { results, unmatchedPayments };
+  return { results, unmatchedPayments, newMatches };
 }
 
 // Which acceptable price did this payment actually satisfy? Strips the $5
@@ -1110,15 +1157,16 @@ async function main() {
   requireEnv("GOOGLE_REFRESH_TOKEN", GOOGLE_REFRESH_TOKEN);
   requireEnv("BREVO_API_KEY", BREVO_API_KEY);
   console.log(`Window: ${WINDOW_START.toISOString()} → ${NOW.toISOString()}`);
-  const [clients, schedule, cashLog, cancellations, rawSlots, payments] = await Promise.all([
+  const [clients, schedule, cashLog, cancellations, priorMatches, rawSlots, payments] = await Promise.all([
     loadClients(CLIENTS_CSV),
     loadSchedule(SCHEDULE_CSV),
     loadCashEntries(REPO_ROOT),
     loadCancellations(REPO_ROOT),
+    loadMatchedLedger(REPO_ROOT),
     fetchVagaroAppointments(),
     fetchVenmoPayments(),
   ]);
-  console.log(`Loaded ${clients.length} clients, ${schedule.length} schedule rows, ${cashLog.length} cash entries, ${cancellations.length} cancellations`);
+  console.log(`Loaded ${clients.length} clients, ${schedule.length} schedule rows, ${cashLog.length} cash entries, ${cancellations.length} cancellations, ${priorMatches.length} prior matches`);
   console.log(`Found ${rawSlots.length} slots, ${payments.length} Venmo payments`);
 
   const appointments = expandSlots(rawSlots, schedule);
@@ -1126,7 +1174,11 @@ async function main() {
   const unidentified = appointments.length - identified;
   console.log(`Schedule lookup: ${identified} identified + ${unidentified} unidentified slots`);
 
-  const { results, unmatchedPayments } = reconcile(appointments, payments, clients, cashLog, cancellations);
+  const { results, unmatchedPayments, newMatches } = reconcile(appointments, payments, clients, cashLog, cancellations, priorMatches);
+  console.log(`Reconciled ${newMatches.length} new payment match${newMatches.length === 1 ? "" : "es"} for the ledger.`);
+  if (DRY_RUN !== "true") {
+    await saveMatchedLedger(REPO_ROOT, [...priorMatches, ...newMatches]);
+  }
 
   // The Gmail window is wider than the appointment window to catch
   // late-arriving emails near the boundary. Payments older than the

@@ -249,6 +249,37 @@ function localParts(date, tz) {
   return { dayNum, hhmm: `${hh}:${parts.minute}` };
 }
 
+// ---- Matched-payment ledger (cross-run memory) ----
+//
+// A Venmo payment is sticky to the FIRST session it gets matched to. Once
+// reconcile() commits a match, the Gmail message-id of that payment lands
+// in billing/matched-payments.json so future runs can't re-grab the same
+// dollar across week boundaries (the Jacob "5/27" → Mon 6/1 double-count bug).
+//
+// Schema is a flat array of records — easy to grep, easy to manually edit
+// if Brad ever needs to un-claim a payment.
+
+export async function loadMatchedLedger(repoRoot) {
+  const p = path.join(repoRoot, "billing", "matched-payments.json");
+  try {
+    const raw = await fs.readFile(p, "utf8");
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch (e) {
+    if (e.code === "ENOENT") return [];
+    throw e;
+  }
+}
+
+export async function saveMatchedLedger(repoRoot, ledger) {
+  const p = path.join(repoRoot, "billing", "matched-payments.json");
+  // Stable sort + 2-space indent so successive runs produce minimal diffs.
+  const sorted = [...ledger].sort((a, b) =>
+    (a.gmail_id || "").localeCompare(b.gmail_id || "")
+  );
+  await fs.writeFile(p, JSON.stringify(sorted, null, 2) + "\n", "utf8");
+}
+
 // ---- Cancellations (sessions Brad didn't actually train — vacation, sick) ----
 //
 // Pattern mirrors cash-entries/: a single file per cancellation in

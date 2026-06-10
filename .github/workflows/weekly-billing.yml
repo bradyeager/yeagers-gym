@@ -63,15 +63,15 @@ jobs:
           EMAIL_STYLE: ${{ github.event.inputs.email_style || 'default' }}
         run: npm start
 
-      - name: Commit weekly log
+      - name: Commit weekly log + matched-payments ledger
         if: ${{ github.event.inputs.dry_run != 'true' }}
         run: |
           git config user.name "yeagers-gym-bot"
           git config user.email "bot@yeagersgym.com"
-          git add billing/logs/
+          git add billing/logs/ billing/matched-payments.json
           if ! git diff --cached --quiet; then
-            git commit -m "Weekly billing log $(date -u +%Y-%m-%d)"
+            git commit -m "Weekly billing log + ledger $(date -u +%Y-%m-%d)"
             git push
           else
-            echo "No log changes to commit"
+            echo "No log/ledger changes to commit"
           fi
