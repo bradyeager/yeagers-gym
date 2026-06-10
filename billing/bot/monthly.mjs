@@ -15,7 +15,7 @@ import {
 
 const {
   BREVO_API_KEY,
-  RECIPIENT_EMAIL = "brad@yeagersgym.com",
+  RECIPIENT_EMAIL = "brad@bradyeager.com",
   SENDER_EMAIL = "brad@yeagersgym.com",
   SENDER_NAME = "Yeager's Gym Billing Bot",
   DRY_RUN = "false",
@@ -44,8 +44,20 @@ export function totalsFromLogs(logs) {
   let paid_venmo_count = 0;
   let paid_cash_count = 0;
 
+  // DEDUP: the weekly bot uses a 14-day window, so each session appears in
+  // ~2 weekly logs (more if extra runs were committed). Collapse to one entry
+  // per (session date+time, client). `logs` arrives oldest→newest, so the last
+  // write wins — a session that was UNPAID one week and PAID the next counts
+  // once, as PAID. Without this, revenue would be multiplied.
+  const unique = new Map();
   for (const { parsed } of logs) {
     for (const a of parsed.appointments) {
+      unique.set(`${a.date}||${a.name}`, a);
+    }
+  }
+
+  for (const a of unique.values()) {
+    {
       sessions += 1;
       switch (a.status) {
         case "PAID_VENMO":
@@ -157,7 +169,7 @@ export function buildEmail({ monthLabel, totals, weekCount, start, end }) {
   body += `</div>`;
 
   const footer = `Window: ${fmtDateIso(start)} → ${fmtDateIso(end)} · ${weekCount} weekly log${weekCount === 1 ? "" : "s"} aggregated · Data source: billing/logs/`;
-  const html = emailShell({ title: `${monthLabel} — Monthly Summary`, bodyHtml: body, footerNote: footer });
+  const html = emailShell({ title: monthLabel, subtitle: "Monthly Revenue Report", bodyHtml: body, footerNote: footer });
   return { subject, html };
 }
 

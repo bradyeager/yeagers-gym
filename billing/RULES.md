@@ -1,0 +1,218 @@
+# Yeager's Gym — Billing Rules
+
+The authoritative reference for client-specific pricing, payment methods, and special cases. When the bot's behavior surprises you, check here first.
+
+This file is read by humans (you + future Claude sessions). The bot reads `clients.csv` and `schedule.csv` — keep those in sync with whatever's in this doc.
+
+---
+
+## Standard pricing
+
+| Session type | Price |
+|---|---|
+| 1:1 Personal Training (60 min) | $70 |
+| 1:1 Personal Training (90 min) | $100 |
+| 2:1 Semi-Private (60 min) | $50/attendee |
+| 3:1 Semi-Private (60 min) | $45/attendee |
+| Protein smoothie add-on | +$5 (auto-accepted by bot) |
+
+Exceptions and per-client overrides below.
+
+---
+
+## Variable pricing — `valid_prices`
+
+When a client's price legitimately varies (couple together vs one spouse solo,
+group vs alone), list every acceptable amount in the `valid_prices` column of
+`clients.csv`, slash-separated: e.g. `70/100`. The bot treats a payment as
+**paid in full** if it equals ANY of those amounts (or that amount + $5 for a
+smoothie). This is how we stop flagging legit variants as "needs review."
+
+Examples in the roster:
+- **Danny / Melissa** `70/100` — couple together $100, one spouse alone $70.
+- **Peggy** `40/45/50/70` — Fri 2:1 $50, solo $70, Senior Games $45, Thu team $40.
+- **Celestin / Rachel** `50/70` — 2:1 $50, solo $70.
+- **Tonnie** `40/45/70` — Thu team $40, Senior Games $45, Thu 1:1 $70.
+
+A payment that matches none of a client's valid prices → NEEDS_REVIEW (eyeball).
+
+## Note-date matching
+
+Clients often write the session date in the Venmo memo ("5/19", "Missed
+session 5/19"). The bot parses that date and uses it to pin a late payment to
+the correct past session when a client has more than one in the window.
+
+## Payment methods
+
+| Method | Bot behavior |
+|---|---|
+| **Venmo** (default) | Reads Venmo emails (`from:venmo.com`), matches sender + amount, marks PAID_VENMO. |
+| **Cash / Check / Zelle** | `pays_cash=true`. Shown as a calm **"Expected via check/Zelle/cash"** FYI list — **no action needed**, no buttons. Only matters if someone who usually pays this way didn't. Currently: Lisa Knievel (Zelle→Chase business), Stacy Tesler (Zelle→personal), Jeanette Davey (check). |
+| **Prepaid** | `prepaid=true`. Marks PAID_PREPAID, never bills. Currently: Robert Brower (all of 2026). |
+
+## Email sections (what you act on)
+
+1. **⚠ Lagging Indicators** — open items carried over from a prior week. Clear first.
+2. **Unpaid** (this week) — pink "Request on Venmo" button.
+3. **Needs review** — amount didn't match any valid price; eyeball, or tap "Request balance" if short.
+4. **Expected via check/Zelle/cash** — FYI only, no action.
+5. **Paid** — collapsed confirmation list.
+6. **Unmatched Venmo payments** — payments with memos the bot couldn't auto-assign; hand-match.
+
+> The only button that opens GitHub is "Log as cash" on an unpaid client. Sign
+> into github.com once (check "keep me signed in") and it works thereafter.
+> Everything else opens Venmo.
+
+## Tuesday 8am TEAM (resolved 5/30)
+
+The Tue 8am group grew to **5 people at $40/person** (was a 3-person group at
+$45). Seats:
+- **Peggy** $40 (own Venmo) · **Tonnie** $40 (own Venmo)
+- **Robert Brower** — prepaid 2026, no payment expected
+- **Annie + David Deioma** — ONE **$80** Mudroom payment covers both spouses
+  (2 seats × $40). David owns Mudroom Backpacks; Venmo shows "Mudroom Backpacks".
+  Modeled as a single Annie Tue-8am entry expecting $80 (valid_prices 80/100).
+
+There is **no Thursday team** — earlier "Thursday" was a mix-up; it's Tuesday.
+Tonnie/Peggy keep both 40 and 45 in valid_prices so historical $45 payments
+(the 3-person era) still reconcile.
+
+---
+
+## Per-client rules
+
+### Danny + Adriana Duty (couple, Mon 4pm 2:1)
+- Both train: **$100 total** (one $100 payment expected)
+- Only one shows: **$70** (NEEDS_REVIEW; tap Accept)
+- **Adriana** pays via Venmo (display name "Adriana Duty")
+- $335 one-time payment in May 2026 = 2 sessions + peptides
+- $5-over (e.g., $75) = smoothie
+
+### Melissa Rios + Julio (couple, Mon 5pm 2:1)
+- Both train: **$100**
+- Melissa alone: **$70** (NEEDS_REVIEW; tap Accept)
+- Melissa pays via Venmo (display name "Melissa Rios")
+- Husband Julio doesn't have his own Vagaro booking
+
+### Annie + David Deioma (couple, Wed 10am 2:1)
+- Both train: **$100**
+- David pays via Venmo from business account: **"Mudroom Backpacks"**
+- David doesn't have his own Vagaro booking
+
+### Katelin Lowther + Anna Cessna (Mon 9am, sometimes 3:1 with Dina)
+- 2:1 (just Katelin + Anna): **$50 each**
+- 3:1 (Dina joins): **$45 each**
+- Katelin's Venmo display: **"katie lowther"** (or sometimes husband "James Lowther")
+- Anna's Venmo: "Anna Cessna"
+- Dina's Venmo: "Dina Bates"
+- *Schedule.csv assumes 3:1 ($45). If Dina absent and they pay $50, smoothie tolerance auto-accepts.*
+
+### Dina Bates
+- Mon 9am 3:1: **$45**
+- 2:1 (without 3rd): **$50**
+
+### Danika Elenes
+- **Flat $65** regardless of session length or type
+
+### Rachel Bertholino (Wed)
+- **Husband Mathieu pays for her.** Venmo from "Celestin Mathieu" (his name).
+- Rachel doesn't pay; mappings handle attribution.
+
+### Celestin Mathieu (Thu)
+- Thu 11am with someone: **$50**
+- Thu alone: **$70** (NEEDS_REVIEW)
+- ALSO pays for wife Rachel's Wed sessions.
+
+### Tonnie Dahl (changing schedule)
+- **Tue 8am: $45** — Senior Games group (3:1 with Peggy + Robert; see below)
+- **Thu 9am: $70** — regular 1:1, unchanged
+- $5-over = smoothie
+
+### San Diego Senior Games (Tue 8am, 3:1 group)
+- Started 5/19/2026
+- Attendees: **Peggy Happ**, **Tonnie Dahl**, **Robert Brower**
+- **$45 each per session**
+- Robert's seat is covered by his 2026 prepay (no payment expected from him)
+- Vagaro may create ONE iCal booking for the whole group — the bot detects the "3:1" ratio in the SUMMARY and bills all 3 attendees from `schedule.csv`. If only one Vagaro booking exists, no further action needed.
+
+### Jeanette Davey
+- **Pays by check** every time
+- **Tue 8am 1:1: $70**
+- **Fri 8am 2:1 with Peggy: $50**
+
+### Peggy Happ
+- Mon 8am 2:1: **$50**
+- Fri 8am 2:1 with Jeanette: **$50**
+- Venmo display: "Peggy Barlow Happ"
+
+### Michelle DeLorenzo
+- **1 of 2 weekly sessions is FREE** through ~Aug 2026 (10-week promo from May 2026)
+- Expect 1 PAID + 1 UNPAID per week → tap "Accept as paid" on the free one
+- Venmo display: "Michelle DeLorenzo" (Vagaro shows as "michelle Delorenza")
+
+### Lacey James
+- Fri 7am (or 7:30 — verify) 1:1: **$70**
+- Venmo display: **"Laci James"**
+
+### Lisa Knievel
+- Mon 7am 1:1 + Fri 9am 1:1: **$70 each**
+- **Pays via Zelle → Chase Business checking**
+- Bot expects you to log via cash-pending button
+
+### Stacy Tesler
+- **Thu morning** (time TBD): **$70**
+- **Pays via Zelle → Personal checking**
+
+### Robert Brower
+- Tue 9am + Thu 10am: $70 each
+- **Prepaid all of 2026** (no per-session billing expected)
+- Any Venmo from him = $5 smoothie payments (lands in Unmatched, harmless)
+
+### Jacob Bain
+- Mon 6am 1:1: $70
+
+### Kerry Kreczmer
+- Mon 2pm 2:1: $50
+
+---
+
+## Hope Daskalos
+
+- **NOT in roster** — old drop-in client from out of town
+- Any Venmo from her lands in Unmatched payments (correct behavior)
+- If she becomes a regular, add her to clients.csv + schedule.csv
+
+---
+
+## "INACTIVE" placeholder bookings
+
+Several Vagaro recurring bookings are for clients who aren't currently training (Maria Alvarez, Jill Naharms, Trevor Ramsay, April Mahanal Maschka, Lisa Perez, Saidah Coston, Kate Rubalcava). They show in your iCal feed but should NOT be billed.
+
+Marked in `schedule.csv` as `client_name=INACTIVE`. Bot skips them entirely.
+
+When one of these returns:
+1. Replace the `INACTIVE` marker in schedule.csv with their real name
+2. Add them to clients.csv with default_price, payment method, etc.
+
+---
+
+## Bot behaviors to remember
+
+- **Smoothie tolerance ($5)**: payment exactly $5 over the expected session price counts as PAID. No NEEDS_REVIEW.
+- **Couple sessions**: bot expects the "together" price by default. Solo attendance triggers NEEDS_REVIEW; tap Accept.
+- **Sender display name fuzzy match** handles nicknames ("Laci" → "Lacey", "katie" → "Katelin") and business names ("Mudroom" → "Mudroom Backpacks"). Last name must match for nicknames.
+- **Multiple display names per client**: `venmo_display_name` in clients.csv accepts comma-separated values (e.g., Katelin's row has `"katie lowther,James Lowther"` since her husband sometimes pays).
+- **Unmatched payments** are real, just not auto-attributable. Brad reviews weekly:
+  - Drop-in clients (Hope)
+  - Backpaid for sessions outside the iCal window
+  - First-week sync gaps where session wasn't backfilled yet
+- **Unidentified slots** = iCal events whose day+time isn't in schedule.csv AND isn't marked INACTIVE. Either add to schedule or mark INACTIVE.
+
+---
+
+## When pricing rules change
+
+1. Update **this file** first (so the rule is documented).
+2. Update **schedule.csv** with the new `price_override` for the affected slot(s).
+3. Update **clients.csv** if the change is permanent (`default_price`) vs slot-specific (`price_override` only).
+4. Commit + push. Next Friday picks up automatically.

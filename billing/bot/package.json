@@ -12,7 +12,7 @@
     "monthly": "node monthly.mjs"
   },
   "dependencies": {
-    "googleapis": "^144.0.0",
-    "node-ical": "^0.20.1"
+    "googleapis": "144.0.0",
+    "node-ical": "0.20.1"
   }
 }

@@ -1687,7 +1687,7 @@ input, textarea, select { font-family: inherit; outline: none; border: none; bac
           <option>Strict Press</option>
           <option>Cable Crunch</option>
           <option>Hanging Knee Raise</option>
-          <option>Hollow Rock</option>
+          <option>Hollow Hold</option>
           <option>Weighted Plank</option>
         </select>
       </div>
@@ -1976,15 +1976,15 @@ const CLIENT = {
   // Monday is locked; second day TBD — adjust to actual day once scheduled.
   trainingDays: [1, -1],
   primaryLifts: ["Back Squat", "Hip Thrust", "Chin-Up", "Deadlift", "Bench Press", "Strict Press"],
-  coreLifts: ["Cable Crunch", "Hanging Knee Raise", "Weighted Plank", "Hollow Rock"],
-  allLoggableLifts: ["Back Squat", "Hip Thrust", "Chin-Up", "Deadlift", "Bench Press", "Strict Press", "Cable Crunch", "Hanging Knee Raise", "Weighted Plank", "Hollow Rock"],
-  liftUnits: { "Back Squat": "weight_reps", "Hip Thrust": "weight_reps", "Chin-Up": "weight_reps", "Deadlift": "weight_reps", "Bench Press": "weight_reps", "Strict Press": "weight_reps", "Cable Crunch": "weight_reps", "Hanging Knee Raise": "reps_only", "Weighted Plank": "weight_seconds", "Hollow Rock": "reps_only" },
+  coreLifts: ["Cable Crunch", "Hanging Knee Raise", "Weighted Plank", "Hollow Hold"],
+  allLoggableLifts: ["Back Squat", "Hip Thrust", "Chin-Up", "Deadlift", "Bench Press", "Strict Press", "Cable Crunch", "Hanging Knee Raise", "Weighted Plank", "Hollow Hold"],
+  liftUnits: { "Back Squat": "weight_reps", "Hip Thrust": "weight_reps", "Chin-Up": "weight_reps", "Deadlift": "weight_reps", "Bench Press": "weight_reps", "Strict Press": "weight_reps", "Cable Crunch": "weight_reps", "Hanging Knee Raise": "reps_only", "Weighted Plank": "weight_seconds", "Hollow Hold": "seconds_only" },
   sessions: [
     { id: "session_1", name: "Session 1 — Glutes / Upper / Core" },
     { id: "session_2", name: "Session 2 — Glutes / Upper / Core" }
   ],
-  baselines: { "Hip Thrust": 225, "Back Squat": 125, "Chin-Up": 110, "Deadlift": 125, "Bench Press": 75, "Strict Press": 65, "Cable Crunch": 40, "Hanging Knee Raise": 8, "Weighted Plank": 30, "Hollow Rock": 30 },
-  goals: { "Hip Thrust": 325, "Back Squat": 150, "Deadlift": 175, "Chin-Up": "bodyweight", "Bench Press": 85, "Strict Press": 75, "Cable Crunch": 70, "Hanging Knee Raise": 15, "Weighted Plank": 60, "Hollow Rock": 60 },
+  baselines: { "Hip Thrust": 225, "Back Squat": 125, "Chin-Up": 110, "Deadlift": 125, "Bench Press": 75, "Strict Press": 65, "Cable Crunch": 40, "Hanging Knee Raise": 8, "Weighted Plank": 30, "Hollow Hold": 30 },
+  goals: { "Hip Thrust": 325, "Back Squat": 150, "Deadlift": 175, "Chin-Up": "bodyweight", "Bench Press": 85, "Strict Press": 75, "Cable Crunch": 70, "Hanging Knee Raise": 15, "Weighted Plank": 60, "Hollow Hold": 60 },
   startingBodyweight: 125,
 
   // Daily Homework Routines — 7-day rotation, bodyweight + glute band only
@@ -2002,7 +2002,7 @@ const CLIENT = {
         { move: "Butterfly Crunches", reps: "2 × 60", note: "Soles together, knees flat" }
       ]},
       2: { name: "Tuesday — The Hollow Series", duration: "~6 min", exercises: [
-        { move: "Hollow Rock", reps: "2 × 60 reps", note: "Tight body, no slack" },
+        { move: "Hollow Hold", reps: "2 × 30 sec", note: "Tight body, no slack" },
         { move: "Flutter Kicks", reps: "2 × 80 total", note: "Small fast kicks, lower back down" },
         { move: "V-Ups", reps: "2 × 30", note: "Reach feet to hands at the top" }
       ]},
@@ -2106,7 +2106,7 @@ const CLIENT = {
   coreTests: [
     { name: "Cable Crunch", unit: "lb", week0: 40, week10Goal: 70, lowerIsBetter: false },
     { name: "Hanging Knee Raise", unit: "reps", week0: 8, week10Goal: 15, lowerIsBetter: false },
-    { name: "Hollow Rock", unit: "reps", week0: 30, week10Goal: 60, lowerIsBetter: false },
+    { name: "Hollow Hold", unit: "seconds", week0: 30, week10Goal: 60, lowerIsBetter: false },
     { name: "Weighted Plank", unit: "seconds", week0: 30, week10Goal: 60, lowerIsBetter: false }
   ],
   glutesGoalInches: 0.5,
@@ -2333,13 +2333,13 @@ function renderMissionCard() {
   const htAddNeeded = CLIENT.goals['Hip Thrust'] - CLIENT.baselines['Hip Thrust'];
   rows.push({ label: 'Hip Thrust', current: htDisplay, target: `Goal: add ${htAddNeeded} lb` });
 
-  // Hollow Rock — "Test Week 1" until W0 baseline; then "2x W1 (X reps)"
-  const hhTests = STATE.fitnessTests.filter(t => t.test_name === 'Hollow Rock').sort((a,b) => a.date.localeCompare(b.date));
+  // Hollow Hold — "Test Week 1" until W0 baseline; then "2x W1 (X sec)"
+  const hhTests = STATE.fitnessTests.filter(t => t.test_name === 'Hollow Hold').sort((a,b) => a.date.localeCompare(b.date));
   const hhBaseline = hhTests.find(t => t.week_number === 0) || hhTests[0];
   const hhLatest = hhTests[hhTests.length - 1];
-  const hhCurrent = hhLatest ? `${hhLatest.result} reps` : 'Test Week 1';
-  const hhTarget = hhBaseline ? `Goal: 2× W1 (${hhBaseline.result * 2} reps)` : 'Goal: double W1 result';
-  rows.push({ label: 'Hollow Rock', current: hhCurrent, target: hhTarget });
+  const hhCurrent = hhLatest ? `${hhLatest.result} sec` : 'Test Week 1';
+  const hhTarget = hhBaseline ? `Goal: 2× W1 (${hhBaseline.result * 2} sec)` : 'Goal: double W1 result';
+  rows.push({ label: 'Hollow Hold', current: hhCurrent, target: hhTarget });
 
   // Weighted Plank — same pattern
   const wpTests = STATE.fitnessTests.filter(t => t.test_name === 'Weighted Plank').sort((a,b) => a.date.localeCompare(b.date));
@@ -2693,7 +2693,7 @@ function openSessionModal(presetSessionType) {
     const prevSets = lastSets.filter(s => s.lift_name === lift);
     const unit = CLIENT.liftUnits[lift];
     const defaultPrimary = unit === 'reps_only' ? 0 : (CLIENT.baselines[lift] || 0);
-    const defaultSecondary = unit === 'reps_only' ? 10 : (unit === 'weight_seconds' ? 30 : 8);
+    const defaultSecondary = unit === 'reps_only' ? 10 : unit === 'seconds_only' ? 30 : (unit === 'weight_seconds' ? 30 : 8);
     const sets = prevSets.length
       ? prevSets.map(s => ({ weight: s.weight, reps: s.reps }))
       : [{ weight: defaultPrimary, reps: defaultSecondary }];
@@ -2769,6 +2769,13 @@ function setRowHTML(lift, num, weight, reps) {
       <button class="set-row-remove">×</button>
     </div>`;
   }
+  if (unit === 'seconds_only') {
+    return `<div class="set-row" data-lift="${lift}">
+      <div class="set-row-label">${num}</div>
+      ${numericInput(`set-r-${safeLift}-${num}`, reps || 30, 5, 0, 'sec')}
+      <button class="set-row-remove">×</button>
+    </div>`;
+  }
   const secondaryUnit = unit === 'weight_seconds' ? 'sec' : 'rep';
   const secondaryStep = 1;
   return `<div class="set-row" data-lift="${lift}">
@@ -2817,9 +2824,9 @@ function handleAddSet(e) {
   const lastSet = setsContainer.lastElementChild;
   const lastInputs = lastSet ? lastSet.querySelectorAll('.numeric-input') : null;
   let lastW, lastR;
-  if (unit === 'reps_only') {
+  if (unit === 'reps_only' || unit === 'seconds_only') {
     lastW = 0;
-    lastR = lastInputs ? lastInputs[0].value : 10;
+    lastR = lastInputs ? lastInputs[0].value : (unit === 'seconds_only' ? 30 : 10);
   } else {
     lastW = lastInputs ? lastInputs[0].value : (CLIENT.baselines[lift] || 0);
     lastR = lastInputs && lastInputs.length > 1 ? lastInputs[1].value : (unit === 'weight_seconds' ? 30 : 8);
@@ -2852,7 +2859,7 @@ async function saveSession(sessionType) {
       if (!toggle || !toggle.checked) return; // skip unchecked lifts
       block.querySelectorAll('.set-row').forEach((row, idx) => {
         const inputs = row.querySelectorAll('.numeric-input');
-        if (unit === 'reps_only') {
+        if (unit === 'reps_only' || unit === 'seconds_only') {
           const r = parseInt(inputs[0].value);
           if (r > 0) setsToInsert.push({ session_id: insertedSession.id, lift_name: lift, set_number: idx + 1, weight: null, reps: r });
         } else {
@@ -3345,6 +3352,7 @@ function openPhotoModal(week, angle, label) {
       await ensureStorageReady();
       try {
         const result = await uploadToStorage(file, week, angle);
+        if (!result) { saveBtn.disabled = false; saveBtn.textContent = 'Save'; return; }
         finalUrl = result.url; finalPath = result.path;
       } catch (err) {
         console.error('Upload failed:', err);
@@ -3387,7 +3395,7 @@ async function ensureStorageReady() {
     if (probe.status === 404) {
       const create = await fetch(`${SUPABASE_URL}/storage/v1/bucket`, {
         method: 'POST', headers: SB_HEADERS,
-        body: JSON.stringify({ id: 'michelle-progress', name: 'michelle-progress', public: true })
+        body: JSON.stringify({ id: 'michelle-progress', name: 'michelle-progress', public: true, fileSizeLimit: 10485760 })
       });
       if (create.ok || create.status === 409) {
         STATE.storageInitialized = true;
@@ -3397,6 +3405,13 @@ async function ensureStorageReady() {
   } catch (err) { /* silent */ }
 }
 async function uploadToStorage(file, week, angle) {
+  if (file.size > 10 * 1024 * 1024) {
+    toast(
+      'Photo too large (max 10MB). Share a compressed version from your Photos app and retry.',
+      'error'
+    );
+    return null;
+  }
   // Map MIME type → safe storage extension. iPhone HEIC uploads sometimes 400 on
   // Supabase Storage when the path ends in .heic; falling back to .jpg keeps the
   // raw bytes intact and the URL universally serveable.
@@ -3419,7 +3434,7 @@ async function initStorage() {
   try {
     const r = await fetch(`${SUPABASE_URL}/storage/v1/bucket`, {
       method: 'POST', headers: SB_HEADERS,
-      body: JSON.stringify({ id: 'michelle-progress', name: 'michelle-progress', public: true })
+      body: JSON.stringify({ id: 'michelle-progress', name: 'michelle-progress', public: true, fileSizeLimit: 10485760 })
     });
     if (r.ok || r.status === 409) {
       STATE.storageInitialized = true;
@@ -3470,8 +3485,8 @@ function getBodyScore() {
     const delta = latest.glutes_hips - w0.glutes_hips;
     scores.push(Math.min(100, Math.max(0, (delta / CLIENT.glutesGoalInches) * 100)));
   }
-  // Hollow rock improvement
-  const hhTests = STATE.fitnessTests.filter(t => t.test_name === 'Hollow Rock').sort((a,b) => a.date.localeCompare(b.date));
+  // Hollow Hold improvement
+  const hhTests = STATE.fitnessTests.filter(t => t.test_name === 'Hollow Hold').sort((a,b) => a.date.localeCompare(b.date));
   if (hhTests.length >= 2) {
     const w0Val = hhTests[0].result, latestVal = hhTests[hhTests.length-1].result;
     if (w0Val > 0) scores.push(Math.min(100, Math.max(0, ((latestVal - w0Val) / w0Val) * 100)));
@@ -3528,7 +3543,7 @@ function renderProgressRings() {
     { label: 'Back Squat', current: getMaxLiftWeight('Back Squat'), baseline: CLIENT.baselines['Back Squat'], goal: CLIENT.goals['Back Squat'] },
     { label: 'Deadlift', current: STATE.fitnessTests.find(t => t.test_name === 'Deadlift' && t.week_number === 12)?.result || CLIENT.baselines['Deadlift'], baseline: CLIENT.baselines['Deadlift'], goal: CLIENT.goals['Deadlift'] },
     { label: 'Glutes', current: ((latest, w0) => latest && w0 ? latest.glutes_hips - w0.glutes_hips : 0)([...STATE.bodyMeasurements].filter(m=>m.week_number>0).sort((a,b)=>b.week_number-a.week_number)[0], STATE.bodyMeasurements.find(m=>m.week_number===0)), baseline: 0, goal: CLIENT.glutesGoalInches },
-    { label: 'Hollow Rock', current: STATE.fitnessTests.filter(t=>t.test_name==='Hollow Rock').sort((a,b)=>b.date.localeCompare(a.date))[0]?.result || 0, baseline: STATE.fitnessTests.find(t=>t.test_name==='Hollow Rock' && t.week_number===0)?.result || 0, goal: null },
+    { label: 'Hollow Hold', current: STATE.fitnessTests.filter(t=>t.test_name==='Hollow Hold').sort((a,b)=>b.date.localeCompare(a.date))[0]?.result || 0, baseline: STATE.fitnessTests.find(t=>t.test_name==='Hollow Hold' && t.week_number===0)?.result || 0, goal: null },
     { label: 'Weighted Plank', current: STATE.fitnessTests.filter(t=>t.test_name==='Weighted Plank').sort((a,b)=>b.date.localeCompare(a.date))[0]?.result || 0, baseline: STATE.fitnessTests.find(t=>t.test_name==='Weighted Plank' && t.week_number===0)?.result || 0, goal: null }
   ];
   rings.forEach(r => {
@@ -3905,6 +3920,111 @@ function renderBiweeklyPill() {
    ═══════════════════════════════════════════════════════════════ */
 const PROGRESS_LOG_ENTRIES = [
   {
+    week: 4,
+    date: "JUN 7, 2026",
+    coach: "LISA",
+    leftWeek: 0,
+    leftLabel: "WEEK 0 · MAY 4",
+    rightWeek: 4,
+    rightLabel: "WEEK 4 · JUN 7",
+    open: true,
+    photos: [
+      {
+        num: "PHOTO 01 · FRONT RELAXED", subtitle: "Midsection Response", angle: "front_relaxed",
+        improved: [
+          "Waist is visibly narrower — the taper from ribcage to hip is more pronounced than baseline",
+          "Oblique lines now visible where the midsection was smooth at Week 0",
+          "Arms show real development — deltoid cap and bicep belly filling out",
+          "Overall composition reads leaner and more athletic head to toe"
+        ],
+        building: [
+          "Lower abs below the navel still smooth — no segmentation yet",
+          "Quad sweep from the front just beginning — outer thigh still flat",
+          "Inner thigh line still developing"
+        ],
+        response: [
+          "Cable crunch load climbing this block toward the 70 lb test",
+          "Adductor machine continues targeting the inner thigh",
+          "Quad development accelerates as squat loads climb Weeks 7–8"
+        ]
+      },
+      {
+        num: "PHOTO 02 · SIDE RELAXED", subtitle: "Glute Projection", angle: "side_relaxed",
+        improved: [
+          "Posterior projection meaningfully up — the hip-to-glute curve is more pronounced than baseline",
+          "The \"shelf\" at the posterior hip is starting to form",
+          "Anterior pelvic tilt from baseline is gone — hip stack is neutral",
+          "Posture correction alone has improved the entire side profile"
+        ],
+        building: [
+          "Lower belly still carries a rounded profile from the side",
+          "Hamstring depth from the side still developing",
+          "Upper glute-to-lower-back tie-in could use more fullness"
+        ],
+        response: [
+          "Hip thrust is driving the projection — loads advanced to 265 this block",
+          "Cable pull-through added Week 7 to build the glute-ham junction",
+          "Continue the heavy hip thrust ramp"
+        ]
+      },
+      {
+        num: "PHOTO 03 · REAR RELAXED", subtitle: "Glute Shape", angle: "back_relaxed",
+        improved: [
+          "Glute round and full from behind — clear volume increase from baseline",
+          "Glute width has improved",
+          "Waist well-defined from the rear — good oblique and erector shadow"
+        ],
+        building: [
+          "Upper glute cap (the lateral shelf at the top) is the primary gap",
+          "Hamstring tie-in underneath the glute is soft — needs density",
+          "Lateral sweep from gluteus medius could be more pronounced"
+        ],
+        response: [
+          "Hip abduction machine replaces banded abduction — heavier lateral loading for the cap",
+          "Lying leg curl added to build the hamstring belly and sharpen the tie-in",
+          "Frog pumps rotate in Week 7 as a volume finisher"
+        ]
+      },
+      {
+        num: "PHOTO 04 · REAR FLEXED", subtitle: "Back and Glute Development", angle: "back_flexed",
+        improved: [
+          "Traps, rear delts, rhomboids all show clear development — reads as a trained back now",
+          "Upper back density up significantly from baseline",
+          "Glute holds its shape under flexion — good muscle quality"
+        ],
+        building: [
+          "Rear delt fullness could be greater",
+          "Mid-back density still has room",
+          "Upper glute cap still the target even under flexion"
+        ],
+        response: [
+          "Lat pulldown continues, grip alternating by week for full lat recruitment",
+          "Chest-supported row (DB Week 6, cable Week 7) targets mid-back density",
+          "Back is ahead of schedule — keep building"
+        ]
+      },
+      {
+        num: "PHOTO 05 · FRONT FLEXED", subtitle: "Upper Body Shape", angle: "front_flexed",
+        improved: [
+          "Bicep belly has real size now — visible peak under flexion",
+          "Deltoid cap is developed and round",
+          "Oblique definition shows clearly when braced",
+          "Serratus starting to show under the chest"
+        ],
+        building: [
+          "Lower abs below the navel still smooth even when flexed",
+          "Lat width from the front still narrow — needs more flare",
+          "Lower core thickness developing slowly"
+        ],
+        response: [
+          "Continue lat pulldown and row work for the front lat flare",
+          "Hanging leg raise progressing toward the 15-rep test",
+          "Cable crunch loaded progression continues"
+        ]
+      }
+    ]
+  },
+  {
     week: 2,
     date: "MAY 22, 2026",
     coach: "LISA",
@@ -3912,7 +4032,7 @@ const PROGRESS_LOG_ENTRIES = [
     leftLabel: "WEEK 0 · MAY 4",
     rightWeek: 2,
     rightLabel: "WEEK 2 · MAY 22",
-    open: true,
+    open: false,
     photos: [
       {
         num: "PHOTO 01 · FRONT RELAXED", subtitle: "Midsection Response", angle: "front_relaxed",
@@ -4219,14 +4339,14 @@ function loadDemoData() {
     { id: 'demo-s4', date: dateAt(10), session_type: 'Session 2', bodyweight: 124.2, note: 'Hollow rocks getting smoother.' }
   ];
   const sets = [
-    // Session 1 (W1) — Hip Thrust + Back Squat + Hollow Rock
+    // Session 1 (W1) — Hip Thrust + Back Squat + Hollow Hold
     { id: 'demo-st1',  session_id: 'demo-s1', lift_name: 'Hip Thrust', set_number: 1, weight: 225, reps: 8, created_at: dateAt(0) },
     { id: 'demo-st2',  session_id: 'demo-s1', lift_name: 'Hip Thrust', set_number: 2, weight: 225, reps: 8, created_at: dateAt(0) },
     { id: 'demo-st3',  session_id: 'demo-s1', lift_name: 'Hip Thrust', set_number: 3, weight: 235, reps: 6, created_at: dateAt(0) },
     { id: 'demo-st4',  session_id: 'demo-s1', lift_name: 'Back Squat', set_number: 1, weight: 125, reps: 8, created_at: dateAt(0) },
     { id: 'demo-st5',  session_id: 'demo-s1', lift_name: 'Back Squat', set_number: 2, weight: 130, reps: 6, created_at: dateAt(0) },
-    { id: 'demo-st6',  session_id: 'demo-s1', lift_name: 'Hollow Rock', set_number: 1, weight: null, reps: 12, created_at: dateAt(0) },
-    { id: 'demo-st7',  session_id: 'demo-s1', lift_name: 'Hollow Rock', set_number: 2, weight: null, reps: 10, created_at: dateAt(0) },
+    { id: 'demo-st6',  session_id: 'demo-s1', lift_name: 'Hollow Hold', set_number: 1, weight: null, reps: 12, created_at: dateAt(0) },
+    { id: 'demo-st7',  session_id: 'demo-s1', lift_name: 'Hollow Hold', set_number: 2, weight: null, reps: 10, created_at: dateAt(0) },
     // Session 2 (W1) — Chin-Up + Deadlift + Strict Press + Weighted Plank
     { id: 'demo-st8',  session_id: 'demo-s2', lift_name: 'Chin-Up', set_number: 1, weight: 115, reps: 6, created_at: dateAt(3) },
     { id: 'demo-st9',  session_id: 'demo-s2', lift_name: 'Chin-Up', set_number: 2, weight: 120, reps: 5, created_at: dateAt(3) },
@@ -4234,13 +4354,13 @@ function loadDemoData() {
     { id: 'demo-st11', session_id: 'demo-s2', lift_name: 'Deadlift', set_number: 2, weight: 155, reps: 5, created_at: dateAt(3) },
     { id: 'demo-st12', session_id: 'demo-s2', lift_name: 'Strict Press', set_number: 1, weight: 65, reps: 6, created_at: dateAt(3) },
     { id: 'demo-st13', session_id: 'demo-s2', lift_name: 'Weighted Plank', set_number: 1, weight: 25, reps: 45, created_at: dateAt(3) },
-    // Session 3 (W2) — Hip Thrust + Back Squat + Hollow Rock (PR)
+    // Session 3 (W2) — Hip Thrust + Back Squat + Hollow Hold (PR)
     { id: 'demo-st14', session_id: 'demo-s3', lift_name: 'Hip Thrust', set_number: 1, weight: 245, reps: 8, created_at: dateAt(7) },
     { id: 'demo-st15', session_id: 'demo-s3', lift_name: 'Hip Thrust', set_number: 2, weight: 245, reps: 8, created_at: dateAt(7) },
     { id: 'demo-st16', session_id: 'demo-s3', lift_name: 'Hip Thrust', set_number: 3, weight: 255, reps: 5, created_at: dateAt(7) },
     { id: 'demo-st17', session_id: 'demo-s3', lift_name: 'Back Squat', set_number: 1, weight: 135, reps: 8, created_at: dateAt(7) },
     { id: 'demo-st18', session_id: 'demo-s3', lift_name: 'Back Squat', set_number: 2, weight: 140, reps: 6, created_at: dateAt(7) },
-    { id: 'demo-st19', session_id: 'demo-s3', lift_name: 'Hollow Rock', set_number: 1, weight: null, reps: 15, created_at: dateAt(7) },
+    { id: 'demo-st19', session_id: 'demo-s3', lift_name: 'Hollow Hold', set_number: 1, weight: null, reps: 15, created_at: dateAt(7) },
     // Session 4 (W2)
     { id: 'demo-st20', session_id: 'demo-s4', lift_name: 'Chin-Up', set_number: 1, weight: 125, reps: 5, created_at: dateAt(10) },
     { id: 'demo-st21', session_id: 'demo-s4', lift_name: 'Chin-Up', set_number: 2, weight: 130, reps: 4, created_at: dateAt(10) },
@@ -4259,7 +4379,7 @@ function loadDemoData() {
     { id: 'demo-ft3', test_name: 'Hip Thrust',     date: dateAt(0),  week_number: 0, result: 225, unit: 'lb' },
     { id: 'demo-ft4', test_name: 'Chin-Up cable',  date: dateAt(0),  week_number: 0, result: 115, unit: 'lb' },
     { id: 'demo-ft5', test_name: 'Strict Press',   date: dateAt(0),  week_number: 0, result: 65,  unit: 'lb' },
-    { id: 'demo-ft6', test_name: 'Hollow Rock',    date: dateAt(0),  week_number: 0, result: 12,  unit: 'reps' },
+    { id: 'demo-ft6', test_name: 'Hollow Hold',    date: dateAt(0),  week_number: 0, result: 12,  unit: 'reps' },
     { id: 'demo-ft7', test_name: 'Weighted Plank', date: dateAt(0),  week_number: 0, result: 45,  unit: 'seconds' }
   ];
   const measurements = [
@@ -4301,6 +4421,7 @@ function wlUpdateHeader() {
   if (unit === 'weight_reps') { col1.textContent = 'WEIGHT (lb)'; col2.textContent = 'REPS'; col1.style.display = ''; }
   else if (unit === 'weight_seconds') { col1.textContent = 'WEIGHT (lb)'; col2.textContent = 'SECONDS'; col1.style.display = ''; }
   else if (unit === 'reps_only') { col1.style.display = 'none'; col2.textContent = 'REPS'; }
+  else if (unit === 'seconds_only') { col1.style.display = 'none'; col2.textContent = 'SECONDS'; }
 }
 
 function wlAddSet() {
@@ -4349,6 +4470,15 @@ function wlAddSet() {
         <button class="numeric-btn" onclick="wlStep(this,-1)">−</button>
         <input type="number" class="numeric-input wl-reps" value="${lastR}" min="0" step="1">
         <button class="numeric-btn" onclick="wlStep(this,1)">+</button>
+      </div>`;
+  } else if (unit === 'seconds_only') {
+    const lastR = lastRow ? lastRow.querySelector('.wl-reps')?.value || 30 : 30;
+    rowHTML += `
+      <div style="display:none"><input type="hidden" class="wl-weight" value="0"></div>
+      <div class="set-row-header-cell" style="display:flex;gap:4px;align-items:center;min-width:0;grid-column:span 2">
+        <button class="numeric-btn" onclick="wlStep(this,-5)">−</button>
+        <input type="number" class="numeric-input wl-reps" value="${lastR}" min="0" step="5">
+        <button class="numeric-btn" onclick="wlStep(this,5)">+</button>
       </div>`;
   }
 

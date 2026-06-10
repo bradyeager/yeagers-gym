@@ -16,17 +16,30 @@ on:
         description: "Days of history to reconcile"
         type: string
         default: "8"
+      email_style:
+        description: "Email template"
+        type: choice
+        options:
+          - default
+          - command-center
+        default: default
 
 permissions:
   contents: write
+
+# Never let a manual dispatch overlap the scheduled run (double-send +
+# log-commit race). Let an in-progress run finish rather than cancel it.
+concurrency:
+  group: weekly-billing
+  cancel-in-progress: false
 
 jobs:
   run:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: "20"
           cache: "npm"
@@ -34,7 +47,7 @@ jobs:
 
       - name: Install dependencies
         working-directory: billing/bot
-        run: npm install --omit=dev --no-audit --no-fund
+        run: npm ci --omit=dev --no-audit --no-fund
 
       - name: Run billing reconciliation
         working-directory: billing/bot
@@ -43,20 +56,22 @@ jobs:
           GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
           GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
           GOOGLE_REFRESH_TOKEN: ${{ secrets.GOOGLE_REFRESH_TOKEN }}
+          GOOGLE_TOKEN_EXPIRES: ${{ secrets.GOOGLE_TOKEN_EXPIRES }}
           BREVO_API_KEY: ${{ secrets.BREVO_API_KEY }}
           DRY_RUN: ${{ github.event.inputs.dry_run || 'false' }}
           LOOKBACK_DAYS: ${{ github.event.inputs.lookback_days || '8' }}
+          EMAIL_STYLE: ${{ github.event.inputs.email_style || 'default' }}
         run: npm start
 
-      - name: Commit weekly log
+      - name: Commit weekly log + matched-payments ledger
         if: ${{ github.event.inputs.dry_run != 'true' }}
         run: |
           git config user.name "yeagers-gym-bot"
           git config user.email "bot@yeagersgym.com"
-          git add billing/logs/
+          git add billing/logs/ billing/matched-payments.json
           if ! git diff --cached --quiet; then
-            git commit -m "Weekly billing log $(date -u +%Y-%m-%d)"
+            git commit -m "Weekly billing log + ledger $(date -u +%Y-%m-%d)"
             git push
           else
-            echo "No log changes to commit"
+            echo "No log/ledger changes to commit"
           fi

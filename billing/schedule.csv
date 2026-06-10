@@ -1,0 +1,87 @@
+day,time,client_name,price_override,notes
+# See billing/RULES.md for full business logic.
+#
+# Schema:
+#   day:             Mon/Tue/Wed/Thu/Fri/Sat/Sun
+#   time:            24-hour Pacific time. HH:MM
+#   client_name:     MUST match a vagaro_name in clients.csv, OR be "INACTIVE"
+#                    to mark a placeholder Vagaro booking that should be ignored.
+#   price_override:  optional integer; overrides clients.csv default_price for
+#                    this specific slot. Use for variable pricing (group rates,
+#                    day-specific rates, etc.).
+#   notes:           free text.
+#
+# INACTIVE slots are silently skipped — no record, no notification.
+# Active slots with no schedule entry surface as UNIDENTIFIED in the email.
+
+# ============================================================
+# INACTIVE — placeholder bookings for clients not currently training
+# (Maria Alvarez, Jill Naharms, Trevor Ramsay, April Mahanal Maschka,
+# Lisa Perez, Saidah Coston, Kate Rubalcava). When a client returns,
+# replace their INACTIVE row with a real entry.
+# ============================================================
+Mon,04:30,INACTIVE,,90 min 1:1 placeholder
+Mon,07:00,INACTIVE,,1:1 placeholder (Maria? Lisa Perez?)
+Mon,10:00,INACTIVE,,2:1 placeholder (Jill?)
+Mon,11:00,INACTIVE,,1:1 placeholder (Trevor?)
+Mon,13:00,INACTIVE,,1:1 placeholder (April?)
+Mon,14:00,INACTIVE,,2:1 overflow placeholder
+Tue,06:00,INACTIVE,,2:1 placeholder
+Tue,10:00,INACTIVE,,1:1 placeholder
+Wed,05:00,INACTIVE,,1:1 placeholder
+Wed,07:00,INACTIVE,,1:1 placeholder (Saidah?)
+Wed,08:00,INACTIVE,,1:1 placeholder (Trevor?)
+Wed,10:00,INACTIVE,,2:1 overflow (David partner?)
+Wed,11:00,INACTIVE,,1:1 placeholder
+Thu,07:00,INACTIVE,,90 min + 60 min placeholders
+Thu,15:00,INACTIVE,,2:1 placeholder
+Fri,07:30,INACTIVE,,1:1 placeholder at same time as Jeanette/Peggy 2:1
+
+# ============================================================
+# ACTIVE SCHEDULE
+# ============================================================
+
+# --- Monday ---
+Mon,06:00,Jacob Bain,,1:1 60min
+Mon,07:00,Lisa Knievel,,1:1 — pays via Zelle (business)
+Mon,08:00,Peggy Happ,,2:1 60min
+Mon,08:00,michelle Delorenza,,1 of 2 weekly sessions free thru ~Aug 2026
+Mon,09:00,Dina Bates,,3:1 group w/ Anna + Katelin
+Mon,09:00,Anna Cessna,45,3:1 group rate when Dina joins (smoothie tolerance handles $50 when Dina absent)
+Mon,09:00,Katelin Lowther,45,3:1 group rate when Dina joins
+Mon,14:00,Kerry Kreczmer,,2:1 60min
+Mon,14:00,Celestin Mathieu,,2:1 60min (Mon)
+Mon,16:00,Danny Duty,,Couple 2:1; $100 together / $70 if alone (Adriana pays)
+Mon,17:00,Melissa Rios,,Couple 2:1 w/ Julio; $100 together / $70 if alone
+
+# --- Tuesday ---
+Tue,07:00,Celestin Mathieu,70,1:1 7am (Mathieu solo, $70)
+# Tue 8am TEAM (grew to 5 people 5/2026) — $40/person.
+# Seats: Peggy $40, Tonnie $40, Robert (prepaid). (Annie left the Tue team ~6/9; Wed 10am only.)
+Tue,08:00,Peggy Happ,40,Tue team — $40
+Tue,08:00,Tonnie Dahl,40,Tue team — $40
+Tue,08:00,Robert Brower,,Tue team — prepaid; no payment expected
+Tue,09:00,Jeanette Davey,70,1:1 by check $70
+Tue,09:00,Robert Brower,,1:1 — prepaid for 2026
+Tue,11:30,michelle Delorenza,,1:1 11:30am (added 5/26)
+
+# --- Wednesday ---
+Wed,06:00,Jacob Bain,,1:1 6am (added 5/27)
+Wed,09:00,Rachel Bertholino,,Husband Mathieu (Venmo: Celestin Mathieu) pays
+Wed,10:00,Annie Deioma,,2:1 w/ husband David (Mudroom Backpacks pays)
+
+# --- Thursday ---
+Thu,06:00,Danny Duty,,Couple 2:1; $100 together / $70 if one alone (added 5/28)
+Thu,06:30,Stacy Tesler CPY,70,1:1 60min — Zelle to personal
+Thu,07:00,Danika Elenes,65,1:1 90min — flat $65 (moved from 8am; this is her real slot)
+Thu,09:00,Tonnie Dahl,70,Thursday 1:1 rate $70 (Tue is $40)
+Thu,10:00,Robert Brower,,Prepaid all of 2026
+Thu,11:00,Celestin Mathieu,,Thu $50 normally / $70 if alone
+
+# --- Friday ---
+Fri,06:30,Lacey James,,1:1 60min
+Fri,07:30,Jeanette Davey,50,2:1 by check $50 w/ Peggy
+Fri,07:30,Peggy Happ,,2:1 w/ Jeanette $50
+Fri,09:00,Lisa Knievel,,1:1 — Zelle (business)
+Fri,09:30,Celestin Mathieu,,1:1 (added 5/30; Mon Kerry session moved here). $50/$70
+Fri,17:00,Jacob Bain,,1:1 5pm (added 5/30)

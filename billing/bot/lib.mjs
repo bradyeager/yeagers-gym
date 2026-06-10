@@ -10,28 +10,42 @@ export const GITHUB_OWNER = process.env.GITHUB_OWNER || "bradyeager";
 export const GITHUB_REPO = process.env.GITHUB_REPO || "yeagers-gym";
 export const DEFAULT_BRANCH = process.env.DEFAULT_BRANCH || "main";
 
-// ---- YG colorway (CLAUDE.md) ----
-
+// ---- YG colorway (canonical per YG-Brand-Style-Reference.md §2) ----
+// Teal is dominant (structure/data/trust). Pink is action/urgency ONLY.
+// Purple is a sparing accent. Max 2 brand colors per view + neutrals.
 export const PALETTE = {
-  bg: "#0a0a0a",
-  bgPanel: "#141414",
-  bgSoft: "#1a1a1a",
-  border: "#2a2a2a",
-  textPrimary: "#eaeaea",
-  textMuted: "#9a9a9a",
-  textDim: "#6a6a6a",
-  teal: "#1EC8B0",
-  pink: "#F0448A",
+  bg: "#0A0E17",          // dark base
+  bgPanel: "#0F1420",     // surface 1 (cards)
+  bgSoft: "#151B2A",      // surface 2 (nested)
+  surface3: "#1A2235",    // surface 3 (hover)
+  border: "rgba(255,255,255,0.12)",
+  divider: "rgba(255,255,255,0.08)",
+  textPrimary: "#E8E6E3",
+  textMuted: "#8A8D93",
+  textDim: "#4A4D55",
+  teal: "#48C4CC",
+  tealHover: "#35ADB5",
+  pink: "#EF3295",
+  pinkHover: "#D42582",
   purple: "#9B6FD4",
-  danger: "#ff6b6b",
-  success: "#1EC8B0",
+  danger: "#EF3295",      // pink = warnings per brand
+  success: "#48C4CC",
 };
 
-// Email-safe font stacks (most clients ignore @font-face).
+// Email-safe fonts (brand ref §3/§9): data + headings = monospace
+// (JetBrains Mono → Courier New fallback since email can't @font-face),
+// Single clean sans throughout (renders natively on every device: SF on
+// Apple, Segoe on Windows, Roboto on Android; falls back to Helvetica/Arial).
+// Brad disliked the monospace look, so display + body share this stack.
 export const FONTS = {
-  display: `ui-monospace, "JetBrains Mono", "SF Mono", Menlo, Consolas, monospace`,
-  body: `-apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, "Helvetica Neue", sans-serif`,
+  display: `-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif`,
+  body: `-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif`,
 };
+
+// Logo shown in the email hero. Served via GitHub Pages from the repo's
+// assets/ folder. Drop a dark-background PNG at this path to override.
+// If the image is missing/blocked, the alt text + wordmark still render.
+export const LOGO_URL = "https://bradyeager.github.io/yeagers-gym/assets/yg-logo-email.png";
 
 // ---- Env helpers ----
 
@@ -68,28 +82,233 @@ export function parseCsvLine(line) {
   return cells;
 }
 
+// Header-driven parser: column order doesn't matter, missing columns are fine.
+// Recognized columns: vagaro_name, venmo_handle, venmo_display_name,
+// default_price, valid_prices, pays_cash, prepaid, note_keywords, notes.
+// valid_prices is a SLASH-separated list (e.g. "70/100") of all acceptable
+// amounts for a client whose price legitimately varies (couple solo vs together,
+// group vs alone). Comma can't be used — it's the CSV delimiter.
+// note_keywords is a PIPE-separated list (e.g. "rachael|rachel"). When a
+// Venmo memo contains any of these (case-insensitive), the payment is
+// CLAIMED by this client even if the sender display name matches a different
+// roster row. Disambiguates one-payer-multiple-clients cases.
 export async function loadClients(csvPath) {
   const raw = await fs.readFile(csvPath, "utf8");
   const lines = raw.split("\n").map((l) => l.trim()).filter((l) => l && !l.startsWith("#"));
   const header = lines.shift();
-  if (!header || !header.startsWith("vagaro_name,")) {
+  if (!header || !header.toLowerCase().startsWith("vagaro_name,")) {
     throw new Error(`Unexpected clients.csv header: ${header}`);
   }
+  const cols = parseCsvLine(header).map((c) => c.trim().toLowerCase());
+  const idx = (name) => cols.indexOf(name);
+  const iName = idx("vagaro_name");
+  const iHandle = idx("venmo_handle");
+  const iDisplay = idx("venmo_display_name");
+  const iDefault = idx("default_price");
+  const iValid = idx("valid_prices");
+  const iCash = idx("pays_cash");
+  const iPrepaid = idx("prepaid");
+  const iKeywords = idx("note_keywords");
+  const iNotes = idx("notes");
+  const at = (cells, i) => (i >= 0 && i < cells.length ? cells[i] : "");
+
   return lines.map((line) => {
     const cells = parseCsvLine(line);
-    const displayRaw = cells[2] || "";
+    const displayRaw = at(cells, iDisplay) || "";
+    const defaultPrice = at(cells, iDefault) ? Number(at(cells, iDefault)) : null;
+    const validRaw = at(cells, iValid) || "";
+    const validPrices = validRaw
+      ? validRaw.split("/").map((s) => Number(s.trim())).filter((n) => !Number.isNaN(n))
+      : [];
+    // Acceptable prices always include default + any explicit valid_prices.
+    const acceptablePrices = [...new Set([defaultPrice, ...validPrices].filter((n) => n != null))];
+    const keywordsRaw = at(cells, iKeywords) || "";
     return {
-      vagaro_name: cells[0],
-      venmo_handle: cells[1] || "",
+      vagaro_name: at(cells, iName),
+      venmo_handle: at(cells, iHandle) || "",
       venmo_display_name: displayRaw,
       venmo_display_names: displayRaw
         ? displayRaw.split(",").map((s) => s.trim()).filter(Boolean)
         : [],
-      default_price: cells[3] ? Number(cells[3]) : null,
-      pays_cash: (cells[4] || "").toLowerCase() === "true",
-      notes: cells[5] || "",
+      default_price: defaultPrice,
+      valid_prices: validPrices,
+      acceptable_prices: acceptablePrices,
+      note_keywords: keywordsRaw
+        ? keywordsRaw.split("|").map((s) => s.trim().toLowerCase()).filter(Boolean)
+        : [],
+      pays_cash: (at(cells, iCash) || "").toLowerCase() === "true",
+      prepaid: (at(cells, iPrepaid) || "").toLowerCase() === "true",
+      notes: at(cells, iNotes) || "",
     };
   });
+}
+
+// Pull a M/D (optionally M/D/YY) date out of a free-text Venmo note.
+// Handles "5/19", "5/19/26", "5.19", "5-19", "May 19", "May 19, 2026".
+// Returns a Date (UTC noon to dodge tz edges) or null. refYear seeds the
+// year when the note omits it.
+const MONTHS = { jan:0,feb:1,mar:2,apr:3,may:4,jun:5,jul:6,aug:7,sep:8,oct:9,nov:10,dec:11 };
+export function parseNoteDate(note, refYear) {
+  if (!note) return null;
+  const text = String(note);
+  // Numeric: M/D, M/D/YY, M/D/YYYY, M.D, M-D
+  let m = text.match(/\b(\d{1,2})[\/.\-](\d{1,2})(?:[\/.\-](\d{2,4}))?\b/);
+  if (m) {
+    const mo = Number(m[1]) - 1, d = Number(m[2]);
+    let y = m[3] ? Number(m[3]) : refYear;
+    if (y < 100) y += 2000;
+    if (mo >= 0 && mo <= 11 && d >= 1 && d <= 31) return new Date(Date.UTC(y, mo, d, 12));
+  }
+  // Month name: "May 19", "May 19, 2026"
+  m = text.match(/\b([A-Za-z]{3,9})\s+(\d{1,2})(?:,\s*(\d{4}))?\b/);
+  if (m) {
+    const mo = MONTHS[m[1].slice(0, 3).toLowerCase()];
+    const d = Number(m[2]);
+    const y = m[3] ? Number(m[3]) : refYear;
+    if (mo != null && d >= 1 && d <= 31) return new Date(Date.UTC(y, mo, d, 12));
+  }
+  return null;
+}
+
+// ---- Weekly schedule (day+time → client_name) ----
+
+const DAY_ALIASES = {
+  sun: 0, sunday: 0,
+  mon: 1, monday: 1,
+  tue: 2, tues: 2, tuesday: 2,
+  wed: 3, weds: 3, wednesday: 3,
+  thu: 4, thur: 4, thurs: 4, thursday: 4,
+  fri: 5, friday: 5,
+  sat: 6, saturday: 6,
+};
+
+export async function loadSchedule(csvPath) {
+  let raw;
+  try {
+    raw = await fs.readFile(csvPath, "utf8");
+  } catch (e) {
+    if (e.code === "ENOENT") return [];
+    throw e;
+  }
+  const lines = raw.split("\n").map((l) => l.trim()).filter((l) => l && !l.startsWith("#"));
+  const header = lines.shift();
+  if (!header || !header.toLowerCase().startsWith("day,")) {
+    throw new Error(`Unexpected schedule.csv header: ${header}`);
+  }
+  // Detect schema: legacy 4-col (day,time,client,notes) or new 5-col with price_override
+  const headerCells = parseCsvLine(header);
+  const hasPriceOverride = headerCells[3]?.trim().toLowerCase() === "price_override";
+  const notesIdx = hasPriceOverride ? 4 : 3;
+  return lines.map((line) => {
+    const cells = parseCsvLine(line);
+    const dayNum = DAY_ALIASES[(cells[0] || "").trim().toLowerCase()];
+    const priceRaw = hasPriceOverride ? (cells[3] || "").trim() : "";
+    return {
+      day_of_week: dayNum,
+      time: (cells[1] || "").trim(),
+      client_name: (cells[2] || "").trim(),
+      price_override: priceRaw ? Number(priceRaw) : null,
+      notes: (cells[notesIdx] || "").trim(),
+    };
+  }).filter((s) => s.day_of_week != null && s.time && s.client_name);
+}
+
+// Given a date and the schedule, return the list of schedule entries
+// (active only; INACTIVE markers excluded) matching the Pacific-time slot.
+export function findScheduleEntriesForSlot(schedule, date, tz = "America/Los_Angeles") {
+  const local = localParts(date, tz);
+  return schedule
+    .filter((s) => s.day_of_week === local.dayNum && s.time === local.hhmm)
+    .filter((s) => s.client_name.toUpperCase() !== "INACTIVE");
+}
+
+export function findClientsForSlot(schedule, date, tz = "America/Los_Angeles") {
+  return findScheduleEntriesForSlot(schedule, date, tz).map((s) => s.client_name);
+}
+
+// True if the schedule has any INACTIVE marker at this day+time.
+// Used to suppress entire slots from the UNIDENTIFIED bucket.
+export function isInactiveSlot(schedule, date, tz = "America/Los_Angeles") {
+  const local = localParts(date, tz);
+  return schedule.some(
+    (s) =>
+      s.day_of_week === local.dayNum &&
+      s.time === local.hhmm &&
+      s.client_name.toUpperCase() === "INACTIVE",
+  );
+}
+
+function localParts(date, tz) {
+  // Use Intl to get day-of-week + HH:MM in the target tz.
+  const fmt = new Intl.DateTimeFormat("en-US", {
+    timeZone: tz, weekday: "short", hour12: false, hour: "2-digit", minute: "2-digit",
+  });
+  const parts = Object.fromEntries(fmt.formatToParts(date).map((p) => [p.type, p.value]));
+  const dayNum = DAY_ALIASES[parts.weekday?.toLowerCase()] ?? -1;
+  const hh = parts.hour === "24" ? "00" : parts.hour;
+  return { dayNum, hhmm: `${hh}:${parts.minute}` };
+}
+
+// ---- Matched-payment ledger (cross-run memory) ----
+//
+// A Venmo payment is sticky to the FIRST session it gets matched to. Once
+// reconcile() commits a match, the Gmail message-id of that payment lands
+// in billing/matched-payments.json so future runs can't re-grab the same
+// dollar across week boundaries (the Jacob "5/27" → Mon 6/1 double-count bug).
+//
+// Schema is a flat array of records — easy to grep, easy to manually edit
+// if Brad ever needs to un-claim a payment.
+
+export async function loadMatchedLedger(repoRoot) {
+  const p = path.join(repoRoot, "billing", "matched-payments.json");
+  try {
+    const raw = await fs.readFile(p, "utf8");
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch (e) {
+    if (e.code === "ENOENT") return [];
+    throw e;
+  }
+}
+
+export async function saveMatchedLedger(repoRoot, ledger) {
+  const p = path.join(repoRoot, "billing", "matched-payments.json");
+  // Stable sort + 2-space indent so successive runs produce minimal diffs.
+  const sorted = [...ledger].sort((a, b) =>
+    (a.gmail_id || "").localeCompare(b.gmail_id || "")
+  );
+  await fs.writeFile(p, JSON.stringify(sorted, null, 2) + "\n", "utf8");
+}
+
+// ---- Cancellations (sessions Brad didn't actually train — vacation, sick) ----
+//
+// Pattern mirrors cash-entries/: a single file per cancellation in
+// billing/cancellations/, name `YYYY-MM-DD-clientslug.md`, contents like
+// `YYYY-MM-DD | Client Name | reason`. The bot drops matching iCal slots
+// from the run so the client doesn't get billed for sessions they missed.
+
+export async function loadCancellations(repoRoot) {
+  const entries = [];
+  const dirPath = path.join(repoRoot, "billing", "cancellations");
+  // Cancellation lines are `YYYY-MM-DD | Client Name | free-text reason`.
+  // NOT parseCashLine — that one requires a dollar amount in field 3 and
+  // silently rejects every cancellation (the "0 cancellations" bug).
+  const lineRe = /^(\d{4}-\d{2}-\d{2})\s*\|\s*([^|]+?)\s*(?:\|\s*(.*))?$/;
+  try {
+    const files = await fs.readdir(dirPath);
+    for (const f of files) {
+      if (!f.endsWith(".md")) continue;
+      if (f.toLowerCase() === "readme.md") continue; // docs, not data — its example line would parse
+      const raw = await fs.readFile(path.join(dirPath, f), "utf8");
+      for (const line of raw.split("\n")) {
+        const m = line.trim().match(lineRe);
+        if (m) entries.push({ date: m[1], name: m[2].trim(), reason: (m[3] || "").trim(), source: `cancellations/${f}` });
+      }
+    }
+  } catch (e) {
+    if (e.code !== "ENOENT") throw e;
+  }
+  return entries;
 }
 
 // ---- Cash entries (aggregates cash-log.md + cash-entries/ dir) ----
@@ -138,15 +357,29 @@ export function fuzzyName(a, b) {
   const nb = b.toLowerCase().replace(/[^a-z ]/g, "").trim();
   if (!na || !nb) return 0;
   if (na === nb) return 1;
+
+  // Prefix match handles business names: "Mudroom" matches "Mudroom Backpacks"
+  if (na.startsWith(nb + " ") || nb.startsWith(na + " ")) return 0.9;
+
   const aParts = na.split(/\s+/);
   const bParts = nb.split(/\s+/);
-  if (aParts[0] === bParts[0]) {
-    const aLast = aParts[aParts.length - 1];
-    const bLast = bParts[bParts.length - 1];
+  const aFirst = aParts[0], bFirst = bParts[0];
+  const aLast = aParts[aParts.length - 1];
+  const bLast = bParts[bParts.length - 1];
+
+  if (aFirst === bFirst) {
     if (aLast === bLast) return 1;
     if (aLast[0] === bLast[0]) return 0.8;
     return 0.6;
   }
+
+  // Nickname / alt spelling tolerance: same last name + similar first
+  // ("Laci James" / "Lacey James", "katie lowther" / "Katelin Lowther")
+  if (aLast && bLast && aLast === bLast) {
+    if (aFirst.slice(0, 3) === bFirst.slice(0, 3)) return 0.9;
+    if (aFirst.startsWith(bFirst) || bFirst.startsWith(aFirst)) return 0.9;
+  }
+
   return 0;
 }
 
@@ -154,6 +387,13 @@ export function fuzzyName(a, b) {
 
 export function fmtDate(d) {
   return new Date(d).toLocaleDateString("en-US", { weekday: "short", month: "numeric", day: "numeric" });
+}
+
+export function fmtDateTime(d, tz = "America/Los_Angeles") {
+  return new Date(d).toLocaleString("en-US", {
+    timeZone: tz, weekday: "short", month: "numeric", day: "numeric",
+    hour: "numeric", minute: "2-digit", hour12: true,
+  });
 }
 
 export function fmtDateIso(d) {
@@ -170,6 +410,26 @@ export function slugify(str) {
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "")
     .slice(0, 60);
+}
+
+// Retry an async fn with exponential backoff. For flaky external calls
+// (Vagaro iCal 403s, Gmail/Google transient 5xx). Throws the last error
+// after `tries` attempts.
+export async function withRetry(fn, { tries = 3, baseMs = 1500, label = "op" } = {}) {
+  let lastErr;
+  for (let i = 1; i <= tries; i++) {
+    try {
+      return await fn();
+    } catch (err) {
+      lastErr = err;
+      if (i < tries) {
+        const wait = baseMs * 2 ** (i - 1);
+        console.log(`${label}: attempt ${i}/${tries} failed (${err.message || err}); retrying in ${wait}ms`);
+        await new Promise((r) => setTimeout(r, wait));
+      }
+    }
+  }
+  throw lastErr;
 }
 
 // ---- Deep links / URLs ----
@@ -219,25 +479,56 @@ export async function sendBrevoEmail({ apiKey, to, from, fromName, subject, html
 
 // ---- YG email building blocks ----
 
-export function emailShell({ title, bodyHtml, footerNote = "" }) {
+// Neon sunset — the YG signature gradient (teal → purple → pink).
+// The one place all three brand colors appear together; treated as a single
+// decorative "neon sign" flourish (per the Velocity Method logo aesthetic).
+export const NEON_GRADIENT = "linear-gradient(90deg, #48C4CC 0%, #9B6FD4 50%, #EF3295 100%)";
+
+export function emailShell({ title, bodyHtml, footerNote = "", subtitle = "Weekly Revenue Transmission" }) {
   const P = PALETTE;
+  // Table-based layout: Outlook (Windows) renders email with the MS Word
+  // engine — no flexbox, gradients, shadows, or max-width on divs. Everything
+  // structural is tables with width/bgcolor attributes so it holds up there.
   return `<!doctype html>
-<html><head><meta charset="utf-8"><meta name="color-scheme" content="dark"></head>
-<body style="margin:0;padding:0;background:${P.bg};color:${P.textPrimary};font-family:${FONTS.body};">
-  <div style="max-width:640px;margin:0 auto;padding:24px 20px;">
-    <div style="border-bottom:1px solid ${P.border};padding-bottom:16px;margin-bottom:24px;">
-      <div style="font-family:${FONTS.display};color:${P.teal};font-size:11px;letter-spacing:0.15em;text-transform:uppercase;margin-bottom:6px;">Yeager's Gym — Billing</div>
-      <h1 style="margin:0;font-family:${FONTS.body};font-size:22px;font-weight:600;color:${P.textPrimary};">${title}</h1>
-    </div>
-    ${bodyHtml}
-    ${footerNote ? `<div style="margin-top:32px;padding-top:16px;border-top:1px solid ${P.border};font-family:${FONTS.display};font-size:11px;color:${P.textDim};">${footerNote}</div>` : ""}
-  </div>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="dark"></head>
+<body style="margin:0;padding:0;background-color:${P.bg};font-family:${FONTS.body};">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="${P.bg}" style="background-color:${P.bg};">
+<tr><td align="center" style="padding:20px 10px 36px;">
+  <table role="presentation" width="640" cellpadding="0" cellspacing="0" border="0" style="width:640px;max-width:640px;">
+
+    <!-- HERO -->
+    <tr><td bgcolor="${P.bgPanel}" style="background-color:${P.bgPanel};border:1px solid ${P.border};border-radius:14px;">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr><td bgcolor="${P.teal}" height="5" style="height:5px;line-height:5px;font-size:0;background:${NEON_GRADIENT};">&nbsp;</td></tr>
+        <tr><td style="padding:24px 24px 20px;">
+          <div style="font-family:${FONTS.display};font-size:32px;line-height:1;font-weight:800;color:#FFFFFF;">YEAGER'S GYM</div>
+          <div style="font-family:${FONTS.display};font-size:13px;color:${P.teal};font-weight:bold;margin-top:9px;">${subtitle}</div>
+          <div style="font-family:${FONTS.display};font-size:12px;color:${P.textMuted};margin-top:5px;">${title}</div>
+        </td></tr>
+      </table>
+    </td></tr>
+
+    <tr><td style="padding-top:20px;font-family:${FONTS.body};color:${P.textPrimary};">${bodyHtml}</td></tr>
+
+    <!-- FOOTER -->
+    <tr><td style="padding-top:26px;">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td bgcolor="${P.teal}" height="3" style="height:3px;line-height:3px;font-size:0;background:${NEON_GRADIENT};">&nbsp;</td></tr></table>
+      <div style="font-family:${FONTS.display};font-size:11px;color:${P.textDim};line-height:1.7;margin-top:12px;">${footerNote || ""}<br>YEAGER'S GYM &#183; San Diego, CA &#183; brad@yeagersgym.com</div>
+    </td></tr>
+
+  </table>
+</td></tr>
+</table>
 </body></html>`;
 }
 
 export function sectionLabel(text, color = "teal") {
   const c = PALETTE[color] || PALETTE.teal;
-  return `<div style="font-family:${FONTS.display};color:${c};font-size:11px;letter-spacing:0.15em;text-transform:uppercase;margin:28px 0 10px 0;">${text}</div>`;
+  // Neon "spine" bar + uppercase mono label — HUD section header.
+  return `<div style="margin:30px 0 12px 0;">`
+    + `<span style="display:inline-block;width:18px;height:3px;background:${c};border-radius:2px;box-shadow:0 0 8px ${c};vertical-align:middle;margin-right:10px;"></span>`
+    + `<span style="font-family:${FONTS.display};color:${c};font-size:12px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;vertical-align:middle;">${text}</span>`
+    + `</div>`;
 }
 
 export function button({ href, label, color = "pink", size = "md" }) {
@@ -261,7 +552,10 @@ export function card(innerHtml, accent = "border") {
 }
 
 export function kv(label, value, valueColor = PALETTE.textPrimary) {
-  return `<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid ${PALETTE.border};"><span style="font-family:${FONTS.display};color:${PALETTE.textMuted};font-size:12px;text-transform:uppercase;letter-spacing:0.1em;">${label}</span><span style="color:${valueColor};font-weight:600;">${value}</span></div>`;
+  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border-bottom:1px solid ${PALETTE.border};"><tr>`
+    + `<td style="padding:6px 0;font-family:${FONTS.display};color:${PALETTE.textMuted};font-size:12px;">${label}</td>`
+    + `<td align="right" style="padding:6px 0;color:${valueColor};font-weight:bold;">${value}</td>`
+    + `</tr></table>`;
 }
 
 // ---- Log parsing (for monthly summary) ----
@@ -287,19 +581,30 @@ export async function readWeeklyLogs(logsDir, { start, end }) {
 }
 
 function parseWeeklyLog(md) {
-  // Pull appointment lines like:
-  // "- 2026-04-14 | Alice Chen | $100 | PAID_VENMO (matched @alice-chen-2021, $100)"
+  // Appointment lines look like (pipe-delimited):
+  //   - Mon, 5/25, 6:00 AM | Jacob Bain | $70 | PAID_VENMO (matched "Jacob Bain", $70, note: "5/21")
+  //   - Tue, 5/26, 8:00 AM | Annie Deioma | $80 | PAID_VENMO (matched "Mudroom", $80, note: "...")
+  // We split on "|" rather than one mega-regex so the format can drift a bit
+  // without silently parsing zero rows (which would zero out the monthly total).
   const out = { appointments: [] };
-  for (const line of md.split("\n")) {
-    const m = line.match(/^-\s+(\d{4}-\d{2}-\d{2})\s*\|\s*([^|]+?)\s*\|\s*\$?([\d.?]+|\?)\s*\|\s*(\w+)/);
-    if (!m) continue;
-    const amountMatch = line.match(/\$(\d+(?:\.\d+)?)\)/);
+  for (const raw of md.split("\n")) {
+    if (!raw.startsWith("- ")) continue;
+    const parts = raw.slice(2).split("|");
+    if (parts.length < 4) continue;
+    const dateStr = parts[0].trim();
+    const name = parts[1].trim();
+    const priceTok = (parts[2].match(/[\d.]+/) || [])[0];
+    const rest = parts.slice(3).join("|").trim();
+    const status = (rest.match(/^([A-Z_]+)/) || [])[1] || "";
+    if (!status) continue;
+    // Amount actually received = first "$N" after the word "matched".
+    const paidM = rest.match(/matched[^$]*\$(\d+(?:\.\d+)?)/);
     out.appointments.push({
-      date: m[1],
-      name: m[2].trim(),
-      price: m[3] === "?" ? null : Number(m[3]),
-      status: m[4],
-      paidAmount: amountMatch ? Number(amountMatch[1]) : null,
+      date: dateStr,                                   // human string; used only as a dedup key
+      name,
+      price: priceTok ? Number(priceTok) : null,
+      status,
+      paidAmount: paidM ? Number(paidM[1]) : null,
     });
   }
   return out;
