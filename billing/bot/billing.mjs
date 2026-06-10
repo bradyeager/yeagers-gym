@@ -1211,6 +1211,7 @@ async function writeLog({ appointments, payments, results, unmatchedPayments }) 
     cash_pending: results.filter((r) => r.status === "CASH_PENDING").length,
     unknown: results.filter((r) => r.status === "UNKNOWN").length,
     unidentified: results.filter((r) => r.status === "UNIDENTIFIED_SLOT").length,
+    cancelled: results.filter((r) => r.status === "CANCELLED").length,
   };
   md += `\n## Summary\n`;
   for (const [k, v] of Object.entries(counts)) md += `- ${k}: ${v}\n`;

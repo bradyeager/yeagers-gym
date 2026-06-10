@@ -290,14 +290,19 @@ export async function saveMatchedLedger(repoRoot, ledger) {
 export async function loadCancellations(repoRoot) {
   const entries = [];
   const dirPath = path.join(repoRoot, "billing", "cancellations");
+  // Cancellation lines are `YYYY-MM-DD | Client Name | free-text reason`.
+  // NOT parseCashLine — that one requires a dollar amount in field 3 and
+  // silently rejects every cancellation (the "0 cancellations" bug).
+  const lineRe = /^(\d{4}-\d{2}-\d{2})\s*\|\s*([^|]+?)\s*(?:\|\s*(.*))?$/;
   try {
     const files = await fs.readdir(dirPath);
     for (const f of files) {
       if (!f.endsWith(".md")) continue;
+      if (f.toLowerCase() === "readme.md") continue; // docs, not data — its example line would parse
       const raw = await fs.readFile(path.join(dirPath, f), "utf8");
       for (const line of raw.split("\n")) {
-        const parsed = parseCashLine(line); // same `YYYY-MM-DD | Name | …` shape
-        if (parsed) entries.push({ date: parsed.date, name: parsed.name, reason: parsed.notes || parsed.amount?.toString() || "", source: `cancellations/${f}` });
+        const m = line.trim().match(lineRe);
+        if (m) entries.push({ date: m[1], name: m[2].trim(), reason: (m[3] || "").trim(), source: `cancellations/${f}` });
       }
     }
   } catch (e) {
