@@ -165,6 +165,21 @@
     }
   },
   {
+    "gmail_id": "19eace80a865fb71",
+    "matched_at": "2026-06-10T01:37:35.208Z",
+    "matched_to": {
+      "date": "2026-06-05",
+      "client": "Lacey James",
+      "status": "PAID_VENMO"
+    },
+    "payment": {
+      "sender": "Laci James",
+      "amount": 70,
+      "note": "Jun 09, 2026",
+      "date": "2026-06-09"
+    }
+  },
+  {
     "gmail_id": "19ead110a97ef41a",
     "matched_at": "2026-06-10T01:12:27.026Z",
     "matched_to": {
@@ -219,7 +234,7 @@
     },
     "payment": {
       "sender": "Laci James",
-      "amount": 70.0,
+      "amount": 70,
       "note": "May 22, 2026",
       "date": "2026-05-22"
     },
@@ -235,7 +250,7 @@
     },
     "payment": {
       "sender": "Jacob Bain",
-      "amount": 70.0,
+      "amount": 70,
       "note": "5/21",
       "date": "2026-05-21"
     },
@@ -251,7 +266,7 @@
     },
     "payment": {
       "sender": "katie lowther",
-      "amount": 50.0,
+      "amount": 50,
       "note": "5.25",
       "date": "2026-05-25"
     },
@@ -267,7 +282,7 @@
     },
     "payment": {
       "sender": "Melissa Rios",
-      "amount": 70.0,
+      "amount": 70,
       "note": "5/19",
       "date": "2026-05-20"
     },
@@ -283,7 +298,7 @@
     },
     "payment": {
       "sender": "Celestin Mathieu",
-      "amount": 70.0,
+      "amount": 70,
       "note": "Rachael",
       "date": "2026-05-27"
     },
@@ -299,7 +314,7 @@
     },
     "payment": {
       "sender": "Peggy Barlow Happ",
-      "amount": 70.0,
+      "amount": 70,
       "note": "Training on the new app 5/22/26",
       "date": "2026-05-22"
     },
@@ -315,7 +330,7 @@
     },
     "payment": {
       "sender": "Celestin Mathieu",
-      "amount": 75.0,
+      "amount": 75,
       "note": "Mathieu + drink",
       "date": "2026-05-29"
     },
@@ -331,7 +346,7 @@
     },
     "payment": {
       "sender": "Mudroom",
-      "amount": 100.0,
+      "amount": 100,
       "note": "Strength training 5/20",
       "date": "2026-05-22"
     },
@@ -347,8 +362,8 @@
     },
     "payment": {
       "sender": "Jacob Bain",
-      "amount": 70.0,
-      "note": "5/27 \ud83c\udf89",
+      "amount": 70,
+      "note": "5/27 🎉",
       "date": "2026-05-31"
     },
     "backfilled": true
@@ -363,7 +378,7 @@
     },
     "payment": {
       "sender": "Peggy Barlow Happ",
-      "amount": 45.0,
+      "amount": 45,
       "note": "Team training and a shake 5/26/26",
       "date": "2026-05-26"
     },
@@ -379,8 +394,8 @@
     },
     "payment": {
       "sender": "Jacob Bain",
-      "amount": 70.0,
-      "note": "5/13 \ud83c\udf89",
+      "amount": 70,
+      "note": "5/13 🎉",
       "date": "2026-05-21"
     },
     "backfilled": true
@@ -395,7 +410,7 @@
     },
     "payment": {
       "sender": "Kerry Kreczmer",
-      "amount": 50.0,
+      "amount": 50,
       "note": "Senior games training",
       "date": "2026-06-02"
     },
@@ -411,7 +426,7 @@
     },
     "payment": {
       "sender": "Anna Cessna",
-      "amount": 50.0,
+      "amount": 50,
       "note": "May 25, 2026",
       "date": "2026-05-25"
     },
@@ -427,7 +442,7 @@
     },
     "payment": {
       "sender": "Adriana Duty",
-      "amount": 70.0,
+      "amount": 70,
       "note": "Workout 5/29",
       "date": "2026-05-28"
     },
@@ -443,7 +458,7 @@
     },
     "payment": {
       "sender": "Mudroom",
-      "amount": 100.0,
+      "amount": 100,
       "note": "Injury prevention / fitness training 5/27",
       "date": "2026-05-28"
     },
@@ -459,7 +474,7 @@
     },
     "payment": {
       "sender": "Danika Elenes",
-      "amount": 65.0,
+      "amount": 65,
       "note": "May 22, 2026",
       "date": "2026-05-22"
     },
@@ -475,7 +490,7 @@
     },
     "payment": {
       "sender": "Adriana Duty",
-      "amount": 70.0,
+      "amount": 70,
       "note": "Missed session 5/19",
       "date": "2026-05-21"
     },
@@ -491,7 +506,7 @@
     },
     "payment": {
       "sender": "Michelle DeLorenzo",
-      "amount": 85.0,
+      "amount": 85,
       "note": "Thank you!",
       "date": "2026-05-26"
     },
@@ -507,7 +522,7 @@
     },
     "payment": {
       "sender": "Peggy Barlow Happ",
-      "amount": 55.0,
+      "amount": 55,
       "note": "Training w/Jeanette and a shake 5/29/26",
       "date": "2026-05-29"
     },
@@ -523,8 +538,8 @@
     },
     "payment": {
       "sender": "Kerry Kreczmer",
-      "amount": 50.0,
-      "note": "5/11 \ud83c\udf89",
+      "amount": 50,
+      "note": "5/11 🎉",
       "date": "2026-05-19"
     },
     "backfilled": true
@@ -539,7 +554,7 @@
     },
     "payment": {
       "sender": "Peggy Barlow Happ",
-      "amount": 45.0,
+      "amount": 45,
       "note": "Team training 5/19/26",
       "date": "2026-05-19"
     },
@@ -555,8 +570,8 @@
     },
     "payment": {
       "sender": "Dina Bates",
-      "amount": 45.0,
-      "note": "5/18 \ud83d\ude05",
+      "amount": 45,
+      "note": "5/18 😅",
       "date": "2026-05-19"
     },
     "backfilled": true
@@ -571,7 +586,7 @@
     },
     "payment": {
       "sender": "Mudroom",
-      "amount": 80.0,
+      "amount": 80,
       "note": "Team training 5/26",
       "date": "2026-05-28"
     },
@@ -587,7 +602,7 @@
     },
     "payment": {
       "sender": "Tonnie Dahl",
-      "amount": 45.0,
+      "amount": 45,
       "note": "For 5/19/2026  Thank You",
       "date": "2026-05-21"
     },
@@ -603,7 +618,7 @@
     },
     "payment": {
       "sender": "Melissa Rios",
-      "amount": 75.0,
+      "amount": 75,
       "note": "6/1 SORRY I FORGOT. BLAME THE PREGNANCY",
       "date": "2026-06-04"
     },
@@ -619,7 +634,7 @@
     },
     "payment": {
       "sender": "Laci James",
-      "amount": 70.0,
+      "amount": 70,
       "note": "May 25, 2026",
       "date": "2026-05-25"
     },
@@ -635,7 +650,7 @@
     },
     "payment": {
       "sender": "Michelle DeLorenzo",
-      "amount": 70.0,
+      "amount": 70,
       "note": "May 18, 2026",
       "date": "2026-05-19"
     },
@@ -651,7 +666,7 @@
     },
     "payment": {
       "sender": "Peggy Barlow Happ",
-      "amount": 50.0,
+      "amount": 50,
       "note": "Training w/Jeanette 5/12/26.",
       "date": "2026-05-15"
     },
@@ -667,7 +682,7 @@
     },
     "payment": {
       "sender": "Michelle DeLorenzo",
-      "amount": 70.0,
+      "amount": 70,
       "note": "Jun 01, 2026",
       "date": "2026-06-01"
     },
