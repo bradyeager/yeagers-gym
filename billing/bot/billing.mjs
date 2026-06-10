@@ -1110,7 +1110,8 @@ async function writeLog({ appointments, payments, results, unmatchedPayments }) 
   for (const r of results) {
     const name = r.roster?.vagaro_name || r.appt.client_name || `[unidentified: ${r.appt.summary || "?"}]`;
     const price = r.expectedPrice ?? r.roster?.default_price ?? "?";
-    md += `- ${fmtDateTime(r.appt.date)} | ${name} | $${price} | ${r.status}`;
+    const co = r.checkoutAmount != null ? ` | checkout $${r.checkoutAmount}` : "";
+    md += `- ${fmtDateTime(r.appt.date)} | ${name} | $${price}${co} | ${r.status}`;
     if (r.payment) {
       const ident = r.payment.sender_handle
         ? `@${r.payment.sender_handle}`
