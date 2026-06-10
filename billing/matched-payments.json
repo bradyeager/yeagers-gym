@@ -3,7 +3,7 @@
     "gmail_id": "19e8532707a60fd3",
     "matched_at": "2026-06-10T01:12:27.025Z",
     "matched_to": {
-      "date": "2026-06-02",
+      "date": "2026-06-01",
       "client": "Celestin Mathieu",
       "status": "PAID_VENMO"
     },
@@ -12,7 +12,8 @@
       "amount": 75,
       "note": "Mathieu drink",
       "date": "2026-06-01"
-    }
+    },
+    "corrected_by": "Brad walkthrough 6/9"
   },
   {
     "gmail_id": "19e88ae7285cd485",
@@ -48,7 +49,7 @@
     "gmail_id": "19e930b9c69d3fea",
     "matched_at": "2026-06-10T01:12:27.025Z",
     "matched_to": {
-      "date": "2026-06-02",
+      "date": "2026-06-04",
       "client": "Tonnie Dahl",
       "status": "PAID_VENMO"
     },
@@ -57,7 +58,8 @@
       "amount": 70,
       "note": "Thank You",
       "date": "2026-06-04"
-    }
+    },
+    "corrected_by": "Brad walkthrough 6/9"
   },
   {
     "gmail_id": "19e9371f8a0c3973",
@@ -153,7 +155,7 @@
     "gmail_id": "19eac8c0e6c777ce",
     "matched_at": "2026-06-10T01:12:27.025Z",
     "matched_to": {
-      "date": "2026-06-04",
+      "date": "2026-06-09",
       "client": "Tonnie Dahl",
       "status": "PAID_VENMO"
     },
@@ -162,7 +164,8 @@
       "amount": 45,
       "note": "Thank You",
       "date": "2026-06-09"
-    }
+    },
+    "corrected_by": "Brad walkthrough 6/9"
   },
   {
     "gmail_id": "19eace80a865fb71",
@@ -363,7 +366,7 @@
     "payment": {
       "sender": "Jacob Bain",
       "amount": 70,
-      "note": "5/27 🎉",
+      "note": "5/27 \ud83c\udf89",
       "date": "2026-05-31"
     },
     "backfilled": true
@@ -395,7 +398,7 @@
     "payment": {
       "sender": "Jacob Bain",
       "amount": 70,
-      "note": "5/13 🎉",
+      "note": "5/13 \ud83c\udf89",
       "date": "2026-05-21"
     },
     "backfilled": true
@@ -539,7 +542,7 @@
     "payment": {
       "sender": "Kerry Kreczmer",
       "amount": 50,
-      "note": "5/11 🎉",
+      "note": "5/11 \ud83c\udf89",
       "date": "2026-05-19"
     },
     "backfilled": true
@@ -571,7 +574,7 @@
     "payment": {
       "sender": "Dina Bates",
       "amount": 45,
-      "note": "5/18 😅",
+      "note": "5/18 \ud83d\ude05",
       "date": "2026-05-19"
     },
     "backfilled": true
