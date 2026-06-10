@@ -187,8 +187,17 @@ function parseVenmoEmail(msg) {
   const date = dateHdr ? new Date(dateHdr) : new Date();
   // Many clients write the session date in the memo ("5/19", "Missed session
   // 5/19", "Training w/Jeanette 5/8/26"). Extract it to pin late payments to
-  // the right session.
-  const noteDate = parseNoteDate(note, date.getUTCFullYear());
+  // the right session. EXCEPTION: when the memo date equals the payment date
+  // ("Jun 09, 2026" sent on 6/9), it's almost always Venmo's auto-filled
+  // default memo, not a session reference — treat as no date evidence so the
+  // payment can match a nearby session by proximity (Laci pays Friday's
+  // session on Tuesday with the default memo).
+  let noteDate = parseNoteDate(note, date.getUTCFullYear());
+  if (noteDate &&
+      noteDate.getUTCMonth() === date.getUTCMonth() &&
+      noteDate.getUTCDate() === date.getUTCDate()) {
+    noteDate = null;
+  }
   return { gmail_id: msg.id, sender_display_name, sender_handle, amount, note, noteDate, date, subject };
 }
 
@@ -344,6 +353,26 @@ export function reconcile(appointments, payments, clients, cashLog, cancellation
     const fp = fingerprint(p.sender_display_name, p.amount, p.note, fmtDateIso(p.date));
     return priorFingerprints.has(fp);
   };
+  // ── Ledger continuity (session pre-pay) ──
+  // A locked payment must still PAY FOR the session it was locked to.
+  // Without this, a re-run inside the same window sees the payment locked,
+  // can't re-match it, and flips an already-settled session back to UNPAID
+  // (the paid_venmo:19→4 collapse). Index prior matches by (session date,
+  // client); each entry settles at most one session.
+  const priorBySession = new Map();
+  for (const m of priorMatches) {
+    const d = m.matched_to?.date;
+    const c = (m.matched_to?.client || "").toLowerCase();
+    if (!d || !c || d.startsWith("n/a")) continue;
+    const key = `${d}__${c}`;
+    if (!priorBySession.has(key)) priorBySession.set(key, m);
+  }
+  const takePriorForSession = (appt, roster) => {
+    const key = `${fmtDateIso(appt.date)}__${roster.vagaro_name.toLowerCase()}`;
+    const m = priorBySession.get(key);
+    if (m) priorBySession.delete(key); // consume — one entry, one session
+    return m || null;
+  };
   // New matches made by THIS run — main() will append to the ledger.
   const newMatches = [];
 
@@ -409,6 +438,30 @@ export function reconcile(appointments, payments, clients, cashLog, cancellation
       expectedPrice,
       ...(roster.acceptable_prices || []),
     ].filter((n) => n != null))];
+
+    // Ledger continuity: this session was already settled by a prior run.
+    // Reproduce that attribution instead of re-matching (its payment is
+    // locked, so re-matching would falsely flip the session to UNPAID).
+    const prior = takePriorForSession(appt, roster);
+    if (prior) {
+      const pay = {
+        sender_display_name: prior.payment?.sender,
+        amount: prior.payment?.amount,
+        note: prior.payment?.note,
+        date: prior.payment?.date && !String(prior.payment.date).startsWith("n/a")
+          ? new Date(prior.payment.date) : new Date(appt.date),
+      };
+      if (prior.matched_to.status === "NEEDS_REVIEW") {
+        results.push({
+          appt, roster, status: "NEEDS_REVIEW", payment: pay, expectedPrice,
+          note: `Received $${pay.amount}, expected $${expectedPrice}`, fromLedger: true,
+        });
+      } else {
+        const checkoutAmount = matchedSessionPrice(pay.amount, acceptablePrices);
+        results.push({ appt, roster, status: "PAID_VENMO", payment: pay, expectedPrice, checkoutAmount, fromLedger: true });
+      }
+      continue;
+    }
 
     if (roster.pays_cash) {
       const cashHit = cashLog.find(

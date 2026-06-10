@@ -1,65 +1,5 @@
 [
   {
-    "gmail_id": "19e6a9bec1853a68",
-    "matched_at": "2026-06-10T01:21:39.662Z",
-    "matched_to": {
-      "date": "2026-06-03",
-      "client": "Rachel Bertholino",
-      "status": "PAID_VENMO"
-    },
-    "payment": {
-      "sender": "Celestin Mathieu",
-      "amount": 70,
-      "note": "Rachael",
-      "date": "2026-05-27"
-    }
-  },
-  {
-    "gmail_id": "19e6fa012cdb0edf",
-    "matched_at": "2026-06-10T01:21:39.662Z",
-    "matched_to": {
-      "date": "2026-06-02",
-      "client": "Tonnie Dahl",
-      "status": "PAID_VENMO"
-    },
-    "payment": {
-      "sender": "Tonnie Dahl",
-      "amount": 70,
-      "note": "Thank You",
-      "date": "2026-05-28"
-    }
-  },
-  {
-    "gmail_id": "19e703646459e44b",
-    "matched_at": "2026-06-10T01:21:39.662Z",
-    "matched_to": {
-      "date": "2026-06-04",
-      "client": "Tonnie Dahl",
-      "status": "NEEDS_REVIEW"
-    },
-    "payment": {
-      "sender": "Tonnie Dahl",
-      "amount": 5,
-      "note": "Thank You",
-      "date": "2026-05-28"
-    }
-  },
-  {
-    "gmail_id": "19e74d025b47e28e",
-    "matched_at": "2026-06-10T01:21:39.661Z",
-    "matched_to": {
-      "date": "2026-06-02",
-      "client": "Celestin Mathieu",
-      "status": "PAID_VENMO"
-    },
-    "payment": {
-      "sender": "Celestin Mathieu",
-      "amount": 75,
-      "note": "Mathieu + drink",
-      "date": "2026-05-29"
-    }
-  },
-  {
     "gmail_id": "19e8532707a60fd3",
     "matched_at": "2026-06-10T01:12:27.025Z",
     "matched_to": {
@@ -86,21 +26,6 @@
       "sender": "Peggy Barlow Happ",
       "amount": 50,
       "note": "Cancelled training 6/2/26",
-      "date": "2026-06-02"
-    }
-  },
-  {
-    "gmail_id": "19e895109df0b79b",
-    "matched_at": "2026-06-10T01:21:39.663Z",
-    "matched_to": {
-      "date": "2026-06-08",
-      "client": "Kerry Kreczmer",
-      "status": "PAID_VENMO"
-    },
-    "payment": {
-      "sender": "Kerry Kreczmer",
-      "amount": 50,
-      "note": "Senior games training",
       "date": "2026-06-02"
     }
   },
@@ -285,498 +210,466 @@
     }
   },
   {
-    "gmail_id": "backfill-09af263b9b4a9158",
+    "gmail_id": "backfill-0369ec01a3294782",
     "matched_at": "2026-05-27T00:00:00Z",
     "matched_to": {
-      "date": "n/a (backfilled)",
-      "client": "Danny Duty",
-      "status": "NEEDS_REVIEW"
-    },
-    "payment": {
-      "sender": "Adriana Duty",
-      "amount": 70,
-      "note": "Missed session 5/19",
-      "date": "n/a (backfilled)"
-    },
-    "backfilled": true
-  },
-  {
-    "gmail_id": "backfill-0faa3c105198c89f",
-    "matched_at": "2026-05-27T00:00:00Z",
-    "matched_to": {
-      "date": "n/a (backfilled)",
-      "client": "Anna Cessna",
-      "status": "PAID_VENMO"
-    },
-    "payment": {
-      "sender": "Anna Cessna",
-      "amount": 50,
-      "note": "May 25, 2026",
-      "date": "n/a (backfilled)"
-    },
-    "backfilled": true
-  },
-  {
-    "gmail_id": "backfill-210640cb9648fa9c",
-    "matched_at": "2026-05-27T00:00:00Z",
-    "matched_to": {
-      "date": "n/a (backfilled)",
-      "client": "Peggy Happ",
-      "status": "PAID_VENMO"
-    },
-    "payment": {
-      "sender": "Peggy Barlow Happ",
-      "amount": 45,
-      "note": "Team training 5/19/26",
-      "date": "n/a (backfilled)"
-    },
-    "backfilled": true
-  },
-  {
-    "gmail_id": "backfill-2333e5e02d5bd87a",
-    "matched_at": "2026-05-30T00:00:00Z",
-    "matched_to": {
-      "date": "n/a (backfilled)",
-      "client": "Jacob Bain",
-      "status": "PAID_VENMO"
-    },
-    "payment": {
-      "sender": "Jacob Bain",
-      "amount": 70,
-      "note": "5/13 🎉",
-      "date": "n/a (backfilled)"
-    },
-    "backfilled": true
-  },
-  {
-    "gmail_id": "backfill-2f59152d3dc1842e",
-    "matched_at": "2026-05-30T00:00:00Z",
-    "matched_to": {
-      "date": "n/a (backfilled)",
-      "client": "Danika Elenes",
-      "status": "PAID_VENMO"
-    },
-    "payment": {
-      "sender": "Danika Elenes",
-      "amount": 65,
-      "note": "May 22, 2026",
-      "date": "n/a (backfilled)"
-    },
-    "backfilled": true
-  },
-  {
-    "gmail_id": "backfill-3b76a6b0d88b99cf",
-    "matched_at": "2026-05-29T00:00:00Z",
-    "matched_to": {
-      "date": "n/a (backfilled)",
-      "client": "Annie Deioma",
-      "status": "PAID_VENMO"
-    },
-    "payment": {
-      "sender": "Mudroom",
-      "amount": 100,
-      "note": "Injury prevention / fitness training 5/27",
-      "date": "n/a (backfilled)"
-    },
-    "backfilled": true
-  },
-  {
-    "gmail_id": "backfill-419e1203a9d177b4",
-    "matched_at": "2026-06-10T00:00:00Z",
-    "matched_to": {
-      "date": "n/a (backfilled)",
+      "date": "2026-05-22",
       "client": "Lacey James",
       "status": "PAID_VENMO"
     },
     "payment": {
       "sender": "Laci James",
-      "amount": 70,
-      "note": "Jun 09, 2026",
-      "date": "n/a (backfilled)"
+      "amount": 70.0,
+      "note": "May 22, 2026",
+      "date": "2026-05-22"
     },
     "backfilled": true
   },
   {
-    "gmail_id": "backfill-439adcb62ec2e50a",
+    "gmail_id": "backfill-0bb0e24c180d68dc",
     "matched_at": "2026-05-27T00:00:00Z",
     "matched_to": {
-      "date": "n/a (backfilled)",
+      "date": "2026-05-25",
+      "client": "Jacob Bain",
+      "status": "PAID_VENMO"
+    },
+    "payment": {
+      "sender": "Jacob Bain",
+      "amount": 70.0,
+      "note": "5/21",
+      "date": "2026-05-21"
+    },
+    "backfilled": true
+  },
+  {
+    "gmail_id": "backfill-22c419bbcee50d15",
+    "matched_at": "2026-05-27T00:00:00Z",
+    "matched_to": {
+      "date": "2026-05-25",
       "client": "Katelin Lowther",
       "status": "PAID_VENMO"
     },
     "payment": {
       "sender": "katie lowther",
-      "amount": 50,
+      "amount": 50.0,
       "note": "5.25",
-      "date": "n/a (backfilled)"
+      "date": "2026-05-25"
     },
     "backfilled": true
   },
   {
-    "gmail_id": "backfill-52594a8060541096",
+    "gmail_id": "backfill-338d37c008d2ffda",
     "matched_at": "2026-05-27T00:00:00Z",
     "matched_to": {
-      "date": "n/a (backfilled)",
-      "client": "Lacey James",
-      "status": "PAID_VENMO"
-    },
-    "payment": {
-      "sender": "Laci James",
-      "amount": 70,
-      "note": "May 22, 2026",
-      "date": "n/a (backfilled)"
-    },
-    "backfilled": true
-  },
-  {
-    "gmail_id": "backfill-528289955eebd747",
-    "matched_at": "2026-06-01T00:00:00Z",
-    "matched_to": {
-      "date": "n/a (backfilled)",
-      "client": "Jacob Bain",
-      "status": "PAID_VENMO"
-    },
-    "payment": {
-      "sender": "Jacob Bain",
-      "amount": 70,
-      "note": "5/27 🎉",
-      "date": "n/a (backfilled)"
-    },
-    "backfilled": true
-  },
-  {
-    "gmail_id": "backfill-5519d89e1f1dc015",
-    "matched_at": "2026-05-27T00:00:00Z",
-    "matched_to": {
-      "date": "n/a (backfilled)",
-      "client": "Peggy Happ",
-      "status": "NEEDS_REVIEW"
-    },
-    "payment": {
-      "sender": "Peggy Barlow Happ",
-      "amount": 45,
-      "note": "Team training and a shake 5/26/26",
-      "date": "n/a (backfilled)"
-    },
-    "backfilled": true
-  },
-  {
-    "gmail_id": "backfill-5abc83ba502075f1",
-    "matched_at": "2026-05-30T00:00:00Z",
-    "matched_to": {
-      "date": "n/a (backfilled)",
-      "client": "michelle Delorenza",
-      "status": "NEEDS_REVIEW"
-    },
-    "payment": {
-      "sender": "Michelle DeLorenzo",
-      "amount": 85,
-      "note": "Thank you!",
-      "date": "n/a (backfilled)"
-    },
-    "backfilled": true
-  },
-  {
-    "gmail_id": "backfill-5d4ee7df7e0e8aa3",
-    "matched_at": "2026-05-29T00:00:00Z",
-    "matched_to": {
-      "date": "n/a (backfilled)",
-      "client": "Danny Duty",
-      "status": "NEEDS_REVIEW"
-    },
-    "payment": {
-      "sender": "Adriana Duty",
-      "amount": 70,
-      "note": "Workout 5/29",
-      "date": "n/a (backfilled)"
-    },
-    "backfilled": true
-  },
-  {
-    "gmail_id": "backfill-5f3217c299679fd4",
-    "matched_at": "2026-05-27T00:00:00Z",
-    "matched_to": {
-      "date": "n/a (backfilled)",
-      "client": "Kerry Kreczmer",
-      "status": "PAID_VENMO"
-    },
-    "payment": {
-      "sender": "Kerry Kreczmer",
-      "amount": 50,
-      "note": "5/11 🎉",
-      "date": "n/a (backfilled)"
-    },
-    "backfilled": true
-  },
-  {
-    "gmail_id": "backfill-65901e05f150620a",
-    "matched_at": "2026-05-27T00:00:00Z",
-    "matched_to": {
-      "date": "n/a (backfilled)",
-      "client": "michelle Delorenza",
-      "status": "PAID_VENMO"
-    },
-    "payment": {
-      "sender": "Michelle DeLorenzo",
-      "amount": 70,
-      "note": "May 18, 2026",
-      "date": "n/a (backfilled)"
-    },
-    "backfilled": true
-  },
-  {
-    "gmail_id": "backfill-66c75dc7a9b8792b",
-    "matched_at": "2026-05-27T00:00:00Z",
-    "matched_to": {
-      "date": "n/a (backfilled)",
-      "client": "Tonnie Dahl",
-      "status": "PAID_VENMO"
-    },
-    "payment": {
-      "sender": "Tonnie Dahl",
-      "amount": 45,
-      "note": "For 5/19/2026  Thank You",
-      "date": "n/a (backfilled)"
-    },
-    "backfilled": true
-  },
-  {
-    "gmail_id": "backfill-736412a659368a77",
-    "matched_at": "2026-05-27T00:00:00Z",
-    "matched_to": {
-      "date": "n/a (backfilled)",
-      "client": "Annie Deioma",
-      "status": "PAID_VENMO"
-    },
-    "payment": {
-      "sender": "Mudroom",
-      "amount": 100,
-      "note": "Strength training 5/20",
-      "date": "n/a (backfilled)"
-    },
-    "backfilled": true
-  },
-  {
-    "gmail_id": "backfill-77596820ba3610fe",
-    "matched_at": "2026-05-29T00:00:00Z",
-    "matched_to": {
-      "date": "n/a (backfilled)",
-      "client": "Lacey James",
-      "status": "PAID_VENMO"
-    },
-    "payment": {
-      "sender": "Laci James",
-      "amount": 70,
-      "note": "May 25, 2026",
-      "date": "n/a (backfilled)"
-    },
-    "backfilled": true
-  },
-  {
-    "gmail_id": "backfill-7df1bede7070deb2",
-    "matched_at": "2026-06-05T00:00:00Z",
-    "matched_to": {
-      "date": "n/a (backfilled)",
+      "date": "2026-05-25",
       "client": "Melissa Rios",
-      "status": "PAID_VENMO"
+      "status": "NEEDS_REVIEW"
     },
     "payment": {
       "sender": "Melissa Rios",
-      "amount": 75,
-      "note": "6/1 SORRY I FORGOT. BLAME THE PREGNANCY",
-      "date": "n/a (backfilled)"
+      "amount": 70.0,
+      "note": "5/19",
+      "date": "2026-05-20"
     },
     "backfilled": true
   },
   {
-    "gmail_id": "backfill-818be9e2d2b71d56",
+    "gmail_id": "backfill-36225511ca012c9a",
     "matched_at": "2026-05-29T00:00:00Z",
     "matched_to": {
-      "date": "n/a (backfilled)",
-      "client": "Celestin Mathieu",
-      "status": "NEEDS_REVIEW"
-    },
-    "payment": {
-      "sender": "Celestin Mathieu",
-      "amount": 75,
-      "note": "Mathieu + drink",
-      "date": "n/a (backfilled)"
-    },
-    "backfilled": true
-  },
-  {
-    "gmail_id": "backfill-9f8acdfcd02f3853",
-    "matched_at": "2026-06-05T00:00:00Z",
-    "matched_to": {
-      "date": "n/a (backfilled)",
-      "client": "michelle Delorenza",
-      "status": "PAID_VENMO"
-    },
-    "payment": {
-      "sender": "Michelle DeLorenzo",
-      "amount": 70,
-      "note": "Jun 01, 2026",
-      "date": "n/a (backfilled)"
-    },
-    "backfilled": true
-  },
-  {
-    "gmail_id": "backfill-a70d49c2b149d669",
-    "matched_at": "2026-05-30T00:00:00Z",
-    "matched_to": {
-      "date": "n/a (backfilled)",
-      "client": "Annie Deioma",
-      "status": "PAID_VENMO"
-    },
-    "payment": {
-      "sender": "Mudroom",
-      "amount": 80,
-      "note": "Team training 5/26",
-      "date": "n/a (backfilled)"
-    },
-    "backfilled": true
-  },
-  {
-    "gmail_id": "backfill-a7659364b4f702de",
-    "matched_at": "2026-05-29T00:00:00Z",
-    "matched_to": {
-      "date": "n/a (backfilled)",
+      "date": "2026-05-27",
       "client": "Rachel Bertholino",
       "status": "NEEDS_REVIEW"
     },
     "payment": {
       "sender": "Celestin Mathieu",
-      "amount": 70,
+      "amount": 70.0,
       "note": "Rachael",
-      "date": "n/a (backfilled)"
+      "date": "2026-05-27"
     },
     "backfilled": true
   },
   {
-    "gmail_id": "backfill-b5ad2c339d2dc071",
+    "gmail_id": "backfill-38924650333c2402",
     "matched_at": "2026-05-27T00:00:00Z",
     "matched_to": {
-      "date": "n/a (backfilled)",
-      "client": "Dina Bates",
-      "status": "PAID_VENMO"
+      "date": "2026-05-26",
+      "client": "Peggy Happ",
+      "status": "NEEDS_REVIEW"
     },
     "payment": {
-      "sender": "Dina Bates",
-      "amount": 45,
-      "note": "5/18 😅",
-      "date": "n/a (backfilled)"
+      "sender": "Peggy Barlow Happ",
+      "amount": 70.0,
+      "note": "Training on the new app 5/22/26",
+      "date": "2026-05-22"
     },
     "backfilled": true
   },
   {
-    "gmail_id": "backfill-c03ae9d6a3162b38",
+    "gmail_id": "backfill-39914e7f5b59831a",
     "matched_at": "2026-05-29T00:00:00Z",
     "matched_to": {
-      "date": "n/a (backfilled)",
-      "client": "Peggy Happ",
-      "status": "PAID_VENMO"
-    },
-    "payment": {
-      "sender": "Peggy Barlow Happ",
-      "amount": 55,
-      "note": "Training w/Jeanette and a shake 5/29/26",
-      "date": "n/a (backfilled)"
-    },
-    "backfilled": true
-  },
-  {
-    "gmail_id": "backfill-de3ef8de721e8495",
-    "matched_at": "2026-05-27T00:00:00Z",
-    "matched_to": {
-      "date": "n/a (backfilled)",
-      "client": "Peggy Happ",
+      "date": "2026-05-28",
+      "client": "Celestin Mathieu",
       "status": "NEEDS_REVIEW"
     },
     "payment": {
-      "sender": "Peggy Barlow Happ",
-      "amount": 70,
-      "note": "Training on the new app 5/22/26",
-      "date": "n/a (backfilled)"
+      "sender": "Celestin Mathieu",
+      "amount": 75.0,
+      "note": "Mathieu + drink",
+      "date": "2026-05-29"
     },
     "backfilled": true
   },
   {
-    "gmail_id": "backfill-e3ed34ee5c036081",
-    "matched_at": "2026-06-05T00:00:00Z",
+    "gmail_id": "backfill-3caeb12665c09920",
+    "matched_at": "2026-05-27T00:00:00Z",
     "matched_to": {
-      "date": "n/a (backfilled)",
-      "client": "Kerry Kreczmer",
+      "date": "2026-05-20",
+      "client": "Annie Deioma",
       "status": "PAID_VENMO"
     },
     "payment": {
-      "sender": "Kerry Kreczmer",
-      "amount": 50,
-      "note": "Senior games training",
-      "date": "n/a (backfilled)"
+      "sender": "Mudroom",
+      "amount": 100.0,
+      "note": "Strength training 5/20",
+      "date": "2026-05-22"
     },
     "backfilled": true
   },
   {
-    "gmail_id": "backfill-ebcec7f544ca83bd",
-    "matched_at": "2026-05-27T00:00:00Z",
+    "gmail_id": "backfill-63c69add5f08ab8a",
+    "matched_at": "2026-06-01T00:00:00Z",
     "matched_to": {
-      "date": "n/a (backfilled)",
-      "client": "Melissa Rios",
-      "status": "NEEDS_REVIEW"
-    },
-    "payment": {
-      "sender": "Melissa Rios",
-      "amount": 70,
-      "note": "5/19",
-      "date": "n/a (backfilled)"
-    },
-    "backfilled": true
-  },
-  {
-    "gmail_id": "backfill-f15ade11c9371aef",
-    "matched_at": "2026-06-10T00:00:00Z",
-    "matched_to": {
-      "date": "n/a (backfilled)",
-      "client": "Danny Duty",
-      "status": "NEEDS_REVIEW"
-    },
-    "payment": {
-      "sender": "Adriana Duty",
-      "amount": 110,
-      "note": "Workout 6/1",
-      "date": "n/a (backfilled)"
-    },
-    "backfilled": true
-  },
-  {
-    "gmail_id": "backfill-f8c6459b6ec17b53",
-    "matched_at": "2026-05-27T00:00:00Z",
-    "matched_to": {
-      "date": "n/a (backfilled)",
-      "client": "Peggy Happ",
-      "status": "PAID_VENMO"
-    },
-    "payment": {
-      "sender": "Peggy Barlow Happ",
-      "amount": 50,
-      "note": "Training w/Jeanette 5/12/26.",
-      "date": "n/a (backfilled)"
-    },
-    "backfilled": true
-  },
-  {
-    "gmail_id": "backfill-ff7c2ecbcfc651f9",
-    "matched_at": "2026-05-27T00:00:00Z",
-    "matched_to": {
-      "date": "n/a (backfilled)",
+      "date": "2026-05-27",
       "client": "Jacob Bain",
       "status": "PAID_VENMO"
     },
     "payment": {
       "sender": "Jacob Bain",
-      "amount": 70,
-      "note": "5/21",
-      "date": "n/a (backfilled)"
+      "amount": 70.0,
+      "note": "5/27 \ud83c\udf89",
+      "date": "2026-05-31"
+    },
+    "backfilled": true
+  },
+  {
+    "gmail_id": "backfill-6458312b5e566a66",
+    "matched_at": "2026-05-27T00:00:00Z",
+    "matched_to": {
+      "date": "2026-05-25",
+      "client": "Peggy Happ",
+      "status": "NEEDS_REVIEW"
+    },
+    "payment": {
+      "sender": "Peggy Barlow Happ",
+      "amount": 45.0,
+      "note": "Team training and a shake 5/26/26",
+      "date": "2026-05-26"
+    },
+    "backfilled": true
+  },
+  {
+    "gmail_id": "backfill-64d8242424f5fa0a",
+    "matched_at": "2026-05-30T00:00:00Z",
+    "matched_to": {
+      "date": "2026-05-27",
+      "client": "Jacob Bain",
+      "status": "PAID_VENMO"
+    },
+    "payment": {
+      "sender": "Jacob Bain",
+      "amount": 70.0,
+      "note": "5/13 \ud83c\udf89",
+      "date": "2026-05-21"
+    },
+    "backfilled": true
+  },
+  {
+    "gmail_id": "backfill-6808c28bbed6ee6c",
+    "matched_at": "2026-06-05T00:00:00Z",
+    "matched_to": {
+      "date": "2026-06-01",
+      "client": "Kerry Kreczmer",
+      "status": "PAID_VENMO"
+    },
+    "payment": {
+      "sender": "Kerry Kreczmer",
+      "amount": 50.0,
+      "note": "Senior games training",
+      "date": "2026-06-02"
+    },
+    "backfilled": true
+  },
+  {
+    "gmail_id": "backfill-73e0d3fc2afb450b",
+    "matched_at": "2026-05-27T00:00:00Z",
+    "matched_to": {
+      "date": "2026-05-25",
+      "client": "Anna Cessna",
+      "status": "PAID_VENMO"
+    },
+    "payment": {
+      "sender": "Anna Cessna",
+      "amount": 50.0,
+      "note": "May 25, 2026",
+      "date": "2026-05-25"
+    },
+    "backfilled": true
+  },
+  {
+    "gmail_id": "backfill-75381e8449d99943",
+    "matched_at": "2026-05-29T00:00:00Z",
+    "matched_to": {
+      "date": "2026-05-25",
+      "client": "Danny Duty",
+      "status": "NEEDS_REVIEW"
+    },
+    "payment": {
+      "sender": "Adriana Duty",
+      "amount": 70.0,
+      "note": "Workout 5/29",
+      "date": "2026-05-28"
+    },
+    "backfilled": true
+  },
+  {
+    "gmail_id": "backfill-77a634b5c0bf2461",
+    "matched_at": "2026-05-29T00:00:00Z",
+    "matched_to": {
+      "date": "2026-05-27",
+      "client": "Annie Deioma",
+      "status": "PAID_VENMO"
+    },
+    "payment": {
+      "sender": "Mudroom",
+      "amount": 100.0,
+      "note": "Injury prevention / fitness training 5/27",
+      "date": "2026-05-28"
+    },
+    "backfilled": true
+  },
+  {
+    "gmail_id": "backfill-7d3b87e29473176a",
+    "matched_at": "2026-05-30T00:00:00Z",
+    "matched_to": {
+      "date": "2026-05-28",
+      "client": "Danika Elenes",
+      "status": "PAID_VENMO"
+    },
+    "payment": {
+      "sender": "Danika Elenes",
+      "amount": 65.0,
+      "note": "May 22, 2026",
+      "date": "2026-05-22"
+    },
+    "backfilled": true
+  },
+  {
+    "gmail_id": "backfill-985816ebfdf71377",
+    "matched_at": "2026-05-27T00:00:00Z",
+    "matched_to": {
+      "date": "2026-05-25",
+      "client": "Danny Duty",
+      "status": "NEEDS_REVIEW"
+    },
+    "payment": {
+      "sender": "Adriana Duty",
+      "amount": 70.0,
+      "note": "Missed session 5/19",
+      "date": "2026-05-21"
+    },
+    "backfilled": true
+  },
+  {
+    "gmail_id": "backfill-9ad993646238516b",
+    "matched_at": "2026-05-30T00:00:00Z",
+    "matched_to": {
+      "date": "2026-05-26",
+      "client": "michelle Delorenza",
+      "status": "NEEDS_REVIEW"
+    },
+    "payment": {
+      "sender": "Michelle DeLorenzo",
+      "amount": 85.0,
+      "note": "Thank you!",
+      "date": "2026-05-26"
+    },
+    "backfilled": true
+  },
+  {
+    "gmail_id": "backfill-ad68d7cb93bd748d",
+    "matched_at": "2026-05-29T00:00:00Z",
+    "matched_to": {
+      "date": "2026-05-25",
+      "client": "Peggy Happ",
+      "status": "PAID_VENMO"
+    },
+    "payment": {
+      "sender": "Peggy Barlow Happ",
+      "amount": 55.0,
+      "note": "Training w/Jeanette and a shake 5/29/26",
+      "date": "2026-05-29"
+    },
+    "backfilled": true
+  },
+  {
+    "gmail_id": "backfill-b93a54ef9d60d570",
+    "matched_at": "2026-05-27T00:00:00Z",
+    "matched_to": {
+      "date": "2026-05-25",
+      "client": "Kerry Kreczmer",
+      "status": "PAID_VENMO"
+    },
+    "payment": {
+      "sender": "Kerry Kreczmer",
+      "amount": 50.0,
+      "note": "5/11 \ud83c\udf89",
+      "date": "2026-05-19"
+    },
+    "backfilled": true
+  },
+  {
+    "gmail_id": "backfill-c3a0eea2b4623fcd",
+    "matched_at": "2026-05-27T00:00:00Z",
+    "matched_to": {
+      "date": "2026-05-19",
+      "client": "Peggy Happ",
+      "status": "PAID_VENMO"
+    },
+    "payment": {
+      "sender": "Peggy Barlow Happ",
+      "amount": 45.0,
+      "note": "Team training 5/19/26",
+      "date": "2026-05-19"
+    },
+    "backfilled": true
+  },
+  {
+    "gmail_id": "backfill-c999ccc91d9f4c02",
+    "matched_at": "2026-05-27T00:00:00Z",
+    "matched_to": {
+      "date": "2026-05-25",
+      "client": "Dina Bates",
+      "status": "PAID_VENMO"
+    },
+    "payment": {
+      "sender": "Dina Bates",
+      "amount": 45.0,
+      "note": "5/18 \ud83d\ude05",
+      "date": "2026-05-19"
+    },
+    "backfilled": true
+  },
+  {
+    "gmail_id": "backfill-d5b6c47b7cb17a32",
+    "matched_at": "2026-05-30T00:00:00Z",
+    "matched_to": {
+      "date": "2026-05-26",
+      "client": "Annie Deioma",
+      "status": "PAID_VENMO"
+    },
+    "payment": {
+      "sender": "Mudroom",
+      "amount": 80.0,
+      "note": "Team training 5/26",
+      "date": "2026-05-28"
+    },
+    "backfilled": true
+  },
+  {
+    "gmail_id": "backfill-df7390ac0bdcb014",
+    "matched_at": "2026-05-27T00:00:00Z",
+    "matched_to": {
+      "date": "2026-05-19",
+      "client": "Tonnie Dahl",
+      "status": "PAID_VENMO"
+    },
+    "payment": {
+      "sender": "Tonnie Dahl",
+      "amount": 45.0,
+      "note": "For 5/19/2026  Thank You",
+      "date": "2026-05-21"
+    },
+    "backfilled": true
+  },
+  {
+    "gmail_id": "backfill-df9719668ca30f16",
+    "matched_at": "2026-06-05T00:00:00Z",
+    "matched_to": {
+      "date": "2026-06-01",
+      "client": "Melissa Rios",
+      "status": "PAID_VENMO"
+    },
+    "payment": {
+      "sender": "Melissa Rios",
+      "amount": 75.0,
+      "note": "6/1 SORRY I FORGOT. BLAME THE PREGNANCY",
+      "date": "2026-06-04"
+    },
+    "backfilled": true
+  },
+  {
+    "gmail_id": "backfill-e75595889b27fbf4",
+    "matched_at": "2026-05-29T00:00:00Z",
+    "matched_to": {
+      "date": "2026-05-29",
+      "client": "Lacey James",
+      "status": "PAID_VENMO"
+    },
+    "payment": {
+      "sender": "Laci James",
+      "amount": 70.0,
+      "note": "May 25, 2026",
+      "date": "2026-05-25"
+    },
+    "backfilled": true
+  },
+  {
+    "gmail_id": "backfill-ec6251228ed940af",
+    "matched_at": "2026-05-27T00:00:00Z",
+    "matched_to": {
+      "date": "2026-05-25",
+      "client": "michelle Delorenza",
+      "status": "PAID_VENMO"
+    },
+    "payment": {
+      "sender": "Michelle DeLorenzo",
+      "amount": 70.0,
+      "note": "May 18, 2026",
+      "date": "2026-05-19"
+    },
+    "backfilled": true
+  },
+  {
+    "gmail_id": "backfill-ed4d2c809823334d",
+    "matched_at": "2026-05-27T00:00:00Z",
+    "matched_to": {
+      "date": "2026-05-22",
+      "client": "Peggy Happ",
+      "status": "PAID_VENMO"
+    },
+    "payment": {
+      "sender": "Peggy Barlow Happ",
+      "amount": 50.0,
+      "note": "Training w/Jeanette 5/12/26.",
+      "date": "2026-05-15"
+    },
+    "backfilled": true
+  },
+  {
+    "gmail_id": "backfill-f3d88c843f1ee30d",
+    "matched_at": "2026-06-05T00:00:00Z",
+    "matched_to": {
+      "date": "2026-06-01",
+      "client": "michelle Delorenza",
+      "status": "PAID_VENMO"
+    },
+    "payment": {
+      "sender": "Michelle DeLorenzo",
+      "amount": 70.0,
+      "note": "Jun 01, 2026",
+      "date": "2026-06-01"
     },
     "backfilled": true
   }
