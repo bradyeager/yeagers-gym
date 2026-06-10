@@ -327,8 +327,23 @@ export function reconcile(appointments, payments, clients, cashLog, cancellation
   const results = [];
   // Payments locked by prior weekly runs — can never be matched again. This
   // is the only durable defense against the Jacob $70 "5/27" → Mon 6/1
-  // double-count bug. Gmail message-id is the unique key.
+  // double-count bug. We index by BOTH Gmail message-id (real, durable for
+  // anything matched after the ledger was introduced) AND a content
+  // fingerprint (sender+amount+note+date — covers historical backfilled
+  // entries that don't have real Gmail ids).
   const priorMatchIds = new Set(priorMatches.map((m) => m.gmail_id).filter(Boolean));
+  const fingerprint = (sender, amount, note, dateIso) =>
+    `${(sender || "").toLowerCase()}|${amount}|${(note || "").toLowerCase()}|${dateIso || ""}`;
+  const priorFingerprints = new Set(
+    priorMatches.map((m) =>
+      fingerprint(m.payment?.sender, m.payment?.amount, m.payment?.note, m.payment?.date),
+    ),
+  );
+  const isPriorMatch = (p) => {
+    if (p.gmail_id && priorMatchIds.has(p.gmail_id)) return true;
+    const fp = fingerprint(p.sender_display_name, p.amount, p.note, fmtDateIso(p.date));
+    return priorFingerprints.has(fp);
+  };
   // New matches made by THIS run — main() will append to the ledger.
   const newMatches = [];
 
@@ -407,8 +422,8 @@ export function reconcile(appointments, payments, clients, cashLog, cancellation
       .map((p, idx) => ({ p, idx }))
       .filter(({ idx }) => !usedPayments.has(idx))
       // Ledger filter: if a prior weekly run already claimed this exact
-      // Gmail message, it's locked — can never be matched again.
-      .filter(({ p }) => !p.gmail_id || !priorMatchIds.has(p.gmail_id))
+      // payment (by Gmail id OR content fingerprint), it's locked.
+      .filter(({ p }) => !isPriorMatch(p))
       // Note-keyword claim: if the payment's memo explicitly names someone
       // else (e.g. "Rachael" routes to Rachel), don't let other clients
       // grab it. A payment NOT claimed by anyone falls through to the
@@ -506,6 +521,7 @@ export function reconcile(appointments, payments, clients, cashLog, cancellation
   payments.forEach((p, idx) => {
     if (usedPayments.has(idx)) return;
     if (p.gmail_id && priorMatchIds.has(p.gmail_id)) return; // ledger lock
+    if (isPriorMatch(p)) return; // ledger lock (gmail_id OR fingerprint)
     const client = resolveClient(p);
     if (!client) return;
     if (!p.noteDate) return; // require date evidence — no amount-only guessing
