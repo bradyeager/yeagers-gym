@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="Yeager's Gym">
+  <rect width="32" height="32" rx="7" fill="#0A0E17"/>
+  <path d="M8.5 9 L16 16.6 L23.5 9" fill="none" stroke="#1EC8B0" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M16 16.6 L16 23.6" fill="none" stroke="#1EC8B0" stroke-width="3.4" stroke-linecap="round"/>
+</svg>
