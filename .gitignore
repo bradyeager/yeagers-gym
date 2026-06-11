@@ -7,9 +7,13 @@ secrets.json
 
 # --- Local audit / working artifacts (not part of the website) ---
 _audit/
+_prototype/
 .playwright-mcp/
 audit-*.jpeg
 audit-*.png
+proto-*.jpeg
+verify-*.jpeg
+batch1-*.jpeg
 
 # --- Git worktrees (local only — a committed gitlink here stalls Pages builds) ---
 .claude/worktrees/
