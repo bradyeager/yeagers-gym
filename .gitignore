@@ -11,6 +11,9 @@ _audit/
 audit-*.jpeg
 audit-*.png
 
+# --- Git worktrees (local only — a committed gitlink here stalls Pages builds) ---
+.claude/worktrees/
+
 # --- OS / editor noise ---
 .DS_Store
 Thumbs.db
