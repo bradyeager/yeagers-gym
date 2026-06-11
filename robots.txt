@@ -1,4 +1,9 @@
 User-agent: *
 Allow: /
+Disallow: /billing/
+Disallow: /michelle/
+Disallow: /lisa/
+Disallow: /athletes/
+Disallow: /scripts/
 
 Sitemap: https://yeagersgym.com/sitemap.xml
