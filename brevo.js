@@ -1,29 +1,27 @@
 /**
  * brevo.js — Yeager's Gym Email Capture Utility
  * Shared across all pages with email capture forms.
- * Uses Brevo v3 Contacts API (client-side, contact-write-only key).
  *
- * Usage:
+ * SECURITY: This file contains NO API key. It posts to a server-side middleman
+ * (Supabase Edge Function "brevo-proxy") which holds the Brevo key in a private
+ * env var and forwards to the Brevo Contacts API. The key never reaches the browser.
+ *
+ * Public interface is unchanged — pages keep calling brevoSubmit({...}) exactly as before:
  *   brevoSubmit({
  *     email: 'user@example.com',
  *     firstName: 'John',          // optional
  *     listIds: [8, 6],
- *     attributes: {
- *       LEAD_SOURCE: 'macro-calculator',
- *       LEAD_MAGNET: 'macro-calculator'
- *     }
+ *     attributes: { LEAD_SOURCE: 'macro-calculator', LEAD_MAGNET: 'macro-calculator' }
  *   }).then(ok => { ... });
  */
 
 (function () {
   'use strict';
 
-  var BREVO_API_URL = 'https://api.brevo.com/v3/contacts';
-  // Key split to pass GitHub push protection (write-only key, safe for client-side)
-  var _k = ['xkey','sib-f462df7b10d7fab2b0257638fe338f47936','e1b8760e86d291f888df1d9cd648e-7DfYSiLYGv0Kd5Ws'];
-  var BREVO_API_KEY = _k.join('');
+  // Server-side middleman endpoint (no secret here — safe for client-side).
+  var PROXY_URL = 'https://qfprpepqzckymbijeexw.supabase.co/functions/v1/brevo-proxy';
 
-  // List IDs
+  // List IDs (unchanged — pages reference these).
   window.BREVO_LISTS = {
     ALL_LEADS: 8,
     LEAD_MAGNETS: 6,
@@ -31,12 +29,12 @@
   };
 
   /**
-   * Submit a contact to Brevo.
+   * Submit a contact via the middleman.
    * @param {Object} opts
    * @param {string} opts.email - Required.
    * @param {string} [opts.firstName] - Optional first name.
-   * @param {number[]} opts.listIds - Array of Brevo list IDs.
-   * @param {Object} [opts.attributes] - Key/value pairs for contact attributes.
+   * @param {number[]} [opts.listIds] - Array of Brevo list IDs (server enforces allowed set).
+   * @param {Object} [opts.attributes] - Key/value contact attributes.
    * @returns {Promise<boolean>} - Resolves true on success, false on error.
    */
   window.brevoSubmit = function (opts) {
@@ -45,40 +43,22 @@
       return Promise.resolve(false);
     }
 
-    var attrs = opts.attributes || {};
-    if (opts.firstName) {
-      attrs.FIRSTNAME = opts.firstName;
-    }
-
     var body = {
       email: opts.email.trim().toLowerCase(),
-      attributes: attrs,
-      listIds: opts.listIds || [BREVO_LISTS.ALL_LEADS],
-      updateEnabled: true
+      firstName: opts.firstName || undefined,
+      listIds: opts.listIds || [window.BREVO_LISTS.ALL_LEADS],
+      attributes: opts.attributes || {}
     };
 
-    return fetch(BREVO_API_URL, {
+    return fetch(PROXY_URL, {
       method: 'POST',
-      headers: {
-        'api-key': BREVO_API_KEY,
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body)
     })
       .then(function (res) {
-        // 201 = created, 204 = already exists and updated
-        if (res.status === 201 || res.status === 204) {
-          return true;
-        }
-        // 400 with "Contact already exist" is also fine (updateEnabled handles it)
-        return res.json().then(function (data) {
-          if (data.code === 'duplicate_parameter') {
-            return true;
-          }
-          console.error('[Brevo] API error:', data);
-          return false;
-        });
+        return res.json()
+          .then(function (data) { return !!(data && data.ok); })
+          .catch(function () { return res.ok; });
       })
       .catch(function (err) {
         console.error('[Brevo] Network error:', err);

@@ -1,0 +1,16 @@
+# --- Secrets: never commit ---
+.env
+.env.*
+*.key
+*-credentials.json
+secrets.json
+
+# --- Local audit / working artifacts (not part of the website) ---
+_audit/
+.playwright-mcp/
+audit-*.jpeg
+audit-*.png
+
+# --- OS / editor noise ---
+.DS_Store
+Thumbs.db
