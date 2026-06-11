@@ -1,0 +1,27 @@
+# GitHub Pages (Jekyll) build configuration.
+#
+# Purpose: keep private/internal directories OUT of the published yeagersgym.com site.
+#
+# This is a PUBLISH-time exclusion only. It does NOT modify, move, delete, or disable
+# any billing automation, GitHub Actions workflow, client data, or secrets. Excluded
+# paths remain in the repository and remain fully readable by the Actions checkout —
+# they are simply not copied into the published site, so they return 404 on
+# yeagersgym.com instead of exposing their contents.
+#
+# Site is a legacy Jekyll build from main:/ with no .nojekyll and no custom Pages
+# workflow, so this `exclude` list is respected by the default GitHub Pages build.
+
+exclude:
+  # --- Client PII / billing (primary mitigation) ---
+  - billing
+  - michelle
+  - lisa
+  - athletes
+  # --- Internal tooling / CI ---
+  - scripts
+  - .github
+  # --- Internal backend / docs / working files ---
+  - _backend
+  - docs
+  - "CLAUDE OUTPUTS"
+  - CLAUDE.md
