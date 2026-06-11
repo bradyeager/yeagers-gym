@@ -683,6 +683,13 @@
   flex-shrink: 0;
 }
 
+/* Tonnie's headshot is a portrait — shift the avatar crop up so her face
+   (not her medals) is centered in the circular frame. Tonnie-only. */
+.hero-testi-avatar[src$="Tonnie.png"],
+.testimonial-avatar-img[src$="Tonnie.png"] {
+  object-position: 50% 20%;
+}
+
 .hero-testi-body {
   flex: 1;
   min-width: 0;
