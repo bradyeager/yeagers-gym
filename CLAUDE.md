@@ -6,13 +6,19 @@ Static website for Yeager's Gym — a data-driven strength coaching brand in San
 Brand tagline: "Coached by Data. Built on Strength."
 Contact: brad@yeagersgym.com
 
+## Project Memory (The Vault)
+Durable project state lives at `C:\Jarvis\Obsidian\01_PROJECTS\yeagersgym-website\`.
+- Read `STATE.md` and `DECISIONS.md` there before substantive work.
+- After meaningful work, update `STATE.md`, append new decisions, show the diff, commit the vault.
+- For project FACTS, vault STATE.md outranks this file — flag conflicts when you see them.
+
 ## Tech Stack
 - Static HTML/CSS/JS — no frameworks, no build tools, no bundlers
 - `base.css` + `style.css` for all styles
 - Vanilla JS inline in each HTML file
 - Local dev server: `npx serve . -l 3003 --no-clipboard` (no --single flag)
 - Deployed via GitHub Pages: https://bradyeager.github.io/yeagers-gym/
-- yeagersgym.com is NOT live yet — GitHub Pages URL is the live site
+- LIVE at https://yeagersgym.com (custom domain on GitHub Pages)
 
 ## File Structure
 - `index.html` — SPA homepage with hash-routed pages (home, about, services, remote, vbt, results, contact)

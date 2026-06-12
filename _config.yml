@@ -25,3 +25,4 @@ exclude:
   - docs
   - "CLAUDE OUTPUTS"
   - CLAUDE.md
+  - AGENTS.md
