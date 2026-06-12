@@ -55,12 +55,14 @@ Before declaring any visual change complete, render the page and check it. Font 
 
 ## Design Tokens
 ```
---color-teal: #1EC8B0        (brand, data, trust, nav CTA)
---color-pink: #F0448A        (pop, urgency, action CTAs)
+--color-teal: #48C4CC        (brand, data, trust, nav CTA)
+--color-pink: #EF3295        (pop, urgency, action CTAs)
 --color-purple: #9B6FD4      (tertiary accent)
 --font-display: JetBrains Mono  (headings, labels, nav, buttons)
 --font-body: Inter              (body copy, hero headlines)
 ```
+
+Retired — never reintroduce (flag if seen): `#1EC8B0` (old teal), `#F0448A` (old pink) — replaced April 2026.
 
 ### Color Usage
 - Pink for "Get Started" labels and primary action CTAs
