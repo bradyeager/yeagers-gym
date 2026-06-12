@@ -228,6 +228,128 @@
     }
   },
   {
+    "gmail_id": "19eb298a5f35cabe",
+    "matched_at": "2026-06-12T18:57:55.089Z",
+    "matched_to": {
+      "date": "2026-06-10",
+      "client": "Rachel Bertholino",
+      "status": "PAID_VENMO"
+    },
+    "payment": {
+      "sender": "Celestin Mathieu",
+      "amount": 50,
+      "note": "Rachael",
+      "date": "2026-06-10"
+    }
+  },
+  {
+    "gmail_id": "19eb45f4f67dc3de",
+    "matched_at": "2026-06-12T18:57:55.090Z",
+    "matched_to": {
+      "date": "2026-06-10",
+      "client": "Lacey James",
+      "status": "PAID_VENMO",
+      "inferred": true
+    },
+    "payment": {
+      "sender": "Laci James",
+      "amount": 70,
+      "note": "6/10",
+      "date": "2026-06-11"
+    }
+  },
+  {
+    "gmail_id": "19eb714d149a14e9",
+    "matched_at": "2026-06-12T18:57:55.089Z",
+    "matched_to": {
+      "date": "2026-06-11",
+      "client": "Tonnie Dahl",
+      "status": "PAID_VENMO"
+    },
+    "payment": {
+      "sender": "Tonnie Dahl",
+      "amount": 70,
+      "note": "Thank You",
+      "date": "2026-06-11"
+    }
+  },
+  {
+    "gmail_id": "19eb80ed9efea803",
+    "matched_at": "2026-06-12T18:57:55.089Z",
+    "matched_to": {
+      "date": "2026-06-11",
+      "client": "Celestin Mathieu",
+      "status": "PAID_VENMO"
+    },
+    "payment": {
+      "sender": "Celestin Mathieu",
+      "amount": 50,
+      "note": "Mathieu",
+      "date": "2026-06-11"
+    }
+  },
+  {
+    "gmail_id": "19eb8b3989e1de54",
+    "matched_at": "2026-06-12T18:57:55.089Z",
+    "matched_to": {
+      "date": "2026-06-10",
+      "client": "Jacob Bain",
+      "status": "NEEDS_REVIEW"
+    },
+    "payment": {
+      "sender": "Jacob Bain",
+      "amount": 50,
+      "note": "Programming - March 👊",
+      "date": "2026-06-11"
+    }
+  },
+  {
+    "gmail_id": "19eb9784b9082516",
+    "matched_at": "2026-06-12T18:57:55.090Z",
+    "matched_to": {
+      "date": "2026-06-11",
+      "client": "Melissa Rios",
+      "status": "PAID_VENMO",
+      "inferred": true
+    },
+    "payment": {
+      "sender": "Melissa Rios",
+      "amount": 70,
+      "note": "6/11",
+      "date": "2026-06-12"
+    }
+  },
+  {
+    "gmail_id": "19ebcbb2c9e8bf83",
+    "matched_at": "2026-06-12T18:57:55.089Z",
+    "matched_to": {
+      "date": "2026-06-12",
+      "client": "Peggy Happ",
+      "status": "PAID_VENMO"
+    },
+    "payment": {
+      "sender": "Peggy Barlow Happ",
+      "amount": 50,
+      "note": "Cancelled appointment 6/12/26",
+      "date": "2026-06-12"
+    }
+  },
+  {
+    "gmail_id": "19ebd011e42dd480",
+    "matched_at": "2026-06-12T18:57:55.088Z",
+    "matched_to": {
+      "date": "2026-06-08",
+      "client": "michelle Delorenza",
+      "status": "PAID_VENMO"
+    },
+    "payment": {
+      "sender": "Michelle DeLorenzo",
+      "amount": 70,
+      "note": "Jun 12, 2026",
+      "date": "2026-06-12"
+    }
+  },
+  {
     "gmail_id": "backfill-0369ec01a3294782",
     "matched_at": "2026-05-27T00:00:00Z",
     "matched_to": {
@@ -366,7 +488,7 @@
     "payment": {
       "sender": "Jacob Bain",
       "amount": 70,
-      "note": "5/27 \ud83c\udf89",
+      "note": "5/27 🎉",
       "date": "2026-05-31"
     },
     "backfilled": true
@@ -398,7 +520,7 @@
     "payment": {
       "sender": "Jacob Bain",
       "amount": 70,
-      "note": "5/13 \ud83c\udf89",
+      "note": "5/13 🎉",
       "date": "2026-05-21"
     },
     "backfilled": true
@@ -542,7 +664,7 @@
     "payment": {
       "sender": "Kerry Kreczmer",
       "amount": 50,
-      "note": "5/11 \ud83c\udf89",
+      "note": "5/11 🎉",
       "date": "2026-05-19"
     },
     "backfilled": true
@@ -574,7 +696,7 @@
     "payment": {
       "sender": "Dina Bates",
       "amount": 45,
-      "note": "5/18 \ud83d\ude05",
+      "note": "5/18 😅",
       "date": "2026-05-19"
     },
     "backfilled": true
@@ -705,6 +827,6 @@
       "note": "Senior games training",
       "date": "2026-06-02"
     },
-    "corrected_by": "Brad walkthrough 6/9 \u2014 Kerry attended Tue team instead of her Mon slot"
+    "corrected_by": "Brad walkthrough 6/9 — Kerry attended Tue team instead of her Mon slot"
   }
 ]
