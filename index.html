@@ -1165,13 +1165,18 @@
 <div id="page-results" class="page">
   <div style="padding-top: 64px;"></div>
 
-  <!-- Athlete Testimonials -->
-  <section class="section" aria-label="Athlete Testimonials">
+  <!-- Athlete Testimonials — header banner over the velocity-dashboard image -->
+  <section style="position: relative; background: url('assets/data-dashboard.jpeg') center center / cover no-repeat; padding: var(--space-12) 0 var(--space-8);" aria-label="Athlete Testimonials">
+    <div style="position: absolute; inset: 0; background: rgba(10, 14, 23, 0.75); z-index: 0;"></div>
+    <div class="container" style="position: relative; z-index: 1; text-align: center;">
+      <p class="section-label" style="color: var(--color-teal); text-align: center; max-width: none;">What Our Athletes Say</p>
+      <h2 style="font-family: var(--font-body); font-size: var(--text-2xl); font-weight: 800; color: var(--color-text); line-height: 1.1; margin-bottom: 0; text-align: center;">Real Athletes. <span style="color: var(--color-pink);">Real Words.</span></h2>
+    </div>
+  </section>
+
+  <!-- Testimonial cards (plain) -->
+  <section class="section">
     <div class="container">
-      <div class="section-header" style="text-align: center;">
-        <p class="section-label" style="color: var(--color-teal); text-align: center; max-width: none;">What Our Athletes Say</p>
-        <h2 style="font-family: var(--font-body); font-size: var(--text-2xl); font-weight: 800; color: var(--color-text); line-height: 1.1; margin-bottom: var(--space-6); text-align: center;">Real Athletes. <span style="color: var(--color-pink);">Real Words.</span></h2>
-      </div>
 
       <div class="testimonial-grid">
 
@@ -1299,9 +1304,8 @@
 
   <hr class="glow-line">
 
-  <section style="position: relative; background: url('assets/data-dashboard.jpeg') center center / cover no-repeat; padding: var(--space-12) 0 var(--space-8);">
-    <div style="position: absolute; inset: 0; background: rgba(10, 14, 23, 0.75); z-index: 0;"></div>
-    <div class="container" style="position: relative; z-index: 1; text-align: center;">
+  <section style="padding: var(--space-12) 0 var(--space-8);">
+    <div class="container" style="text-align: center;">
       <h2 style="font-family: var(--font-body); font-size: var(--text-2xl); font-weight: 800; color: var(--color-text); line-height: 1.1; margin-bottom: var(--space-4);">Proof in the <span style="color: var(--color-teal);">Numbers.</span></h2>
       <p class="section-desc" style="margin-inline: auto;">Real athletes. Real numbers. Every result below is backed by consistent coaching and tracked over time.</p>
     </div>
