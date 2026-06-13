@@ -903,6 +903,17 @@
      ═══════════════════════════════════════════ -->
 <footer class="site-footer" role="contentinfo" style="padding: var(--space-6) 0;">
   <div class="container">
+    <!-- Newsletter capture -->
+    <div class="footer-newsletter">
+      <div class="footer-newsletter-text">
+        <p class="footer-newsletter-title">Train smarter — straight to your inbox</p>
+        <p class="footer-newsletter-desc">Get free tools, training notes, and data-driven strength resources from Yeager's Gym.</p>
+      </div>
+      <form class="footer-newsletter-form" novalidate onsubmit="return ygNewsletter(this,'newsletter-footer')">
+        <input type="email" required placeholder="Your email" aria-label="Email address" autocomplete="email">
+        <button type="submit" class="btn btn-primary">Get Resources</button>
+      </form>
+    </div>
     <div class="footer-bottom" style="border-top: none; padding-top: 0;">
       <span>&copy; 2026 Yeager's Gym. San Diego, CA.</span>
     </div>
@@ -1247,5 +1258,19 @@
 })();
 </script>
 
+<script>
+window.ygNewsletter = window.ygNewsletter || function (form, source) {
+  var input = form.querySelector('input[type="email"]'), btn = form.querySelector('button');
+  var email = (input.value || '').trim();
+  if (typeof brevoValidateEmail !== 'function' || !brevoValidateEmail(email)) { input.focus(); return false; }
+  var original = btn.textContent; btn.disabled = true; btn.textContent = 'Sending\u2026';
+  brevoSubmit({ email: email, listIds: [BREVO_LISTS.ALL_LEADS], attributes: { LEAD_SOURCE: source } }).then(function (ok) {
+    if (ok) { form.reset(); btn.textContent = 'Subscribed \u2713'; if (typeof brevoToast === 'function') brevoToast(); }
+    else { btn.textContent = 'Try again'; }
+    setTimeout(function () { btn.textContent = original; btn.disabled = false; }, 3200);
+  });
+  return false;
+};
+</script>
 </body>
 </html>
