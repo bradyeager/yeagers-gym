@@ -3118,7 +3118,7 @@
   .hero-bg img {
     object-position: 50% 18% !important;
     opacity: 1 !important;
-    transform: scale(1.12);
+    transform: scale(1.12) translateY(-4vh);
     transform-origin: center 25%;
   }
 
@@ -3275,6 +3275,7 @@
   }
   .footer-newsletter-form {
     max-width: none;
+    flex: 0 0 auto;
   }
 }
 
