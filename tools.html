@@ -352,17 +352,16 @@
 
     <section class="tool-group fade-in">
       <div class="tool-group-head">
-        <h2 class="tool-group-title">Recovery</h2>
-        <p class="tool-group-desc">A 30-second readiness check to decide whether today is a push day or a pull-back day.</p>
+        <h2 class="tool-group-title">Peptide Education</h2>
+        <p class="tool-group-desc">Reconstitution and dosing math for learning purposes — education only, not medical advice.</p>
       </div>
       <div class="tools-grid">
-      <!-- Recovery (teal) -->
-      <a href="./tools-readiness.html" class="tool-card fade-in">
-        <span class="tool-tag tool-tag--recovery">Recovery</span>
-        <h3>Daily Readiness Score</h3>
-        <p>30-second check-in. Push day, maintain day, or recovery day?</p>
+      <!-- Peptide (pink) -->
+      <a href="./tools-peptide.html" class="tool-card fade-in">
+        <span class="tool-tag tool-tag--peptide">Peptide</span>
+        <h3>Peptide Dosing Calculator</h3>
+        <p>Reconstitution math, syringe units, draw volume, and vial duration.</p>
       </a>
-
       </div>
     </section>
 
@@ -389,16 +388,17 @@
 
     <section class="tool-group fade-in">
       <div class="tool-group-head">
-        <h2 class="tool-group-title">Peptide Education</h2>
-        <p class="tool-group-desc">Reconstitution and dosing math for learning purposes — education only, not medical advice.</p>
+        <h2 class="tool-group-title">Recovery</h2>
+        <p class="tool-group-desc">A 30-second readiness check to decide whether today is a push day or a pull-back day.</p>
       </div>
       <div class="tools-grid">
-      <!-- Peptide (pink) -->
-      <a href="./tools-peptide.html" class="tool-card fade-in">
-        <span class="tool-tag tool-tag--peptide">Peptide</span>
-        <h3>Peptide Dosing Calculator</h3>
-        <p>Reconstitution math, syringe units, draw volume, and vial duration.</p>
+      <!-- Recovery (teal) -->
+      <a href="./tools-readiness.html" class="tool-card fade-in">
+        <span class="tool-tag tool-tag--recovery">Recovery</span>
+        <h3>Daily Readiness Score</h3>
+        <p>30-second check-in. Push day, maintain day, or recovery day?</p>
       </a>
+
       </div>
     </section>
   </div>
@@ -448,6 +448,17 @@
         </a>
         <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="footer-vagaro-link">Book via Vagaro →</a>
       </div>
+    </div>
+    <!-- Newsletter capture -->
+    <div class="footer-newsletter">
+      <div class="footer-newsletter-text">
+        <p class="footer-newsletter-title">Train smarter — straight to your inbox</p>
+        <p class="footer-newsletter-desc">Get free tools, training notes, and data-driven strength resources from Yeager's Gym.</p>
+      </div>
+      <form class="footer-newsletter-form" novalidate onsubmit="return ygNewsletter(this,'newsletter-footer')">
+        <input type="email" required placeholder="Your email" aria-label="Email address" autocomplete="email">
+        <button type="submit" class="btn btn-primary">Get Resources</button>
+      </form>
     </div>
     <div class="footer-bottom">
       <span>&copy; 2026 Yeager's Gym &middot; San Diego, CA</span>
@@ -502,5 +513,20 @@
 })();
 </script>
 
+<script src="./brevo.js"></script>
+<script>
+window.ygNewsletter = window.ygNewsletter || function (form, source) {
+  var input = form.querySelector('input[type="email"]'), btn = form.querySelector('button');
+  var email = (input.value || '').trim();
+  if (typeof brevoValidateEmail !== 'function' || !brevoValidateEmail(email)) { input.focus(); return false; }
+  var original = btn.textContent; btn.disabled = true; btn.textContent = 'Sending\u2026';
+  brevoSubmit({ email: email, listIds: [BREVO_LISTS.ALL_LEADS], attributes: { LEAD_SOURCE: source } }).then(function (ok) {
+    if (ok) { form.reset(); btn.textContent = 'Subscribed \u2713'; if (typeof brevoToast === 'function') brevoToast(); }
+    else { btn.textContent = 'Try again'; }
+    setTimeout(function () { btn.textContent = original; btn.disabled = false; }, 3200);
+  });
+  return false;
+};
+</script>
 </body>
 </html>

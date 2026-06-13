@@ -53,7 +53,59 @@
 </script>
 
 <!-- Enhanced Homepage Styles -->
+<style>
+  /* Services & Pricing hero — frame the athlete's face above the headline on both breakpoints */
+  .services-hero {
+    position: relative;
+    overflow: hidden;
+    background: url('assets/promo-geo-resting-opt.jpg') 50% 22% / cover no-repeat;
+    padding: var(--space-12) 0 var(--space-8);
+    min-height: 500px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+  }
+  @media (max-width: 768px) {
+    .services-hero {
+      background-position: 62% 18%;
+      min-height: 480px;
+    }
+  }
 
+  /* Homepage email capture band */
+  .home-capture { padding: var(--space-8) 0; text-align: center; }
+  .home-capture-title {
+    font-family: var(--font-body);
+    font-size: var(--text-xl);
+    font-weight: 800;
+    color: var(--color-text);
+    margin: 0 0 var(--space-2);
+  }
+  .home-capture-desc {
+    font-size: var(--text-sm);
+    color: var(--color-text-muted);
+    max-width: 52ch;
+    margin: 0 auto var(--space-5);
+    line-height: 1.6;
+  }
+  .home-capture-form { display: flex; gap: var(--space-2); max-width: 460px; margin: 0 auto; }
+  .home-capture-form input {
+    flex: 1;
+    min-width: 0;
+    padding: 0.7rem 1rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    color: var(--color-text);
+    font-family: var(--font-body);
+    font-size: var(--text-sm);
+  }
+  .home-capture-form input:focus { outline: none; border-color: var(--color-teal); }
+  .home-capture-form .btn { white-space: nowrap; }
+  @media (max-width: 560px) {
+    .home-capture-form { flex-direction: column; }
+  }
+</style>
 
 </head>
 <body>
@@ -125,8 +177,9 @@
     <picture>
       <source media="(min-width: 769px)" srcset="assets/hero-desktop.webp" type="image/webp">
       <source media="(min-width: 769px)" srcset="assets/hero-desktop.jpeg" type="image/jpeg">
-      <source media="(max-width: 768px)" srcset="assets/hero-mobile.png?v=3" type="image/png">
-      <img src="assets/hero-mobile.png?v=3" alt="Yeager's Gym — Data-Driven Strength Coaching" loading="eager" width="1170" height="653">
+      <source media="(max-width: 768px)" srcset="assets/hero-mobile.webp" type="image/webp">
+      <source media="(max-width: 768px)" srcset="assets/hero-mobile.png?v=4" type="image/png">
+      <img src="assets/hero-mobile.png?v=4" alt="Yeager's Gym — Data-Driven Strength Coaching" loading="eager" width="1170" height="653">
     </picture>
   </div>
   <div class="hero-content">
@@ -538,6 +591,21 @@
 
 <hr class="glow-line">
 
+<!-- Homepage email capture -->
+<section class="home-capture" aria-label="Free resources signup">
+  <div class="container">
+    <p class="section-label" style="color: var(--color-teal); text-align: center; max-width: none;">// Free Resources</p>
+    <h2 class="home-capture-title">Not ready to book? Train smarter for free.</h2>
+    <p class="home-capture-desc">Get free tools, training notes, and data-driven strength resources from Yeager's Gym — straight to your inbox.</p>
+    <form class="home-capture-form" novalidate onsubmit="return ygNewsletter(this,'newsletter-home')">
+      <input type="email" required placeholder="Your email" aria-label="Email address" autocomplete="email">
+      <button type="submit" class="btn btn-primary">Get Free Resources</button>
+    </form>
+  </div>
+</section>
+
+<hr class="glow-line">
+
 <!-- Stats Ticker -->
 <div class="stats-ticker">
   <div class="stats-ticker-track">
@@ -654,7 +722,7 @@
      ═══════════════════════════════════════════════════════════ -->
 <div id="page-services" class="page">
   <div style="padding-top: 80px;"></div>
-  <section style="position: relative; overflow: hidden; background: url('assets/promo-geo-resting-opt.jpg') center 35% / cover no-repeat; padding: var(--space-12) 0 var(--space-8); min-height: 450px;" aria-label="Services Hero">
+  <section class="services-hero" aria-label="Services Hero">
     <div style="position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(5,7,11,0.45) 0%, rgba(5,7,11,0.65) 50%, var(--color-bg) 100%); pointer-events: none;"></div>
     <div class="container" style="position: relative; z-index: 1;">
       <div class="section-header" style="text-align: center;">
@@ -1088,133 +1156,6 @@
      ═══════════════════════════════════════════════════════════ -->
 <div id="page-results" class="page">
   <div style="padding-top: 64px;"></div>
-  <section style="position: relative; background: url('assets/data-dashboard.jpeg') center center / cover no-repeat; padding: var(--space-12) 0 var(--space-8);">
-    <div style="position: absolute; inset: 0; background: rgba(10, 14, 23, 0.75); z-index: 0;"></div>
-    <div class="container" style="position: relative; z-index: 1; text-align: center;">
-      <h2 style="font-family: var(--font-body); font-size: var(--text-2xl); font-weight: 800; color: var(--color-text); line-height: 1.1; margin-bottom: var(--space-4);">The <span style="color: var(--color-teal);">Data</span> Speaks for <span style="color: var(--color-pink);">Itself.</span></h2>
-      <p class="section-desc" style="margin-inline: auto;">Real athletes. Real numbers. Every result below is backed by consistent coaching and tracked over time.</p>
-    </div>
-  </section>
-
-  <hr class="glow-line">
-
-  <section class="section" aria-label="Results">
-    <div class="container">
-
-      <!-- Powerlifting Data -->
-      <div class="results-category results-category--pink fade-in">
-        <h3 class="results-category-title">Powerlifting Data</h3>
-        <div class="result-highlight-grid result-highlight-grid--tight">
-          <div class="result-highlight result-highlight--tight">
-            <div class="stat-val">+75 lbs</div>
-            <div class="stat-label">Squat PR · 6 months</div>
-            <p class="vbt-showcase-desc" style="font-size: var(--text-xs); color: var(--color-text-muted); margin-top: var(--space-2); line-height: 1.6;">Went from a shaky 315 to a confident 390 squat through structured progressive overload and smart intensity management.</p>
-          </div>
-          <div class="result-highlight result-highlight--tight">
-            <div class="stat-val">9/9</div>
-            <div class="stat-label">USAPL Meet Attempts</div>
-            <p class="vbt-showcase-desc" style="font-size: var(--text-xs); color: var(--color-text-muted); margin-top: var(--space-2); line-height: 1.6;">Perfect 9-for-9 at first USAPL meet. Every attempt was planned and practiced in training — zero guesswork on the platform.</p>
-          </div>
-        </div>
-      </div>
-
-      <!-- Weightlifting Data -->
-      <div class="results-category results-category--teal fade-in">
-        <h3 class="results-category-title">Weightlifting Data</h3>
-        <div class="result-highlight-grid result-highlight-grid--tight">
-          <div class="result-highlight result-highlight--tight">
-            <div class="stat-val">+15 kg</div>
-            <div class="stat-label">Clean & Jerk PR · 12 weeks</div>
-            <p class="vbt-showcase-desc" style="font-size: var(--text-xs); color: var(--color-text-muted); margin-top: var(--space-2); line-height: 1.6;">Targeted technique work on the second pull translated directly to a competition PR. Coaching caught what self-training missed.</p>
-          </div>
-          <div class="result-highlight result-highlight--tight">
-            <div class="stat-val">+10 kg</div>
-            <div class="stat-label">Snatch PR · 8 weeks</div>
-            <p class="vbt-showcase-desc" style="font-size: var(--text-xs); color: var(--color-text-muted); margin-top: var(--space-2); line-height: 1.6;">Identified the exact loading range where technique broke down. Focused work in that zone produced a smooth, confident PR.</p>
-          </div>
-        </div>
-      </div>
-
-      <!-- CrossFit Data -->
-      <div class="results-category results-category--pink fade-in">
-        <h3 class="results-category-title">CrossFit Data</h3>
-        <div class="result-highlight-grid result-highlight-grid--tight">
-          <div class="result-highlight result-highlight--tight">
-            <div class="stat-val">-1:42</div>
-            <div class="stat-label">Fran Time · 8 weeks</div>
-            <p class="vbt-showcase-desc" style="font-size: var(--text-xs); color: var(--color-text-muted); margin-top: var(--space-2); line-height: 1.6;">Improved thruster velocity and cycling efficiency through targeted barbell speed work. Almost two minutes faster on the benchmark.</p>
-          </div>
-          <div class="result-highlight result-highlight--tight">
-            <div class="stat-val">5★</div>
-            <div class="stat-label">Client Rating</div>
-            <p class="vbt-showcase-desc" style="font-size: var(--text-xs); color: var(--color-text-muted); margin-top: var(--space-2); line-height: 1.6;">Perfect rating from CrossFit athletes who value data-backed programming that doesn't sacrifice the competitive edge.</p>
-          </div>
-        </div>
-      </div>
-
-      <!-- Bodybuilding Data -->
-      <div class="results-category results-category--teal fade-in">
-        <h3 class="results-category-title">Bodybuilding Data</h3>
-        <div class="result-highlight-grid result-highlight-grid--tight">
-          <div class="result-highlight result-highlight--tight">
-            <div class="stat-val">-18 lbs</div>
-            <div class="stat-label">Body Recomp · 12 weeks</div>
-            <p class="vbt-showcase-desc" style="font-size: var(--text-xs); color: var(--color-text-muted); margin-top: var(--space-2); line-height: 1.6;">Lost 18 lbs while maintaining or improving every major lift. Structured programming ensured training intensity stayed high throughout the cut.</p>
-          </div>
-          <div class="result-highlight result-highlight--tight">
-            <div class="stat-val">-4% BF</div>
-            <div class="stat-label">Body Fat · 8 weeks</div>
-            <p class="vbt-showcase-desc" style="font-size: var(--text-xs); color: var(--color-text-muted); margin-top: var(--space-2); line-height: 1.6;">Nutrition coaching combined with structured training produced measurable body composition changes without sacrificing performance.</p>
-          </div>
-        </div>
-      </div>
-
-      <!-- HYROX Data -->
-      <div class="results-category results-category--pink fade-in">
-        <h3 class="results-category-title">HYROX Data</h3>
-        <div class="result-highlight-grid result-highlight-grid--tight">
-          <div class="result-highlight result-highlight--tight">
-            <div class="stat-val">-8:30</div>
-            <div class="stat-label">Total Time · 16 weeks</div>
-            <p class="vbt-showcase-desc" style="font-size: var(--text-xs); color: var(--color-text-muted); margin-top: var(--space-2); line-height: 1.6;">Structured strength and conditioning plan targeted HYROX-specific weaknesses. Over 8 minutes shaved off total race time.</p>
-          </div>
-          <div class="result-highlight result-highlight--tight">
-            <div class="stat-val">-2:15</div>
-            <div class="stat-label">Sled Push Split · 8 weeks</div>
-            <p class="vbt-showcase-desc" style="font-size: var(--text-xs); color: var(--color-text-muted); margin-top: var(--space-2); line-height: 1.6;">Velocity-based leg power training directly improved sled push efficiency. The strongest station became the fastest station.</p>
-          </div>
-        </div>
-      </div>
-
-      <!-- Velocity Data -->
-      <div class="results-category results-category--teal fade-in">
-        <h3 class="results-category-title">Velocity Data</h3>
-        <div class="vbt-showcase-grid">
-          <div class="vbt-showcase-card">
-            <div class="vbt-showcase-metric">
-              <span class="vbt-showcase-from">0.38 m/s</span>
-              <span class="vbt-showcase-arrow">→</span>
-              <span class="vbt-showcase-to">0.52 m/s</span>
-            </div>
-            <div class="vbt-showcase-label">Squat velocity at 315 lbs · 12 weeks</div>
-            <p class="vbt-showcase-desc">A 37% improvement at the same load. 315 went from a grind to a confident working weight through structured programming.</p>
-          </div>
-          <div class="vbt-showcase-card">
-            <div class="vbt-showcase-metric">
-              <span class="vbt-showcase-from">0.22 m/s</span>
-              <span class="vbt-showcase-arrow">→</span>
-              <span class="vbt-showcase-to">0.35 m/s</span>
-            </div>
-            <div class="vbt-showcase-label">Bench velocity at 225 lbs · 8 weeks</div>
-            <p class="vbt-showcase-desc">Strength adaptation was measurable weeks before the max even moved. Consistent programming built real confidence under the bar.</p>
-          </div>
-        </div>
-      </div>
-
-    </div>
-  </section>
-
-  <hr class="glow-line">
 
   <!-- Athlete Testimonials -->
   <section class="section" aria-label="Athlete Testimonials">
@@ -1345,6 +1286,134 @@
         </div>
 
       </div>
+    </div>
+  </section>
+
+  <hr class="glow-line">
+
+  <section style="position: relative; background: url('assets/data-dashboard.jpeg') center center / cover no-repeat; padding: var(--space-12) 0 var(--space-8);">
+    <div style="position: absolute; inset: 0; background: rgba(10, 14, 23, 0.75); z-index: 0;"></div>
+    <div class="container" style="position: relative; z-index: 1; text-align: center;">
+      <h2 style="font-family: var(--font-body); font-size: var(--text-2xl); font-weight: 800; color: var(--color-text); line-height: 1.1; margin-bottom: var(--space-4);">Proof in the <span style="color: var(--color-teal);">Numbers.</span></h2>
+      <p class="section-desc" style="margin-inline: auto;">Real athletes. Real numbers. Every result below is backed by consistent coaching and tracked over time.</p>
+    </div>
+  </section>
+
+  <hr class="glow-line">
+
+  <section class="section" aria-label="Results">
+    <div class="container">
+
+      <!-- Powerlifting Data -->
+      <div class="results-category results-category--pink fade-in">
+        <h3 class="results-category-title">Powerlifting Data</h3>
+        <div class="result-highlight-grid result-highlight-grid--tight">
+          <div class="result-highlight result-highlight--tight">
+            <div class="stat-val">+75 lbs</div>
+            <div class="stat-label">Squat PR · 6 months</div>
+            <p class="vbt-showcase-desc" style="font-size: var(--text-xs); color: var(--color-text-muted); margin-top: var(--space-2); line-height: 1.6;">Went from a shaky 315 to a confident 390 squat through structured progressive overload and smart intensity management.</p>
+          </div>
+          <div class="result-highlight result-highlight--tight">
+            <div class="stat-val">9/9</div>
+            <div class="stat-label">USAPL Meet Attempts</div>
+            <p class="vbt-showcase-desc" style="font-size: var(--text-xs); color: var(--color-text-muted); margin-top: var(--space-2); line-height: 1.6;">Perfect 9-for-9 at first USAPL meet. Every attempt was planned and practiced in training — zero guesswork on the platform.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Weightlifting Data -->
+      <div class="results-category results-category--teal fade-in">
+        <h3 class="results-category-title">Weightlifting Data</h3>
+        <div class="result-highlight-grid result-highlight-grid--tight">
+          <div class="result-highlight result-highlight--tight">
+            <div class="stat-val">+15 kg</div>
+            <div class="stat-label">Clean & Jerk PR · 12 weeks</div>
+            <p class="vbt-showcase-desc" style="font-size: var(--text-xs); color: var(--color-text-muted); margin-top: var(--space-2); line-height: 1.6;">Targeted technique work on the second pull translated directly to a competition PR. Coaching caught what self-training missed.</p>
+          </div>
+          <div class="result-highlight result-highlight--tight">
+            <div class="stat-val">+10 kg</div>
+            <div class="stat-label">Snatch PR · 8 weeks</div>
+            <p class="vbt-showcase-desc" style="font-size: var(--text-xs); color: var(--color-text-muted); margin-top: var(--space-2); line-height: 1.6;">Identified the exact loading range where technique broke down. Focused work in that zone produced a smooth, confident PR.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- CrossFit Data -->
+      <div class="results-category results-category--pink fade-in">
+        <h3 class="results-category-title">CrossFit Data</h3>
+        <div class="result-highlight-grid result-highlight-grid--tight">
+          <div class="result-highlight result-highlight--tight">
+            <div class="stat-val">-1:42</div>
+            <div class="stat-label">Fran Time · 8 weeks</div>
+            <p class="vbt-showcase-desc" style="font-size: var(--text-xs); color: var(--color-text-muted); margin-top: var(--space-2); line-height: 1.6;">Improved thruster velocity and cycling efficiency through targeted barbell speed work. Almost two minutes faster on the benchmark.</p>
+          </div>
+          <div class="result-highlight result-highlight--tight">
+            <div class="stat-val">5★</div>
+            <div class="stat-label">Client Rating</div>
+            <p class="vbt-showcase-desc" style="font-size: var(--text-xs); color: var(--color-text-muted); margin-top: var(--space-2); line-height: 1.6;">Perfect rating from CrossFit athletes who value data-backed programming that doesn't sacrifice the competitive edge.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bodybuilding Data -->
+      <div class="results-category results-category--teal fade-in">
+        <h3 class="results-category-title">Bodybuilding Data</h3>
+        <div class="result-highlight-grid result-highlight-grid--tight">
+          <div class="result-highlight result-highlight--tight">
+            <div class="stat-val">-18 lbs</div>
+            <div class="stat-label">Body Recomp · 12 weeks</div>
+            <p class="vbt-showcase-desc" style="font-size: var(--text-xs); color: var(--color-text-muted); margin-top: var(--space-2); line-height: 1.6;">Lost 18 lbs while maintaining or improving every major lift. Structured programming ensured training intensity stayed high throughout the cut.</p>
+          </div>
+          <div class="result-highlight result-highlight--tight">
+            <div class="stat-val">-4% BF</div>
+            <div class="stat-label">Body Fat · 8 weeks</div>
+            <p class="vbt-showcase-desc" style="font-size: var(--text-xs); color: var(--color-text-muted); margin-top: var(--space-2); line-height: 1.6;">Nutrition coaching combined with structured training produced measurable body composition changes without sacrificing performance.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- HYROX Data -->
+      <div class="results-category results-category--pink fade-in">
+        <h3 class="results-category-title">HYROX Data</h3>
+        <div class="result-highlight-grid result-highlight-grid--tight">
+          <div class="result-highlight result-highlight--tight">
+            <div class="stat-val">-8:30</div>
+            <div class="stat-label">Total Time · 16 weeks</div>
+            <p class="vbt-showcase-desc" style="font-size: var(--text-xs); color: var(--color-text-muted); margin-top: var(--space-2); line-height: 1.6;">Structured strength and conditioning plan targeted HYROX-specific weaknesses. Over 8 minutes shaved off total race time.</p>
+          </div>
+          <div class="result-highlight result-highlight--tight">
+            <div class="stat-val">-2:15</div>
+            <div class="stat-label">Sled Push Split · 8 weeks</div>
+            <p class="vbt-showcase-desc" style="font-size: var(--text-xs); color: var(--color-text-muted); margin-top: var(--space-2); line-height: 1.6;">Velocity-based leg power training directly improved sled push efficiency. The strongest station became the fastest station.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Velocity Data -->
+      <div class="results-category results-category--teal fade-in">
+        <h3 class="results-category-title">Velocity Data</h3>
+        <div class="vbt-showcase-grid">
+          <div class="vbt-showcase-card">
+            <div class="vbt-showcase-metric">
+              <span class="vbt-showcase-from">0.38 m/s</span>
+              <span class="vbt-showcase-arrow">→</span>
+              <span class="vbt-showcase-to">0.52 m/s</span>
+            </div>
+            <div class="vbt-showcase-label">Squat velocity at 315 lbs · 12 weeks</div>
+            <p class="vbt-showcase-desc">A 37% improvement at the same load. 315 went from a grind to a confident working weight through structured programming.</p>
+          </div>
+          <div class="vbt-showcase-card">
+            <div class="vbt-showcase-metric">
+              <span class="vbt-showcase-from">0.22 m/s</span>
+              <span class="vbt-showcase-arrow">→</span>
+              <span class="vbt-showcase-to">0.35 m/s</span>
+            </div>
+            <div class="vbt-showcase-label">Bench velocity at 225 lbs · 8 weeks</div>
+            <p class="vbt-showcase-desc">Strength adaptation was measurable weeks before the max even moved. Consistent programming built real confidence under the bar.</p>
+          </div>
+        </div>
+      </div>
+
     </div>
   </section>
 
@@ -1499,6 +1568,17 @@
         </a>
         <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="footer-vagaro-link">Book via Vagaro →</a>
       </div>
+    </div>
+    <!-- Newsletter capture -->
+    <div class="footer-newsletter">
+      <div class="footer-newsletter-text">
+        <p class="footer-newsletter-title">Train smarter — straight to your inbox</p>
+        <p class="footer-newsletter-desc">Get free tools, training notes, and data-driven strength resources from Yeager's Gym.</p>
+      </div>
+      <form class="footer-newsletter-form" novalidate onsubmit="return ygNewsletter(this,'newsletter-footer')">
+        <input type="email" required placeholder="Your email" aria-label="Email address" autocomplete="email">
+        <button type="submit" class="btn btn-primary">Get Resources</button>
+      </form>
     </div>
     <div class="footer-bottom">
       <span>&copy; 2026 Yeager's Gym &middot; San Diego, CA</span>
@@ -1659,5 +1739,20 @@
 })();
 </script>
 
+<script src="./brevo.js"></script>
+<script>
+window.ygNewsletter = window.ygNewsletter || function (form, source) {
+  var input = form.querySelector('input[type="email"]'), btn = form.querySelector('button');
+  var email = (input.value || '').trim();
+  if (typeof brevoValidateEmail !== 'function' || !brevoValidateEmail(email)) { input.focus(); return false; }
+  var original = btn.textContent; btn.disabled = true; btn.textContent = 'Sending\u2026';
+  brevoSubmit({ email: email, listIds: [BREVO_LISTS.ALL_LEADS], attributes: { LEAD_SOURCE: source } }).then(function (ok) {
+    if (ok) { form.reset(); btn.textContent = 'Subscribed \u2713'; if (typeof brevoToast === 'function') brevoToast(); }
+    else { btn.textContent = 'Try again'; }
+    setTimeout(function () { btn.textContent = original; btn.disabled = false; }, 3200);
+  });
+  return false;
+};
+</script>
 </body>
 </html>

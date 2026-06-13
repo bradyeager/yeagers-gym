@@ -154,8 +154,13 @@
   color: var(--color-text);
   line-height: 1.1;
   margin-bottom: var(--space-3);
-  max-width: 16ch;
+  max-width: none;
   margin-inline: auto;
+}
+
+/* One colored phrase per line — no mid-phrase wraps */
+.method-hero h1 > span {
+  display: block;
 }
 
 .method-hero h1 .hl-teal { color: var(--color-teal); }
@@ -507,11 +512,16 @@
   font-size: var(--text-xl);
   font-weight: 800;
   color: var(--color-text);
-  max-width: 20ch;
+  max-width: none;
   margin-inline: auto;
   margin-bottom: var(--space-3);
   line-height: 1.15;
   position: relative;
+}
+
+/* Two clean sentence lines on desktop; sentences wrap naturally on mobile */
+.velocity-transition h2 .vt-ln {
+  display: block;
 }
 
 .velocity-transition .vt-sub {
@@ -973,7 +983,7 @@
 
     <section class="method-hero fade-in" aria-label="The Velocity Method">
       <p class="section-label" style="color: var(--color-pink); text-align: center; max-width: none;">THE VELOCITY METHOD</p>
-      <h1><span class="hl-teal">Six Lifts.</span> Every Muscle. <span class="hl-pink">Tracked by Science.</span></h1>
+      <h1><span class="hl-teal">Six Lifts.</span> <span>Every Muscle.</span> <span class="hl-pink">Tracked by Science.</span></h1>
       <p class="hero-sub">Your body doesn't need 30 exercises. It needs six — done right, tracked precisely, and progressed intelligently. This is how we train every athlete at Yeager's Gym.</p>
       <div class="hero-cta-row">
         <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" class="btn btn-primary">Book Your FREE Session!</a>
@@ -1142,7 +1152,7 @@
          ═══════════════════════════════════════ -->
     <section class="velocity-transition fade-in" aria-label="Velocity-based training layer">
       <p class="section-label" style="color: var(--color-pink); text-align: center; max-width: none;">THE DIFFERENTIATOR</p>
-      <h2>The <span style="color: var(--color-teal);">lifts</span> are the foundation. <span style="color: var(--color-pink);">Velocity</span> is what makes it <span style="color: var(--color-teal);">intelligent.</span></h2>
+      <h2><span class="vt-ln">The <span style="color: var(--color-teal);">lifts</span> are the foundation.</span> <span class="vt-ln"><span style="color: var(--color-pink);">Velocity</span> is what makes it <span style="color: var(--color-teal);">intelligent.</span></span></h2>
       <p class="vt-sub">Most coaches prescribe weights based on a 1RM test you took months ago. We attach a sensor to the bar and measure how fast every rep moves — in real time. Your program adapts to your body today, not a spreadsheet from last quarter.</p>
 
       <div class="velocity-features">
@@ -1526,6 +1536,17 @@
         <a href="https://www.vagaro.com/tmoxgj" target="_blank" rel="noopener noreferrer" style="display: block; font-size: 11px; color: var(--color-text-muted); text-decoration: none; padding: 1px 0; line-height: 1.5;">Book via Vagaro</a>
       </div>
     </div>
+    <!-- Newsletter capture -->
+    <div class="footer-newsletter">
+      <div class="footer-newsletter-text">
+        <p class="footer-newsletter-title">Train smarter — straight to your inbox</p>
+        <p class="footer-newsletter-desc">Get free tools, training notes, and data-driven strength resources from Yeager's Gym.</p>
+      </div>
+      <form class="footer-newsletter-form" novalidate onsubmit="return ygNewsletter(this,'newsletter-footer')">
+        <input type="email" required placeholder="Your email" aria-label="Email address" autocomplete="email">
+        <button type="submit" class="btn btn-primary">Get Resources</button>
+      </form>
+    </div>
     <div class="footer-bottom" style="padding-top: var(--space-2); border-top: 1px solid rgba(255,255,255,0.06); display: flex; justify-content: space-between; align-items: center; font-size: 10px; color: rgba(255,255,255,0.25);">
       <span>&copy; 2026 Yeager's Gym &middot; San Diego, CA</span>
       <a href="./index.html" aria-label="Yeager's Gym Home">
@@ -1640,5 +1661,19 @@
 })();
 </script>
 
+<script>
+window.ygNewsletter = window.ygNewsletter || function (form, source) {
+  var input = form.querySelector('input[type="email"]'), btn = form.querySelector('button');
+  var email = (input.value || '').trim();
+  if (typeof brevoValidateEmail !== 'function' || !brevoValidateEmail(email)) { input.focus(); return false; }
+  var original = btn.textContent; btn.disabled = true; btn.textContent = 'Sending\u2026';
+  brevoSubmit({ email: email, listIds: [BREVO_LISTS.ALL_LEADS], attributes: { LEAD_SOURCE: source } }).then(function (ok) {
+    if (ok) { form.reset(); btn.textContent = 'Subscribed \u2713'; if (typeof brevoToast === 'function') brevoToast(); }
+    else { btn.textContent = 'Try again'; }
+    setTimeout(function () { btn.textContent = original; btn.disabled = false; }, 3200);
+  });
+  return false;
+};
+</script>
 </body>
 </html>
