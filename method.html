@@ -118,6 +118,17 @@
   position: relative;
   background: url('./assets/vbt-opt-04.png_preview.jpeg') center center / cover no-repeat;
 }
+
+/* Desktop: the hero graphic is landscape (graphs on top, barbell below). The wide,
+   short desktop hero was cropping the graphs with `cover`, so show the full image
+   with `contain` over a seamless dark fill that matches the overlay. The mobile hero
+   is portrait, where `cover` already frames the full content — so it keeps `cover`. */
+@media (min-width: 769px) {
+  .method-hero {
+    background-size: contain;
+    background-color: #0A0E17;
+  }
+}
 .method-hero::after {
   content: '';
   position: absolute;
