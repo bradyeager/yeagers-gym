@@ -7,7 +7,7 @@ Brand tagline: "Coached by Data. Built on Strength."
 Contact: brad@yeagersgym.com
 
 ## Project Memory (The Vault)
-Durable project state lives at `C:\Jarvis\Obsidian\01_PROJECTS\yeagersgym-website\`.
+Durable project state lives at `C:\Jarvis-Local\Obsidian\01_PROJECTS\yeagersgym-website\`.
 - Read `STATE.md` and `DECISIONS.md` there before substantive work.
 - After meaningful work, update `STATE.md`, append new decisions, show the diff, commit the vault.
 - For project FACTS, vault STATE.md outranks this file — flag conflicts when you see them.
