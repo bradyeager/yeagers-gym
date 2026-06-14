@@ -413,12 +413,12 @@
   font-weight: 700;
   letter-spacing: 0.02em;
   transition: background 0.2s, transform 0.15s;
-  box-shadow: 0 0 20px rgba(30, 200, 176, 0.3);
+  box-shadow: 0 0 20px rgba(72, 196, 204, 0.3);
 }
 .btn-hero-cta:hover {
-  background: #17a594;
+  background: var(--color-teal-hover);
   transform: translateY(-2px);
-  box-shadow: 0 0 30px rgba(30, 200, 176, 0.5);
+  box-shadow: 0 0 30px rgba(72, 196, 204, 0.5);
 }
 
 .hero-tagline {
