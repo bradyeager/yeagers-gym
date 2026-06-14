@@ -125,16 +125,14 @@
   text-align: center;
   padding: var(--space-12) 0 var(--space-8);
   position: relative;
-  background: url('./assets/vbt-opt-04.png_preview.jpeg') center center / cover no-repeat;
+  background: url('./assets/vbt-opt-04-wide.jpg') center center / cover no-repeat;
 }
 
-/* Desktop: the hero graphic is landscape (graphs on top, barbell below). The wide,
-   short desktop hero was cropping the graphs with `cover`, so show the full image
-   with `contain` over a seamless dark fill that matches the overlay. The mobile hero
-   is portrait, where `cover` already frames the full content — so it keeps `cover`. */
+/* Desktop: the hero graphic was outpainted to a wide ~2.6:1 ratio, so `cover` now
+   fills the band edge-to-edge without cropping the VELOCITY / REP SPEED panels. */
 @media (min-width: 769px) {
   .method-hero {
-    background-size: contain;
+    background-size: cover;
     background-color: #0A0E17;
   }
 }
