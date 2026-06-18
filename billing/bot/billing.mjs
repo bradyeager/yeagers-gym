@@ -9,19 +9,12 @@ import ical from "node-ical";
 import { google } from "googleapis";
 import {
   PALETTE, FONTS, GITHUB_OWNER, GITHUB_REPO, DEFAULT_BRANCH,
-<<<<<<< HEAD
-  requireEnv, resolveRepoRoot, loadClients, loadCashEntries,
-  fuzzyName, fmtDate, fmtDateIso, slugify,
-  venmoRequestLink, githubNewFileUrl, sendBrevoEmail,
-  emailShell, sectionLabel, button, buttonOutline, card,
-=======
   requireEnv, resolveRepoRoot, loadClients, loadCashEntries, loadCancellations,
   loadMatchedLedger, saveMatchedLedger,
   loadSchedule, findScheduleEntriesForSlot, isInactiveSlot,
   fuzzyName, fmtDate, fmtDateTime, fmtDateIso, slugify, parseNoteDate, withRetry,
   venmoRequestLink, githubNewFileUrl, sendBrevoEmail,
   emailShell, sectionLabel, button, buttonOutline, card, NEON_GRADIENT,
->>>>>>> origin/main
 } from "./lib.mjs";
 
 const {
@@ -30,18 +23,11 @@ const {
   GOOGLE_CLIENT_SECRET,
   GOOGLE_REFRESH_TOKEN,
   BREVO_API_KEY,
-<<<<<<< HEAD
-  RECIPIENT_EMAIL = "brad@yeagersgym.com",
-  SENDER_EMAIL = "brad@yeagersgym.com",
-  SENDER_NAME = "Yeager's Gym Billing Bot",
-  LOOKBACK_DAYS = "8",
-=======
   RECIPIENT_EMAIL = "brad@bradyeager.com",
   SENDER_EMAIL = "brad@yeagersgym.com",
   SENDER_NAME = "Yeager's Gym Billing Bot",
   LOOKBACK_DAYS = "14",
   PAYMENT_LOOKBACK_DAYS = "21",
->>>>>>> origin/main
   DRY_RUN = "false",
 } = process.env;
 
@@ -50,32 +36,12 @@ const NOW = new Date();
 const WINDOW_START = new Date(NOW.getTime() - LOOKBACK_MS);
 const REPO_ROOT = resolveRepoRoot(import.meta.url);
 const CLIENTS_CSV = path.join(REPO_ROOT, "billing", "clients.csv");
-<<<<<<< HEAD
-=======
 const SCHEDULE_CSV = path.join(REPO_ROOT, "billing", "schedule.csv");
->>>>>>> origin/main
 const LOGS_DIR = path.join(REPO_ROOT, "billing", "logs");
 
 // ---- Vagaro iCal ----
 
 async function fetchVagaroAppointments() {
-<<<<<<< HEAD
-  const events = await ical.async.fromURL(VAGARO_ICAL_URL);
-  const appts = [];
-  for (const ev of Object.values(events)) {
-    if (ev.type !== "VEVENT") continue;
-    const start = ev.start instanceof Date ? ev.start : new Date(ev.start);
-    if (start < WINDOW_START || start > NOW) continue;
-    if ((ev.status || "").toUpperCase() === "CANCELLED") continue;
-    const summary = (ev.summary || "").trim();
-    appts.push({
-      date: start,
-      summary,
-      description: (ev.description || "").trim(),
-      client_name: extractClientName(summary, ev.description),
-    });
-  }
-=======
   const events = await withRetry(() => ical.async.fromURL(VAGARO_ICAL_URL), { label: "Vagaro iCal fetch" });
   const all = Object.values(events);
   const typeCounts = {};
@@ -141,13 +107,10 @@ async function fetchVagaroAppointments() {
     });
   }
 
->>>>>>> origin/main
   appts.sort((a, b) => a.date - b.date);
   return appts;
 }
 
-<<<<<<< HEAD
-=======
 // Whitelist Vagaro service-type keywords. Ratio-only checks ("1:1", "2:1")
 // were too lax — "Get Forrest & Aspen @ 2:40" slipped through. If Brad adds
 // new service types in Vagaro, extend the keyword list here.
@@ -158,7 +121,6 @@ function isBillableSession(summary) {
   return false;
 }
 
->>>>>>> origin/main
 function extractClientName(summary, description) {
   if (!summary) return "";
   const patterns = [
@@ -183,15 +145,11 @@ async function fetchVenmoPayments() {
   const oauth2 = new google.auth.OAuth2(GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET);
   oauth2.setCredentials({ refresh_token: GOOGLE_REFRESH_TOKEN });
   const gmail = google.gmail({ version: "v1", auth: oauth2 });
-<<<<<<< HEAD
-  const query = `from:venmo@venmo.com "paid you" newer_than:${LOOKBACK_DAYS}d`;
-=======
   // Broader sender match — Venmo sends from venmo@venmo.com,
   // notifications@venmo.com, no-reply@venmo.com, etc. Use the domain.
   // Payment window is wider than appointment window to catch late-arriving
   // emails and boundary cases (~8-day appt window + ~7 day matching slop).
   const query = `from:venmo.com "paid you" newer_than:${PAYMENT_LOOKBACK_DAYS}d`;
->>>>>>> origin/main
   const list = await gmail.users.messages.list({ userId: "me", q: query, maxResults: 200 });
   const msgs = list.data.messages || [];
   const payments = [];
@@ -208,24 +166,6 @@ function parseVenmoEmail(msg) {
   const subject = headers["subject"] || "";
   const dateHdr = headers["date"] || "";
   const snippet = msg.snippet || "";
-<<<<<<< HEAD
-  const body = extractBody(msg.payload);
-  const subjMatch = subject.match(/^(.+?)\s+paid you\s+\$([\d,.]+)/i);
-  if (!subjMatch) return null;
-  const sender_display_name = subjMatch[1].trim();
-  const amount = Number(subjMatch[2].replace(/,/g, ""));
-  const handleMatch = (body + "\n" + snippet).match(/venmo\.com\/u\/([A-Za-z0-9._-]+)/i)
-    || (body + "\n" + snippet).match(/@([A-Za-z0-9._-]+)/);
-  const sender_handle = handleMatch ? handleMatch[1].toLowerCase() : "";
-  const noteMatch = body.match(/"([^"\n]{1,140})"/);
-  const note = noteMatch ? noteMatch[1].trim() : "";
-  const date = dateHdr ? new Date(dateHdr) : new Date();
-  return { sender_display_name, sender_handle, amount, note, date, subject };
-}
-
-function extractBody(payload) {
-  if (!payload) return "";
-=======
   // Prefer the text/plain MIME part — cleaner than HTML, no DOCTYPE noise.
   const body = extractBody(msg.payload, "text/plain") || extractBody(msg.payload);
   // Handles both "Name paid you $X" (direct payment) and
@@ -267,7 +207,6 @@ function extractBody(payload, mimeType = null) {
     const part = findMimePart(payload, mimeType);
     return part?.body?.data ? Buffer.from(part.body.data, "base64").toString("utf8") : "";
   }
->>>>>>> origin/main
   const chunks = [];
   const walk = (p) => {
     if (p.body?.data) chunks.push(Buffer.from(p.body.data, "base64").toString("utf8"));
@@ -277,16 +216,6 @@ function extractBody(payload, mimeType = null) {
   return chunks.join("\n");
 }
 
-<<<<<<< HEAD
-// ---- Reconciliation ----
-
-export function reconcile(appointments, payments, clients, cashLog) {
-  const byVagaroName = new Map(clients.map((c) => [c.vagaro_name.toLowerCase(), c]));
-  const usedPayments = new Set();
-  const results = [];
-
-  for (const appt of appointments) {
-=======
 function findMimePart(payload, mimeType) {
   if (payload.mimeType === mimeType && payload.body?.data) return payload;
   if (payload.parts) {
@@ -476,7 +405,6 @@ export function reconcile(appointments, payments, clients, cashLog, cancellation
       continue;
     }
 
->>>>>>> origin/main
     const roster = byVagaroName.get((appt.client_name || "").toLowerCase());
 
     if (!roster) {
@@ -484,8 +412,6 @@ export function reconcile(appointments, payments, clients, cashLog, cancellation
       continue;
     }
 
-<<<<<<< HEAD
-=======
     // Honor cancellations BEFORE prepaid/pays_cash gates so a vacation week
     // for any client type drops cleanly.
     if (cancelledSet.has(cancelKey(appt.date, roster.vagaro_name))) {
@@ -537,22 +463,10 @@ export function reconcile(appointments, payments, clients, cashLog, cancellation
       continue;
     }
 
->>>>>>> origin/main
     if (roster.pays_cash) {
       const cashHit = cashLog.find(
         (c) => sameDay(c.date, appt.date) && fuzzyName(c.name, roster.vagaro_name) >= 0.8,
       );
-<<<<<<< HEAD
-      if (cashHit) results.push({ appt, roster, status: "PAID_CASH", payment: cashHit });
-      else results.push({ appt, roster, status: "CASH_PENDING" });
-      continue;
-    }
-
-    const expectedPrice = roster.default_price;
-    const candidates = payments
-      .map((p, idx) => ({ p, idx }))
-      .filter(({ idx }) => !usedPayments.has(idx))
-=======
       if (cashHit) results.push({ appt, roster, status: "PAID_CASH", payment: cashHit, expectedPrice, checkoutAmount: expectedPrice });
       else results.push({ appt, roster, status: "CASH_PENDING", expectedPrice, checkoutAmount: expectedPrice });
       continue;
@@ -577,7 +491,6 @@ export function reconcile(appointments, payments, clients, cashLog, cancellation
       // for last week's session got grabbed for this week's same-slot
       // session. Payments with no date in the note fall through normally.
       .filter(({ p }) => !p.noteDate || sameDay(p.noteDate, appt.date))
->>>>>>> origin/main
       .filter(({ p }) => {
         const nameMatch = roster.venmo_handle && p.sender_handle === roster.venmo_handle.toLowerCase();
         const namesToCheck = roster.venmo_display_names?.length
@@ -589,10 +502,6 @@ export function reconcile(appointments, payments, clients, cashLog, cancellation
         return nameMatch || displayMatch;
       })
       .filter(({ p }) => withinDateWindow(p.date, appt.date))
-<<<<<<< HEAD
-      .map(({ p, idx }) => ({ p, idx, amountScore: expectedPrice ? amountScore(p.amount, expectedPrice) : 0.5 }))
-      .sort((a, b) => b.amountScore - a.amountScore);
-=======
       .map(({ p, idx }) => ({
         p, idx,
         amountScore: acceptablePrices.length ? amountScore(p.amount, acceptablePrices) : 0.5,
@@ -606,18 +515,11 @@ export function reconcile(appointments, payments, clients, cashLog, cancellation
         b.amountScore - a.amountScore ||
         b.noteDateMatch - a.noteDateMatch ||
         a.dateGap - b.dateGap);
->>>>>>> origin/main
 
     if (candidates.length === 0) {
       results.push({ appt, roster, status: "UNPAID", expectedPrice });
     } else {
       const best = candidates[0];
-<<<<<<< HEAD
-      if (best.amountScore >= 0.8) {
-        usedPayments.add(best.idx);
-        results.push({ appt, roster, status: "PAID_VENMO", payment: best.p, expectedPrice });
-      } else {
-=======
       // Record the match in the ledger so a future run can never re-grab
       // this Gmail message for a different session.
       const recordMatch = (status) => {
@@ -648,7 +550,6 @@ export function reconcile(appointments, payments, clients, cashLog, cancellation
         // this session. Without this it doubles in the unmatched list.
         usedPayments.add(best.idx);
         recordMatch("NEEDS_REVIEW");
->>>>>>> origin/main
         results.push({
           appt, roster, status: "NEEDS_REVIEW",
           payment: best.p, expectedPrice,
@@ -658,23 +559,6 @@ export function reconcile(appointments, payments, clients, cashLog, cancellation
     }
   }
 
-<<<<<<< HEAD
-  const unmatchedPayments = payments.filter((_, idx) => !usedPayments.has(idx));
-  return { results, unmatchedPayments };
-}
-
-function amountScore(received, expected) {
-  if (!expected) return 0.5;
-  if (received === expected) return 1;
-  // Smoothie add-on: exactly $5 over the session price.
-  if (received === expected + 5) return 1;
-  const ratio = received / expected;
-  // Exact multiple (package pre-pay) counts as full match.
-  if (Math.abs(ratio - Math.round(ratio)) < 0.02 && ratio >= 1) return 1;
-  // Within a couple dollars (rounding / cents) counts as full match.
-  if (Math.abs(received - expected) <= 2) return 1;
-  // Anything else surfaces for review.
-=======
   // ── SECOND PASS: reschedule auto-pairing ──
   // A client who moved to a non-standard time leaves an UNIDENTIFIED_SLOT
   // (a session with no schedule mapping) AND an unmatched payment (named, but
@@ -752,7 +636,6 @@ function amountScore(received, acceptable) {
     if (Math.abs(ratio - Math.round(ratio)) < 0.02 && ratio >= 1) return 1; // package
     if (Math.abs(received - expected) <= 2) return 1;  // rounding
   }
->>>>>>> origin/main
   return 0.5;
 }
 
@@ -761,17 +644,11 @@ function sameDay(a, b) {
   return ad.getFullYear() === bd.getFullYear() && ad.getMonth() === bd.getMonth() && ad.getDate() === bd.getDate();
 }
 
-<<<<<<< HEAD
-function withinDateWindow(payDate, apptDate) {
-  const diff = (payDate - apptDate) / (24 * 60 * 60 * 1000);
-  return diff >= -3 && diff <= 7;
-=======
 // Payment can be up to 7 days BEFORE session (prepay) or 14 days AFTER
 // (late payment). Tunable if real-world data shows other patterns.
 function withinDateWindow(payDate, apptDate) {
   const diff = (payDate - apptDate) / (24 * 60 * 60 * 1000);
   return diff >= -7 && diff <= 14;
->>>>>>> origin/main
 }
 
 // ---- Email building ----
@@ -784,8 +661,6 @@ function cashEntryLink({ date, name, amount, note = "per weekly billing email" }
   return githubNewFileUrl({ filename, value, message: `Cash: ${name} $${amount} ${iso}` });
 }
 
-<<<<<<< HEAD
-=======
 // Deep links that launch the bank app on a phone where the non-Venmo money
 // lands. These are mobile URL schemes — if one doesn't open the app on Brad's
 // device, edit it here (e.g. a universal https:// link).
@@ -817,7 +692,6 @@ function bankVerify(roster) {
   return null;
 }
 
->>>>>>> origin/main
 function reviewResolutionLink({ date, name, disposition, detail }) {
   const iso = fmtDateIso(date);
   const slug = slugify(name);
@@ -827,46 +701,6 @@ function reviewResolutionLink({ date, name, disposition, detail }) {
 }
 
 export function buildEmail({ results, unmatchedPayments, now = NOW, windowStart = WINDOW_START }) {
-<<<<<<< HEAD
-  const unpaid = results.filter((r) => r.status === "UNPAID");
-  const review = results.filter((r) => r.status === "NEEDS_REVIEW");
-  const unknown = results.filter((r) => r.status === "UNKNOWN");
-  const paidVenmo = results.filter((r) => r.status === "PAID_VENMO");
-  const paidCash = results.filter((r) => r.status === "PAID_CASH");
-  const cashPending = results.filter((r) => r.status === "CASH_PENDING");
-
-  const weekOf = results.length ? fmtDate(results[0].appt.date) : fmtDate(windowStart);
-  const subject = `Weekly billing — ${unpaid.length} unpaid, ${review.length} needs review (week of ${weekOf})`;
-
-  let body = "";
-
-  // Top-line summary strip
-  body += `<div style="display:flex;flex-wrap:wrap;gap:14px;margin-bottom:20px;">`;
-  body += statChip(unpaid.length, "unpaid", unpaid.length ? "pink" : "textMuted");
-  body += statChip(review.length, "review", review.length ? "purple" : "textMuted");
-  body += statChip(paidVenmo.length + paidCash.length, "paid", "teal");
-  body += statChip(cashPending.length, "cash pending", cashPending.length ? "purple" : "textMuted");
-  body += `</div>`;
-
-  // UNPAID
-  if (unpaid.length) {
-    body += sectionLabel(`Unpaid — ${unpaid.length}`, "pink");
-    for (const r of unpaid) {
-      const price = r.expectedPrice || r.roster?.default_price || "?";
-      const handle = r.roster?.venmo_handle;
-      const noteText = `Training ${fmtDate(r.appt.date)} — Yeager's Gym`;
-      const requestUrl = handle ? venmoRequestLink(handle, price, noteText) : "";
-      const cashUrl = cashEntryLink({ date: r.appt.date, name: r.roster.vagaro_name, amount: price });
-
-      let inner = `<div style="font-family:${FONTS.body};font-size:15px;color:${PALETTE.textPrimary};margin-bottom:4px;"><strong>${escapeHtml(r.roster.vagaro_name)}</strong> — ${fmtDate(r.appt.date)} — $${price}</div>`;
-      inner += `<div style="margin-top:10px;">`;
-      if (requestUrl) inner += button({ href: requestUrl, label: `Request $${price} on Venmo`, color: "pink" });
-      else inner += `<span style="color:${PALETTE.textMuted};font-family:${FONTS.display};font-size:12px;">No Venmo handle in clients.csv</span> `;
-      inner += buttonOutline({ href: cashUrl, label: "Log as cash", color: "teal" });
-      inner += `</div>`;
-      body += card(inner, "pink");
-    }
-=======
   // "This week" = the 7 days ending at the run (last Sat → this Fri for a
   // Friday run). Anything older that's still open is a carryover from a
   // prior week → surfaced first under "Lagging Indicators".
@@ -978,47 +812,10 @@ export function buildEmail({ results, unmatchedPayments, now = NOW, windowStart 
   if (unpaid.length) {
     body += sectionLabel(`Unpaid — ${unpaid.length}`, "pink");
     for (const r of unpaid) body += unpaidCard(r);
->>>>>>> origin/main
   }
 
   // NEEDS REVIEW
   if (review.length) {
-<<<<<<< HEAD
-    body += sectionLabel(`Needs review — ${review.length}`, "purple");
-    for (const r of review) {
-      const expected = r.expectedPrice || r.roster?.default_price || 0;
-      const received = r.payment?.amount || 0;
-      const diff = expected - received;
-      const name = r.roster.vagaro_name;
-      const noteText = `Balance from training ${fmtDate(r.appt.date)} — Yeager's Gym`;
-      const handle = r.roster?.venmo_handle;
-
-      let inner = `<div style="font-family:${FONTS.body};font-size:15px;color:${PALETTE.textPrimary};margin-bottom:4px;"><strong>${escapeHtml(name)}</strong> — ${fmtDate(r.appt.date)}</div>`;
-      inner += `<div style="font-family:${FONTS.display};font-size:12px;color:${PALETTE.textMuted};margin-bottom:10px;">Session $${expected} · received $${received} from @${escapeHtml(r.payment?.sender_handle || "?")}${diff > 0 ? ` · short $${diff}` : diff < 0 ? ` · over $${-diff}` : ""}</div>`;
-      inner += `<div>`;
-      // Accept as-is
-      inner += buttonOutline({
-        href: reviewResolutionLink({ date: r.appt.date, name, disposition: "accepted", detail: `Accepted $${received} of $${expected}` }),
-        label: "Accept as paid",
-        color: "teal",
-      });
-      // Request the diff (only if short)
-      if (diff > 0 && handle) {
-        inner += button({
-          href: venmoRequestLink(handle, diff, noteText),
-          label: `Request $${diff} diff`,
-          color: "pink",
-        });
-      }
-      // Dispute
-      inner += buttonOutline({
-        href: reviewResolutionLink({ date: r.appt.date, name, disposition: "disputed", detail: `Disputed — received $${received}, expected $${expected}` }),
-        label: "Mark disputed",
-        color: "purple",
-      });
-      inner += `</div>`;
-      body += card(inner, "purple");
-=======
     body += sectionLabel(`Needs review — ${review.length}`, "teal");
     for (const r of review) body += reviewCard(r);
   }
@@ -1033,40 +830,20 @@ export function buildEmail({ results, unmatchedPayments, now = NOW, windowStart 
         `<div style="color:${PALETTE.textPrimary};"><strong>${fmtDateTime(r.appt.date)}</strong></div><div style="font-family:${FONTS.display};font-size:12px;color:${PALETTE.textMuted};margin-top:4px;">${escapeHtml(summary)}</div>`,
         "teal",
       );
->>>>>>> origin/main
     }
   }
 
   // UNKNOWN
   if (unknown.length) {
-<<<<<<< HEAD
-    body += sectionLabel(`Unknown clients — ${unknown.length}`, "purple");
-    for (const r of unknown) {
-      body += card(
-        `<div style="color:${PALETTE.textPrimary};">${fmtDate(r.appt.date)} — "${escapeHtml(r.appt.summary)}"</div><div style="font-family:${FONTS.display};font-size:12px;color:${PALETTE.textMuted};margin-top:4px;">${escapeHtml(r.note || "")}. Add to clients.csv.</div>`,
-        "purple",
-=======
     body += sectionLabel(`Unknown clients — ${unknown.length}`, "teal");
     for (const r of unknown) {
       body += card(
         `<div style="color:${PALETTE.textPrimary};">${fmtDate(r.appt.date)} — "${escapeHtml(r.appt.summary)}"</div><div style="font-family:${FONTS.display};font-size:12px;color:${PALETTE.textMuted};margin-top:4px;">${escapeHtml(r.note || "")}. Add to clients.csv.</div>`,
         "teal",
->>>>>>> origin/main
       );
     }
   }
 
-<<<<<<< HEAD
-  // CASH PENDING
-  if (cashPending.length) {
-    body += sectionLabel(`Cash pending — ${cashPending.length}`, "teal");
-    for (const r of cashPending) {
-      const price = r.roster.default_price || "?";
-      const cashUrl = cashEntryLink({ date: r.appt.date, name: r.roster.vagaro_name, amount: price });
-      let inner = `<div style="color:${PALETTE.textPrimary};"><strong>${escapeHtml(r.roster.vagaro_name)}</strong> — ${fmtDate(r.appt.date)} — expected $${price}</div>`;
-      inner += `<div style="margin-top:10px;">`;
-      inner += button({ href: cashUrl, label: `Log $${price} cash`, color: "teal" });
-=======
   // CHECK / ZELLE / CASH — these clients pay outside Venmo. "Verify" deep-links
   // to the bank app where the money lands (Chase / Capital One) so Brad can
   // confirm it arrived; "Confirm paid" logs it so it won't reappear next week.
@@ -1081,22 +858,11 @@ export function buildEmail({ results, unmatchedPayments, now = NOW, windowStart 
       inner += `<div style="margin-top:10px;">`;
       if (bank) inner += button({ href: bank.url, label: bank.label, color: "pink" });
       inner += buttonOutline({ href: cashUrl, label: "Confirm paid", color: "teal" });
->>>>>>> origin/main
       inner += `</div>`;
       body += card(inner, "teal");
     }
   }
 
-<<<<<<< HEAD
-  // PAID (collapsed)
-  if (paidVenmo.length || paidCash.length) {
-    body += sectionLabel(`Paid — ${paidVenmo.length + paidCash.length}`, "teal");
-    const names = [...paidVenmo, ...paidCash].map((r) => escapeHtml(r.roster.vagaro_name)).join(", ");
-    body += `<div style="color:${PALETTE.textMuted};font-size:14px;line-height:1.6;margin-bottom:10px;">${names}</div>`;
-  }
-
-  // UNMATCHED PAYMENTS
-=======
   // RESCHEDULED — auto-matched a known client's payment to a session that ran
   // at a non-standard time. Shown separately so Brad can confirm at a glance.
   const inferred = [...paidVenmo].filter((r) => r.inferred);
@@ -1152,7 +918,6 @@ export function buildEmail({ results, unmatchedPayments, now = NOW, windowStart 
   }
 
   // UNMATCHED PAYMENTS (with their memos, so Brad can hand-assign)
->>>>>>> origin/main
   if (unmatchedPayments.length) {
     body += sectionLabel(`Unmatched Venmo payments — ${unmatchedPayments.length}`, "textMuted");
     for (const p of unmatchedPayments) {
@@ -1160,16 +925,6 @@ export function buildEmail({ results, unmatchedPayments, now = NOW, windowStart 
     }
   }
 
-<<<<<<< HEAD
-  const footer = `Log committed to billing/logs/${fmtDateIso(now)}.md · Repo: ${GITHUB_OWNER}/${GITHUB_REPO}`;
-  const html = emailShell({ title: `Week of ${weekOf}`, bodyHtml: body, footerNote: footer });
-  return { subject, html };
-}
-
-function statChip(n, label, color = "teal") {
-  const c = PALETTE[color] || PALETTE.teal;
-  return `<div style="flex:1;min-width:120px;background:${PALETTE.bgPanel};border:1px solid ${PALETTE.border};border-top:3px solid ${c};border-radius:6px;padding:12px 14px;"><div style="font-family:${FONTS.display};font-size:28px;font-weight:700;color:${c};line-height:1;">${n}</div><div style="font-family:${FONTS.display};font-size:11px;text-transform:uppercase;letter-spacing:0.15em;color:${PALETTE.textMuted};margin-top:6px;">${label}</div></div>`;
-=======
   // ── WEEK LEDGER — the two numbers Brad cares about most ──
   // Venmo collected = actual $ that hit Venmo for matched sessions this run.
   // Outstanding = money owed but not yet in (unpaid sessions + short balances).
@@ -1407,7 +1162,6 @@ function tokenExpiryNotice(now) {
     + `<div style="font-family:${FONTS.body};font-size:13px;color:${PALETTE.textPrimary};line-height:1.55;margin-top:10px;">Fix (~5 min): open <b>developers.google.com/oauthplayground</b> &rarr; gear icon &rarr; "Use your own OAuth credentials" (paste Client ID + Secret) &rarr; authorize scope <b>gmail.readonly</b> as <b>thebradyeager@gmail.com</b> &rarr; "Exchange authorization code for tokens" &rarr; copy the <b>refresh token</b>. Then update the <b>GOOGLE_REFRESH_TOKEN</b> and <b>GOOGLE_TOKEN_EXPIRES</b> secrets here: ${secretsUrl}</div>`
     + `<div style="font-family:${FONTS.display};font-size:11px;color:${PALETTE.textMuted};margin-top:10px;">Permanent fix: publish the OAuth app to Production (Google Cloud Console &rarr; OAuth consent screen) so tokens stop expiring. See billing/SETUP.md.</div>`
     + `</div></div>`;
->>>>>>> origin/main
 }
 
 function escapeHtml(s) {
@@ -1423,12 +1177,6 @@ async function writeLog({ appointments, payments, results, unmatchedPayments }) 
   md += `Window: ${WINDOW_START.toISOString()} → ${NOW.toISOString()}\n\n`;
   md += `## Appointments (${appointments.length})\n`;
   for (const r of results) {
-<<<<<<< HEAD
-    const name = r.roster?.vagaro_name || r.appt.client_name;
-    const price = r.expectedPrice ?? r.roster?.default_price ?? "?";
-    md += `- ${fmtDateIso(r.appt.date)} | ${name} | $${price} | ${r.status}`;
-    if (r.payment) md += ` (matched @${r.payment.sender_handle || r.payment.name}, $${r.payment.amount})`;
-=======
     const name = r.roster?.vagaro_name || r.appt.client_name || `[unidentified: ${r.appt.summary || "?"}]`;
     const price = r.expectedPrice ?? r.roster?.default_price ?? "?";
     const co = r.checkoutAmount != null ? ` | checkout $${r.checkoutAmount}` : "";
@@ -1441,7 +1189,6 @@ async function writeLog({ appointments, payments, results, unmatchedPayments }) 
       md += ` (matched ${ident}, $${r.payment.amount}${noteSuffix})`;
     }
     if (r.inferred) md += ` [INFERRED reschedule]`;
->>>>>>> origin/main
     if (r.note) md += ` — ${r.note}`;
     md += `\n`;
   }
@@ -1458,19 +1205,13 @@ async function writeLog({ appointments, payments, results, unmatchedPayments }) 
   const counts = {
     paid_venmo: results.filter((r) => r.status === "PAID_VENMO").length,
     paid_cash: results.filter((r) => r.status === "PAID_CASH").length,
-<<<<<<< HEAD
-=======
     paid_prepaid: results.filter((r) => r.status === "PAID_PREPAID").length,
->>>>>>> origin/main
     unpaid: results.filter((r) => r.status === "UNPAID").length,
     needs_review: results.filter((r) => r.status === "NEEDS_REVIEW").length,
     cash_pending: results.filter((r) => r.status === "CASH_PENDING").length,
     unknown: results.filter((r) => r.status === "UNKNOWN").length,
-<<<<<<< HEAD
-=======
     unidentified: results.filter((r) => r.status === "UNIDENTIFIED_SLOT").length,
     cancelled: results.filter((r) => r.status === "CANCELLED").length,
->>>>>>> origin/main
   };
   md += `\n## Summary\n`;
   for (const [k, v] of Object.entries(counts)) md += `- ${k}: ${v}\n`;
@@ -1487,21 +1228,6 @@ async function main() {
   requireEnv("GOOGLE_REFRESH_TOKEN", GOOGLE_REFRESH_TOKEN);
   requireEnv("BREVO_API_KEY", BREVO_API_KEY);
   console.log(`Window: ${WINDOW_START.toISOString()} → ${NOW.toISOString()}`);
-<<<<<<< HEAD
-  const [clients, cashLog, appointments, payments] = await Promise.all([
-    loadClients(CLIENTS_CSV),
-    loadCashEntries(REPO_ROOT),
-    fetchVagaroAppointments(),
-    fetchVenmoPayments(),
-  ]);
-  console.log(`Loaded ${clients.length} clients, ${cashLog.length} cash entries`);
-  console.log(`Found ${appointments.length} appointments, ${payments.length} Venmo payments`);
-
-  const { results, unmatchedPayments } = reconcile(appointments, payments, clients, cashLog);
-  const { subject, html } = buildEmail({ results, unmatchedPayments });
-  const logFile = await writeLog({ appointments, payments, results, unmatchedPayments });
-  console.log(`Wrote log: ${logFile}`);
-=======
   const [clients, schedule, cashLog, cancellations, priorMatches, rawSlots, payments] = await Promise.all([
     loadClients(CLIENTS_CSV),
     loadSchedule(SCHEDULE_CSV),
@@ -1552,7 +1278,6 @@ async function main() {
   console.log("\n=== LOG FILE CONTENTS ===");
   console.log(await fs.readFile(logFile, "utf8"));
   console.log("=== END LOG ===\n");
->>>>>>> origin/main
   await sendBrevoEmail({
     apiKey: BREVO_API_KEY,
     to: RECIPIENT_EMAIL,
@@ -1562,11 +1287,7 @@ async function main() {
     html,
     dryRun: DRY_RUN === "true",
   });
-<<<<<<< HEAD
-  console.log(`Sent email: ${subject}`);
-=======
   console.log(DRY_RUN === "true" ? `Dry run — no email sent. Subject: ${subject}` : `Sent email: ${subject}`);
->>>>>>> origin/main
 }
 
 const isDirectRun = process.argv[1] && import.meta.url === `file://${process.argv[1]}`;
