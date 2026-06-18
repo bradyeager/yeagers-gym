@@ -323,31 +323,33 @@
     "gmail_id": "19eb8b3989e1de54",
     "matched_at": "2026-06-12T18:57:55.089Z",
     "matched_to": {
-      "date": "2026-06-10",
+      "date": "n/a-programming",
       "client": "Jacob Bain",
-      "status": "NEEDS_REVIEW"
+      "status": "EXTRA_SERVICE"
     },
     "payment": {
       "sender": "Jacob Bain",
       "amount": 50,
       "note": "Programming - March 👊",
       "date": "2026-06-11"
-    }
+    },
+    "corrected_by": "Brad 6/18 — Jacob has separate Programming subscription; this $50 not for training"
   },
   {
     "gmail_id": "19eb8b3b975ccd24",
     "matched_at": "2026-06-18T04:28:03.678Z",
     "matched_to": {
-      "date": "2026-06-15",
+      "date": "n/a-programming",
       "client": "Jacob Bain",
-      "status": "NEEDS_REVIEW"
+      "status": "EXTRA_SERVICE"
     },
     "payment": {
       "sender": "Jacob Bain",
       "amount": 50,
       "note": "Programming - Forgot to request March 🤦‍♂️ This is for May. 🙏",
       "date": "2026-06-11"
-    }
+    },
+    "corrected_by": "Brad 6/18 — Jacob has separate Programming subscription; this $50 not for training"
   },
   {
     "gmail_id": "19eb9784b9082516",
@@ -504,7 +506,7 @@
     "gmail_id": "19ed169cbbe5b427",
     "matched_at": "2026-06-18T04:28:03.678Z",
     "matched_to": {
-      "date": "2026-06-15",
+      "date": "2026-06-16",
       "client": "Peggy Happ",
       "status": "PAID_VENMO"
     },
@@ -513,7 +515,8 @@
       "amount": 45,
       "note": "Team training 6/16/26.",
       "date": "2026-06-16"
-    }
+    },
+    "corrected_by": "Brad 6/18 — memo says Tue 6/16 team, not Mon 6/15 2:1"
   },
   {
     "gmail_id": "19ed3148475382ff",
