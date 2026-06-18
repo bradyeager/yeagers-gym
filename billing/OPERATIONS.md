@@ -76,6 +76,43 @@ iCal), paste the new value into the secret. Nothing else changes.
 - `/test-billing-email` — preflight render → push → trigger → poll → summarize
 - `/vagaro-prompt` — regenerate the checkout block from latest log + your
   newest cash/cancellation commits (no email, no API calls)
+- `/move` — file schedule changes from plain English. Examples:
+  - "Dina is out until August 1" → generates a date-range cancellation file
+  - "Kerry moved from Mon 3pm to Mon 2pm permanently" → edits schedule.csv + cancels old-slot sessions in the next 2 weeks
+  - "Jacob missed Monday" → creates a single cancellation file
+
+## Issue intake (from your phone — no Claude Code session needed)
+
+Cheapest way to file billing changes on the go:
+
+1. Open **github.com/bradyeager/yeagers-gym/issues/new**
+2. Title: short description ("Dina out until Aug 1")
+3. Body: plain English ("Dina Bates is out every Monday until August 1. Lisa paid cash $70 for 6/9.")
+4. Apply label: **billing-intake**
+
+The `claude-billing-intake.yml` workflow fires, commits the correct files,
+and closes the issue. Costs ~$0.01/issue (Haiku model). Requires
+`ANTHROPIC_API_KEY` in repo Settings → Secrets → Actions.
+
+## Monthly P&L
+
+Runs automatically on the 1st of each month at 10 AM PT.
+Reads all weekly logs from the prior month, deduplicates sessions,
+and emails: total revenue, Venmo vs cash split, unpaid outstanding, 1099-K note.
+
+Manual trigger: Actions → Monthly billing summary → Run workflow → month_offset=-1.
+
+## Failure notifications
+
+GitHub emails the repo owner by default when a workflow fails. Verify:
+**github.com/settings/notifications** → GitHub Actions → Email checked.
+Full setup + Slack fallback: `billing/prompts/04-github-notifications.md`.
+
+## Privacy / private repo migration
+
+All billing data (client names, amounts, Venmo handles) is currently in the
+public `yeagers-gym` repo. Migration guide to a private repo:
+`billing/prompts/03-private-repo-setup.md`
 
 ## Files that are data (Brad-editable, bot-read)
 

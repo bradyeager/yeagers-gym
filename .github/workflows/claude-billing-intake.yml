@@ -1,0 +1,84 @@
+name: Billing intake (issue-driven)
+
+# Brad opens a GitHub Issue from his phone labeled "billing-intake".
+# Claude reads it, commits the required cancellations / schedule changes /
+# cash entries, and closes the issue. Costs pennies per run.
+#
+# SETUP (one-time):
+#   1. Add ANTHROPIC_API_KEY to repo Settings → Secrets → Actions
+#   2. Create a label named "billing-intake" in Issues → Labels
+#   3. (Optional) create a label "billing-intake-done" for closed issues
+#
+# USAGE (Brad):
+#   github.com/bradyeager/yeagers-gym/issues/new
+#   Title: quick description (e.g. "Dina out until Aug 1")
+#   Body: plain-English changes (see examples below)
+#   Label: billing-intake  ← this triggers the action
+#
+# EXAMPLE ISSUE BODY:
+#   Dina is out until August 1.
+#   Jacob skipped Monday June 8.
+#   Lisa paid cash $70 for 6/9.
+#   Kerry moved permanently from Mon 3pm to Mon 2pm.
+
+on:
+  issues:
+    types: [labeled]
+
+permissions:
+  contents: write
+  issues: write
+
+concurrency:
+  group: billing-intake-${{ github.event.issue.number }}
+  cancel-in-progress: false
+
+jobs:
+  intake:
+    # Only run when the billing-intake label was just added
+    if: github.event.label.name == 'billing-intake'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          model: claude-haiku-4-5-20251001
+          # Tell Claude exactly what to do with the issue body.
+          system_prompt: |
+            You are the Yeager's Gym billing bot. Brad just sent you a plain-English issue describing
+            schedule changes, cancellations, or cash payments. Today is ${{ env.TODAY }}.
+
+            YOUR ONLY JOB: read the issue, commit the correct billing files, then close the issue.
+
+            ── FILES YOU CAN TOUCH ──
+            billing/cancellations/YYYY-MM-DD-slug.md  (one skip per file; format: "YYYY-MM-DD | Exact Vagaro Name | reason")
+            billing/cash-entries/YYYY-MM-DD-slug.md    (format: "YYYY-MM-DD | Exact Vagaro Name | $amount | note")
+            billing/schedule.csv                        (for permanent slot changes only)
+
+            ── RULES ──
+            1. Exact Vagaro Name = vagaro_name in billing/clients.csv. Always look it up.
+            2. Cancellation files: name them YYYY-MM-DD-clientslug.md; one date per line.
+            3. Date-range absence: create one file with one line per affected session date.
+            4. Permanent slot change: edit schedule.csv AND cancel old-slot sessions in the next 14 days.
+            5. Cash entry: create billing/cash-entries/YYYY-MM-DD-slug.md.
+            6. Never edit billing/matched-payments.json or billing/logs/ — those are bot-owned.
+            7. Commit with a short descriptive message ("cancel: Jacob Bain 2026-06-08").
+            8. After committing, post a brief comment on the issue: what you did in 3–5 bullet points.
+            9. Close the issue by posting a comment and applying a "billing-intake-done" label
+               (or just close it if the label doesn't exist).
+
+            ── TODAY'S DATE ──
+            ${{ env.TODAY }}
+          direct_prompt: |
+            Issue title: ${{ github.event.issue.title }}
+
+            Issue body:
+            ${{ github.event.issue.body }}
+
+            Read billing/clients.csv and billing/schedule.csv first, then commit the required files,
+            then comment and close this issue.
+        env:
+          TODAY: ${{ github.event.issue.created_at }}

@@ -1,0 +1,8 @@
+{
+    "name": "yg-vagaro-webhook",
+    "version": "1.0.0",
+    "private": true,
+    "type": "module",
+    "description": "Vagaro webhook receiver for Yeager's Gym billing.",
+    "engines": { "node": ">=20" }
+}
