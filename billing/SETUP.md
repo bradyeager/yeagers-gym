@@ -149,16 +149,11 @@ You already use Brevo on the site (`brevo.js`), so you have an account.
 | `GOOGLE_CLIENT_ID` | From Step 3d |
 | `GOOGLE_CLIENT_SECRET` | From Step 3d |
 | `GOOGLE_REFRESH_TOKEN` | From Step 3e |
-<<<<<<< HEAD
-=======
 | `GOOGLE_TOKEN_EXPIRES` | The date the refresh token stops working, `YYYY-MM-DD` (see Step 5b) |
->>>>>>> origin/main
 | `BREVO_API_KEY` | From Step 4 |
 
 Order matters only for your sanity. Names must match exactly.
 
-<<<<<<< HEAD
-=======
 ### Step 5b — Stop the Google token from expiring (IMPORTANT)
 
 Google OAuth refresh tokens behave differently depending on the app's
@@ -182,7 +177,6 @@ The weekly email shows a loud pink warning starting **14 days** before that
 date, with the exact re-auth steps — so you'll never be caught off guard. When
 you re-issue a token, bump this date.
 
->>>>>>> origin/main
 ---
 
 ## Step 6 — Test-run the bot
