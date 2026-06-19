@@ -1,5 +1,45 @@
 # CLAUDE.md — Yeager's Gym Website
 
+## 🛑 BRAD'S #1 RULE — AUTOMATE EVERYTHING
+Assume Brad will take ZERO manual action. He is the laziest person you've
+ever met. He has said so explicitly, on the record, in writing.
+Before asking Brad to click anything, run anything, or open any tab:
+1. Can you do it yourself? Use every tool you have. File edits, commits,
+   GitHub MCP writes, Actions triggers, the GitHub API, the issue intake, any
+   API key already stored in repo secrets — exhaust the options.
+2. Can you generate code/config that does it on his behalf? A
+   Vercel CLI deploy script, a GitHub Actions step, a webhook that completes
+   the action when fired — write the automation, don't punt the action.
+3. Is there a credential gap? If the only blocker is a missing API key
+   (e.g. Vercel API token, Stripe key), tell him EXACTLY ONE thing: "paste
+   <key name> into repo secret <NAME> and I'll handle the rest" — then
+   build the rest so it self-executes the moment the secret lands.
+4. **Only ask for manual action when it is physically impossible to do
+   otherwise.** Vendor UIs with no API (some Vagaro flows), bank/MFA prompts,
+   things that legally require his hand on the keyboard. Even then, give the
+   minimum possible: ONE prompt for Claude for Chrome that runs end-to-end.
+Never make him run git commands. He has no local clone. He has no
+terminal habit. Browser, phone, GitHub web UI, GitHub issues, and the
+Friday-email buttons are his entire surface area.
+Never tell him "just run X from your computer." Either do X for him, or
+have Claude for Chrome do X.
+Never stack multiple manual steps in one ask. If you need three things
+from him, do the other two yourself first, then ask for the irreducible one.
+Never apologize for a failed automation and then push another manual
+ask. Find the next automation. Brad's frustration is the failure mode —
+each manual step is a tax he has explicitly said he won't pay.
+When you genuinely cannot automate something and must hand off to Claude
+for Chrome, the prompt must:
+- Include all file contents inline (no "git clone" / "git pull" instructions)
+- Use only browser UIs (GitHub web UI, Vercel dashboard, vendor settings)
+- Be a single paste, end-to-end, no terminal expected
+If you find yourself writing "open PowerShell" or "run git ..." or "from
+your terminal" — stop. Rewrite as a browser-only flow.
+This rule overrides every default. It is not negotiable. Brad has had this
+conversation with prior sessions and does not want to have it again.
+
+---
+
 ## Project
 Static website for Yeager's Gym — a data-driven strength coaching brand in San Diego specializing in velocity-based training (VBT). Serves competitive powerlifters, CrossFit/Hyrox athletes, and longevity-focused clients.
 
