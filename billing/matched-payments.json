@@ -1012,5 +1012,21 @@
       "date": "2026-06-02"
     },
     "corrected_by": "Brad walkthrough 6/9 — Kerry attended Tue team instead of her Mon slot"
+  },
+  {
+    "gmail_id": "manual-james-lowther-176-20260611",
+    "matched_at": "2026-06-18T08:00:00Z",
+    "matched_to": {
+      "date": "n/a-mixed-training-peptides",
+      "client": "James Lowther",
+      "status": "EXTRA_SERVICE"
+    },
+    "payment": {
+      "sender": "James Lowther",
+      "amount": 176,
+      "note": "Jun 11, 2026",
+      "date": "2026-06-11"
+    },
+    "corrected_by": "Brad 6/18 — $176 = training (Thu 6/11 2:1 w/ Mathieu) + peptides one-time mixed payment"
   }
 ]
