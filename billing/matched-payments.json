@@ -534,6 +534,81 @@
     }
   },
   {
+    "gmail_id": "19ed794df9c1da57",
+    "matched_at": "2026-06-19T18:27:27.240Z",
+    "matched_to": {
+      "date": "2026-06-17",
+      "client": "Annie Deioma",
+      "status": "NEEDS_REVIEW"
+    },
+    "payment": {
+      "sender": "Annie Deioma",
+      "amount": 70,
+      "note": "Strength 6/17",
+      "date": "2026-06-17"
+    }
+  },
+  {
+    "gmail_id": "19edb1b5b033915b",
+    "matched_at": "2026-06-19T18:27:27.240Z",
+    "matched_to": {
+      "date": "2026-06-18",
+      "client": "Tonnie Dahl",
+      "status": "PAID_VENMO"
+    },
+    "payment": {
+      "sender": "Tonnie Dahl",
+      "amount": 70,
+      "note": "Thank You",
+      "date": "2026-06-18"
+    }
+  },
+  {
+    "gmail_id": "19edbe15553211d2",
+    "matched_at": "2026-06-19T18:27:27.240Z",
+    "matched_to": {
+      "date": "2026-06-16",
+      "client": "Celestin Mathieu",
+      "status": "PAID_VENMO"
+    },
+    "payment": {
+      "sender": "Celestin Mathieu",
+      "amount": 70,
+      "note": "Mathieu",
+      "date": "2026-06-18"
+    }
+  },
+  {
+    "gmail_id": "19ee04abd08f2588",
+    "matched_at": "2026-06-19T18:27:27.240Z",
+    "matched_to": {
+      "date": "2026-06-19",
+      "client": "Lacey James",
+      "status": "PAID_VENMO"
+    },
+    "payment": {
+      "sender": "Laci James",
+      "amount": 70,
+      "note": "Jun 19, 2026",
+      "date": "2026-06-19"
+    }
+  },
+  {
+    "gmail_id": "19ee0a438d6e6b1c",
+    "matched_at": "2026-06-19T18:27:27.239Z",
+    "matched_to": {
+      "date": "2026-06-15",
+      "client": "Peggy Happ",
+      "status": "PAID_VENMO"
+    },
+    "payment": {
+      "sender": "Peggy Barlow Happ",
+      "amount": 70,
+      "note": "Training 6/19/26",
+      "date": "2026-06-19"
+    }
+  },
+  {
     "gmail_id": "backfill-0369ec01a3294782",
     "matched_at": "2026-05-27T00:00:00Z",
     "matched_to": {
@@ -998,22 +1073,6 @@
     "backfilled": true
   },
   {
-    "gmail_id": "manual-kerry-sg-0602",
-    "matched_at": "2026-06-10T02:30:00Z",
-    "matched_to": {
-      "date": "2026-06-02",
-      "client": "Kerry Kreczmer",
-      "status": "PAID_VENMO"
-    },
-    "payment": {
-      "sender": "Kerry Kreczmer",
-      "amount": 50,
-      "note": "Senior games training",
-      "date": "2026-06-02"
-    },
-    "corrected_by": "Brad walkthrough 6/9 — Kerry attended Tue team instead of her Mon slot"
-  },
-  {
     "gmail_id": "manual-james-lowther-176-20260611",
     "matched_at": "2026-06-18T08:00:00Z",
     "matched_to": {
@@ -1028,5 +1087,21 @@
       "date": "2026-06-11"
     },
     "corrected_by": "Brad 6/18 — $176 = training (Thu 6/11 2:1 w/ Mathieu) + peptides one-time mixed payment"
+  },
+  {
+    "gmail_id": "manual-kerry-sg-0602",
+    "matched_at": "2026-06-10T02:30:00Z",
+    "matched_to": {
+      "date": "2026-06-02",
+      "client": "Kerry Kreczmer",
+      "status": "PAID_VENMO"
+    },
+    "payment": {
+      "sender": "Kerry Kreczmer",
+      "amount": 50,
+      "note": "Senior games training",
+      "date": "2026-06-02"
+    },
+    "corrected_by": "Brad walkthrough 6/9 — Kerry attended Tue team instead of her Mon slot"
   }
 ]
