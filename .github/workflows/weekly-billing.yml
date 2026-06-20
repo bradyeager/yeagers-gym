@@ -22,7 +22,7 @@ on:
         options:
           - default
           - command-center
-        default: default
+        default: command-center
 
 permissions:
   contents: write
@@ -60,7 +60,7 @@ jobs:
           BREVO_API_KEY: ${{ secrets.BREVO_API_KEY }}
           DRY_RUN: ${{ github.event.inputs.dry_run || 'false' }}
           LOOKBACK_DAYS: ${{ github.event.inputs.lookback_days || '8' }}
-          EMAIL_STYLE: ${{ github.event.inputs.email_style || 'default' }}
+          EMAIL_STYLE: ${{ github.event.inputs.email_style || 'command-center' }}
         run: npm start
 
       - name: Commit weekly log + matched-payments ledger
