@@ -522,9 +522,10 @@
     "gmail_id": "19ed3148475382ff",
     "matched_at": "2026-06-18T04:28:03.679Z",
     "matched_to": {
-      "date": "2026-06-16",
+      "date": "2026-06-17",
       "client": "Melissa Rios",
-      "status": "PAID_VENMO"
+      "status": "PAID_VENMO",
+      "corrected_by": "Brad 6/20 — Tue 6/16 5PM PT = UTC 6/17; Melissa only trained Tue this week"
     },
     "payment": {
       "sender": "Melissa Rios",
@@ -539,7 +540,8 @@
     "matched_to": {
       "date": "2026-06-17",
       "client": "Annie Deioma",
-      "status": "NEEDS_REVIEW"
+      "status": "PAID_VENMO",
+      "corrected_by": "Brad 6/20 — $70 IS full solo rate per updated valid_prices; ledger was locked at NEEDS_REVIEW from prior run"
     },
     "payment": {
       "sender": "Annie Deioma",
@@ -567,9 +569,10 @@
     "gmail_id": "19edbe15553211d2",
     "matched_at": "2026-06-19T18:27:27.240Z",
     "matched_to": {
-      "date": "2026-06-16",
+      "date": "2026-06-18",
       "client": "Celestin Mathieu",
-      "status": "PAID_VENMO"
+      "status": "PAID_VENMO",
+      "corrected_by": "Brad 6/20 — $70 'Mathieu' on 6/18 = Thu solo (not Tue 7AM)"
     },
     "payment": {
       "sender": "Celestin Mathieu",
@@ -597,9 +600,10 @@
     "gmail_id": "19ee0a438d6e6b1c",
     "matched_at": "2026-06-19T18:27:27.239Z",
     "matched_to": {
-      "date": "2026-06-15",
+      "date": "2026-06-19",
       "client": "Peggy Happ",
-      "status": "PAID_VENMO"
+      "status": "PAID_VENMO",
+      "corrected_by": "Brad 6/20 — $70 'Training 6/19/26' = Fri solo (default-memo exception bug)"
     },
     "payment": {
       "sender": "Peggy Barlow Happ",
