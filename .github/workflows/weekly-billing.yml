@@ -23,6 +23,13 @@ on:
           - default
           - command-center
         default: command-center
+      appointment_source:
+        description: "Where appointments come from (ical = proven path; vagaro-events = Phase 3 webhook feed)"
+        type: choice
+        options:
+          - ical
+          - vagaro-events
+        default: ical
 
 permissions:
   contents: write
@@ -52,6 +59,11 @@ jobs:
       - name: Run billing reconciliation
         working-directory: billing/bot
         env:
+          # ROLLOUT SAFETY: committed default is "ical" (the proven path).
+          # Scheduled Friday runs have no inputs, so they fall back to "ical".
+          # Brad flips to vagaro-events via a manual workflow_dispatch once the
+          # Phase 3 path is validated by a dry-run.
+          APPOINTMENT_SOURCE: ${{ github.event.inputs.appointment_source || 'ical' }}
           VAGARO_ICAL_URL: ${{ secrets.VAGARO_ICAL_URL }}
           GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
           GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
