@@ -384,30 +384,17 @@ export function buildMoneyLine({ results, unmatchedPayments, now, windowStart, c
     + `</tr></table>`;
   body += ledger();
 
-  // LOOSE ENDS (unmatched / unidentified)
-  if (cats.unidentified.length || unmatchedPayments.length) {
-    body += sectionLabel("Loose Ends", T.unid);
-    if (cats.unidentified.length) {
-      for (const r of cats.unidentified) {
-        body += card(
-          `<div class="yg-mono" style="font-family:${FONT_MONO};font-size:14px;color:${T.white};font-weight:700;">${fmtShort(r.appt.date)} · ${timeOf(r.appt.date)}</div>`
-            + `<div class="yg-body" style="font-family:${FONT_BODY};font-size:14px;color:${T.body};margin-top:6px;">${esc(r.appt.summary || "Unknown service")}</div>`
-            + `<div class="yg-body" style="font-family:${FONT_BODY};font-size:13px;color:${T.muted};margin-top:7px;line-height:1.5;">${micro("Suggested", T.unid)} &nbsp;Map this slot in schedule.csv, or mark INACTIVE.</div>`,
-          T.unid,
-        );
-      }
-    }
-    if (unmatchedPayments.length) {
-      body += `<div style="margin:10px 0 6px;">${micro(`Unmatched Venmo Payments — ${unmatchedPayments.length}`, T.muted)}</div>`;
-      let list = "";
-      unmatchedPayments.forEach((p, i) => {
-        const bg = i % 2 === 1 ? T.rowAlt : T.card;
-        list += `<tr><td bgcolor="${bg}" class="yg-mono" style="background-color:${bg};padding:9px 12px;font-family:${FONT_MONO};font-size:13px;color:${T.muted};">`
-          + `<span style="color:${T.body};">${esc(p.sender_display_name)}</span> &middot; <span style="color:${T.white};font-weight:700;">${money(p.amount)}</span> &middot; ${fmtDate(p.date)} &middot; "${esc(p.note || "")}"`
-          + `</td></tr>`;
-      });
-      body += `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="${T.card}" style="background-color:${T.card};border:1px solid ${T.border};border-radius:8px;">${list}</table>`;
-    }
+  // UNMATCHED VENMO PAYMENTS (money in that didn't pin to a session)
+  if (unmatchedPayments.length) {
+    body += sectionLabel(`Unmatched Venmo Payments — ${unmatchedPayments.length}`, T.unid);
+    let list = "";
+    unmatchedPayments.forEach((p, i) => {
+      const bg = i % 2 === 1 ? T.rowAlt : T.card;
+      list += `<tr><td bgcolor="${bg}" class="yg-mono" style="background-color:${bg};padding:9px 12px;font-family:${FONT_MONO};font-size:13px;color:${T.muted};">`
+        + `<span style="color:${T.body};">${esc(p.sender_display_name)}</span> &middot; <span style="color:${T.white};font-weight:700;">${money(p.amount)}</span> &middot; ${fmtDate(p.date)} &middot; "${esc(p.note || "")}"`
+        + `</td></tr>`;
+    });
+    body += `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="${T.card}" style="background-color:${T.card};border:1px solid ${T.border};border-radius:8px;">${list}</table>`;
   }
 
   // THE PLAYBOOK (Vagaro checkout — VERBATIM)
@@ -460,7 +447,7 @@ export function buildMoneyLine({ results, unmatchedPayments, now, windowStart, c
   body, table, td, div, p, span, a { -webkit-text-size-adjust:100%; -ms-text-size-adjust:100%; }
   /* Outlook.com web dark mode lock */
   [data-ogsc] body, [data-ogsb] body { background-color:${T.bg} !important; color:${T.body} !important; }
-  [data-ogsc] .yg-card { background-color:${T.cardBg} !important; }
+  [data-ogsc] .yg-card { background-color:${T.card} !important; }
   [data-ogsc] .yg-hero { background-color:${T.heroBg} !important; }
   [data-ogsc] .yg-text { color:${T.body} !important; }
   /* Mobile: bump readability without touching The Playbook (<pre>) */
