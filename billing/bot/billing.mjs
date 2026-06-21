@@ -12,7 +12,7 @@ import {
   requireEnv, resolveRepoRoot, loadClients, loadCashEntries, loadCancellations,
   loadMatchedLedger, saveMatchedLedger,
   loadSchedule, findScheduleEntriesForSlot, isInactiveSlot,
-  fuzzyName, fmtDate, fmtDateTime, fmtDateIso, slugify, parseNoteDate, withRetry,
+  fuzzyName, fmtDate, fmtDateTime, fmtDateIso, fmtDateIsoPacific, slugify, parseNoteDate, withRetry,
   venmoRequestLink, githubNewFileUrl, sendBrevoEmail,
   emailShell, sectionLabel, button, buttonOutline, card, NEON_GRADIENT,
 } from "./lib.mjs";
@@ -29,6 +29,15 @@ const {
   LOOKBACK_DAYS = "14",
   PAYMENT_LOOKBACK_DAYS = "21",
   DRY_RUN = "false",
+  // Phase 3: where appointments come from.
+  //   "ical"          (default) — legacy Vagaro iCal feed via schedule.csv.
+  //   "vagaro-events"           — read billing/vagaro-events/*.json (live webhook).
+  // ROLLOUT SAFETY: the committed default is "ical" so an unset env (and the
+  // scheduled Friday runs) keep using the proven path until Brad validates the
+  // vagaro-events path via a manual workflow_dispatch dry-run. The workflow
+  // passes APPOINTMENT_SOURCE explicitly from its input; this default only
+  // matters when the env is absent.
+  APPOINTMENT_SOURCE = "ical",
 } = process.env;
 
 const LOOKBACK_MS = Number(LOOKBACK_DAYS) * 24 * 60 * 60 * 1000;
@@ -38,10 +47,25 @@ const REPO_ROOT = resolveRepoRoot(import.meta.url);
 const CLIENTS_CSV = path.join(REPO_ROOT, "billing", "clients.csv");
 const SCHEDULE_CSV = path.join(REPO_ROOT, "billing", "schedule.csv");
 const LOGS_DIR = path.join(REPO_ROOT, "billing", "logs");
+const VAGARO_EVENTS_DIR = path.join(REPO_ROOT, "billing", "vagaro-events");
+const VAGARO_CUSTOMERS_JSON = path.join(REPO_ROOT, "billing", "vagaro-customers.json");
 
-// ---- Vagaro iCal ----
+// ---- Vagaro appointments (dispatcher) ----
+//
+// Phase 3: committed default source is the legacy iCal feed (proven path).
+// Set APPOINTMENT_SOURCE=vagaro-events to read the live webhook event archive
+// in billing/vagaro-events/*.json once that path is validated.
 
 async function fetchVagaroAppointments() {
+  if (APPOINTMENT_SOURCE === "ical") {
+    return fetchVagaroAppointmentsFromIcal();
+  }
+  return fetchVagaroAppointmentsFromEvents();
+}
+
+// ---- Vagaro iCal (legacy fallback) ----
+
+async function fetchVagaroAppointmentsFromIcal() {
   const events = await withRetry(() => ical.async.fromURL(VAGARO_ICAL_URL), { label: "Vagaro iCal fetch" });
   const all = Object.values(events);
   const typeCounts = {};
@@ -105,6 +129,211 @@ async function fetchVagaroAppointments() {
     rawVevents.forEach((e, i) => {
       console.log(`  [${i}] start=${e.start} status=${e.status || ""} rrule=${!!e.rrule} summary="${(e.summary || "").slice(0, 80)}"`);
     });
+  }
+
+  appts.sort((a, b) => a.date - b.date);
+  return appts;
+}
+
+// ---- Vagaro events (Phase 3 — live webhook feed) ----
+//
+// Each file in billing/vagaro-events/ is one Vagaro webhook envelope:
+//   { id, createdDate, type, action, payload: { ... } }
+// We only care about type==="appointment" — type==="transaction" and
+// type==="customer" tell us about cash/CC payments and roster changes,
+// not slot existence.
+//
+// One appointmentId can fire multiple events (created → modified → deleted).
+// We dedupe and keep the LATEST per appointmentId (by modifiedDate ||
+// createdDate || envelope createdDate || file mtime). If the latest event
+// is a cancellation (action "deleted" or bookingStatus indicating cancel),
+// we DROP the appointment — this replaces per-file billing/cancellations/*.md
+// for any Vagaro-side cancellation.
+
+async function loadVagaroCustomerMap() {
+  try {
+    const raw = await fs.readFile(VAGARO_CUSTOMERS_JSON, "utf8");
+    const parsed = JSON.parse(raw);
+    if (parsed && typeof parsed === "object") return parsed;
+    return {};
+  } catch (e) {
+    if (e.code === "ENOENT") return {};
+    throw e;
+  }
+}
+
+// Action strings (from the envelope) that DROP an appointment outright.
+// Real enum observed: "created", "deleted", "updated" (NOT "modified").
+// Matched generically so any future cancel-ish verb is caught.
+function isCancelAction(action) {
+  if (!action) return false;
+  return /delete|cancel|no.?show/i.test(String(action));
+}
+
+// bookingStatus enum strings that mean "don't bill this slot."
+// Observed in real payloads: "Deleted", "Service Completed", "Accepted".
+// Defensive coverage of values Vagaro uses elsewhere in its API: "Cancelled",
+// "No Show", "Late Cancel". Case-insensitive substring match so minor spelling
+// drift won't slip cancellations through as billable.
+function isCancelledStatus(status) {
+  if (!status) return false;
+  return /delete|cancel|no.?show/i.test(String(status));
+}
+
+// True if THIS single event marks the appointment as cancelled — by action
+// (deleted/cancelled/no-show) OR bookingStatus (Deleted/Cancelled/No Show/etc).
+function eventIsCancellation(env) {
+  const p = env.payload || {};
+  return isCancelAction(env.action) || isCancelledStatus(p.bookingStatus);
+}
+
+// Sort key for "latest" event per appointmentId. Higher = newer.
+// Vagaro stamps modifiedDate when an existing appointment is updated, falls
+// back to payload.createdDate, then to the envelope createdDate, then to
+// the file mtime if all timestamps are missing (defensive — shouldn't happen
+// in real payloads).
+function eventTimestamp(env, fileMtimeMs) {
+  const p = env.payload || {};
+  const candidates = [p.modifiedDate, p.createdDate, env.createdDate];
+  for (const c of candidates) {
+    if (!c) continue;
+    const t = Date.parse(c);
+    if (!Number.isNaN(t)) return t;
+  }
+  return fileMtimeMs || 0;
+}
+
+export async function fetchVagaroAppointmentsFromEvents() {
+  let files;
+  try {
+    files = await fs.readdir(VAGARO_EVENTS_DIR);
+  } catch (e) {
+    if (e.code === "ENOENT") {
+      console.log(`vagaro-events: directory missing (${VAGARO_EVENTS_DIR}); 0 appointments`);
+      return [];
+    }
+    throw e;
+  }
+  const jsonFiles = files.filter((f) => f.endsWith(".json"));
+  console.log(`vagaro-events: scanning ${jsonFiles.length} envelope file(s)`);
+
+  const customerMap = await loadVagaroCustomerMap();
+  console.log(`vagaro-customers: ${Object.keys(customerMap).length} known customerId→name mapping(s)`);
+
+  // ── PASS 1: group ALL appointment events by appointmentId ──
+  // We need every event (not just the latest) because FIX 3 — cancellation
+  // dominance — says: if ANY event for an appointmentId is a cancellation,
+  // the appointment is dropped, regardless of timestamp ordering. A naive
+  // "latest wins" can resurrect a cancelled session when a backfilled
+  // `created` carries a newer createdDate than the `deleted` event.
+  const eventsByApptId = new Map(); // apptId → [{ env, ts, source }]
+  let skippedNonAppointment = 0, skippedNoApptId = 0, skippedParseErr = 0;
+
+  for (const f of jsonFiles) {
+    const full = path.join(VAGARO_EVENTS_DIR, f);
+    let raw, env, mtimeMs = 0;
+    try {
+      raw = await fs.readFile(full, "utf8");
+      env = JSON.parse(raw);
+      const st = await fs.stat(full);
+      mtimeMs = st.mtimeMs;
+    } catch (_e) {
+      skippedParseErr++;
+      continue;
+    }
+    if (!env || env.type !== "appointment") { skippedNonAppointment++; continue; }
+    const apptId = env.payload?.appointmentId;
+    if (!apptId) { skippedNoApptId++; continue; }
+    const ts = eventTimestamp(env, mtimeMs);
+    if (!eventsByApptId.has(apptId)) eventsByApptId.set(apptId, []);
+    eventsByApptId.get(apptId).push({ env, ts, source: f });
+  }
+  console.log(
+    `vagaro-events: ${eventsByApptId.size} unique appointmentId(s); ` +
+    `skipped ${skippedNonAppointment} non-appointment, ${skippedNoApptId} missing apptId, ${skippedParseErr} parse-err`,
+  );
+
+  // ── PASS 2: per appointmentId, apply cancellation dominance, then emit ──
+  // ONE billing record per appointment (each Vagaro appointment event is
+  // already one attendee — no schedule.csv expansion in events mode). The
+  // record shape matches what reconcile() expects:
+  //   { date, summary, description, client_name, vagaroAmount, unidentified }
+  const appts = [];
+  let skippedCancelled = 0, skippedOld = 0, skippedFuture = 0;
+  let skippedNonBillable = 0, skippedNoStart = 0;
+  let addedKnown = 0, addedUnknown = 0;
+
+  for (const [apptId, events] of eventsByApptId.entries()) {
+    // FIX 3 — cancellation dominance: if ANY event cancels this appointment,
+    // drop it full-stop (no resurrection by a newer-timestamped `created`).
+    // (events is an array of { env, ts, source } wrappers — unwrap to env.)
+    if (events.some((e) => eventIsCancellation(e.env))) { skippedCancelled++; continue; }
+
+    // Otherwise use the LATEST non-cancel event for the appointment's details.
+    const latest = events.reduce((a, b) => (b.ts > a.ts ? b : a));
+    const { env, source } = latest;
+    const p = env.payload || {};
+
+    const summary = (p.serviceTitle || "").trim();
+    if (!isBillableSession(summary)) { skippedNonBillable++; continue; }
+
+    if (!p.startTime) { skippedNoStart++; continue; }
+    const start = new Date(p.startTime);
+    if (Number.isNaN(start.getTime())) { skippedNoStart++; continue; }
+    if (start < WINDOW_START) { skippedOld++; continue; }
+    if (start > NOW)         { skippedFuture++; continue; }
+
+    // FIX 2 — the Vagaro-resolved price for this appointment. Numeric (e.g.
+    // 40, 45, 50, 70, 100). reconcile() uses this as the FIRST-choice expected
+    // price, freeing the bot from schedule.csv pricing entirely.
+    const vagaroAmount = (p.amount != null && !Number.isNaN(Number(p.amount)))
+      ? Number(p.amount) : null;
+
+    const customerId = p.customerId || "";
+    const mappedName = customerId ? (customerMap[customerId] || "") : "";
+
+    if (mappedName) {
+      // FIX 1 — resolved client flows straight to roster matching.
+      appts.push({
+        date: start,
+        summary,
+        description: `customerId=${customerId} appointmentId=${apptId} amount=${vagaroAmount} source=${source}`,
+        client_name: mappedName,
+        vagaroAmount,
+        unidentified: false,
+      });
+      addedKnown++;
+    } else {
+      // FIX 4(b) — FULL-ID VISIBILITY. The email's UNIDENTIFIED renderer
+      // prints r.appt.summary ONLY, so bake the FULL customerId + service +
+      // price into the summary. Brad copies the id straight from the email
+      // into vagaro-customers.json. Empty client_name + unidentified:true →
+      // lands in the UNIDENTIFIED bucket in reconcile().
+      const idStr = customerId || "<none>";
+      const priceStr = vagaroAmount != null ? ` @ $${vagaroAmount}` : "";
+      appts.push({
+        date: start,
+        summary: `Unknown Vagaro client [id=${idStr}] — ${summary}${priceStr}`,
+        description: `Unknown Vagaro client id=${customerId} appointmentId=${apptId} amount=${vagaroAmount} source=${source}`,
+        client_name: "",
+        vagaroAmount,
+        unidentified: true,
+      });
+      addedUnknown++;
+    }
+  }
+
+  console.log(
+    `vagaro-events filter: added ${addedKnown} known + ${addedUnknown} unknown-customer; ` +
+    `skipped ${skippedCancelled} cancelled, ${skippedNonBillable} non-billable, ` +
+    `${skippedOld} old, ${skippedFuture} future, ${skippedNoStart} no-start-time`,
+  );
+
+  if (appts.length > 0) {
+    console.log(`First ${Math.min(3, appts.length)} appointments:`);
+    appts.slice(0, 3).forEach((a) =>
+      console.log(`  ${a.date.toISOString()} | summary="${a.summary}" | client_name="${a.client_name}" | $${a.vagaroAmount}`),
+    );
   }
 
   appts.sort((a, b) => a.date - b.date);
@@ -196,7 +425,18 @@ function parseVenmoEmail(msg) {
   if (noteDate &&
       noteDate.getUTCMonth() === date.getUTCMonth() &&
       noteDate.getUTCDate() === date.getUTCDate()) {
-    noteDate = null;
+    // Default-memo exception: when the parsed date equals the payment send date,
+    // it's Venmo's auto-fill — UNLESS the memo also contains real content
+    // ("Training 6/19/26" — the client is intentionally tagging the session
+    // date). Only null when the memo is JUST the date with nothing meaningful
+    // around it (whitespace / punctuation is fine).
+    const trimmed = (note || "").trim();
+    const datePatterns = [
+      /^(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s+\d{1,2}(?:,\s*\d{4})?$/i,
+      /^\d{1,2}[\/.\-]\d{1,2}(?:[\/.\-]\d{2,4})?$/,
+    ];
+    const isPureDate = datePatterns.some((re) => re.test(trimmed));
+    if (isPureDate) noteDate = null;
   }
   return { gmail_id: msg.id, sender_display_name, sender_handle, amount, note, noteDate, date, subject };
 }
@@ -358,20 +598,54 @@ export function reconcile(appointments, payments, clients, cashLog, cancellation
   // Without this, a re-run inside the same window sees the payment locked,
   // can't re-match it, and flips an already-settled session back to UNPAID
   // (the paid_venmo:19→4 collapse). Index prior matches by (session date,
-  // client); each entry settles at most one session.
+  // client). Each KEY holds a QUEUE of matches — a client can have two settled
+  // sessions on the same calendar day (Lacey trained twice 6/10; Peggy had two
+  // 5/25 sessions). A single-value map would strand the 2nd session → UNPAID;
+  // the queue lets each appointment consume one prior match.
   const priorBySession = new Map();
   for (const m of priorMatches) {
     const d = m.matched_to?.date;
     const c = (m.matched_to?.client || "").toLowerCase();
     if (!d || !c || d.startsWith("n/a")) continue;
     const key = `${d}__${c}`;
-    if (!priorBySession.has(key)) priorBySession.set(key, m);
+    if (!priorBySession.has(key)) priorBySession.set(key, []);
+    priorBySession.get(key).push(m);
   }
+  // FIX 5 — ledger continuity must survive the iCal→events date-provenance
+  // change. Old ledger entries (matched_to.date) were keyed in UTC (iCal mode
+  // wrote fmtDateIso = UTC day). Events mode keys sessions on the Pacific day.
+  // A 5 PM+ PT session is on the NEXT UTC day, so the same session that paid
+  // under UTC keying could strand and flip back to UNPAID (the paid_venmo
+  // 19→4 evening-class bug). Probe the prior-session index with:
+  //   • the Pacific key (new canonical), then
+  //   • the legacy UTC key (old ledger entries), then
+  //   • the Pacific key ±1 day (covers the UTC/PT day-boundary straddle).
+  // The ±1-day neighbor probe is safe because the index is ALREADY keyed by
+  // client name — a neighbor-day hit can only be the SAME client, so we won't
+  // steal another client's settled session.
+  const neighborKeys = (date, name) => {
+    const lc = name.toLowerCase();
+    const d = new Date(date);
+    const prevDay = new Date(d.getTime() - 24 * 60 * 60 * 1000);
+    const nextDay = new Date(d.getTime() + 24 * 60 * 60 * 1000);
+    return [
+      `${fmtDateIsoPacific(date)}__${lc}`,        // 1. Pacific (canonical)
+      `${fmtDateIso(date)}__${lc}`,               // 2. legacy UTC
+      `${fmtDateIsoPacific(prevDay)}__${lc}`,     // 3. Pacific − 1 day
+      `${fmtDateIsoPacific(nextDay)}__${lc}`,     // 4. Pacific + 1 day
+    ];
+  };
   const takePriorForSession = (appt, roster) => {
-    const key = `${fmtDateIso(appt.date)}__${roster.vagaro_name.toLowerCase()}`;
-    const m = priorBySession.get(key);
-    if (m) priorBySession.delete(key); // consume — one entry, one session
-    return m || null;
+    for (const key of neighborKeys(appt.date, roster.vagaro_name)) {
+      const queue = priorBySession.get(key);
+      if (queue && queue.length) {
+        // Consume ONE prior match from this key's queue. A second appointment
+        // for the same (client, day) will take the next one; a third finds the
+        // queue empty and falls through to live matching / UNPAID as before.
+        return queue.shift();
+      }
+    }
+    return null;
   };
   // New matches made by THIS run — main() will append to the ledger.
   const newMatches = [];
@@ -396,7 +670,7 @@ export function reconcile(appointments, payments, clients, cashLog, cancellation
   });
 
   // ── Cancellations (Brad didn't actually train — vacation, sick, etc.) ──
-  const cancelKey = (date, name) => `${fmtDateIso(date)}__${(name || "").toLowerCase()}`;
+  const cancelKey = (date, name) => `${fmtDateIsoPacific(date)}__${(name || "").toLowerCase()}`;
   const cancelledSet = new Set(cancellations.map((c) => cancelKey(c.date, c.name)));
 
   for (const appt of appointments) {
@@ -426,16 +700,22 @@ export function reconcile(appointments, payments, clients, cashLog, cancellation
       continue;
     }
 
-    // Schedule's price_override beats clients.csv default_price for
-    // slot-specific pricing (e.g. group rate, Tuesday vs Thursday,
-    // Jeanette $70 on Tue vs $50 on Fri).
-    const expectedPrice = appt.price_override ?? roster.default_price;
+    // FIX 2 — pricing source priority:
+    //   1. appt.vagaroAmount  (events mode: the price Vagaro itself recorded —
+    //      Peggy team $40, Annie solo $70, etc. come straight from Vagaro).
+    //   2. appt.price_override (iCal mode: schedule.csv slot-specific price).
+    //   3. roster.default_price (clients.csv fallback).
+    // This is what frees the bot from schedule.csv pricing. clients.csv
+    // valid_prices remain ADDITIONAL tolerance via acceptablePrices, not the
+    // primary source.
+    const expectedPrice = appt.vagaroAmount ?? appt.price_override ?? roster.default_price;
     // Every amount the bot should treat as paid-in-full for this client:
-    // the slot's expected price + any client-level valid_prices (couple solo
-    // vs together, group vs alone). A $5 smoothie on top of any of these is
-    // also accepted (handled in amountScore).
+    // the slot's expected price (incl. the Vagaro amount) + any client-level
+    // valid_prices (couple solo vs together, group vs alone). A $5 smoothie on
+    // top of any of these is also accepted (handled in amountScore).
     const acceptablePrices = [...new Set([
       expectedPrice,
+      appt.vagaroAmount,
       ...(roster.acceptable_prices || []),
     ].filter((n) => n != null))];
 
@@ -528,7 +808,7 @@ export function reconcile(appointments, payments, clients, cashLog, cancellation
           gmail_id: best.p.gmail_id,
           matched_at: new Date().toISOString(),
           matched_to: {
-            date: fmtDateIso(appt.date),
+            date: fmtDateIsoPacific(appt.date),
             client: roster.vagaro_name,
             status,
           },
@@ -599,7 +879,7 @@ export function reconcile(appointments, payments, clients, cashLog, cancellation
       newMatches.push({
         gmail_id: p.gmail_id,
         matched_at: new Date().toISOString(),
-        matched_to: { date: fmtDateIso(r.appt.date), client: client.vagaro_name, status: "PAID_VENMO", inferred: true },
+        matched_to: { date: fmtDateIsoPacific(r.appt.date), client: client.vagaro_name, status: "PAID_VENMO", inferred: true },
         payment: { sender: p.sender_display_name, amount: p.amount, note: p.note, date: fmtDateIso(p.date) },
       });
     }
@@ -607,7 +887,7 @@ export function reconcile(appointments, payments, clients, cashLog, cancellation
     results[ri] = { appt: r.appt, roster: client, status: "PAID_VENMO", payment: p, expectedPrice: exp, checkoutAmount: exp, inferred: true };
   });
 
-  const unmatchedPayments = payments.filter((_, idx) => !usedPayments.has(idx));
+  const unmatchedPayments = payments.filter((p, idx) => !usedPayments.has(idx) && !isPriorMatch(p));
   return { results, unmatchedPayments, newMatches };
 }
 
@@ -640,8 +920,9 @@ function amountScore(received, acceptable) {
 }
 
 function sameDay(a, b) {
-  const ad = new Date(a), bd = new Date(b);
-  return ad.getFullYear() === bd.getFullYear() && ad.getMonth() === bd.getMonth() && ad.getDate() === bd.getDate();
+  // Pacific-time comparison — bot runs in UTC; PT sessions after 5 PM cross
+  // midnight UTC and would falsely fail same-day checks with .getDate() etc.
+  return fmtDateIsoPacific(a) === fmtDateIsoPacific(b);
 }
 
 // Payment can be up to 7 days BEFORE session (prepay) or 14 days AFTER
@@ -1222,11 +1503,17 @@ async function writeLog({ appointments, payments, results, unmatchedPayments }) 
 // ---- Main ----
 
 async function main() {
-  requireEnv("VAGARO_ICAL_URL", VAGARO_ICAL_URL);
+  // Phase 3: only require the iCal URL when we're actually using iCal.
+  // Default source ("vagaro-events") reads from the on-disk webhook archive
+  // and doesn't need the iCal secret at all.
+  if (APPOINTMENT_SOURCE === "ical") {
+    requireEnv("VAGARO_ICAL_URL", VAGARO_ICAL_URL);
+  }
   requireEnv("GOOGLE_CLIENT_ID", GOOGLE_CLIENT_ID);
   requireEnv("GOOGLE_CLIENT_SECRET", GOOGLE_CLIENT_SECRET);
   requireEnv("GOOGLE_REFRESH_TOKEN", GOOGLE_REFRESH_TOKEN);
   requireEnv("BREVO_API_KEY", BREVO_API_KEY);
+  console.log(`Appointment source: ${APPOINTMENT_SOURCE}`);
   console.log(`Window: ${WINDOW_START.toISOString()} → ${NOW.toISOString()}`);
   const [clients, schedule, cashLog, cancellations, priorMatches, rawSlots, payments] = await Promise.all([
     loadClients(CLIENTS_CSV),
@@ -1240,10 +1527,17 @@ async function main() {
   console.log(`Loaded ${clients.length} clients, ${schedule.length} schedule rows, ${cashLog.length} cash entries, ${cancellations.length} cancellations, ${priorMatches.length} prior matches`);
   console.log(`Found ${rawSlots.length} slots, ${payments.length} Venmo payments`);
 
-  const appointments = expandSlots(rawSlots, schedule);
+  // FIX 1 — in events mode, each Vagaro appointment event is already ONE
+  // attendee with a Vagaro-resolved client_name + price. Do NOT route through
+  // expandSlots (that clobbers the resolved name with schedule.csv rows and
+  // re-prices from schedule). Emit the per-appointment records as-is. iCal
+  // mode still expands raw slots via schedule.csv, unchanged.
+  const appointments = APPOINTMENT_SOURCE === "ical"
+    ? expandSlots(rawSlots, schedule)
+    : rawSlots;
   const identified = appointments.filter((a) => !a.unidentified).length;
   const unidentified = appointments.length - identified;
-  console.log(`Schedule lookup: ${identified} identified + ${unidentified} unidentified slots`);
+  console.log(`Appointment resolution: ${identified} identified + ${unidentified} unidentified`);
 
   const { results, unmatchedPayments, newMatches } = reconcile(appointments, payments, clients, cashLog, cancellations, priorMatches);
   console.log(`Reconciled ${newMatches.length} new payment match${newMatches.length === 1 ? "" : "es"} for the ledger.`);
@@ -1312,3 +1606,4 @@ if (isDirectRun) {
     process.exit(1);
   });
 }
+

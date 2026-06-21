@@ -400,6 +400,18 @@ export function fmtDateIso(d) {
   return new Date(d).toISOString().slice(0, 10);
 }
 
+// Pacific-time version of fmtDateIso. Use this for ANY same-day comparison
+// against an appointment time — the bot runs in UTC on GitHub Actions, so a
+// 5 PM PT session crosses midnight UTC and ends up keyed on the WRONG day
+// otherwise (broke cancellations + ledger continuity for Mon Melissa 5pm /
+// Mon Danny 5pm etc.).
+export function fmtDateIsoPacific(d) {
+  return new Intl.DateTimeFormat("en-CA", {
+    timeZone: "America/Los_Angeles",
+    year: "numeric", month: "2-digit", day: "2-digit",
+  }).format(new Date(d));
+}
+
 export function fmtMonth(d) {
   return new Date(d).toLocaleDateString("en-US", { month: "long", year: "numeric" });
 }
