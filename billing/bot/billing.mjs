@@ -625,15 +625,25 @@ export function reconcile(appointments, payments, clients, cashLog, cancellation
   // steal another client's settled session.
   const neighborKeys = (date, name) => {
     const lc = name.toLowerCase();
-    const d = new Date(date);
-    const prevDay = new Date(d.getTime() - 24 * 60 * 60 * 1000);
-    const nextDay = new Date(d.getTime() + 24 * 60 * 60 * 1000);
-    return [
-      `${fmtDateIsoPacific(date)}__${lc}`,        // 1. Pacific (canonical)
-      `${fmtDateIso(date)}__${lc}`,               // 2. legacy UTC
-      `${fmtDateIsoPacific(prevDay)}__${lc}`,     // 3. Pacific − 1 day
-      `${fmtDateIsoPacific(nextDay)}__${lc}`,     // 4. Pacific + 1 day
+    const pac = fmtDateIsoPacific(date);
+    const utc = fmtDateIso(date);
+    const keys = [
+      `${pac}__${lc}`,                            // 1. Pacific (canonical)
+      `${utc}__${lc}`,                            // 2. legacy UTC
     ];
+    // ONLY probe ±1 day when the appointment actually crossed the midnight-UTC
+    // boundary (Pacific date ≠ UTC date — i.e. ≥5PM PT). Otherwise the ±1 probe
+    // is too greedy: a morning session steals the next morning's settled ledger
+    // entry, leaving the rightful owner UNPAID. Daytime appts' Pacific key
+    // already equals the legacy UTC key, so no neighbor probing is needed.
+    if (pac !== utc) {
+      const d = new Date(date);
+      const prevDay = new Date(d.getTime() - 24 * 60 * 60 * 1000);
+      const nextDay = new Date(d.getTime() + 24 * 60 * 60 * 1000);
+      keys.push(`${fmtDateIsoPacific(prevDay)}__${lc}`);   // 3. Pacific − 1 day
+      keys.push(`${fmtDateIsoPacific(nextDay)}__${lc}`);   // 4. Pacific + 1 day
+    }
+    return keys;
   };
   const takePriorForSession = (appt, roster) => {
     for (const key of neighborKeys(appt.date, roster.vagaro_name)) {
