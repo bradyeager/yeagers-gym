@@ -670,7 +670,17 @@ export function reconcile(appointments, payments, clients, cashLog, cancellation
   });
 
   // ── Cancellations (Brad didn't actually train — vacation, sick, etc.) ──
-  const cancelKey = (date, name) => `${fmtDateIsoPacific(date)}__${(name || "").toLowerCase()}`;
+  const cancelKey = (date, name) => {
+    // Cancellation file dates arrive as "YYYY-MM-DD" strings (Brad's Pacific-day
+    // convention). Appointment dates are Date objects (UTC instants needing
+    // Pacific conversion). Treat strings as already-Pacific to avoid the
+    // UTC-midnight → Pacific-previous-day silent mismatch that swallowed every
+    // cancellation in the 6/21 run.
+    const dateStr = typeof date === "string" && /^\d{4}-\d{2}-\d{2}$/.test(date)
+      ? date
+      : fmtDateIsoPacific(date);
+    return `${dateStr}__${(name || "").toLowerCase()}`;
+  };
   const cancelledSet = new Set(cancellations.map((c) => cancelKey(c.date, c.name)));
 
   for (const appt of appointments) {
