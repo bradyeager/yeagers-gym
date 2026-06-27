@@ -30,6 +30,13 @@ on:
           - ical
           - vagaro-events
         default: ical
+      billing_mode:
+        description: "schedule = roster/iCal model; payment-driven = money-in + history-based chase (no schedule.csv)"
+        type: choice
+        options:
+          - schedule
+          - payment-driven
+        default: schedule
 
 permissions:
   contents: write
@@ -59,10 +66,11 @@ jobs:
       - name: Run billing reconciliation
         working-directory: billing/bot
         env:
-          # ROLLOUT SAFETY: committed default is "ical" (the proven path).
-          # Scheduled Friday runs have no inputs, so they fall back to "ical".
-          # Brad flips to vagaro-events via a manual workflow_dispatch once the
-          # Phase 3 path is validated by a dry-run.
+          # ROLLOUT SAFETY: committed defaults are the proven paths.
+          # Scheduled Friday runs have no inputs, so they fall back to
+          # BILLING_MODE=schedule + APPOINTMENT_SOURCE=ical. Brad flips to
+          # payment-driven via a manual workflow_dispatch after a dry-run.
+          BILLING_MODE: ${{ github.event.inputs.billing_mode || 'schedule' }}
           APPOINTMENT_SOURCE: ${{ github.event.inputs.appointment_source || 'ical' }}
           VAGARO_ICAL_URL: ${{ secrets.VAGARO_ICAL_URL }}
           GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
