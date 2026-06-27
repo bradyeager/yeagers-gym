@@ -38,11 +38,27 @@ const {
   // passes APPOINTMENT_SOURCE explicitly from its input; this default only
   // matters when the env is absent.
   APPOINTMENT_SOURCE = "ical",
+  // Phase 4: HOW the bot decides who owes money.
+  //   "schedule"        (default) — the proven path: fetch a roster of
+  //                     appointments (iCal or events), then reconcile each
+  //                     against Venmo. Requires a schedule to exist.
+  //   "payment-driven"            — NO schedule. Drive everything from actual
+  //                     Venmo payments + payment HISTORY (the ledger). Money in
+  //                     is what arrived this week; the chase list is computed
+  //                     from each client's historical payment cadence.
+  // ROLLOUT SAFETY: committed default is "schedule" so the live Friday cron and
+  // any unset env keep running the proven behavior until Brad flips the flag via
+  // a manual workflow_dispatch dry-run. Reversible — flip the input back to
+  // "schedule" and nothing changes.
+  BILLING_MODE = "schedule",
 } = process.env;
 
 const LOOKBACK_MS = Number(LOOKBACK_DAYS) * 24 * 60 * 60 * 1000;
 const NOW = new Date();
 const WINDOW_START = new Date(NOW.getTime() - LOOKBACK_MS);
+// Payment-driven "this week" money-in window: the 7 days ending at the run.
+const PD_WINDOW_DAYS = 7;
+const PD_WINDOW_START = new Date(NOW.getTime() - PD_WINDOW_DAYS * 24 * 60 * 60 * 1000);
 const REPO_ROOT = resolveRepoRoot(import.meta.url);
 const CLIENTS_CSV = path.join(REPO_ROOT, "billing", "clients.csv");
 const SCHEDULE_CSV = path.join(REPO_ROOT, "billing", "schedule.csv");
@@ -1469,6 +1485,503 @@ function escapeHtml(s) {
   return String(s || "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 }
 
+// ═══════════════════════════════════════════════════════════════════════
+// PAYMENT-DRIVEN MODE (BILLING_MODE=payment-driven)
+//
+// The owner's schedule changes weekly and Vagaro can't feed a roster. So we
+// stop guessing a schedule and drive billing from actual Venmo payments plus
+// payment HISTORY (the matched-payments ledger):
+//   1. MONEY IN     — every Venmo payment in the 7-day window, matched to a
+//                     client. Sum the total. New matches get locked to the
+//                     ledger (gmail_id) so a dollar is never double-counted.
+//   2. CHASE LIST   — history-driven. A "REGULAR" (paid in ≥ N of the last 5
+//                     completed weeks) who has NO payment THIS week → soft
+//                     "did they train?" nudge with a Venmo request button.
+//   3. CASH/CHECK/ZELLE — pays_cash roster clients never hit Venmo; list them
+//                     as a standing "verify in bank" reminder.
+//   4. UNMATCHED    — in-window payments that matched no roster client.
+//   5. NEEDS REVIEW — a matched payment whose amount is anomalous vs usual.
+// ═══════════════════════════════════════════════════════════════════════
+
+// ── Cadence tuning constants ──
+// A client is a REGULAR if they paid in at least this many of the last
+// CADENCE_WINDOW_WEEKS completed weeks. 3-of-5 tolerates one vacation/skip
+// without dropping a true weekly client off the chase list.
+export const REGULAR_WEEKS_THRESHOLD = 3;
+export const CADENCE_WINDOW_WEEKS = 5;
+// A matched in-window payment flags NEEDS_REVIEW when it falls below this
+// fraction of the client's usual amount (and isn't a known acceptable price).
+// Light touch — we only want the obvious "$30 when they usually pay $70".
+const REVIEW_LOW_FRACTION = 0.7;
+
+// Is this ledger entry real TRAINING income for cadence purposes? Excludes
+// EXTRA_SERVICE (Jacob programming, James peptides) and any "n/a-*" session
+// (non-training one-offs). Used to keep the chase list honest.
+function isTrainingLedgerEntry(m) {
+  const status = m.matched_to?.status || "";
+  const date = m.matched_to?.date || "";
+  if (status === "EXTRA_SERVICE") return false;
+  if (String(date).startsWith("n/a")) return false;
+  return true;
+}
+
+// Bucket index of a date relative to NOW's 7-day windows.
+//   0  = current week  (PD_WINDOW_START → NOW)
+//   1  = one completed week before that, etc.
+// Negative = future (shouldn't happen). We bucket by the date money ARRIVED.
+function weekBucketIndex(date, now = NOW) {
+  const ms = now.getTime() - new Date(date).getTime();
+  return Math.floor(ms / (7 * 24 * 60 * 60 * 1000));
+}
+
+// Mode (most frequent) of an array of numbers; ties broken by the larger
+// value (a client who sometimes pays $50 and sometimes $70 → assume the
+// higher when tied, so we don't under-request).
+function modeAmount(amounts) {
+  if (!amounts.length) return null;
+  const counts = new Map();
+  for (const a of amounts) counts.set(a, (counts.get(a) || 0) + 1);
+  let best = null, bestN = -1;
+  for (const [val, n] of counts) {
+    if (n > bestN || (n === bestN && val > best)) { best = val; bestN = n; }
+  }
+  return best;
+}
+
+// Build per-client cadence from the ledger history. Returns a Map keyed by
+// vagaro_name → { regular, usual, lastPaid, weeksPaid, paidThisWeek }.
+export function computeCadence(clients, priorMatches, payments, now = NOW) {
+  const byName = new Map(clients.map((c) => [c.vagaro_name, c]));
+  // Resolve a ledger entry's client to a roster row (it stores vagaro_name).
+  const cad = new Map();
+  for (const c of clients) {
+    // Skip clients that never use Venmo (cash/check/Zelle) or pre-paid — they
+    // can't have a Venmo cadence, and including them would chase phantoms.
+    if (c.pays_cash || c.prepaid) continue;
+    cad.set(c.vagaro_name, {
+      client: c,
+      regular: false,
+      usual: c.default_price ?? null,
+      lastPaid: null,
+      weeksPaid: 0,
+      paidThisWeek: false,
+      recentAmounts: [],
+      weekSet: new Set(),
+    });
+  }
+
+  // Walk historical ledger entries (real training income only).
+  for (const m of priorMatches) {
+    if (!isTrainingLedgerEntry(m)) continue;
+    const name = m.matched_to?.client;
+    if (!name || !cad.has(name)) continue;
+    const c = byName.get(name);
+    const payDate = m.payment?.date;
+    if (!payDate || String(payDate).startsWith("n/a")) continue;
+    const bucket = weekBucketIndex(payDate, now);
+    const entry = cad.get(name);
+    // Track last-paid date across all history.
+    if (!entry.lastPaid || new Date(payDate) > new Date(entry.lastPaid)) {
+      entry.lastPaid = payDate;
+    }
+    // A current-week (bucket 0) ledger payment means they already paid this
+    // week — even though we matched it on a PRIOR run (so it's a prior-match
+    // lock, not a live MONEY-IN hit). This keeps already-paid regulars OFF the
+    // chase list. Without it, every client whose week-N payment is already
+    // ledgered would be wrongly chased (the "9 phantom chases" bug).
+    if (bucket === 0) entry.paidThisWeek = true;
+    // Cadence counts the last CADENCE_WINDOW_WEEKS COMPLETED weeks (buckets
+    // 1..CADENCE_WINDOW_WEEKS). Bucket 0 is the current (incomplete) week.
+    if (bucket >= 1 && bucket <= CADENCE_WINDOW_WEEKS) {
+      entry.weekSet.add(bucket);
+      // Snap amount to the real session price (strip smoothie) for "usual".
+      const accept = c.acceptable_prices?.length ? c.acceptable_prices : [c.default_price];
+      const snapped = matchedSessionPrice(m.payment.amount, accept) ?? m.payment.amount;
+      entry.recentAmounts.push(snapped);
+    }
+  }
+
+  // Fold in THIS-week matched payments (from the live reconcile, not yet in
+  // the prior ledger) so paidThisWeek is accurate on the very first run.
+  for (const p of payments) {
+    const name = p.matchedClient;             // set by reconcilePaymentsToClients
+    if (!name || !cad.has(name)) continue;
+    const bucket = weekBucketIndex(p.date, now);
+    if (bucket === 0) cad.get(name).paidThisWeek = true;
+  }
+
+  for (const [, entry] of cad) {
+    entry.weeksPaid = entry.weekSet.size;
+    entry.regular = entry.weeksPaid >= REGULAR_WEEKS_THRESHOLD;
+    const m = modeAmount(entry.recentAmounts);
+    if (m != null) entry.usual = m;
+  }
+  return cad;
+}
+
+// Match every in-window Venmo payment to a roster client, reusing the same
+// matching primitives reconcile() uses (note-keyword claim, venmo_display_names,
+// venmo_handle, fuzzyName). NO schedule, NO appointments. Records new matches
+// to the ledger (gmail_id locked) so a payment is never double-counted.
+//
+// Returns { moneyIn, unmatched, newMatches, total }.
+//   moneyIn:  [{ payment, client, checkoutAmount, low }]  (client may be null? no —
+//             only matched payments are moneyIn; unmatched go to `unmatched`)
+export function reconcilePaymentsToClients(payments, clients, priorMatches) {
+  const priorMatchIds = new Set(priorMatches.map((m) => m.gmail_id).filter(Boolean));
+  const fingerprint = (sender, amount, note, dateIso) =>
+    `${(sender || "").toLowerCase()}|${amount}|${(note || "").toLowerCase()}|${dateIso || ""}`;
+  const priorFingerprints = new Set(
+    priorMatches.map((m) =>
+      fingerprint(m.payment?.sender, m.payment?.amount, m.payment?.note, m.payment?.date)),
+  );
+  const isPriorMatch = (p) => {
+    if (p.gmail_id && priorMatchIds.has(p.gmail_id)) return true;
+    const fp = fingerprint(p.sender_display_name, p.amount, p.note, fmtDateIso(p.date));
+    return priorFingerprints.has(fp);
+  };
+
+  // Note-keyword routing (Mathieu "Rachael" → Rachel), same as reconcile().
+  const claimFor = (p) => {
+    const note = (p.note || "").toLowerCase();
+    if (!note) return null;
+    for (const c of clients) {
+      const kws = c.note_keywords || [];
+      if (kws.length && kws.some((kw) => kw && note.includes(kw))) return c;
+    }
+    return null;
+  };
+  // Sender → roster client (handle or fuzzy display-name), excluding a row
+  // that is note-claimed by someone else.
+  const resolveClient = (p) => {
+    const claimed = claimFor(p);
+    if (claimed) return claimed;
+    return clients.find((c) => {
+      if (c.note_keywords?.length) {
+        // A note-keyword client is only matched via its keyword (handled
+        // above) OR when no sibling claims it — but to keep Celestin vs Rachel
+        // disambiguation correct, a payment with no claiming keyword still
+        // falls to the sender display name below.
+      }
+      const handleMatch = c.venmo_handle && p.sender_handle === c.venmo_handle.toLowerCase();
+      const names = c.venmo_display_names?.length ? c.venmo_display_names : [c.vagaro_name];
+      return handleMatch || names.some((n) => fuzzyName(p.sender_display_name, n) >= 0.8);
+    }) || null;
+  };
+
+  const moneyIn = [];
+  const unmatched = [];
+  const newMatches = [];
+  for (const p of payments) {
+    // IMPORTANT: isPriorMatch does NOT suppress display. The owner re-triggers
+    // the workflow repeatedly within a week — on a re-run every payment is
+    // already ledger-locked, so skipping locked payments would render MONEY IN
+    // empty/under-counted. MONEY IN must show EVERY in-window receipt. The
+    // ledger lock ONLY governs (a) which matches get APPENDED this run (no
+    // duplicate gmail_ids) and (b) cadence "paidThisWeek". So we compute the
+    // lock once and use it solely to gate the newMatches append below.
+    const locked = isPriorMatch(p);
+    const client = resolveClient(p);
+    if (!client) { unmatched.push(p); continue; }
+    // Pre-paid clients (Robert) only ever Venmo $5 smoothies → not income.
+    if (client.prepaid) { unmatched.push(p); continue; }
+    const accept = client.acceptable_prices?.length ? client.acceptable_prices : [client.default_price];
+    const checkoutAmount = matchedSessionPrice(p.amount, accept) ?? p.amount;
+    const score = amountScore(p.amount, accept);
+    p.matchedClient = client.vagaro_name; // used by computeCadence (paidThisWeek)
+    moneyIn.push({ payment: p, client, checkoutAmount, low: score < 0.8 });
+    // Append to the ledger ONLY if this is a brand-new payment (not already
+    // locked) — keeps the ledger idempotent across same-week re-runs.
+    if (p.gmail_id && !locked) {
+      newMatches.push({
+        gmail_id: p.gmail_id,
+        matched_at: new Date().toISOString(),
+        matched_to: {
+          date: fmtDateIsoPacific(p.date),
+          client: client.vagaro_name,
+          status: score >= 0.8 ? "PAID_VENMO" : "NEEDS_REVIEW",
+        },
+        payment: {
+          sender: p.sender_display_name,
+          amount: p.amount,
+          note: p.note,
+          date: fmtDateIso(p.date),
+        },
+      });
+    }
+  }
+  const total = moneyIn.reduce((s, m) => s + (m.payment.amount || 0), 0);
+  return { moneyIn, unmatched, newMatches, total };
+}
+
+// ── Payment-driven email (command-center look via lib.mjs primitives) ──
+export function buildPaymentDrivenEmail({
+  moneyIn, unmatched, cadence, clients, now = NOW, windowStart = PD_WINDOW_START,
+}) {
+  const money = (n) => `$${Number(n || 0).toLocaleString()}`;
+  const total = moneyIn.reduce((s, m) => s + (m.payment.amount || 0), 0);
+
+  // ── CHASE LIST: regulars with no payment this week ──
+  const chase = [];
+  for (const [name, c] of cadence) {
+    if (!c.regular) continue;
+    if (c.paidThisWeek) continue;
+    chase.push({ name, usual: c.usual, lastPaid: c.lastPaid, client: c.client });
+  }
+  chase.sort((a, b) => new Date(b.lastPaid || 0) - new Date(a.lastPaid || 0));
+
+  // ── NEEDS REVIEW: matched but anomalously low vs usual ──
+  const review = [];
+  for (const m of moneyIn) {
+    const cad = cadence.get(m.client.vagaro_name);
+    const usual = cad?.usual ?? m.client.default_price;
+    if (!usual) continue;
+    // Skip when the amount is an acceptable price for this client (couple solo
+    // vs together, group rate) — those aren't anomalies.
+    const accept = m.client.acceptable_prices?.length ? m.client.acceptable_prices : [m.client.default_price];
+    if (amountScore(m.payment.amount, accept) >= 0.8) continue;
+    if (m.payment.amount < usual * REVIEW_LOW_FRACTION) {
+      review.push({ ...m, usual });
+    }
+  }
+
+  // ── CASH / CHECK / ZELLE standing list ──
+  const cashClients = clients.filter((c) => c.pays_cash);
+
+  const subject = `Weekly billing — week ending ${fmtDate(now)} — ${money(total)} in, ${chase.length} to chase`;
+
+  let body = "";
+  // Token-expiry banner (kept verbatim from schedule mode).
+  body += tokenExpiryNotice(now);
+
+  // Top stat strip: money in · payments · to chase · unmatched.
+  body += statStrip([
+    { n: money(total), label: "Money In", color: "teal" },
+    { n: moneyIn.length, label: "Payments", color: "teal" },
+    { n: chase.length, label: "To Chase", color: chase.length ? "pink" : "textMuted" },
+    { n: unmatched.length, label: "Unmatched", color: unmatched.length ? "purple" : "textMuted" },
+  ]);
+
+  // ── MONEY IN ──
+  body += sectionLabel("Money In — This Week", "teal");
+  if (!moneyIn.length) {
+    body += card(`<div style="font-family:${FONTS.display};font-size:12px;color:${PALETTE.textMuted};">No Venmo payments in the last 7 days.</div>`, "border");
+  } else {
+    const rows = [...moneyIn]
+      .sort((a, b) => new Date(b.payment.date) - new Date(a.payment.date))
+      .map((m) => {
+        const nm = m.client.vagaro_name;
+        const amt = money(m.payment.amount);
+        // Only show the checkout snap when it's a confident full-payment match
+        // (strip-the-smoothie). For low/review amounts the snap is a guess, so
+        // suppress it — the ⚑ review flag tells Brad to eyeball it instead.
+        const co = !m.low && m.checkoutAmount != null && m.checkoutAmount !== m.payment.amount
+          ? ` <span style="color:${PALETTE.textMuted};">(→ $${m.checkoutAmount})</span>` : "";
+        const flag = m.low ? ` <span style="color:${PALETTE.pink};">⚑ review</span>` : "";
+        return `<tr>`
+          + `<td style="padding:7px 10px;font-family:${FONTS.body};font-size:13px;color:${PALETTE.textPrimary};border-bottom:1px solid ${PALETTE.divider};"><strong>${escapeHtml(nm)}</strong></td>`
+          + `<td align="right" style="padding:7px 10px;font-family:${FONTS.display};font-size:13px;color:${PALETTE.teal};font-weight:700;border-bottom:1px solid ${PALETTE.divider};white-space:nowrap;">${amt}${co}${flag}</td>`
+          + `<td style="padding:7px 10px;font-family:${FONTS.display};font-size:11px;color:${PALETTE.textMuted};border-bottom:1px solid ${PALETTE.divider};white-space:nowrap;">${fmtDate(m.payment.date)}</td>`
+          + `<td style="padding:7px 10px;font-family:${FONTS.display};font-size:11px;color:${PALETTE.textDim};border-bottom:1px solid ${PALETTE.divider};">${escapeHtml(m.payment.note || "")}</td>`
+          + `</tr>`;
+      }).join("");
+    body += `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="${PALETTE.bgPanel}" style="background-color:${PALETTE.bgPanel};border:1px solid ${PALETTE.border};border-radius:8px;">${rows}`
+      + `<tr><td style="padding:9px 10px;font-family:${FONTS.display};font-size:13px;color:${PALETTE.textPrimary};font-weight:700;">TOTAL</td>`
+      + `<td align="right" colspan="3" style="padding:9px 10px;font-family:${FONTS.display};font-size:15px;color:${PALETTE.teal};font-weight:800;">${money(total)}</td></tr>`
+      + `</table>`;
+  }
+
+  // ── CHASE LIST ──
+  body += sectionLabel(`Chase List — ${chase.length}`, "pink");
+  body += `<div style="font-family:${FONTS.display};font-size:11px;color:${PALETTE.textMuted};margin-bottom:10px;">Regulars (paid ${REGULAR_WEEKS_THRESHOLD}+ of the last ${CADENCE_WINDOW_WEEKS} weeks) with no payment this week. Soft nudge — only chase if they actually trained.</div>`;
+  if (!chase.length) {
+    body += card(`<div style="font-family:${FONTS.display};font-size:12px;color:${PALETTE.teal};">All regulars have paid this week. Nothing to chase.</div>`, "teal");
+  } else {
+    for (const ch of chase) {
+      const handle = ch.client.venmo_handle;
+      const usual = ch.usual || ch.client.default_price || 0;
+      const lastTxt = ch.lastPaid ? fmtDate(ch.lastPaid) : "—";
+      let inner = `<div style="font-family:${FONTS.body};font-size:13px;color:${PALETTE.textPrimary};margin-bottom:4px;">`
+        + `<strong>${escapeHtml(ch.name)}</strong> — usually ~$${usual}, last paid ${lastTxt}. Did they train?</div>`;
+      inner += `<div style="margin-top:10px;">`;
+      if (handle) {
+        inner += button({
+          href: venmoRequestLink(handle, usual, `Training — Yeager's Gym`),
+          label: `Request $${usual}`,
+          color: "pink",
+        });
+      } else {
+        inner += `<span style="color:${PALETTE.textMuted};font-family:${FONTS.display};font-size:11px;">No Venmo handle on file — add one to clients.csv to enable a one-tap request.</span> `;
+      }
+      // Soft dismiss: log a "wasn't trained / skip" note so we know it was reviewed.
+      const skipUrl = githubNewFileUrl({
+        filename: `billing/cancellations/${fmtDateIso(now)}-${slugify(ch.name)}.md`,
+        value: `${fmtDateIsoPacific(now)} | ${ch.name} | wasn't trained / skip\n`,
+        message: `Skip: ${ch.name} ${fmtDateIso(now)}`,
+      });
+      inner += buttonOutline({ href: skipUrl, label: "Wasn't trained / skip", color: "teal" });
+      inner += `</div>`;
+      body += card(inner, "pink");
+    }
+  }
+
+  // ── NEEDS REVIEW ──
+  if (review.length) {
+    body += sectionLabel(`Needs Review — ${review.length}`, "purple");
+    for (const r of review) {
+      const inner = `<div style="font-family:${FONTS.body};font-size:13px;color:${PALETTE.textPrimary};">`
+        + `<strong>${escapeHtml(r.client.vagaro_name)}</strong> paid ${money(r.payment.amount)} — usually ~$${r.usual}.`
+        + `${r.payment.note ? ` <span style="color:${PALETTE.textDim};">"${escapeHtml(r.payment.note)}"</span>` : ""}</div>`
+        + `<div style="font-family:${FONTS.display};font-size:11px;color:${PALETTE.textMuted};margin-top:6px;">Eyeball — short session, partial payment, or a memo to read.</div>`;
+      body += card(inner, "purple");
+    }
+  }
+
+  // ── CASH / CHECK / ZELLE ──
+  body += sectionLabel("Cash / Check / Zelle — Verify in Bank", "teal");
+  body += `<div style="font-family:${FONTS.display};font-size:11px;color:${PALETTE.textMuted};margin-bottom:10px;">These clients never pay via Venmo, so cadence can't see them. Confirm in your bank app when they train.</div>`;
+  if (!cashClients.length) {
+    body += card(`<div style="font-family:${FONTS.display};font-size:12px;color:${PALETTE.textMuted};">No cash/check/Zelle clients on the roster.</div>`, "border");
+  } else {
+    for (const c of cashClients) {
+      const method = paymentMethodHint(c);
+      const bank = bankVerify(c);
+      let inner = `<div style="font-family:${FONTS.body};font-size:13px;color:${PALETTE.textPrimary};margin-bottom:4px;">`
+        + `<strong>${escapeHtml(c.vagaro_name)}</strong> — ${escapeHtml(method)} · usually $${c.default_price ?? "?"}</div>`;
+      if (bank) {
+        inner += `<div style="margin-top:8px;">` + button({ href: bank.url, label: bank.label, color: "teal" }) + `</div>`;
+      }
+      body += card(inner, "teal");
+    }
+  }
+
+  // ── UNMATCHED ──
+  if (unmatched.length) {
+    body += sectionLabel(`Unmatched Payments — ${unmatched.length}`, "purple");
+    body += `<div style="font-family:${FONTS.display};font-size:11px;color:${PALETTE.textMuted};margin-bottom:10px;">In-window Venmo payments that didn't match a roster client — new clients, $5 smoothies, one-offs. Eyeball.</div>`;
+    let list = "";
+    [...unmatched]
+      .sort((a, b) => new Date(b.date) - new Date(a.date))
+      .forEach((p) => {
+        list += `<tr><td style="padding:8px 12px;font-family:${FONTS.display};font-size:12px;color:${PALETTE.textMuted};border-bottom:1px solid ${PALETTE.divider};">`
+          + `<span style="color:${PALETTE.textPrimary};">${escapeHtml(p.sender_display_name)}</span> · <span style="color:${PALETTE.teal};font-weight:700;">${money(p.amount)}</span> · ${fmtDate(p.date)} · "${escapeHtml(p.note || "")}"`
+          + `</td></tr>`;
+      });
+    body += `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="${PALETTE.bgPanel}" style="background-color:${PALETTE.bgPanel};border:1px solid ${PALETTE.border};border-radius:8px;">${list}</table>`;
+  }
+
+  const footer = `Payment-driven mode · window ${fmtDateIso(windowStart)} → ${fmtDateIso(now)} · cadence ${REGULAR_WEEKS_THRESHOLD}/${CADENCE_WINDOW_WEEKS} weeks`;
+  const html = emailShell({
+    title: `Week ending ${fmtDate(now)} · ${money(total)} in · ${chase.length} to chase`,
+    bodyHtml: body,
+    footerNote: footer,
+    subtitle: "Payment-Driven Reconciliation",
+  });
+  return { subject, html, chase, review, moneyInTotal: total };
+}
+
+// Payment-driven weekly log. Mirrors writeLog's section headers so downstream
+// tooling (vagaro-prompt, monthly summary) can still parse the money lines.
+async function writePaymentDrivenLog({ payments, moneyIn, unmatched, chase, review, cashClients }) {
+  await fs.mkdir(LOGS_DIR, { recursive: true });
+  const file = path.join(LOGS_DIR, `${fmtDateIso(NOW)}.md`);
+  const money = (n) => `$${Number(n || 0).toLocaleString()}`;
+  const total = moneyIn.reduce((s, m) => s + (m.payment.amount || 0), 0);
+  let md = `# Weekly billing log (payment-driven) — ${fmtDateIso(NOW)}\n\n`;
+  md += `Window: ${PD_WINDOW_START.toISOString()} → ${NOW.toISOString()}\n\n`;
+  md += `## Money in (${moneyIn.length}) — total ${money(total)}\n`;
+  for (const m of [...moneyIn].sort((a, b) => new Date(a.payment.date) - new Date(b.payment.date))) {
+    md += `- ${fmtDateIso(m.payment.date)} | ${m.client.vagaro_name} | $${m.payment.amount}`
+      + `${!m.low && m.checkoutAmount != null ? ` | checkout $${m.checkoutAmount}` : ""}`
+      + `${m.low ? " | NEEDS_REVIEW" : ""} | note: "${m.payment.note || ""}"\n`;
+  }
+  md += `\n## Chase list (${chase.length})\n`;
+  for (const ch of chase) {
+    md += `- ${ch.name} | usually ~$${ch.usual} | last paid ${ch.lastPaid || "—"}\n`;
+  }
+  md += `\n## Cash / check / Zelle (${cashClients.length})\n`;
+  for (const c of cashClients) {
+    md += `- ${c.vagaro_name} | ${paymentMethodHint(c)} | usually $${c.default_price ?? "?"}\n`;
+  }
+  md += `\n## Venmo payments received (${payments.length})\n`;
+  for (const p of payments) {
+    md += `- ${fmtDateIso(p.date)} | ${p.sender_display_name} (@${p.sender_handle || "?"}) | $${p.amount} | "${p.note}"\n`;
+  }
+  if (unmatched.length) {
+    md += `\n## Unmatched Venmo payments\n`;
+    for (const p of unmatched) {
+      md += `- ${fmtDateIso(p.date)} | ${p.sender_display_name} | $${p.amount} | "${p.note}"\n`;
+    }
+  }
+  md += `\n## Summary\n`;
+  md += `- mode: payment-driven\n`;
+  md += `- money_in_count: ${moneyIn.length}\n`;
+  md += `- money_in_total: ${total}\n`;
+  md += `- chase: ${chase.length}\n`;
+  md += `- needs_review: ${review.length}\n`;
+  md += `- unmatched: ${unmatched.length}\n`;
+  await fs.writeFile(file, md, "utf8");
+  return file;
+}
+
+// Orchestration for payment-driven mode. Called from main() when
+// BILLING_MODE=payment-driven. Deliberately skips iCal + schedule.csv.
+async function runPaymentDriven() {
+  // NOTE: VAGARO_ICAL_URL is intentionally NOT required here.
+  requireEnv("GOOGLE_CLIENT_ID", GOOGLE_CLIENT_ID);
+  requireEnv("GOOGLE_CLIENT_SECRET", GOOGLE_CLIENT_SECRET);
+  requireEnv("GOOGLE_REFRESH_TOKEN", GOOGLE_REFRESH_TOKEN);
+  requireEnv("BREVO_API_KEY", BREVO_API_KEY);
+  console.log("Billing mode: payment-driven (no schedule, no iCal)");
+  console.log(`Window: ${PD_WINDOW_START.toISOString()} → ${NOW.toISOString()}`);
+
+  const [clients, priorMatches, allPayments] = await Promise.all([
+    loadClients(CLIENTS_CSV),
+    loadMatchedLedger(REPO_ROOT),
+    fetchVenmoPayments(),
+  ]);
+  console.log(`Loaded ${clients.length} clients, ${priorMatches.length} prior matches, ${allPayments.length} Venmo payments (Gmail window)`);
+
+  // MONEY IN = payments in the 7-day window only.
+  const windowPayments = allPayments.filter((p) => new Date(p.date) >= PD_WINDOW_START);
+  console.log(`${windowPayments.length} payments in the 7-day money-in window`);
+
+  const { moneyIn, unmatched, newMatches, total } =
+    reconcilePaymentsToClients(windowPayments, clients, priorMatches);
+  console.log(`Matched ${moneyIn.length} (${total} total), ${unmatched.length} unmatched, ${newMatches.length} new ledger locks`);
+
+  if (DRY_RUN !== "true") {
+    await saveMatchedLedger(REPO_ROOT, [...priorMatches, ...newMatches]);
+  }
+
+  // Cadence uses the FULL ledger history + this week's live matches.
+  const cadence = computeCadence(clients, priorMatches, windowPayments, NOW);
+
+  const { subject, html, chase, review } = buildPaymentDrivenEmail({
+    moneyIn, unmatched, cadence, clients, now: NOW, windowStart: PD_WINDOW_START,
+  });
+  const cashClients = clients.filter((c) => c.pays_cash);
+
+  const logFile = await writePaymentDrivenLog({
+    payments: windowPayments, moneyIn, unmatched, chase, review, cashClients,
+  });
+  console.log(`Wrote log: ${logFile}`);
+  console.log("\n=== LOG FILE CONTENTS ===");
+  console.log(await fs.readFile(logFile, "utf8"));
+  console.log("=== END LOG ===\n");
+
+  await sendBrevoEmail({
+    apiKey: BREVO_API_KEY,
+    to: RECIPIENT_EMAIL,
+    from: SENDER_EMAIL,
+    fromName: SENDER_NAME,
+    subject,
+    html,
+    dryRun: DRY_RUN === "true",
+  });
+  console.log(DRY_RUN === "true" ? `Dry run — no email sent. Subject: ${subject}` : `Sent email: ${subject}`);
+}
+
 // ---- Log file ----
 
 async function writeLog({ appointments, payments, results, unmatchedPayments }) {
@@ -1523,6 +2036,12 @@ async function writeLog({ appointments, payments, results, unmatchedPayments }) 
 // ---- Main ----
 
 async function main() {
+  // Phase 4: payment-driven mode is a fully separate code path. It skips iCal
+  // and schedule.csv entirely and drives billing from Venmo + payment history.
+  // The committed default is "schedule" so the live Friday cron is unaffected.
+  if (BILLING_MODE === "payment-driven") {
+    return runPaymentDriven();
+  }
   // Phase 3: only require the iCal URL when we're actually using iCal.
   // Default source ("vagaro-events") reads from the on-disk webhook archive
   // and doesn't need the iCal secret at all.
