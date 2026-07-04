@@ -415,7 +415,7 @@ function parseVenmoEmail(msg) {
   const body = extractBody(msg.payload, "text/plain") || extractBody(msg.payload);
   // Handles both "Name paid you $X" (direct payment) and
   // "Name paid your $X request" (paid a request Brad sent them).
-  const subjMatch = subject.match(/^(.+?)\s+paid your?\s+\$([\d,.]+)/i);
+  const subjMatch = subject.match(/^(.+?)\s+paid your?\s+\$([\d,.]+)/i) || subject.match(/^(.+?)\s+paid\s+\$([\d,.]+)\s+to your Venmo account/i);
   if (!subjMatch) {
     if (subject.toLowerCase().includes("paid")) {
       console.log(`Venmo parser: skipping unrecognized subject "${subject}"`);
