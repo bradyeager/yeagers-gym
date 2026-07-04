@@ -36,7 +36,7 @@ on:
         options:
           - schedule
           - payment-driven
-        default: schedule
+        default: payment-driven
 
 permissions:
   contents: write
@@ -70,7 +70,7 @@ jobs:
           # Scheduled Friday runs have no inputs, so they fall back to
           # BILLING_MODE=schedule + APPOINTMENT_SOURCE=ical. Brad flips to
           # payment-driven via a manual workflow_dispatch after a dry-run.
-          BILLING_MODE: ${{ github.event.inputs.billing_mode || 'schedule' }}
+          BILLING_MODE: ${{ github.event.inputs.billing_mode || 'payment-driven' }}
           APPOINTMENT_SOURCE: ${{ github.event.inputs.appointment_source || 'ical' }}
           VAGARO_ICAL_URL: ${{ secrets.VAGARO_ICAL_URL }}
           GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
