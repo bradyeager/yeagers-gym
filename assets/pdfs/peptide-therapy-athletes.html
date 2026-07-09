@@ -43,6 +43,15 @@ body {
   padding-bottom: 0.1in;
   border-bottom: 2px solid #48C4CC;
 }
+.header-left { display: flex; align-items: center; gap: 12px; }
+.logo-mark {
+  width: 0.62in;
+  height: 0.62in;
+  border-radius: 50%;
+  border: 1.5px solid rgba(72, 196, 204, 0.55);
+  object-fit: cover;
+  flex-shrink: 0;
+}
 .header-left h1 {
   font-family: 'JetBrains Mono', monospace;
   font-size: 16pt;
@@ -140,7 +149,7 @@ h2.purple { color: #9B6FD4; }
 }
 .cat-recovery { background: rgba(72,196,204,0.15); color: #48C4CC; }
 .cat-body { background: rgba(239,50,149,0.15); color: #EF3295; }
-.cat-longevity { background: rgba(251,191,36,0.15); color: #fbbf24; }
+.cat-longevity { background: rgba(155,111,212,0.15); color: #9B6FD4; }
 
 .two-col {
   display: grid;
@@ -241,8 +250,11 @@ h2.purple { color: #9B6FD4; }
 
 <div class="header">
   <div class="header-left">
-    <h1><span class="teal">Peptide Therapy</span> for <span class="pink">Athletes</span></h1>
-    <p>Science-Backed Recovery &bull; What You Need to Know</p>
+    <img class="logo-mark" src="https://yeagersgym.com/assets/logo.jpeg" alt="Yeager's Gym logo">
+    <div class="header-titles">
+      <h1><span class="teal">Peptide Therapy</span> for <span class="pink">Athletes</span></h1>
+      <p>Science-Backed Recovery &bull; What You Need to Know</p>
+    </div>
   </div>
   <div class="header-right">
     <div class="brand">YEAGER'S GYM</div>
@@ -292,6 +304,34 @@ h2.purple { color: #9B6FD4; }
       <td>Fat loss, blood sugar regulation</td>
       <td>Dual GIP/GLP-1 agonist — more potent metabolic effect than semaglutide alone</td>
       <td>2.5 mg/week escalating, physician-guided</td>
+    </tr>
+    <tr>
+      <td><span class="peptide-name">Retatrutide</span></td>
+      <td><span class="peptide-cat cat-body">Body Comp</span></td>
+      <td>Significant fat loss, metabolic health (investigational)</td>
+      <td>Triple GIP/GLP-1/glucagon agonist — the strongest fat-loss effect of the GLP class</td>
+      <td>Microdose escalating (~1-2 mg/wk), physician-guided</td>
+    </tr>
+    <tr>
+      <td><span class="peptide-name">GHK-Cu</span></td>
+      <td><span class="peptide-cat cat-recovery">Recovery</span></td>
+      <td>Skin &amp; tissue repair, collagen synthesis, anti-inflammatory</td>
+      <td>Copper-binding tripeptide — drives collagen/elastin production and tissue remodeling</td>
+      <td>1-2 mg/day SubQ or topical, 4-8 week cycles</td>
+    </tr>
+    <tr>
+      <td><span class="peptide-name">Tesamorelin</span></td>
+      <td><span class="peptide-cat cat-longevity">Longevity</span></td>
+      <td>Visceral fat reduction, GH support, recovery</td>
+      <td>GHRH analog — stimulates natural GH release and targets deep abdominal fat</td>
+      <td>1-2 mg nightly SubQ, physician-guided</td>
+    </tr>
+    <tr>
+      <td><span class="peptide-name">MOTS-c</span></td>
+      <td><span class="peptide-cat cat-body">Body Comp</span></td>
+      <td>Metabolic health, insulin sensitivity, endurance</td>
+      <td>Mitochondrial-derived peptide — improves fat oxidation and metabolic flexibility</td>
+      <td>~10 mg 2-3x/week, cycled, physician-guided</td>
     </tr>
   </tbody>
 </table>
@@ -370,7 +410,7 @@ h2.purple { color: #9B6FD4; }
 </div>
 
 <div class="disclaimer">
-  <strong>Disclaimer:</strong> This guide is for educational purposes only and is not medical advice. Peptide therapy should be supervised by a licensed healthcare provider. Brad Yeager is a Certified Peptide Therapist (SSRP) who consults on evidence-based protocols alongside physician oversight. Always discuss new protocols with your doctor before starting.
+  <strong>Disclaimer:</strong> This guide is for educational purposes only and is not medical advice. Peptide therapy should be supervised by a licensed healthcare provider. Brad Yeager is a Certified Peptide Therapist (SSRP) who consults on evidence-based protocols alongside physician oversight. Several peptides listed here — including Retatrutide and MOTS-c — are investigational and not FDA-approved for these uses. Always discuss new protocols with your doctor before starting.
 </div>
 
 <div class="footer">
