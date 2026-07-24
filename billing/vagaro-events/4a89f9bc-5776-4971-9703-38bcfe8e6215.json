@@ -1,0 +1,30 @@
+{
+  "id": "4a89f9bc-5776-4971-9703-38bcfe8e6215",
+  "createdDate": "2026-07-24T01:31:54.497Z",
+  "type": "customer",
+  "action": "updated",
+  "payload": {
+    "customerId": "Yl1lZrTuqBsLyDk40KWrOQ==",
+    "businessIds": [
+      "KC9blI3VkybEbxHRtAKSgw=="
+    ],
+    "customerFirstName": "Brooke",
+    "customerLastName": "Hassell",
+    "businessGroupId": null,
+    "email": "brookehassell@gmail.com",
+    "mobilePhone": "4803219259",
+    "dayPhone": "",
+    "nightPhone": "",
+    "streetAddress": "12206 Collins Rd",
+    "city": "Lewes",
+    "regionCode": "CA",
+    "regionName": "Lewes",
+    "countryCode": "US",
+    "countryName": "United States of America",
+    "postalCode": "19958",
+    "createdDate": "2022-05-21T14:24:00Z",
+    "createdBy": "XeazymQ6S1h~pqVmcf~WdQ==",
+    "modifiedDate": "2026-07-24T01:31:24.538Z",
+    "modifiedBy": "Yl1lZrTuqBsLyDk40KWrOQ=="
+  }
+}
