@@ -1,0 +1,32 @@
+{
+  "id": "44ed683e-6cea-40fb-8cb2-422579a5cd02",
+  "createdDate": "2026-07-24T01:31:55.2867322Z",
+  "type": "appointment",
+  "action": "created",
+  "payload": {
+    "appointmentId": "1~8qz3Y3hgwqR7S7Vw--IA==",
+    "startTime": "2026-08-03T17:00:00Z",
+    "endTime": "2026-08-03T17:30:00Z",
+    "bookingStatus": "Accepted",
+    "serviceTitle": "Peptide Therapy Consulting",
+    "serviceId": "rAFJSQIoEqi4jI7jQEeAmA==",
+    "calendarEventId": null,
+    "amount": 200,
+    "eventType": "Appointment",
+    "onlineVsInhouse": "Booked Inhouse",
+    "appointmentTypeCode": null,
+    "appointmentTypeName": null,
+    "customerId": "Yl1lZrTuqBsLyDk40KWrOQ==",
+    "bookingSource": "Booked Inhouse",
+    "serviceProviderId": "TuzDHqmtraIfkDqnIzmWHw==",
+    "businessId": "KC9blI3VkybEbxHRtAKSgw==",
+    "businessAlias": null,
+    "businessGroupId": null,
+    "serviceCategory": "Peptide Therapy Consulting",
+    "createdDate": "2026-07-24T01:31:54.107Z",
+    "createdBy": "Yl1lZrTuqBsLyDk40KWrOQ==",
+    "modifiedDate": null,
+    "modifiedBy": null,
+    "formResponseIds": null
+  }
+}
