@@ -394,6 +394,21 @@ input, textarea, select { font-family: inherit; outline: none; border: none; bac
 .sl-closeout-list li:last-child { border-bottom: none; }
 .sl-closeout-list li::before { content: '→'; color: var(--teal); font-weight: 700; position: absolute; left: 0; top: 8px; }
 
+/* ═══════ WEEK 12: THE RECEIPTS ═══════ */
+.w12-compare { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 10px; background: var(--card-elevated); }
+.w12-shot { margin: 0; min-width: 0; }
+.w12-img { width: 100%; aspect-ratio: 3/4; object-fit: contain; background: #0A0E17; border-radius: 8px; display: block; }
+.w12-cap { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; text-align: center; margin-top: 6px; color: var(--pink); }
+.w12-cap.now { color: var(--teal); }
+.w12-missing { width: 100%; aspect-ratio: 3/4; background: var(--card-elevated); border: 1px dashed var(--border-strong); border-radius: 8px; display: flex; align-items: center; justify-content: center; text-align: center; padding: 10px; box-sizing: border-box; color: var(--text-muted); font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; line-height: 1.6; }
+.w12-confidence { margin-top: 14px; padding-top: 10px; border-top: 1px solid var(--border); font-size: 11px; line-height: 1.5; color: var(--text-muted); }
+.w12-conf-label { text-transform: uppercase; letter-spacing: 0.1em; font-weight: 700; font-size: 10px; }
+.w12-conf-high { color: var(--teal); font-weight: 700; }
+.w12-conf-mod { color: var(--pink); font-weight: 700; }
+.w12-single { padding: 10px; background: var(--card-elevated); }
+.w12-single .w12-img { aspect-ratio: 3/4; }
+.w12-note { padding: 14px; font-size: 13px; line-height: 1.5; color: var(--text-secondary); }
+
 /* ═══════ PROGRESS LOG TAB ═══════ */
 .pl-program-link { display: inline-flex; align-items: center; gap: 6px; background: var(--teal); color: #0F1620; font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; padding: 10px 16px; border-radius: 999px; text-decoration: none; margin-bottom: 18px; transition: transform 0.15s, box-shadow 0.15s; }
 .pl-program-link:hover { transform: translateY(-1px); box-shadow: 0 4px 14px rgba(72,196,204,0.35); }
@@ -855,6 +870,7 @@ input, textarea, select { font-family: inherit; outline: none; border: none; bac
 <nav class="tab-nav">
   <button class="tab-btn active" data-tab="mission"><span class="tab-emoji">🎯</span>Mission</button>
   <button class="tab-btn" data-tab="starting-line"><span class="tab-emoji">🏁</span>Week One</button>
+  <button class="tab-btn" data-tab="week-12"><span class="tab-emoji">🏆</span>Week 12</button>
   <button class="tab-btn" data-tab="progress-log"><span class="tab-emoji">📋</span>Progress Log</button>
   <button class="tab-btn" data-tab="performance"><span class="tab-emoji">💪</span>Performance</button>
   <button class="tab-btn" data-tab="bodycomp"><span class="tab-emoji">📊</span>Body Comp</button>
@@ -1650,6 +1666,543 @@ input, textarea, select { font-family: inherit; outline: none; border: none; bac
   </div>
 </div>
 
+<!-- ═══════ TAB — WEEK 12: THE RECEIPTS ═══════ -->
+<div class="tab-panel" id="tab-week-12">
+  <div class="page-header-block">
+    <h2 class="page-headline">Week 12: The Receipts</h2>
+    <div class="page-subhead">Side-By-Side Read · July 31, 2026</div>
+  </div>
+
+  <div class="sl-intro-card">
+    <div class="sl-intro-eyebrow">// LISA'S WEEK 12 EVALUATION</div>
+    <div class="sl-intro-headline">The shelf showed up. The waist held.</div>
+    <div class="sl-intro-body">Twelve weeks ago the assignment was narrow: build the glutes and thicken the core without losing the waist that makes the whole shape work. Across every angle that had a clean Week One counterpart, the same two changes repeat — more upper-glute shelf and projection from every rear and side view, and a wider, more capped shoulder and back line. The midsection did not get bigger; it got more detailed, which is the harder and better outcome. Ten of the fifteen Week One views had a valid Week 12 comparison. Five angles were not recaptured, and no progress claim is made on those. Read shape and proportion here, not size on screen: several Week 12 frames were shot from further back, the hair is up rather than down, lighting is brighter and flatter in the close-ups, and two of the torso frames came in as phone screenshots rather than clean photos. No Week 12 scan, tape measurement, or strength retest was logged, so nothing below quotes a number — this is a visual read only.</div>
+    <div class="sl-intro-meta">
+      <div class="sl-intro-meta-item">Views Compared <span class="sl-intro-meta-value">10 of 15</span></div>
+      <div class="sl-intro-meta-item">Not Captured <span class="sl-intro-meta-value">5</span></div>
+      <div class="sl-intro-meta-item">Additional Views <span class="sl-intro-meta-value">5</span></div>
+    </div>
+  </div>
+
+  <!-- PAIR 01 -->
+  <div class="sl-photo-block">
+    <div class="sl-photo-header">
+      <div class="sl-photo-num">Photo 01 · Front Relaxed</div>
+      <div class="sl-photo-title">Taper Widened From The Top</div>
+      <div class="sl-photo-subtitle">May 4, 2026 → July 31, 2026</div>
+    </div>
+    <div class="w12-compare">
+      <figure class="w12-shot"><img class="w12-img" data-w1-index="0" alt="Week One — front relaxed"><figcaption class="w12-cap">Week One · May 4</figcaption></figure>
+      <figure class="w12-shot"><img class="w12-img" loading="lazy" src="https://qfprpepqzckymbijeexw.supabase.co/storage/v1/object/public/michelle-progress/week-12/front_relaxed-1785551097401.jpg" alt="Week 12 — front relaxed"><figcaption class="w12-cap now">Week 12 · July 31</figcaption></figure>
+    </div>
+    <div class="sl-feedback">
+      <div class="sl-fb-section">
+        <div class="sl-fb-label good">What Improved</div>
+        <ul class="sl-fb-list">
+          <li>Shoulders read wider and more capped, sharpening the line from delt down to waist</li>
+          <li>Quads show separation standing relaxed, not only under flexion</li>
+          <li>Arms carry more shape at rest through the delt-to-triceps transition</li>
+        </ul>
+      </div>
+      <div class="sl-fb-section">
+        <div class="sl-fb-label improve">Why It Matters</div>
+        <ul class="sl-fb-list improve">
+          <li>A wider relaxed shoulder line makes the waist look smaller without the waist changing</li>
+          <li>Leg detail at rest means tissue was built, not a training-day pump</li>
+          <li>Relaxed front is the honest angle — what shows here is structural</li>
+        </ul>
+      </div>
+      <div class="sl-fb-section">
+        <div class="sl-fb-label how">Next Focus</div>
+        <ul class="sl-fb-list how">
+          <li>Keep shoulder and lat volume in — it is doing the visual work on this angle</li>
+          <li>Hold the current waist while the upper frame keeps widening</li>
+        </ul>
+      </div>
+      <div class="w12-confidence"><span class="w12-conf-label">Comparison confidence ·</span> <span class="w12-conf-high">High</span> — same camera position, same standing angle, same room. Week 12 is framed slightly further back and the hair is up, so judge the shoulder-to-waist ratio rather than absolute size on screen.</div>
+    </div>
+  </div>
+
+  <!-- PAIR 02 -->
+  <div class="sl-photo-block">
+    <div class="sl-photo-header">
+      <div class="sl-photo-num">Photo 02 · Side Relaxed</div>
+      <div class="sl-photo-title">Projection Off The Back Line</div>
+      <div class="sl-photo-subtitle">May 4, 2026 → July 31, 2026</div>
+    </div>
+    <div class="w12-compare">
+      <figure class="w12-shot"><img class="w12-img" data-w1-index="1" alt="Week One — side relaxed"><figcaption class="w12-cap">Week One · May 4</figcaption></figure>
+      <figure class="w12-shot"><img class="w12-img" loading="lazy" src="https://qfprpepqzckymbijeexw.supabase.co/storage/v1/object/public/michelle-progress/week-12/side_relaxed-1785551171141.jpg" alt="Week 12 — side relaxed"><figcaption class="w12-cap now">Week 12 · July 31</figcaption></figure>
+    </div>
+    <div class="sl-feedback">
+      <div class="sl-fb-section">
+        <div class="sl-fb-label good">What Improved</div>
+        <ul class="sl-fb-list">
+          <li>Glute projection off the back line is clearly greater in profile</li>
+          <li>Midsection sits flatter from the side, with less forward abdominal curve</li>
+          <li>Front thigh shows more quad definition standing relaxed</li>
+        </ul>
+      </div>
+      <div class="sl-fb-section">
+        <div class="sl-fb-label improve">Why It Matters</div>
+        <ul class="sl-fb-list improve">
+          <li>Profile is where glute build shows first and exaggerates least</li>
+          <li>A flatter side-on midsection at the same waist reflects rib-down control, not weight loss</li>
+        </ul>
+      </div>
+      <div class="sl-fb-section">
+        <div class="sl-fb-label how">Next Focus</div>
+        <ul class="sl-fb-list how">
+          <li>Keep hip thrust as the primary driver — profile is the angle where it pays</li>
+          <li>Carry the same rib-down bracing into standing posture so the profile holds uncued</li>
+        </ul>
+      </div>
+      <div class="w12-confidence"><span class="w12-conf-label">Comparison confidence ·</span> <span class="w12-conf-mod">Moderate</span> — same left-facing profile from the same side of the room, but hand and forearm position differ and Week 12 is shot from further back, which changes how the hip and waist read.</div>
+    </div>
+  </div>
+
+  <!-- PAIR 03 -->
+  <div class="sl-photo-block">
+    <div class="sl-photo-header">
+      <div class="sl-photo-num">Photo 03 · Rear Relaxed</div>
+      <div class="sl-photo-title">The Headline Result</div>
+      <div class="sl-photo-subtitle">May 4, 2026 → July 31, 2026</div>
+    </div>
+    <div class="w12-compare">
+      <figure class="w12-shot"><img class="w12-img" data-w1-index="2" alt="Week One — rear relaxed"><figcaption class="w12-cap">Week One · May 4</figcaption></figure>
+      <figure class="w12-shot"><img class="w12-img" loading="lazy" src="https://qfprpepqzckymbijeexw.supabase.co/storage/v1/object/public/michelle-progress/week-12/back_relaxed-1785551143176.jpg" alt="Week 12 — rear relaxed"><figcaption class="w12-cap now">Week 12 · July 31</figcaption></figure>
+    </div>
+    <div class="sl-feedback">
+      <div class="sl-fb-section">
+        <div class="sl-fb-label good">What Improved</div>
+        <ul class="sl-fb-list">
+          <li>Upper-glute shelf is visibly fuller — the step off the lower back is more pronounced</li>
+          <li>Glute-to-hamstring tie-in is tighter and better defined</li>
+          <li>Back shows more lat width and more detail across the mid-back</li>
+        </ul>
+      </div>
+      <div class="sl-fb-section">
+        <div class="sl-fb-label improve">Why It Matters</div>
+        <ul class="sl-fb-list improve">
+          <li>The shelf was the stated target of the entire block — this is the result it was built for</li>
+          <li>Back width from behind reinforces the same taper the front view is showing</li>
+        </ul>
+      </div>
+      <div class="sl-fb-section">
+        <div class="sl-fb-label how">Next Focus</div>
+        <ul class="sl-fb-list how">
+          <li>Keep progressing hip thrust load — the shelf is clearly responding to it</li>
+          <li>Hold direct hamstring work weekly to keep developing the tie-in</li>
+        </ul>
+      </div>
+      <div class="w12-confidence"><span class="w12-conf-label">Comparison confidence ·</span> <span class="w12-conf-high">High</span> — same rear standing angle, same framing family, same lighting setup. Hair is up in Week 12, which exposes more of the upper back.</div>
+    </div>
+  </div>
+
+  <!-- MISSING 04 -->
+  <div class="sl-photo-block">
+    <div class="sl-photo-header">
+      <div class="sl-photo-num">Photo 04 · Side Posture Check</div>
+      <div class="sl-photo-title">Week 12 Equivalent Not Captured</div>
+      <div class="sl-photo-subtitle">Baseline retained · No comparison drawn</div>
+    </div>
+    <div class="w12-compare">
+      <figure class="w12-shot"><img class="w12-img" data-w1-index="3" alt="Week One — side posture check"><figcaption class="w12-cap">Week One · May 4</figcaption></figure>
+      <figure class="w12-shot"><div class="w12-missing">Week 12 equivalent<br>not captured</div><figcaption class="w12-cap now">Week 12 · July 31</figcaption></figure>
+    </div>
+    <div class="w12-note">No Week 12 frame matches this arm-overhead side posture angle, so no progress claim is made here. Recapture it at the next checkpoint with the arm raised and the camera square to the side.</div>
+  </div>
+
+  <!-- PAIR 05 -->
+  <div class="sl-photo-block">
+    <div class="sl-photo-header">
+      <div class="sl-photo-num">Photo 05 · Front Flex</div>
+      <div class="sl-photo-title">Arm And Shoulder Answered</div>
+      <div class="sl-photo-subtitle">May 4, 2026 → July 31, 2026</div>
+    </div>
+    <div class="w12-compare">
+      <figure class="w12-shot"><img class="w12-img" data-w1-index="4" alt="Week One — front flex"><figcaption class="w12-cap">Week One · May 4</figcaption></figure>
+      <figure class="w12-shot"><img class="w12-img" loading="lazy" src="https://qfprpepqzckymbijeexw.supabase.co/storage/v1/object/public/michelle-progress/week-12/front_flexed-1785551114237.jpg" alt="Week 12 — front flex"><figcaption class="w12-cap now">Week 12 · July 31</figcaption></figure>
+    </div>
+    <div class="sl-feedback">
+      <div class="sl-fb-section">
+        <div class="sl-fb-label good">What Improved</div>
+        <ul class="sl-fb-list">
+          <li>Clear biceps peak under flexion where Week One showed a smoother arm</li>
+          <li>Shoulder cap is rounder and better separated from the arm</li>
+          <li>Lat flare is visible from the front, widening the top of the taper</li>
+          <li>Midsection shows more oblique and serratus detail under tension</li>
+        </ul>
+      </div>
+      <div class="sl-fb-section">
+        <div class="sl-fb-label improve">Why It Matters</div>
+        <ul class="sl-fb-list improve">
+          <li>Flexed shots show what the tissue can actually do — the arm change is not lighting</li>
+          <li>Front-visible lat flare means pulling volume is translating into frame width</li>
+        </ul>
+      </div>
+      <div class="sl-fb-section">
+        <div class="sl-fb-label how">Next Focus</div>
+        <ul class="sl-fb-list how">
+          <li>Keep direct arm and rear-delt work — it is producing visible return</li>
+          <li>Continue pulling volume for lat width</li>
+        </ul>
+      </div>
+      <div class="w12-confidence"><span class="w12-conf-label">Comparison confidence ·</span> <span class="w12-conf-high">High</span> — same pose, same camera position, same room.</div>
+    </div>
+  </div>
+
+  <!-- PAIR 06 -->
+  <div class="sl-photo-block">
+    <div class="sl-photo-header">
+      <div class="sl-photo-num">Photo 06 · Rear Flex</div>
+      <div class="sl-photo-title">Back Detail Under Tension</div>
+      <div class="sl-photo-subtitle">May 4, 2026 → July 31, 2026</div>
+    </div>
+    <div class="w12-compare">
+      <figure class="w12-shot"><img class="w12-img" data-w1-index="5" alt="Week One — rear flex"><figcaption class="w12-cap">Week One · May 4</figcaption></figure>
+      <figure class="w12-shot"><img class="w12-img" loading="lazy" src="https://qfprpepqzckymbijeexw.supabase.co/storage/v1/object/public/michelle-progress/week-12/back_flexed-1785551158889.jpg" alt="Week 12 — rear flex"><figcaption class="w12-cap now">Week 12 · July 31</figcaption></figure>
+    </div>
+    <div class="sl-feedback">
+      <div class="sl-fb-section">
+        <div class="sl-fb-label good">What Improved</div>
+        <ul class="sl-fb-list">
+          <li>Substantially more separation visible across the mid-back under flexion</li>
+          <li>Lat spread is wider at the same pose</li>
+          <li>Glutes hold more roundness even in the flexed rear stance</li>
+          <li>Rear delts are fuller, widening the shoulder line from behind</li>
+        </ul>
+      </div>
+      <div class="sl-fb-section">
+        <div class="sl-fb-label improve">Why It Matters</div>
+        <ul class="sl-fb-list improve">
+          <li>Rear double-biceps is the hardest angle to flatter — detail here reflects real back development</li>
+          <li>Rear-delt and lat width are what make the waist read narrow from behind</li>
+        </ul>
+      </div>
+      <div class="sl-fb-section">
+        <div class="sl-fb-label how">Next Focus</div>
+        <ul class="sl-fb-list how">
+          <li>Maintain rows and pulldowns at current volume</li>
+          <li>Keep rear-delt work weekly — it is carrying the width</li>
+        </ul>
+      </div>
+      <div class="w12-confidence"><span class="w12-conf-label">Comparison confidence ·</span> <span class="w12-conf-high">High</span> — same pose and camera angle. Week 12 sits slightly further from the camera, so compare proportion rather than on-screen size.</div>
+    </div>
+  </div>
+
+  <!-- PAIR 07 -->
+  <div class="sl-photo-block">
+    <div class="sl-photo-header">
+      <div class="sl-photo-num">Photo 07 · Oblique Core Angle</div>
+      <div class="sl-photo-title">Rib-To-Hip Line Emerged</div>
+      <div class="sl-photo-subtitle">May 4, 2026 → July 31, 2026</div>
+    </div>
+    <div class="w12-compare">
+      <figure class="w12-shot"><img class="w12-img" data-w1-index="6" alt="Week One — oblique core angle"><figcaption class="w12-cap">Week One · May 4</figcaption></figure>
+      <figure class="w12-shot"><img class="w12-img" loading="lazy" src="https://qfprpepqzckymbijeexw.supabase.co/storage/v1/object/public/michelle-progress/week-12/obliques-1785552612201.png" alt="Week 12 — oblique core angle"><figcaption class="w12-cap now">Week 12 · July 31</figcaption></figure>
+    </div>
+    <div class="sl-feedback">
+      <div class="sl-fb-section">
+        <div class="sl-fb-label good">What Improved</div>
+        <ul class="sl-fb-list">
+          <li>Visible oblique and serratus lines along the rib cage that were not there at Week One</li>
+          <li>Tighter line running from the last rib into the hip</li>
+        </ul>
+      </div>
+      <div class="sl-fb-section">
+        <div class="sl-fb-label improve">Why It Matters</div>
+        <ul class="sl-fb-list improve">
+          <li>Oblique detail at an already-lean starting point points to core tissue built, not fat lost</li>
+          <li>The rib-to-hip line is what creates the waist illusion this whole block was designed around</li>
+        </ul>
+      </div>
+      <div class="sl-fb-section">
+        <div class="sl-fb-label how">Next Focus</div>
+        <ul class="sl-fb-list how">
+          <li>Keep loaded core work progressing in load rather than adding volume</li>
+          <li>Match the turn angle at the next shoot so this view stays comparable</li>
+        </ul>
+      </div>
+      <div class="w12-confidence"><span class="w12-conf-label">Comparison confidence ·</span> <span class="w12-conf-mod">Moderate</span> — Week One is a shallow front-oblique turn and Week 12 is a deeper side-oblique turn, so part of the difference is rotation. The Week 12 frame is a phone screenshot with a crop badge in the corner, and its lighting is brighter and flatter.</div>
+    </div>
+  </div>
+
+  <!-- PAIR 08 -->
+  <div class="sl-photo-block">
+    <div class="sl-photo-header">
+      <div class="sl-photo-num">Photo 08 · Front Core Close-Up</div>
+      <div class="sl-photo-title">The Waist Held Its Ground</div>
+      <div class="sl-photo-subtitle">May 4, 2026 → July 31, 2026</div>
+    </div>
+    <div class="w12-compare">
+      <figure class="w12-shot"><img class="w12-img" data-w1-index="7" alt="Week One — front core close-up"><figcaption class="w12-cap">Week One · May 4</figcaption></figure>
+      <figure class="w12-shot"><img class="w12-img" loading="lazy" src="https://qfprpepqzckymbijeexw.supabase.co/storage/v1/object/public/michelle-progress/week-12/core_relaxed-1785551351869.png" alt="Week 12 — front core close-up"><figcaption class="w12-cap now">Week 12 · July 31</figcaption></figure>
+    </div>
+    <div class="sl-feedback">
+      <div class="sl-fb-section">
+        <div class="sl-fb-label good">What Improved</div>
+        <ul class="sl-fb-list">
+          <li>More upper-abdominal definition at rest</li>
+          <li>An oblique line at the waist that reads as structure rather than shadow</li>
+          <li>Slightly tighter taper from rib cage into the hip</li>
+        </ul>
+      </div>
+      <div class="sl-fb-section">
+        <div class="sl-fb-label improve">Why It Matters</div>
+        <ul class="sl-fb-list improve">
+          <li>Relaxed core detail is a more reliable indicator than a braced shot</li>
+          <li>Confirms the midsection held while the rest of the frame added size — the stated goal</li>
+        </ul>
+      </div>
+      <div class="sl-fb-section">
+        <div class="sl-fb-label how">Next Focus</div>
+        <ul class="sl-fb-list how">
+          <li>Hold current core loading — nothing here calls for more volume</li>
+          <li>Recapture this angle as a clean photo rather than a screenshot next checkpoint</li>
+        </ul>
+      </div>
+      <div class="w12-confidence"><span class="w12-conf-label">Comparison confidence ·</span> <span class="w12-conf-mod">Moderate</span> — same straight-on framing, but the Week 12 frame is a phone screenshot with a crop badge, and its brighter, flatter lighting exaggerates definition relative to Week One's side-lit frame.</div>
+    </div>
+  </div>
+
+  <!-- MISSING 09 -->
+  <div class="sl-photo-block">
+    <div class="sl-photo-header">
+      <div class="sl-photo-num">Photo 09 · Angled Core Close-Up</div>
+      <div class="sl-photo-title">Week 12 Equivalent Not Captured</div>
+      <div class="sl-photo-subtitle">Baseline retained · No comparison drawn</div>
+    </div>
+    <div class="w12-compare">
+      <figure class="w12-shot"><img class="w12-img" data-w1-index="8" alt="Week One — angled core close-up"><figcaption class="w12-cap">Week One · May 4</figcaption></figure>
+      <figure class="w12-shot"><div class="w12-missing">Week 12 equivalent<br>not captured</div><figcaption class="w12-cap now">Week 12 · July 31</figcaption></figure>
+    </div>
+    <div class="w12-note">Week 12 produced only two distinct torso close-ups, and both are already used above for Photos 07 and 08. No third angle exists to compare against, so no progress claim is made here.</div>
+  </div>
+
+  <!-- PAIR 10 -->
+  <div class="sl-photo-block">
+    <div class="sl-photo-header">
+      <div class="sl-photo-num">Photo 10 · Side Waist Close-Up</div>
+      <div class="sl-photo-title">Best Look At The Shelf</div>
+      <div class="sl-photo-subtitle">May 4, 2026 → July 31, 2026</div>
+    </div>
+    <div class="w12-compare">
+      <figure class="w12-shot"><img class="w12-img" data-w1-index="9" alt="Week One — side waist close-up"><figcaption class="w12-cap">Week One · May 4</figcaption></figure>
+      <figure class="w12-shot"><img class="w12-img" loading="lazy" src="https://qfprpepqzckymbijeexw.supabase.co/storage/v1/object/public/michelle-progress/week-12/glutes_flexed-1785551241058.jpg" alt="Week 12 — side waist close-up"><figcaption class="w12-cap now">Week 12 · July 31</figcaption></figure>
+    </div>
+    <div class="sl-feedback">
+      <div class="sl-fb-section">
+        <div class="sl-fb-label good">What Improved</div>
+        <ul class="sl-fb-list">
+          <li>Upper-glute shelf is more pronounced, with a clearer step above the hip</li>
+          <li>Side-waist line runs tighter into the hip</li>
+          <li>More fullness through the glute medius, rounding the hip from the side</li>
+        </ul>
+      </div>
+      <div class="sl-fb-section">
+        <div class="sl-fb-label improve">Why It Matters</div>
+        <ul class="sl-fb-list improve">
+          <li>This is the closest available look at the shelf — the block's primary target</li>
+          <li>Glute medius fullness is what turns a flat hip into a rounded one from this angle</li>
+        </ul>
+      </div>
+      <div class="sl-fb-section">
+        <div class="sl-fb-label how">Next Focus</div>
+        <ul class="sl-fb-list how">
+          <li>Keep abduction work alongside hip thrust in the rotation</li>
+          <li>Reuse this exact camera angle next checkpoint — it is the most informative glute view</li>
+        </ul>
+      </div>
+      <div class="w12-confidence"><span class="w12-conf-label">Comparison confidence ·</span> <span class="w12-conf-high">High</span> — near-identical camera angle and framing, confirmed by matching hip tattoo position. Lighting differs — Week One is side-lit against the plates, Week 12 has brighter mirror fill — so judge shape rather than skin texture.</div>
+    </div>
+  </div>
+
+  <!-- MISSING 11 -->
+  <div class="sl-photo-block">
+    <div class="sl-photo-header">
+      <div class="sl-photo-num">Photo 11 · Rear Upper Body Close-Up</div>
+      <div class="sl-photo-title">Week 12 Equivalent Not Captured</div>
+      <div class="sl-photo-subtitle">Baseline retained · No comparison drawn</div>
+    </div>
+    <div class="w12-compare">
+      <figure class="w12-shot"><img class="w12-img" data-w1-index="10" alt="Week One — rear upper body close-up"><figcaption class="w12-cap">Week One · May 4</figcaption></figure>
+      <figure class="w12-shot"><div class="w12-missing">Week 12 equivalent<br>not captured</div><figcaption class="w12-cap now">Week 12 · July 31</figcaption></figure>
+    </div>
+    <div class="w12-note">No Week 12 rear upper-body close-up was taken. The full-body rear flex in Photo 06 covers back development at a wider framing, but it is not the same shot, so nothing is claimed here.</div>
+  </div>
+
+  <!-- MISSING 12 -->
+  <div class="sl-photo-block">
+    <div class="sl-photo-header">
+      <div class="sl-photo-num">Photo 12 · Quad / Adductor Close-Up</div>
+      <div class="sl-photo-title">Week 12 Equivalent Not Captured</div>
+      <div class="sl-photo-subtitle">Baseline retained · No comparison drawn</div>
+    </div>
+    <div class="w12-compare">
+      <figure class="w12-shot"><img class="w12-img" data-w1-index="11" alt="Week One — quad and adductor close-up"><figcaption class="w12-cap">Week One · May 4</figcaption></figure>
+      <figure class="w12-shot"><div class="w12-missing">Week 12 equivalent<br>not captured</div><figcaption class="w12-cap now">Week 12 · July 31</figcaption></figure>
+    </div>
+    <div class="w12-note">Week 12 has no front-facing leg frame — the only lower-leg shot is taken from behind and appears under Additional Views. Adductor and inner-thigh progress cannot be assessed from this set.</div>
+  </div>
+
+  <!-- PAIR 13 -->
+  <div class="sl-photo-block">
+    <div class="sl-photo-header">
+      <div class="sl-photo-num">Photo 13 · Rear Glute Angle</div>
+      <div class="sl-photo-title">Straight-On Confirmation</div>
+      <div class="sl-photo-subtitle">May 4, 2026 → July 31, 2026</div>
+    </div>
+    <div class="w12-compare">
+      <figure class="w12-shot"><img class="w12-img" data-w1-index="12" alt="Week One — rear glute angle"><figcaption class="w12-cap">Week One · May 4</figcaption></figure>
+      <figure class="w12-shot"><img class="w12-img" loading="lazy" src="https://qfprpepqzckymbijeexw.supabase.co/storage/v1/object/public/michelle-progress/week-12/glutes_relaxed-1785551214412.jpg" alt="Week 12 — rear glute angle"><figcaption class="w12-cap now">Week 12 · July 31</figcaption></figure>
+    </div>
+    <div class="sl-feedback">
+      <div class="sl-fb-section">
+        <div class="sl-fb-label good">What Improved</div>
+        <ul class="sl-fb-list">
+          <li>Fuller glutes with a more defined upper shelf viewed straight from behind</li>
+          <li>Cleaner lower-glute line where it meets the hamstring</li>
+          <li>More lower-back and erector detail framing the glutes</li>
+        </ul>
+      </div>
+      <div class="sl-fb-section">
+        <div class="sl-fb-label improve">Why It Matters</div>
+        <ul class="sl-fb-list improve">
+          <li>Straight rear is the most repeatable glute angle, so change here is the most dependable</li>
+          <li>A defined lower-glute line is what separates a built glute from a soft one</li>
+        </ul>
+      </div>
+      <div class="sl-fb-section">
+        <div class="sl-fb-label how">Next Focus</div>
+        <ul class="sl-fb-list how">
+          <li>Continue hip thrust progression as the primary driver</li>
+          <li>Keep hinge work weekly to develop the tie-in further</li>
+        </ul>
+      </div>
+      <div class="w12-confidence"><span class="w12-conf-label">Comparison confidence ·</span> <span class="w12-conf-high">High</span> — same straight-rear framing, same background, same watch and hand position. Week 12 is framed slightly further back.</div>
+    </div>
+  </div>
+
+  <!-- MISSING 14 -->
+  <div class="sl-photo-block">
+    <div class="sl-photo-header">
+      <div class="sl-photo-num">Photo 14 · Rear Glute Close-Up</div>
+      <div class="sl-photo-title">Week 12 Equivalent Not Captured</div>
+      <div class="sl-photo-subtitle">Baseline retained · No comparison drawn</div>
+    </div>
+    <div class="w12-compare">
+      <figure class="w12-shot"><img class="w12-img" data-w1-index="13" alt="Week One — rear glute close-up"><figcaption class="w12-cap">Week One · May 4</figcaption></figure>
+      <figure class="w12-shot"><div class="w12-missing">Week 12 equivalent<br>not captured</div><figcaption class="w12-cap now">Week 12 · July 31</figcaption></figure>
+    </div>
+    <div class="w12-note">Week One documented four distinct glute framings; Week 12 produced three, all of which are already paired above. This fourth close-up has no counterpart, so no claim is made.</div>
+  </div>
+
+  <!-- PAIR 15 -->
+  <div class="sl-photo-block">
+    <div class="sl-photo-header">
+      <div class="sl-photo-num">Photo 15 · Rear Projection Angle</div>
+      <div class="sl-photo-title">Shape, Not Just Size</div>
+      <div class="sl-photo-subtitle">May 4, 2026 → July 31, 2026</div>
+    </div>
+    <div class="w12-compare">
+      <figure class="w12-shot"><img class="w12-img" data-w1-index="14" alt="Week One — rear projection angle"><figcaption class="w12-cap">Week One · May 4</figcaption></figure>
+      <figure class="w12-shot"><img class="w12-img" loading="lazy" src="https://qfprpepqzckymbijeexw.supabase.co/storage/v1/object/public/michelle-progress/week-12/hamstrings-1785552126199.jpg" alt="Week 12 — rear projection angle"><figcaption class="w12-cap now">Week 12 · July 31</figcaption></figure>
+    </div>
+    <div class="sl-feedback">
+      <div class="sl-fb-section">
+        <div class="sl-fb-label good">What Improved</div>
+        <ul class="sl-fb-list">
+          <li>Greater glute projection away from the back line at the turned angle</li>
+          <li>More hamstring definition where it meets the glute</li>
+        </ul>
+      </div>
+      <div class="sl-fb-section">
+        <div class="sl-fb-label improve">Why It Matters</div>
+        <ul class="sl-fb-list improve">
+          <li>The turned rear angle shows projection, which is the shape goal rather than size alone</li>
+          <li>Hamstring definition supports the same tie-in the straight-rear view is showing</li>
+        </ul>
+      </div>
+      <div class="sl-fb-section">
+        <div class="sl-fb-label how">Next Focus</div>
+        <ul class="sl-fb-list how">
+          <li>Keep RDL or hip extension in weekly</li>
+          <li>Standardize distance from the camera at this angle so the next comparison is cleaner</li>
+        </ul>
+      </div>
+      <div class="w12-confidence"><span class="w12-conf-label">Comparison confidence ·</span> <span class="w12-conf-mod">Moderate</span> — same turned rear-side pose, but Week 12 is shot from noticeably further back and includes more of the leg and room, so relative size on screen is not comparable. Judge shape and projection only.</div>
+    </div>
+  </div>
+
+  <!-- ADDITIONAL VIEWS -->
+  <div class="divider">// WEEK 12 ADDITIONAL VIEWS</div>
+  <div class="sl-intro-card">
+    <div class="sl-intro-eyebrow">// NO WEEK ONE COUNTERPART</div>
+    <div class="sl-intro-headline">Week 12 Additional Views</div>
+    <div class="sl-intro-body">These five Week 12 frames have no matching Week One photo, so they are recorded as observations only. No before-and-after improvement is claimed for anything in this section.</div>
+  </div>
+
+  <div class="sl-photo-block">
+    <div class="sl-photo-header">
+      <div class="sl-photo-num">Additional · Side, Arm Overhead (Left)</div>
+      <div class="sl-photo-title">Full Side Line, Lat Lengthened</div>
+    </div>
+    <div class="w12-single"><img class="w12-img" loading="lazy" src="https://qfprpepqzckymbijeexw.supabase.co/storage/v1/object/public/michelle-progress/week-12/side_left-1785552558748.jpg" alt="Week 12 additional view — side, arm overhead, left"><figcaption class="w12-cap now">Week 12 · July 31</figcaption></div>
+    <div class="w12-note">Left profile with the arm raised, showing the full side line from armpit to knee with the lat lengthened. Week One has no arm-overhead profile, so this is a new reference frame for future blocks rather than a comparison.</div>
+  </div>
+
+  <div class="sl-photo-block">
+    <div class="sl-photo-header">
+      <div class="sl-photo-num">Additional · Side, Arm Overhead (Right)</div>
+      <div class="sl-photo-title">Opposite-Side Hip And Lat</div>
+    </div>
+    <div class="w12-single"><img class="w12-img" loading="lazy" src="https://qfprpepqzckymbijeexw.supabase.co/storage/v1/object/public/michelle-progress/week-12/side_right-1785552572046.jpg" alt="Week 12 additional view — side, arm overhead, right"><figcaption class="w12-cap now">Week 12 · July 31</figcaption></div>
+    <div class="w12-note">Turned rear-side with the arm raised, documenting the lat insertion and hip line from the opposite side. Useful as a symmetry check going forward — there is no Week One equivalent to measure it against.</div>
+  </div>
+
+  <div class="sl-photo-block">
+    <div class="sl-photo-header">
+      <div class="sl-photo-num">Additional · Arm Close-Up</div>
+      <div class="sl-photo-title">Arm Shape At Week 12</div>
+    </div>
+    <div class="w12-single"><img class="w12-img" loading="lazy" src="https://qfprpepqzckymbijeexw.supabase.co/storage/v1/object/public/michelle-progress/week-12/biceps-1785552522748.jpg" alt="Week 12 additional view — arm close-up"><figcaption class="w12-cap now">Week 12 · July 31</figcaption></div>
+    <div class="w12-note">Close arm frame under flexion, recorded as a Week 12 reference. Arm change is already covered with a genuine before-and-after in Photo 05, so nothing further is claimed from this frame.</div>
+  </div>
+
+  <div class="sl-photo-block">
+    <div class="sl-photo-header">
+      <div class="sl-photo-num">Additional · Calves</div>
+      <div class="sl-photo-title">Lower Leg, Rear</div>
+    </div>
+    <div class="w12-single"><img class="w12-img" loading="lazy" src="https://qfprpepqzckymbijeexw.supabase.co/storage/v1/object/public/michelle-progress/week-12/calves-1785552111898.jpg" alt="Week 12 additional view — calves"><figcaption class="w12-cap now">Week 12 · July 31</figcaption></div>
+    <div class="w12-note">Lower legs from behind. Week One contains no calf frame at any angle, so this establishes a baseline for the next block rather than showing change.</div>
+  </div>
+
+  <div class="sl-photo-block">
+    <div class="sl-photo-header">
+      <div class="sl-photo-num">Additional · Upper Body, Arm Raised</div>
+      <div class="sl-photo-title">Shoulder And Arm, Top Of Frame</div>
+    </div>
+    <div class="w12-single"><img class="w12-img" loading="lazy" src="https://qfprpepqzckymbijeexw.supabase.co/storage/v1/object/public/michelle-progress/week-12/lats_spread-1785552141532.jpg" alt="Week 12 additional view — upper body, arm raised"><figcaption class="w12-cap now">Week 12 · July 31</figcaption></div>
+    <div class="w12-note">Filed in the app under a lat-spread label, but the frame is actually an upper-body shot with the arm raised — it does not show a lat spread. Recorded as-is for the record, with no comparison drawn.</div>
+  </div>
+
+  <!-- CLOSEOUT -->
+  <div class="divider">// WHERE THIS GOES NEXT</div>
+  <div class="sl-closeout">
+    <div class="sl-closeout-eyebrow">// AFTER TWELVE WEEKS</div>
+    <div class="sl-closeout-headline">Keep the driver. Fix the camera.</div>
+    <ul class="sl-closeout-list">
+      <li>Hip thrust progression produced the shelf — it stays the primary lift next block</li>
+      <li>Pulling and rear-delt volume built the width that makes the waist read — hold it</li>
+      <li>Core work progresses in load, not volume; the midsection is already doing its job</li>
+      <li>Shoot all fifteen angles next checkpoint — five were missed, which cost five comparisons</li>
+      <li>Same distance, same lighting, same arm positions, straight from the camera roll — not screenshots</li>
+    </ul>
+  </div>
+</div>
+
 <!-- ═══════ TAB — PROGRESS LOG ═══════ -->
 <div class="tab-panel" id="tab-progress-log">
   <div class="page-header-block">
@@ -2279,6 +2832,19 @@ function initTabs() {
    ═══════════════════════════════════════════════════════════════ */
 const LOGO_DATA_URI = 'assets/yeagers-logo.jpeg';
 const MICHELLE_DATA_URI = 'data:image/jpeg;base64,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';
+
+/* Week 12 comparison cards reuse the SAME <img> sources already embedded in the
+   Week One tab, so the left-hand baseline is provably the photo Michelle sees
+   there — and the file does not carry a second copy of 15 base64 images. */
+function initWeek12Baselines() {
+  try {
+    const baselines = document.querySelectorAll('#tab-starting-line .sl-photo-image');
+    document.querySelectorAll('#tab-week-12 .w12-img[data-w1-index]').forEach(img => {
+      const src = baselines[Number(img.dataset.w1Index)]?.getAttribute('src');
+      if (src) img.setAttribute('src', src);
+    });
+  } catch (e) { console.warn('Week 12 baseline wiring skipped:', e); }
+}
 
 function initAssets() {
   try {
@@ -4301,6 +4867,7 @@ function renderAll() {
    ═══════════════════════════════════════════════════════════════ */
 async function init() {
   initAssets();
+  initWeek12Baselines();
   initTabs();
   initFAB();
   initSettings();
