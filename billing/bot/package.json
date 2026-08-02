@@ -9,7 +9,8 @@
   },
   "scripts": {
     "start": "node billing.mjs",
-    "monthly": "node monthly.mjs"
+    "monthly": "node monthly.mjs",
+    "test": "node --test"
   },
   "dependencies": {
     "googleapis": "144.0.0",

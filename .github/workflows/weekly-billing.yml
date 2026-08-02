@@ -2,10 +2,13 @@ name: Weekly billing reconciliation
 
 on:
   schedule:
-    # Fridays at 17:00 UTC = 10 AM PDT (summer) / 9 AM PST (winter).
+    # Saturdays at 04:00 UTC = Friday 9 PM PDT (summer) / Friday 8 PM PST
+    # (winter) in San Diego. Runs Friday EVENING so payments made during and
+    # after Friday's sessions are already in Gmail when the bot reconciles —
+    # the old Friday-morning slot missed them and chased clients who had paid.
     # GitHub Actions cron runs in UTC with no DST awareness; the 1-hour
     # winter shift is acceptable.
-    - cron: "0 17 * * 5"
+    - cron: "0 4 * * 6"
   workflow_dispatch:
     inputs:
       dry_run:
@@ -36,7 +39,7 @@ on:
         options:
           - schedule
           - payment-driven
-        default: payment-driven
+        default: schedule
 
 permissions:
   contents: write
@@ -70,7 +73,7 @@ jobs:
           # Scheduled Friday runs have no inputs, so they fall back to
           # BILLING_MODE=schedule + APPOINTMENT_SOURCE=ical. Brad flips to
           # payment-driven via a manual workflow_dispatch after a dry-run.
-          BILLING_MODE: ${{ github.event.inputs.billing_mode || 'payment-driven' }}
+          BILLING_MODE: ${{ github.event.inputs.billing_mode || 'schedule' }}
           APPOINTMENT_SOURCE: ${{ github.event.inputs.appointment_source || 'ical' }}
           VAGARO_ICAL_URL: ${{ secrets.VAGARO_ICAL_URL }}
           GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
