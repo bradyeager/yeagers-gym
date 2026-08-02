@@ -12,7 +12,8 @@ import {
   requireEnv, resolveRepoRoot, loadClients, loadCashEntries, loadCancellations,
   loadMatchedLedger, saveMatchedLedger,
   loadSchedule, findScheduleEntriesForSlot, isInactiveSlot,
-  fuzzyName, fmtDate, fmtDateTime, fmtDateIso, fmtDateIsoPacific, slugify, parseNoteDate, withRetry,
+  fuzzyName, fmtDate, fmtDateTime, fmtDateIso, fmtDateIsoPacific, slugify,
+  parseNoteDate, parseNoteDates, enumeratesDates, withRetry,
   venmoRequestLink, githubNewFileUrl, sendBrevoEmail,
   emailShell, sectionLabel, button, buttonOutline, card, NEON_GRADIENT,
 } from "./lib.mjs";
@@ -586,6 +587,134 @@ export function expandSlots(slots, schedule) {
   return out;
 }
 
+// ---- Production configuration guard ----
+//
+// A scheduled, non-dry run is the one that emails Brad a real chase list and
+// commits the ledger. It is only trustworthy on the approved path:
+//   BILLING_MODE=schedule + APPOINTMENT_SOURCE=ical
+// payment-driven is a vacation/no-bookings DIAGNOSTIC: it has no schedule, so
+// its "who owes" list is inferred from historical cadence. Emailing that as a
+// normal debt/chase email is how a degraded run passed for a real one for
+// weeks. vagaro-events is built but not yet validated as production.
+//
+// Dry runs are exempt — exploring either path with DRY_RUN=true is the
+// sanctioned way to validate it before flipping the default.
+export function assertProductionConfig({ billingMode, appointmentSource, dryRun }) {
+  if (dryRun) return;
+  const problems = [];
+  if (billingMode !== "schedule") {
+    problems.push(
+      `BILLING_MODE must be "schedule" for a non-dry production run (got "${billingMode}"). ` +
+      `"payment-driven" is a dry-run diagnostic only and must never send a normal debt/chase email.`,
+    );
+  }
+  if (appointmentSource !== "ical") {
+    problems.push(
+      `APPOINTMENT_SOURCE must be "ical" for a non-dry production run (got "${appointmentSource}"). ` +
+      `"vagaro-events" is built but not yet approved for production.`,
+    );
+  }
+  if (problems.length) {
+    throw new Error(
+      `Refusing to run: unapproved production configuration.\n  - ${problems.join("\n  - ")}\n` +
+      `Fix the workflow inputs, or set DRY_RUN=true to explore this configuration safely.`,
+    );
+  }
+}
+
+// ---- Summary counts (single source of truth) ----
+//
+// Every count Brad reads — log summary, email subject, email stat strip —
+// must be derived from the FINAL result rows and nothing else. The email
+// previously counted only THIS WEEK's rows for "Unpaid"/"Review" and filed
+// older open rows under a separate "Carryover" chip, so a week whose only two
+// review rows were carryover rendered "0 Review" while the log said
+// needs_review: 2 and both rows were plainly visible in the body.
+export function summaryCounts(results) {
+  const n = (status) => results.filter((r) => r.status === status).length;
+  return {
+    paid_venmo: n("PAID_VENMO"),
+    paid_cash: n("PAID_CASH"),
+    paid_prepaid: n("PAID_PREPAID"),
+    unpaid: n("UNPAID"),
+    needs_review: n("NEEDS_REVIEW"),
+    cash_pending: n("CASH_PENDING"),
+    unknown: n("UNKNOWN"),
+    unidentified: n("UNIDENTIFIED_SLOT"),
+    cancelled: n("CANCELLED"),
+  };
+}
+
+// Both email templates end their subject with "— N unpaid, M review".
+// Pulling the numbers back out of the rendered subject is deliberate: it
+// verifies what Brad will actually READ, not what we intended to render, and
+// it covers the command-center template (email-moneyline.mjs) without
+// reaching into it.
+export function parseSubjectCounts(subject) {
+  const m = String(subject || "").match(/(\d+)\s+unpaid,\s*(\d+)\s+review/i);
+  return m ? { unpaid: Number(m[1]), needs_review: Number(m[2]) } : null;
+}
+
+// Fail BEFORE a normal billing email whenever the numbers disagree.
+export function assertSummaryConsistency({ results, logCounts, subject }) {
+  const counts = summaryCounts(results);
+  const problems = [];
+  for (const [k, v] of Object.entries(counts)) {
+    if (logCounts[k] !== v) problems.push(`log ${k}=${logCounts[k]} but final rows have ${v}`);
+  }
+  const subjectCounts = parseSubjectCounts(subject);
+  if (!subjectCounts) {
+    problems.push(`could not read "N unpaid, M review" out of the email subject: "${subject}"`);
+  } else {
+    if (subjectCounts.unpaid !== counts.unpaid) {
+      problems.push(`email says ${subjectCounts.unpaid} unpaid but final rows have ${counts.unpaid}`);
+    }
+    if (subjectCounts.needs_review !== counts.needs_review) {
+      problems.push(`email says ${subjectCounts.needs_review} review but final rows have ${counts.needs_review}`);
+    }
+  }
+  if (problems.length) {
+    throw new Error(
+      `Refusing to send: summary counts disagree with the final result rows.\n  - ${problems.join("\n  - ")}`,
+    );
+  }
+  return counts;
+}
+
+// ---- Payment allocation invariant ----
+//
+// sum(session allocations) + unallocated remainder = gross receipt, for every
+// payment. A PAID session allocates exactly the session price it settled (so a
+// $75 receipt against a $70 session allocates $70 and preserves a $5 remainder
+// for the smoothie instead of swallowing the whole receipt). A NEEDS_REVIEW row
+// allocates nothing — the money is spoken for but nothing is settled, so the
+// full amount stays as remainder pending human resolution.
+export function assertAllocationInvariant(allocations) {
+  const problems = [];
+  for (const a of allocations) {
+    const allocated = a.sessions.reduce((s, x) => s + x.amount, 0);
+    if (allocated > a.gross + 1e-9) {
+      problems.push(`${a.sender} $${a.gross}: allocated $${allocated} exceeds the gross receipt`);
+    }
+    if (Math.abs(allocated + a.remainder - a.gross) > 1e-9) {
+      problems.push(`${a.sender} $${a.gross}: allocations $${allocated} + remainder $${a.remainder} != gross`);
+    }
+    // Identity is the SLOT, not the calendar day: a client legitimately trains
+    // twice on one date (Lacey 6/10, Peggy 5/25), and one receipt covering both
+    // is exactly the combined payment this repair exists to support. Only the
+    // same slot being settled twice is a real double-settle.
+    const seen = new Set();
+    for (const s of a.sessions) {
+      const key = s.slot ?? `${s.date}__${s.client}`;
+      if (seen.has(key)) problems.push(`${a.sender} $${a.gross}: session ${s.date} / ${s.client} settled twice by one receipt`);
+      seen.add(key);
+    }
+  }
+  if (problems.length) {
+    throw new Error(`Refusing to send: payment allocation invariant violated.\n  - ${problems.join("\n  - ")}`);
+  }
+}
+
 export function reconcile(appointments, payments, clients, cashLog, cancellations = [], priorMatches = []) {
   const byVagaroName = new Map(clients.map((c) => [c.vagaro_name.toLowerCase(), c]));
   const usedPayments = new Set();
@@ -709,7 +838,155 @@ export function reconcile(appointments, payments, clients, cashLog, cancellation
   };
   const cancelledSet = new Set(cancellations.map((c) => cancelKey(c.date, c.name)));
 
-  for (const appt of appointments) {
+  // ── Combined-payment reservation pre-pass ──
+  //
+  // The greedy loop below walks appointments in order, lets each take the
+  // best-scoring payment, then marks that payment spent. Two defects fall out:
+  //   • a $140 receipt covering two $70 sessions scores as an exact multiple
+  //     ("package"), settles the FIRST session, and is consumed — so the second
+  //     session reports UNPAID even though the client paid for it;
+  //   • nothing distinguishes "$140 = my two sessions" from "$140 = me + two
+  //     other people + a drink", so a mixed receipt silently settles a session.
+  //
+  // This pass runs BEFORE the loop and answers one question per payment: do we
+  // know EXACTLY which sessions this receipt covers? Only two answers count,
+  // both deterministic:
+  //   A. the memo names the dates ("7/10 and 7/13") and each named date has
+  //      exactly one open session for this client;
+  //   B. the memo names no date, the amount is an exact k-multiple (k≥2) of one
+  //      session price, and this client has EXACTLY k open sessions at that
+  //      price in the window ("Thurs & Fri" with exactly two eligible).
+  // Everything else — ambiguity, mixed-person, mixed-service — is deliberately
+  // NOT reserved and falls through to NEEDS_REVIEW instead of being guessed.
+  const ADDON_RE = /\b(drinks?|shakes?|smoothies?|proteins?|peptides?|supplements?|consults?|consultations?|retainers?|tips?)\b/i;
+  const escapeRe = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const clientTokens = clients.map((c) => {
+    const toks = new Set();
+    for (const kw of c.note_keywords || []) if (kw && kw.length >= 3) toks.add(kw.toLowerCase());
+    for (const nm of [c.vagaro_name, ...(c.venmo_display_names || [])]) {
+      for (const t of String(nm || "").toLowerCase().split(/[^a-z]+/)) if (t.length >= 3) toks.add(t);
+    }
+    return { client: c, tokens: [...toks] };
+  });
+  // Which roster clients does this memo name? Two or more distinct people in
+  // one memo means the receipt is split across humans and we cannot know how.
+  const clientsNamedIn = (note) => {
+    const lc = String(note || "").toLowerCase();
+    const hit = new Set();
+    if (!lc) return hit;
+    for (const { client, tokens } of clientTokens) {
+      if (tokens.some((t) => new RegExp(`\\b${escapeRe(t)}\\b`).test(lc))) hit.add(client.vagaro_name);
+    }
+    return hit;
+  };
+  const payMeta = payments.map((p) => {
+    // Respect parseVenmoEmail's date semantics: a null noteDate means "no date
+    // evidence" (including the Venmo auto-filled default memo), so we must NOT
+    // re-parse one back into existence. Only an already-dated memo gets scanned
+    // for the ADDITIONAL dates of a combined payment.
+    const all = p.noteDate ? parseNoteDates(p.note, new Date(p.date).getUTCFullYear()) : [];
+    const noteDates = p.noteDate ? (all.length ? all : [p.noteDate]) : [];
+    const named = clientsNamedIn(p.note);
+    return { noteDates, named, mixed: named.size >= 2 || ADDON_RE.test(p.note || "") };
+  });
+  const senderMatches = (p, roster) => {
+    const nameMatch = roster.venmo_handle && p.sender_handle === roster.venmo_handle.toLowerCase();
+    const namesToCheck = roster.venmo_display_names?.length ? roster.venmo_display_names : [roster.vagaro_name];
+    return nameMatch || namesToCheck.some((name) => fuzzyName(p.sender_display_name, name) >= 0.8);
+  };
+  // Per-appointment view of the same gates the loop applies, so the pre-pass
+  // only ever reserves sessions the loop would actually try to settle.
+  const apptMeta = appointments.map((appt) => {
+    if (appt.unidentified) return null;
+    const roster = byVagaroName.get((appt.client_name || "").toLowerCase());
+    if (!roster) return null;
+    if (cancelledSet.has(cancelKey(appt.date, roster.vagaro_name))) return null;
+    if (roster.prepaid || roster.pays_cash) return null;
+    // Already settled by a prior run — ledger continuity will reproduce it.
+    if (neighborKeys(appt.date, roster.vagaro_name).some((k) => (priorBySession.get(k) || []).length > 0)) return null;
+    const expectedPrice = appt.vagaroAmount ?? appt.price_override ?? roster.default_price;
+    return { roster, expectedPrice };
+  });
+  const reservedFor = new Map(); // appointment index → payment index
+  const registerReservation = (pIdx, picked) => {
+    for (const e of picked) reservedFor.set(e.aIdx, pIdx);
+  };
+  payments.forEach((p, pIdx) => {
+    if (isPriorMatch(p)) return;          // locked by a prior run
+    if (payMeta[pIdx].mixed) return;      // never guess a mixed receipt
+    const eligible = [];
+    appointments.forEach((appt, aIdx) => {
+      const info = apptMeta[aIdx];
+      if (!info || reservedFor.has(aIdx)) return;
+      if (!senderMatches(p, info.roster)) return;
+      const claimed = noteClaimedBy.get(pIdx);
+      if (claimed && claimed.vagaro_name !== info.roster.vagaro_name) return;
+      if (!withinDateWindow(p.date, appt.date)) return;
+      eligible.push({ aIdx, appt, info });
+    });
+    if (eligible.length < 2) return;      // nothing combined to resolve
+
+    // A. Explicit dates: the memo must genuinely ENUMERATE dates (not merely
+    //    contain two things that parse as dates — see enumeratesDates), and
+    //    every named date must resolve to exactly one session.
+    if (payMeta[pIdx].noteDates.length >= 2 && enumeratesDates(p.note)) {
+      const picked = [];
+      for (const nd of payMeta[pIdx].noteDates) {
+        const hits = eligible.filter((e) => sameDay(nd, e.appt.date));
+        if (hits.length !== 1) return;    // missing or ambiguous → don't guess
+        picked.push(hits[0]);
+      }
+      // A priceless session can't be part of a proven split: its share would
+      // book as $0 and freeze that $0 into the ledger. Path B already skips
+      // these; path A must too.
+      if (picked.some((e) => !e.info.expectedPrice)) return;
+      if (picked.reduce((s, e) => s + e.info.expectedPrice, 0) > p.amount) return;
+      registerReservation(pIdx, picked);
+      return;
+    }
+
+    // B. No dates: exact k-multiple AND exactly k eligible sessions at that
+    //    price, with no other eligible session competing for the same money.
+    if (payMeta[pIdx].noteDates.length === 0) {
+      const byPrice = new Map();
+      for (const e of eligible) {
+        const q = e.info.expectedPrice;
+        if (!q) continue;
+        if (!byPrice.has(q)) byPrice.set(q, []);
+        byPrice.get(q).push(e);
+      }
+      for (const [q, group] of byPrice) {
+        const k = p.amount / q;
+        if (!Number.isInteger(k) || k < 2) continue;
+        if (group.length !== k) continue;               // ambiguous count
+        if (group.length !== eligible.length) continue; // other sessions compete
+        registerReservation(pIdx, group);
+        return;
+      }
+    }
+  });
+  const reservedPayments = new Set(reservedFor.values());
+  // Dollars of each receipt already committed to a session this run.
+  const allocatedByPayment = new Map();
+  const allocationSessions = new Map();
+  // Book at most what the receipt actually carried, and never a negative.
+  // amountScore accepts a payment within $2 of the price and matchedSessionPrice
+  // then snaps UP to the session price, so a $68 receipt for a $70 session would
+  // otherwise book $70 against a $68 gross — and the invariant below would abort
+  // the entire Friday run because a client rounded down. The clamp keeps
+  // checkoutAmount (what Brad types into Vagaro) at the real session price while
+  // the ledger records only money that actually arrived.
+  const allocate = (pIdx, amount, session) => {
+    const already = allocatedByPayment.get(pIdx) || 0;
+    const booked = Math.max(0, Math.min(amount, payments[pIdx].amount - already));
+    allocatedByPayment.set(pIdx, already + booked);
+    if (!allocationSessions.has(pIdx)) allocationSessions.set(pIdx, []);
+    allocationSessions.get(pIdx).push({ ...session, amount: booked });
+    return booked;
+  };
+
+  for (let apptIndex = 0; apptIndex < appointments.length; apptIndex++) {
+    const appt = appointments[apptIndex];
     if (appt.unidentified) {
       results.push({ appt, status: "UNIDENTIFIED_SLOT" });
       continue;
@@ -762,7 +1039,12 @@ export function reconcile(appointments, payments, clients, cashLog, cancellation
     if (prior) {
       const pay = {
         sender_display_name: prior.payment?.sender,
-        amount: prior.payment?.amount,
+        // For a combined receipt the ledger stores the gross AND this session's
+        // share; replay the share so money-in totals don't re-inflate on every
+        // subsequent run. Single-session entries have no session_amount and are
+        // reproduced exactly as before.
+        amount: prior.matched_to?.session_amount ?? prior.payment?.amount,
+        gross_amount: prior.payment?.amount,
         note: prior.payment?.note,
         date: prior.payment?.date && !String(prior.payment.date).startsWith("n/a")
           ? new Date(prior.payment.date) : new Date(appt.date),
@@ -787,9 +1069,48 @@ export function reconcile(appointments, payments, clients, cashLog, cancellation
       else results.push({ appt, roster, status: "CASH_PENDING", expectedPrice, checkoutAmount: expectedPrice });
       continue;
     }
+
+    // A session the pre-pass proved this receipt covers. Settle exactly this
+    // session's price and leave the rest of the receipt available for its other
+    // reserved sessions (and any genuine remainder unallocated).
+    const reservedIdx = reservedFor.get(apptIndex);
+    if (reservedIdx != null) {
+      const p = payments[reservedIdx];
+      usedPayments.add(reservedIdx);
+      const share = allocate(reservedIdx, expectedPrice,
+        { date: fmtDateIsoPacific(appt.date), client: roster.vagaro_name, slot: apptIndex });
+      if (p.gmail_id) {
+        newMatches.push({
+          gmail_id: p.gmail_id,
+          matched_at: new Date().toISOString(),
+          // session_amount is this session's share; payment.amount stays the
+          // gross so the ledger still records the real receipt (and the
+          // content fingerprint that locks it keeps matching).
+          matched_to: {
+            date: fmtDateIsoPacific(appt.date), client: roster.vagaro_name,
+            status: "PAID_VENMO", combined: true, session_amount: share,
+          },
+          payment: { sender: p.sender_display_name, amount: p.amount, note: p.note, date: fmtDateIso(p.date) },
+        });
+      }
+      results.push({
+        appt, roster, status: "PAID_VENMO",
+        // A per-session VIEW of the receipt. Both email templates total money-in
+        // as sum(row.payment.amount) over paid rows, so handing every settled
+        // session the gross would report one $140 receipt as $280 collected.
+        payment: { ...p, amount: share, gross_amount: p.amount, combined: true },
+        expectedPrice, checkoutAmount: expectedPrice, combined: true,
+      });
+      continue;
+    }
+
     const candidates = payments
       .map((p, idx) => ({ p, idx }))
       .filter(({ idx }) => !usedPayments.has(idx))
+      // Reserved by the combined-payment pre-pass for a known set of sessions.
+      // Only those sessions may draw on it — otherwise an unrelated appointment
+      // earlier in the array could take the receipt back.
+      .filter(({ idx }) => !reservedPayments.has(idx))
       // Ledger filter: if a prior weekly run already claimed this exact
       // payment (by Gmail id OR content fingerprint), it's locked.
       .filter(({ p }) => !isPriorMatch(p))
@@ -806,6 +1127,12 @@ export function reconcile(appointments, payments, clients, cashLog, cancellation
       // THAT date. Kills the cross-week false positives where a payment
       // for last week's session got grabbed for this week's same-slot
       // session. Payments with no date in the note fall through normally.
+      // Deliberately still the STRICT single-date rule. Combined receipts are
+      // handled entirely by the reservation pre-pass (and are filtered out of
+      // this list above), so widening this to "any date named in the memo"
+      // would buy nothing and would break requirement 5: with two dates in
+      // scope the greedy earliest-appointment scan could consume a payment its
+      // memo pinned to the later session.
       .filter(({ p }) => !p.noteDate || sameDay(p.noteDate, appt.date))
       .filter(({ p }) => {
         const nameMatch = roster.venmo_handle && p.sender_handle === roster.venmo_handle.toLowerCase();
@@ -820,7 +1147,14 @@ export function reconcile(appointments, payments, clients, cashLog, cancellation
       .filter(({ p }) => withinDateWindow(p.date, appt.date))
       .map(({ p, idx }) => ({
         p, idx,
-        amountScore: acceptablePrices.length ? amountScore(p.amount, acceptablePrices) : 0.5,
+        // allowPackage:false — an exact multiple ($140 against a $70 session)
+        // is NOT proof this one session was paid. Only the pre-pass, which
+        // knows which sessions the receipt covers, may settle a multiple.
+        // An unresolved multiple now lands in NEEDS_REVIEW instead of silently
+        // settling one session and swallowing the rest of the receipt.
+        amountScore: acceptablePrices.length
+          ? amountScore(p.amount, acceptablePrices, { allowPackage: false })
+          : 0.5,
         // 1 if the client wrote this session's date in the memo, else 0.
         noteDateMatch: p.noteDate && sameDay(p.noteDate, appt.date) ? 1 : 0,
         dateGap: Math.abs((new Date(p.date) - new Date(appt.date)) / (24 * 60 * 60 * 1000)),
@@ -860,6 +1194,11 @@ export function reconcile(appointments, payments, clients, cashLog, cancellation
         usedPayments.add(best.idx);
         recordMatch("PAID_VENMO");
         const checkoutAmount = matchedSessionPrice(best.p.amount, acceptablePrices);
+        // Allocate only the session price actually settled. A $75 receipt on a
+        // $70 session allocates $70 and leaves a $5 remainder for the smoothie
+        // rather than booking the whole receipt against one session.
+        allocate(best.idx, checkoutAmount ?? expectedPrice ?? best.p.amount,
+          { date: fmtDateIsoPacific(appt.date), client: roster.vagaro_name });
         results.push({ appt, roster, status: "PAID_VENMO", payment: best.p, expectedPrice, checkoutAmount });
       } else {
         // Mark as used too — a NEEDS_REVIEW payment is still "spoken for" by
@@ -924,7 +1263,22 @@ export function reconcile(appointments, payments, clients, cashLog, cancellation
   });
 
   const unmatchedPayments = payments.filter((p, idx) => !usedPayments.has(idx) && !isPriorMatch(p));
-  return { results, unmatchedPayments, newMatches };
+  // Per-receipt allocation ledger: what each payment settled, and what is left
+  // over. sessions[] + remainder must always reconstruct the gross amount —
+  // asserted by assertAllocationInvariant() before any email goes out.
+  const allocations = payments.map((p, idx) => {
+    const sessions = allocationSessions.get(idx) || [];
+    const allocated = allocatedByPayment.get(idx) || 0;
+    return {
+      gmail_id: p.gmail_id,
+      sender: p.sender_display_name,
+      note: p.note,
+      gross: p.amount,
+      sessions,
+      remainder: p.amount - allocated,
+    };
+  });
+  return { results, unmatchedPayments, newMatches, allocations };
 }
 
 // Which acceptable price did this payment actually satisfy? Strips the $5
@@ -942,14 +1296,18 @@ function matchedSessionPrice(received, acceptable) {
 // Returns 1 (paid in full) if `received` equals any acceptable amount, that
 // amount + $5 (protein smoothie), an exact multiple (package pre-pay), or is
 // within $2 (rounding). Otherwise 0.5 → NEEDS_REVIEW.
-function amountScore(received, acceptable) {
+// `allowPackage` (default true, preserving every existing call site) controls
+// the exact-multiple rule. The main candidate scorer passes false: a $140
+// receipt is not evidence that THIS $70 session was paid — it's evidence of a
+// combined payment, which only the reservation pre-pass is allowed to split.
+function amountScore(received, acceptable, { allowPackage = true } = {}) {
   const prices = Array.isArray(acceptable) ? acceptable : [acceptable];
   for (const expected of prices) {
     if (!expected) continue;
     if (received === expected) return 1;
     if (received === expected + 5) return 1;           // smoothie add-on
     const ratio = received / expected;
-    if (Math.abs(ratio - Math.round(ratio)) < 0.02 && ratio >= 1) return 1; // package
+    if (allowPackage && Math.abs(ratio - Math.round(ratio)) < 0.02 && ratio >= 1) return 1; // package
     if (Math.abs(received - expected) <= 2) return 1;  // rounding
   }
   return 0.5;
@@ -1039,11 +1397,16 @@ export function buildEmail({ results, unmatchedPayments, now = NOW, windowStart 
   const unpaid = unpaidAll.filter((r) => !isLagging(r));
   const review = reviewAll.filter((r) => !isLagging(r));
 
+  // Headline counts are TOTALS over the final result rows, not just this
+  // week's. Splitting them by age is a display concern (the Lagging section
+  // below); it must never shrink the number Brad reads at the top. A week
+  // whose only two review rows were carryover used to render "0 review".
+  const totals = summaryCounts(results);
   const weekLabel = `${fmtDate(THIS_WEEK_START)} – ${fmtDate(now)}`;
   const subjParts = [];
   if (lagging.length) subjParts.push(`${lagging.length} carryover`);
-  subjParts.push(`${unpaid.length} unpaid`);
-  subjParts.push(`${review.length} review`);
+  subjParts.push(`${totals.unpaid} unpaid`);
+  subjParts.push(`${totals.needs_review} review`);
   const subject = `Weekly billing — week ending ${fmtDate(now)} — ${subjParts.join(", ")}`;
 
   // ---- Reusable card renderers ----
@@ -1102,8 +1465,8 @@ export function buildEmail({ results, unmatchedPayments, now = NOW, windowStart 
   // Top-line summary strip (table-based for Outlook)
   const chips = [];
   if (lagging.length) chips.push({ n: lagging.length, label: "Carryover", color: "pink" });
-  chips.push({ n: unpaid.length, label: "Unpaid", color: unpaid.length ? "pink" : "textMuted" });
-  chips.push({ n: review.length, label: "Review", color: review.length ? "teal" : "textMuted" });
+  chips.push({ n: totals.unpaid, label: "Unpaid", color: totals.unpaid ? "pink" : "textMuted" });
+  chips.push({ n: totals.needs_review, label: "Review", color: totals.needs_review ? "teal" : "textMuted" });
   chips.push({ n: paidVenmo.length + paidCash.length + paidPrepaid.length, label: "Paid", color: "teal" });
   if (unidentified.length) chips.push({ n: unidentified.length, label: "Unidentified", color: "teal" });
   body += statStrip(chips);
@@ -2016,26 +2379,25 @@ async function writeLog({ appointments, payments, results, unmatchedPayments }) 
       md += `- ${fmtDateIso(p.date)} | ${p.sender_display_name} | $${p.amount} | "${p.note}"\n`;
     }
   }
-  const counts = {
-    paid_venmo: results.filter((r) => r.status === "PAID_VENMO").length,
-    paid_cash: results.filter((r) => r.status === "PAID_CASH").length,
-    paid_prepaid: results.filter((r) => r.status === "PAID_PREPAID").length,
-    unpaid: results.filter((r) => r.status === "UNPAID").length,
-    needs_review: results.filter((r) => r.status === "NEEDS_REVIEW").length,
-    cash_pending: results.filter((r) => r.status === "CASH_PENDING").length,
-    unknown: results.filter((r) => r.status === "UNKNOWN").length,
-    unidentified: results.filter((r) => r.status === "UNIDENTIFIED_SLOT").length,
-    cancelled: results.filter((r) => r.status === "CANCELLED").length,
-  };
+  // Same helper the email uses — one derivation, from the final rows only.
+  const counts = summaryCounts(results);
   md += `\n## Summary\n`;
   for (const [k, v] of Object.entries(counts)) md += `- ${k}: ${v}\n`;
   await fs.writeFile(file, md, "utf8");
-  return file;
+  return { file, counts };
 }
 
 // ---- Main ----
 
 async function main() {
+  // Gate FIRST — before any mode branches. A non-dry run that isn't on the
+  // approved schedule+ical path must fail loudly here rather than produce a
+  // normal-looking billing email from a degraded path.
+  assertProductionConfig({
+    billingMode: BILLING_MODE,
+    appointmentSource: APPOINTMENT_SOURCE,
+    dryRun: DRY_RUN === "true",
+  });
   // Phase 4: payment-driven mode is a fully separate code path. It skips iCal
   // and schedule.csv entirely and drives billing from Venmo + payment history.
   // The committed default is "schedule" so the live Friday cron is unaffected.
@@ -2043,8 +2405,8 @@ async function main() {
     return runPaymentDriven();
   }
   // Phase 3: only require the iCal URL when we're actually using iCal.
-  // Default source ("vagaro-events") reads from the on-disk webhook archive
-  // and doesn't need the iCal secret at all.
+  // The committed default source is "ical"; "vagaro-events" reads from the
+  // on-disk webhook archive and doesn't need the iCal secret at all.
   if (APPOINTMENT_SOURCE === "ical") {
     requireEnv("VAGARO_ICAL_URL", VAGARO_ICAL_URL);
   }
@@ -2078,7 +2440,7 @@ async function main() {
   const unidentified = appointments.length - identified;
   console.log(`Appointment resolution: ${identified} identified + ${unidentified} unidentified`);
 
-  const { results, unmatchedPayments, newMatches } = reconcile(appointments, payments, clients, cashLog, cancellations, priorMatches);
+  const { results, unmatchedPayments, newMatches, allocations } = reconcile(appointments, payments, clients, cashLog, cancellations, priorMatches);
   console.log(`Reconciled ${newMatches.length} new payment match${newMatches.length === 1 ? "" : "es"} for the ledger.`);
   if (DRY_RUN !== "true") {
     await saveMatchedLedger(REPO_ROOT, [...priorMatches, ...newMatches]);
@@ -2105,12 +2467,21 @@ async function main() {
   } else {
     ({ subject, html } = buildEmail({ results, unmatchedPayments: unmatchedInWindow }));
   }
-  const logFile = await writeLog({ appointments, payments, results, unmatchedPayments });
+  const { file: logFile, counts: logCounts } = await writeLog({ appointments, payments, results, unmatchedPayments });
   console.log(`Wrote log: ${logFile}`);
   // Dump log to console for easy review (dry-run never commits the file).
   console.log("\n=== LOG FILE CONTENTS ===");
   console.log(await fs.readFile(logFile, "utf8"));
   console.log("=== END LOG ===\n");
+
+  // Degraded-run detection. Both must hold before Brad gets a normal billing
+  // email: the money each receipt settled has to reconstruct that receipt, and
+  // the numbers in the email have to equal the numbers in the log and in the
+  // final rows. A mismatch means the run is lying about itself — fail loudly.
+  assertAllocationInvariant(allocations);
+  const finalCounts = assertSummaryConsistency({ results, logCounts, subject });
+  console.log(`Summary verified — ${JSON.stringify(finalCounts)}`);
+
   await sendBrevoEmail({
     apiKey: BREVO_API_KEY,
     to: RECIPIENT_EMAIL,

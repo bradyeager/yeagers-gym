@@ -170,6 +170,82 @@ export function parseNoteDate(note, refYear) {
   return null;
 }
 
+// Pull EVERY date out of a free-text Venmo note, ascending and deduped.
+//
+// parseNoteDate() above returns only the FIRST date, which is correct for the
+// single-session case but strands the second session of a combined payment:
+// "$140 — 7/10 and 7/13" would lock the receipt to 7/10 and leave 7/13 UNPAID.
+// The combined-payment reservation pass needs every date the client named.
+//
+// Same parsing rules and UTC-noon convention as parseNoteDate, so a memo with
+// exactly one date yields exactly what parseNoteDate returns. Deliberately a
+// SEPARATE function: parseNoteDate's numeric-before-month-name precedence is
+// load-bearing for existing single-session matching and is left untouched.
+// Only these words are months. parseNoteDate matches [A-Za-z]{3,9} and keys off
+// the first three letters, which is harmless there (it stops at the first hit,
+// and the numeric branch usually wins). Scanning globally it is not: "Maya 15"
+// would become May 15 and "Julie 2" would become Jul 2, fabricating a date that
+// can only ADD a session to a combined reservation.
+const MONTH_WORDS = new Set([
+  "jan", "january", "feb", "february", "mar", "march", "apr", "april",
+  "may", "jun", "june", "jul", "july", "aug", "august",
+  "sep", "sept", "september", "oct", "october", "nov", "november", "dec", "december",
+]);
+
+// Every date in a memo, with the character span it occupied, ascending.
+function scanNoteDates(note, refYear) {
+  const text = String(note || "");
+  const hits = [];
+  const push = (mo, d, y, index, length) => {
+    if (mo == null || !(mo >= 0 && mo <= 11) || !(d >= 1 && d <= 31)) return;
+    let yy = y == null ? refYear : Number(y);
+    if (yy < 100) yy += 2000;
+    hits.push({ date: new Date(Date.UTC(yy, mo, d, 12)), index, length });
+  };
+  // Numeric: M/D, M/D/YY, M/D/YYYY, M.D — but NOT the hyphen form parseNoteDate
+  // accepts. Scanning globally, "7/10 7-8 pm" would otherwise yield July 8 as
+  // well as July 10. A memo whose ONLY date uses a hyphen still works: the
+  // caller falls back to parseNoteDate's single date.
+  for (const m of text.matchAll(/\b(\d{1,2})[\/.](\d{1,2})(?:[\/.\-](\d{2,4}))?\b/g)) {
+    push(Number(m[1]) - 1, Number(m[2]), m[3], m.index, m[0].length);
+  }
+  // Month name: "May 19", "May 19, 2026"
+  for (const m of text.matchAll(/\b([A-Za-z]{3,9})\s+(\d{1,2})(?:,\s*(\d{4}))?\b/g)) {
+    const word = m[1].toLowerCase();
+    if (!MONTH_WORDS.has(word)) continue;
+    push(MONTHS[word.slice(0, 3)], Number(m[2]), m[3], m.index, m[0].length);
+  }
+  return hits.sort((a, b) => a.index - b.index);
+}
+
+export function parseNoteDates(note, refYear) {
+  if (!note) return [];
+  const out = [];
+  for (const h of scanNoteDates(note, refYear)) {
+    if (!out.some((e) => e.getTime() === h.date.getTime())) out.push(h.date);
+  }
+  return out.sort((a, b) => a - b);
+}
+
+// Does this memo genuinely ENUMERATE several session dates?
+//
+// Presence of two parseable dates is NOT enough, and trusting it is how a
+// receipt gets spread across sessions the client never named: "7/13 6.30 pm"
+// parses as June 30 + July 13, and "5/20 Maya 15 min late" as May 15 + May 20.
+// A real enumeration joins its dates with a conjunction — and the conjunction
+// must sit BETWEEN two dates, so a trailing ", thanks" cannot promote a
+// single-date memo. Anything else falls back to single-date matching, which is
+// the conservative pre-repair behavior.
+export function enumeratesDates(note) {
+  const hits = scanNoteDates(note, 2000);
+  if (hits.length < 2) return false;
+  for (let i = 1; i < hits.length; i++) {
+    const gap = String(note).slice(hits[i - 1].index + hits[i - 1].length, hits[i].index);
+    if (/^\s*(and|&|\+|,|;|plus|\/)\s*$/i.test(gap)) return true;
+  }
+  return false;
+}
+
 // ---- Weekly schedule (day+time → client_name) ----
 
 const DAY_ALIASES = {
