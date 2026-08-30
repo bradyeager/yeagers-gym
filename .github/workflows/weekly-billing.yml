@@ -33,6 +33,10 @@ on:
           - ical
           - vagaro-events
         default: ical
+      billing_as_of:
+        description: "Preview/replay cutoff ISO timestamp (blank = now)"
+        type: string
+        default: ""
       billing_mode:
         description: "schedule = roster/iCal model; payment-driven = money-in + history-based chase (no schedule.csv)"
         type: choice
@@ -82,6 +86,7 @@ jobs:
           GOOGLE_TOKEN_EXPIRES: ${{ secrets.GOOGLE_TOKEN_EXPIRES }}
           BREVO_API_KEY: ${{ secrets.BREVO_API_KEY }}
           DRY_RUN: ${{ github.event.inputs.dry_run || 'false' }}
+          BILLING_AS_OF: ${{ github.event.inputs.billing_as_of || '' }}
           LOOKBACK_DAYS: ${{ github.event.inputs.lookback_days || '8' }}
           EMAIL_STYLE: ${{ github.event.inputs.email_style || 'command-center' }}
         run: npm start
