@@ -2538,7 +2538,7 @@ async function main() {
   } else {
     ({ subject, html } = buildEmail({ results, unmatchedPayments: unmatchedInWindow }));
   }
-  const { file: logFile, counts: logCounts } = await writeLog({ appointments, payments, results, unmatchedPayments });
+  const { file: logFile, counts: logCounts } = await writeLog({ appointments, payments: paymentsThroughNow, results, unmatchedPayments });
   console.log(`Wrote log: ${logFile}`);
   // Dump log to console for easy review (dry-run never commits the file).
   console.log("\n=== LOG FILE CONTENTS ===");
