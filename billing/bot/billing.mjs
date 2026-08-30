@@ -407,6 +407,10 @@ async function fetchVenmoPayments() {
   return payments;
 }
 
+export function isLikelyAutoDateMemo(note) {
+  return /^(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s+\d{1,2}(?:,\s*\d{4})?$/i.test(String(note || "").trim());
+}
+
 function parseVenmoEmail(msg) {
   const headers = Object.fromEntries((msg.payload?.headers || []).map((h) => [h.name.toLowerCase(), h.value]));
   const subject = headers["subject"] || "";
@@ -448,12 +452,12 @@ function parseVenmoEmail(msg) {
     // date). Only null when the memo is JUST the date with nothing meaningful
     // around it (whitespace / punctuation is fine).
     const trimmed = (note || "").trim();
-    const datePatterns = [
-      /^(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s+\d{1,2}(?:,\s*\d{4})?$/i,
-      /^\d{1,2}[\/.\-]\d{1,2}(?:[\/.\-]\d{2,4})?$/,
-    ];
-    const isPureDate = datePatterns.some((re) => re.test(trimmed));
-    if (isPureDate) noteDate = null;
+    // Numeric memos such as "8/26" or "8.24" are strong user-entered
+    // service-date evidence even when payment happened the same day. The old
+    // heuristic discarded them and let a Wednesday payment settle Friday.
+    // Only a bare month-name date remains eligible for the legacy auto-fill
+    // exception (e.g. "Aug 24, 2026").
+    if (isLikelyAutoDateMemo(trimmed)) noteDate = null;
   }
   return { gmail_id: msg.id, sender_display_name, sender_handle, amount, note, noteDate, date, subject };
 }
@@ -573,6 +577,10 @@ export function expandSlots(slots, schedule) {
         ...slot,
         client_name: entries[i].client_name,
         price_override: entries[i].price_override,
+        // When fewer iCal events exist than schedule rows, the slot proves the
+        // time existed but not that every scheduled client attended. Paid rows
+        // may still reconcile; an unpaid row is downgraded to review below.
+        mapping_ambiguous: n < k,
         unidentified: false,
       });
     }
@@ -1281,6 +1289,42 @@ export function reconcile(appointments, payments, clients, cashLog, cancellation
     const exp = accept.find((a) => amountScore(p.amount, [a]) >= 0.8) ?? client.default_price;
     results[ri] = { appt: r.appt, roster: client, status: "PAID_VENMO", payment: p, expectedPrice: exp, checkoutAmount: exp, inferred: true };
   });
+
+  // ?? FALSE-DEBT GUARD ??
+  // iCal tells us that a service slot existed, but schedule.csv supplies the
+  // client identity. If the slot-to-client mapping was underdetermined, or if
+  // the same client has evidence of an off-pattern/rescheduled payment, a bare
+  // UNPAID row is not strong enough to chase. Downgrade it to NEEDS_REVIEW.
+  // This is deliberately asymmetric: uncertainty may delay a request, but may
+  // never create debt.
+  for (let ri = 0; ri < results.length; ri++) {
+    const r = results[ri];
+    if (r.status !== "UNPAID" || !r.roster) continue;
+    const name = r.roster.vagaro_name;
+    const reasons = [];
+    if (r.appt.mapping_ambiguous) {
+      reasons.push("iCal slot does not uniquely prove this scheduled client attended");
+    }
+    const inferredNearby = results.some((x, xi) =>
+      xi !== ri && x.inferred && x.status === "PAID_VENMO" &&
+      x.roster?.vagaro_name === name &&
+      Math.abs(new Date(x.appt.date) - new Date(r.appt.date)) <= 7 * 86400000);
+    if (inferredNearby) reasons.push("paid off-pattern session exists nearby ? possible reschedule");
+
+    const pendingSameClient = payments
+      .map((p, idx) => ({ p, idx }))
+      .filter(({ idx, p }) => !usedPayments.has(idx) && !isPriorMatch(p))
+      .find(({ p }) => {
+        const c = resolveClient(p);
+        return c?.vagaro_name === name && withinDateWindow(p.date, r.appt.date);
+      });
+    if (pendingSameClient) {
+      reasons.push(`unallocated ${name} payment exists ($${pendingSameClient.p.amount}, note: "${pendingSameClient.p.note || ""}")`);
+    }
+    if (reasons.length) {
+      results[ri] = { ...r, status: "NEEDS_REVIEW", note: reasons.join("; ") };
+    }
+  }
 
   const unmatchedPayments = payments.filter((p, idx) => !usedPayments.has(idx) && !isPriorMatch(p));
   // Per-receipt allocation ledger: what each payment settled, and what is left

@@ -16,7 +16,7 @@ import { fileURLToPath } from "node:url";
 import {
   reconcile, buildEmail, summaryCounts, parseSubjectCounts,
   assertProductionConfig, assertSummaryConsistency, assertAllocationInvariant,
-  trustedScheduleLedger, isPaymentDrivenLedgerEntry,
+  trustedScheduleLedger, isPaymentDrivenLedgerEntry, isLikelyAutoDateMemo,
 } from "./billing.mjs";
 import { parseNoteDate, parseNoteDates, enumeratesDates, fmtDate, fmtDateIsoPacific } from "./lib.mjs";
 
@@ -334,6 +334,33 @@ test("Friday-evening run labels and action dates stay on the Pacific service day
   const fridayNinePmPdt = new Date("2026-08-29T04:00:00Z");
   assert.equal(fmtDate(fridayNinePmPdt), "Fri, 8/28");
   assert.equal(fmtDateIsoPacific(fridayNinePmPdt), "2026-08-28");
+});
+
+
+test("numeric same-day Venmo memo remains explicit service-date evidence", () => {
+  assert.equal(isLikelyAutoDateMemo("8/26"), false);
+  assert.equal(isLikelyAutoDateMemo("8.24"), false);
+  assert.equal(isLikelyAutoDateMemo("8-25-26"), false);
+  assert.equal(isLikelyAutoDateMemo("Aug 24, 2026"), true);
+});
+
+test("ambiguous schedule replication cannot create a firm unpaid debt", () => {
+  const ambiguous = appt("2026-07-10", "Lacey James", { mapping_ambiguous: true });
+  const { results } = run([ambiguous], []);
+  assert.equal(results[0].status, "NEEDS_REVIEW");
+  assert.match(results[0].note, /does not uniquely prove/i);
+});
+
+test("nearby inferred reschedule downgrades remaining scheduled debt to review", () => {
+  const scheduled = appt("2026-07-10");
+  const moved = appt("2026-07-09", null, { unidentified: true, summary: "60 Mins - 1:1 Personal Training" });
+  const p = pay(70, "7/9", "2026-07-09");
+  const { results } = run([scheduled, moved], [p]);
+  const scheduledRow = results.find((r) => r.appt === scheduled);
+  const inferred = results.find((r) => r.inferred);
+  assert.equal(inferred?.status, "PAID_VENMO");
+  assert.equal(scheduledRow.status, "NEEDS_REVIEW");
+  assert.match(scheduledRow.note, /possible reschedule/i);
 });
 
 // ---- Allocation invariant --------------------------------------------------
