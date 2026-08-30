@@ -10,7 +10,7 @@ import { google } from "googleapis";
 import {
   PALETTE, FONTS, GITHUB_OWNER, GITHUB_REPO, DEFAULT_BRANCH,
   requireEnv, resolveRepoRoot, loadClients, loadCashEntries, loadCancellations,
-  loadMatchedLedger, saveMatchedLedger,
+  loadMatchedLedger, saveMatchedLedger, loadPaymentDrivenRunDates,
   loadSchedule, findScheduleEntriesForSlot, isInactiveSlot,
   fuzzyName, fmtDate, fmtDateTime, fmtDateIso, fmtDateIsoPacific, slugify,
   parseNoteDate, parseNoteDates, enumeratesDates, withRetry,
@@ -587,6 +587,23 @@ export function expandSlots(slots, schedule) {
   return out;
 }
 
+// ---- Ledger provenance bridge ----
+
+// payment-driven mode records that money arrived, but it does not prove which
+// appointment the money settled. Older payment-driven rows predate the
+// source_mode field, so their weekly log date is used to identify them.
+export function isPaymentDrivenLedgerEntry(entry, paymentDrivenRunDates = new Set()) {
+  if (entry?.source_mode === "schedule") return false;
+  if (entry?.source_mode === "payment-driven") return true;
+  if (entry?.corrected_by) return false; // explicit human adjudication wins
+  const matchedDate = String(entry?.matched_at || "").slice(0, 10);
+  return Boolean(matchedDate && paymentDrivenRunDates.has(matchedDate));
+}
+
+export function trustedScheduleLedger(priorMatches, paymentDrivenRunDates = new Set()) {
+  return priorMatches.filter((m) => !isPaymentDrivenLedgerEntry(m, paymentDrivenRunDates));
+}
+
 // ---- Production configuration guard ----
 //
 // A scheduled, non-dry run is the one that emails Brad a real chase list and
@@ -1083,6 +1100,7 @@ export function reconcile(appointments, payments, clients, cashLog, cancellation
         newMatches.push({
           gmail_id: p.gmail_id,
           matched_at: new Date().toISOString(),
+          source_mode: "schedule",
           // session_amount is this session's share; payment.amount stays the
           // gross so the ledger still records the real receipt (and the
           // content fingerprint that locks it keeps matching).
@@ -1177,6 +1195,7 @@ export function reconcile(appointments, payments, clients, cashLog, cancellation
         newMatches.push({
           gmail_id: best.p.gmail_id,
           matched_at: new Date().toISOString(),
+          source_mode: "schedule",
           matched_to: {
             date: fmtDateIsoPacific(appt.date),
             client: roster.vagaro_name,
@@ -1254,6 +1273,7 @@ export function reconcile(appointments, payments, clients, cashLog, cancellation
       newMatches.push({
         gmail_id: p.gmail_id,
         matched_at: new Date().toISOString(),
+        source_mode: "schedule",
         matched_to: { date: fmtDateIsoPacific(r.appt.date), client: client.vagaro_name, status: "PAID_VENMO", inferred: true },
         payment: { sender: p.sender_display_name, amount: p.amount, note: p.note, date: fmtDateIso(p.date) },
       });
@@ -1329,7 +1349,7 @@ function withinDateWindow(payDate, apptDate) {
 // ---- Email building ----
 
 function cashEntryLink({ date, name, amount, note = "per weekly billing email" }) {
-  const iso = fmtDateIso(date);
+  const iso = fmtDateIsoPacific(date);
   const slug = slugify(name);
   const filename = `billing/cash-entries/${iso}-${slug}.md`;
   const value = `${iso} | ${name} | $${amount} | ${note}\n`;
@@ -1368,7 +1388,7 @@ function bankVerify(roster) {
 }
 
 function reviewResolutionLink({ date, name, disposition, detail }) {
-  const iso = fmtDateIso(date);
+  const iso = fmtDateIsoPacific(date);
   const slug = slugify(name);
   const filename = `billing/review-resolutions/${iso}-${slug}-${disposition}.md`;
   const value = `${iso} | ${name} | ${disposition} | ${detail}\n`;
@@ -2059,6 +2079,7 @@ export function reconcilePaymentsToClients(payments, clients, priorMatches) {
       newMatches.push({
         gmail_id: p.gmail_id,
         matched_at: new Date().toISOString(),
+        source_mode: "payment-driven",
         matched_to: {
           date: fmtDateIsoPacific(p.date),
           client: client.vagaro_name,
@@ -2247,7 +2268,7 @@ export function buildPaymentDrivenEmail({
 // tooling (vagaro-prompt, monthly summary) can still parse the money lines.
 async function writePaymentDrivenLog({ payments, moneyIn, unmatched, chase, review, cashClients }) {
   await fs.mkdir(LOGS_DIR, { recursive: true });
-  const file = path.join(LOGS_DIR, `${fmtDateIso(NOW)}.md`);
+  const file = path.join(LOGS_DIR, `${fmtDateIsoPacific(NOW)}.md`);
   const money = (n) => `$${Number(n || 0).toLocaleString()}`;
   const total = moneyIn.reduce((s, m) => s + (m.payment.amount || 0), 0);
   let md = `# Weekly billing log (payment-driven) — ${fmtDateIso(NOW)}\n\n`;
@@ -2349,7 +2370,7 @@ async function runPaymentDriven() {
 
 async function writeLog({ appointments, payments, results, unmatchedPayments }) {
   await fs.mkdir(LOGS_DIR, { recursive: true });
-  const file = path.join(LOGS_DIR, `${fmtDateIso(NOW)}.md`);
+  const file = path.join(LOGS_DIR, `${fmtDateIsoPacific(NOW)}.md`);
   let md = `# Weekly billing log — ${fmtDateIso(NOW)}\n\n`;
   md += `Window: ${WINDOW_START.toISOString()} → ${NOW.toISOString()}\n\n`;
   md += `## Appointments (${appointments.length})\n`;
@@ -2416,16 +2437,19 @@ async function main() {
   requireEnv("BREVO_API_KEY", BREVO_API_KEY);
   console.log(`Appointment source: ${APPOINTMENT_SOURCE}`);
   console.log(`Window: ${WINDOW_START.toISOString()} → ${NOW.toISOString()}`);
-  const [clients, schedule, cashLog, cancellations, priorMatches, rawSlots, payments] = await Promise.all([
+  const [clients, schedule, cashLog, cancellations, priorMatches, paymentDrivenRunDates, rawSlots, payments] = await Promise.all([
     loadClients(CLIENTS_CSV),
     loadSchedule(SCHEDULE_CSV),
     loadCashEntries(REPO_ROOT),
     loadCancellations(REPO_ROOT),
     loadMatchedLedger(REPO_ROOT),
+    loadPaymentDrivenRunDates(REPO_ROOT),
     fetchVagaroAppointments(),
     fetchVenmoPayments(),
   ]);
-  console.log(`Loaded ${clients.length} clients, ${schedule.length} schedule rows, ${cashLog.length} cash entries, ${cancellations.length} cancellations, ${priorMatches.length} prior matches`);
+  const schedulePriorMatches = trustedScheduleLedger(priorMatches, paymentDrivenRunDates);
+  const evidenceOnlyCount = priorMatches.length - schedulePriorMatches.length;
+  console.log(`Loaded ${clients.length} clients, ${schedule.length} schedule rows, ${cashLog.length} cash entries, ${cancellations.length} cancellations, ${priorMatches.length} prior matches (${evidenceOnlyCount} payment-driven evidence-only)`);
   console.log(`Found ${rawSlots.length} slots, ${payments.length} Venmo payments`);
 
   // FIX 1 — in events mode, each Vagaro appointment event is already ONE
@@ -2440,7 +2464,7 @@ async function main() {
   const unidentified = appointments.length - identified;
   console.log(`Appointment resolution: ${identified} identified + ${unidentified} unidentified`);
 
-  const { results, unmatchedPayments, newMatches, allocations } = reconcile(appointments, payments, clients, cashLog, cancellations, priorMatches);
+  const { results, unmatchedPayments, newMatches, allocations } = reconcile(appointments, payments, clients, cashLog, cancellations, schedulePriorMatches);
   console.log(`Reconciled ${newMatches.length} new payment match${newMatches.length === 1 ? "" : "es"} for the ledger.`);
   if (DRY_RUN !== "true") {
     await saveMatchedLedger(REPO_ROOT, [...priorMatches, ...newMatches]);

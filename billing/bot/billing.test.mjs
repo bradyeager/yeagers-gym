@@ -16,8 +16,9 @@ import { fileURLToPath } from "node:url";
 import {
   reconcile, buildEmail, summaryCounts, parseSubjectCounts,
   assertProductionConfig, assertSummaryConsistency, assertAllocationInvariant,
+  trustedScheduleLedger, isPaymentDrivenLedgerEntry,
 } from "./billing.mjs";
-import { parseNoteDate, parseNoteDates, enumeratesDates } from "./lib.mjs";
+import { parseNoteDate, parseNoteDates, enumeratesDates, fmtDate, fmtDateIsoPacific } from "./lib.mjs";
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = path.resolve(HERE, "..", "..");
@@ -310,6 +311,29 @@ test("a short payment still lands in review", () => {
 test("an unpaid session with no payment is still UNPAID", () => {
   const { results } = run([appt("2026-07-10")], []);
   assert.deepEqual(statuses(results), ["UNPAID"]);
+});
+
+
+// ---- Provenance + Pacific-date regressions ---------------------------------
+
+test("payment-driven ledger observations never masquerade as settled sessions", () => {
+  const pdDates = new Set(["2026-08-29"]);
+  const legacyPd = { gmail_id: "pd", matched_at: "2026-08-29T00:47:30Z", matched_to: { date: "2026-08-24", client: "A" } };
+  const explicitPd = { ...legacyPd, gmail_id: "pd2", matched_at: "2026-09-01T00:00:00Z", source_mode: "payment-driven" };
+  const schedule = { ...legacyPd, gmail_id: "sched", source_mode: "schedule" };
+  const corrected = { ...legacyPd, gmail_id: "manual", corrected_by: "Brad" };
+
+  assert.equal(isPaymentDrivenLedgerEntry(legacyPd, pdDates), true);
+  assert.equal(isPaymentDrivenLedgerEntry(explicitPd, pdDates), true);
+  assert.equal(isPaymentDrivenLedgerEntry(schedule, pdDates), false);
+  assert.equal(isPaymentDrivenLedgerEntry(corrected, pdDates), false);
+  assert.deepEqual(trustedScheduleLedger([legacyPd, explicitPd, schedule, corrected], pdDates).map((m) => m.gmail_id), ["sched", "manual"]);
+});
+
+test("Friday-evening run labels and action dates stay on the Pacific service day", () => {
+  const fridayNinePmPdt = new Date("2026-08-29T04:00:00Z");
+  assert.equal(fmtDate(fridayNinePmPdt), "Fri, 8/28");
+  assert.equal(fmtDateIsoPacific(fridayNinePmPdt), "2026-08-28");
 });
 
 // ---- Allocation invariant --------------------------------------------------

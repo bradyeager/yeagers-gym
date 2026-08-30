@@ -347,6 +347,30 @@ export async function loadMatchedLedger(repoRoot) {
   }
 }
 
+// Dates whose weekly log was produced by payment-driven mode. Those ledger
+// rows are payment observations, not session allocations, and must not be
+// replayed as proof that a same-date appointment was settled when schedule
+// mode resumes. Historical rows predate the source_mode field, so the log
+// header is the authoritative provenance bridge.
+export async function loadPaymentDrivenRunDates(repoRoot) {
+  const out = new Set();
+  const dir = path.join(repoRoot, "billing", "logs");
+  try {
+    const files = await fs.readdir(dir);
+    for (const f of files) {
+      if (!/^\d{4}-\d{2}-\d{2}\.md$/.test(f)) continue;
+      const raw = await fs.readFile(path.join(dir, f), "utf8");
+      const first = raw.split(/\r?\n/, 1)[0] || "";
+      if (/weekly billing log \(payment-driven\)/i.test(first)) {
+        out.add(f.slice(0, 10));
+      }
+    }
+  } catch (e) {
+    if (e.code !== "ENOENT") throw e;
+  }
+  return out;
+}
+
 export async function saveMatchedLedger(repoRoot, ledger) {
   const p = path.join(repoRoot, "billing", "matched-payments.json");
   // Stable sort + 2-space indent so successive runs produce minimal diffs.
@@ -461,8 +485,10 @@ export function fuzzyName(a, b) {
 
 // ---- Date formatting ----
 
-export function fmtDate(d) {
-  return new Date(d).toLocaleDateString("en-US", { weekday: "short", month: "numeric", day: "numeric" });
+export function fmtDate(d, tz = "America/Los_Angeles") {
+  return new Date(d).toLocaleDateString("en-US", {
+    timeZone: tz, weekday: "short", month: "numeric", day: "numeric",
+  });
 }
 
 export function fmtDateTime(d, tz = "America/Los_Angeles") {
@@ -559,10 +585,15 @@ export async function sendBrevoEmail({ apiKey, to, from, fromName, subject, html
       htmlContent: html,
     }),
   });
+  const body = await resp.text();
   if (!resp.ok) {
-    const body = await resp.text();
     throw new Error(`Brevo send failed: ${resp.status} ${body}`);
   }
+  let receipt = null;
+  try { receipt = body ? JSON.parse(body) : null; } catch (_) { /* non-JSON success body */ }
+  const messageId = receipt?.messageId || receipt?.messageIds?.[0] || "<not returned>";
+  console.log(`Brevo accepted email: status=${resp.status} messageId=${messageId} to=${to}`);
+  return { status: resp.status, messageId };
 }
 
 // ---- YG email building blocks ----

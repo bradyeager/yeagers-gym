@@ -23,7 +23,7 @@
 //                             checkoutPrompt, theme }) → { subject, html, preheader }
 // ─────────────────────────────────────────────────────────────────────
 
-import { GITHUB_OWNER, GITHUB_REPO, fmtDate, fmtDateIso } from "./lib.mjs";
+import { GITHUB_OWNER, GITHUB_REPO, fmtDate, fmtDateIso, fmtDateIsoPacific } from "./lib.mjs";
 
 const FONT_BODY = `Inter, Arial, Helvetica, sans-serif`;
 const FONT_MONO = `ui-monospace, Menlo, 'SF Mono', Consolas, monospace`;
@@ -166,7 +166,7 @@ export function buildMoneyLine({ results, unmatchedPayments, now, windowStart, c
     // the P3 builder below. Lifted into a helper so unpaid rows without a
     // Venmo handle always get an actionable button.
     const cashHref = (date, name, amount) => {
-      const iso = fmtDateIso(date);
+      const iso = fmtDateIsoPacific(date);
       const slug = (name || "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
       const value = `${iso} | ${name} | $${amount} | per weekly billing email\n`;
       return `https://github.com/${GITHUB_OWNER}/${GITHUB_REPO}/new/main/billing/cash-entries?filename=${iso}-${slug}.md&value=${encodeURIComponent(value)}`;
@@ -176,7 +176,7 @@ export function buildMoneyLine({ results, unmatchedPayments, now, windowStart, c
     // no-show). Creates a file in billing/cancellations/ that the bot will
     // honor on the next run. Filename: YYYY-MM-DD-clientslug.md.
     const skipHref = (date, name) => {
-      const iso = fmtDateIso(date);
+      const iso = fmtDateIsoPacific(date);
       const slug = (name || "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
       const value = `${iso} | ${name} | wasn't trained\n`;
       return `https://github.com/${GITHUB_OWNER}/${GITHUB_REPO}/new/main/billing/cancellations?filename=${iso}-${slug}.md&value=${encodeURIComponent(value)}`;
@@ -187,7 +187,7 @@ export function buildMoneyLine({ results, unmatchedPayments, now, windowStart, c
       const handle = r.roster?.venmo_handle;
       const name = r.roster?.vagaro_name;
       const expected = r.checkoutAmount ?? r.expectedPrice ?? r.roster?.default_price;
-      const requestBtn = handle ? btnPink({ href: `https://venmo.com/${handle}?txn=charge&amount=${expected}&note=Training%20${encodeURIComponent(fmtDateIso(r.appt.date))}`, label: `Request ${money(expected)} on Venmo` }) : "";
+      const requestBtn = handle ? btnPink({ href: `https://venmo.com/${handle}?txn=charge&amount=${expected}&note=Training%20${encodeURIComponent(fmtDateIsoPacific(r.appt.date))}`, label: `Request ${money(expected)} on Venmo` }) : "";
       const logBtn = btnTeal({ href: cashHref(r.appt.date, name, expected), label: "Log as cash" });
       const skipBtn = btnTeal({ href: skipHref(r.appt.date, name), label: "Wasn't trained" });
       // Fallback when no handle: explain it + still give Brad a way to clear
@@ -204,7 +204,7 @@ export function buildMoneyLine({ results, unmatchedPayments, now, windowStart, c
       const name = r.roster?.vagaro_name;
       const expected = r.checkoutAmount ?? r.expectedPrice ?? r.roster?.default_price;
       const received = r.payment?.amount ?? null;
-      const requestBtn = handle && isUnp ? btnPink({ href: `https://venmo.com/${handle}?txn=charge&amount=${expected}&note=Training%20${encodeURIComponent(fmtDateIso(r.appt.date))}`, label: `Request ${money(expected)} on Venmo` }) : "";
+      const requestBtn = handle && isUnp ? btnPink({ href: `https://venmo.com/${handle}?txn=charge&amount=${expected}&note=Training%20${encodeURIComponent(fmtDateIsoPacific(r.appt.date))}`, label: `Request ${money(expected)} on Venmo` }) : "";
       const logBtn = isUnp ? btnTeal({ href: cashHref(r.appt.date, name, expected), label: "Log as cash" }) : "";
       items.push({ priority: 1, type: isUnp ? "Unpaid (carryover)" : "Review (carryover)", accent: isUnp ? T.unpaid : T.review, client: name, when: fmtShort(r.appt.date) + " · " + timeOf(r.appt.date), expected, received, method: r.payment ? "Venmo" : null, issue: "Carried over from a prior week — clear first.", fix: isUnp ? (handle ? "Send a Venmo request, or accept as cash if collected." : "No Venmo handle on file. Log as cash if collected, or add the handle to clients.csv.") : "Review the amount mismatch; accept or chase the balance.", action: requestBtn + logBtn });
     }
@@ -214,7 +214,7 @@ export function buildMoneyLine({ results, unmatchedPayments, now, windowStart, c
       const received = r.payment?.amount ?? null;
       const delta = received != null && expected != null ? received - expected : null;
       const shortBy = delta != null && delta < 0 ? -delta : null;
-      const action = shortBy && handle ? btnPink({ href: `https://venmo.com/${handle}?txn=charge&amount=${shortBy}&note=${encodeURIComponent("Balance for " + fmtDateIso(r.appt.date))}`, label: `Request ${money(shortBy)} balance` }) : "";
+      const action = shortBy && handle ? btnPink({ href: `https://venmo.com/${handle}?txn=charge&amount=${shortBy}&note=${encodeURIComponent("Balance for " + fmtDateIsoPacific(r.appt.date))}`, label: `Request ${money(shortBy)} balance` }) : "";
       items.push({ priority: 2, type: "Payment Mismatch", accent: T.review, client: r.roster?.vagaro_name, when: fmtShort(r.appt.date) + " · " + timeOf(r.appt.date), expected, received, method: "Venmo", issue: `Received ${money(received)} but expected ${money(expected)}.`, fix: shortBy ? `Request the ${money(shortBy)} balance, or accept as paid in full.` : "Eyeball — could be a tip or smoothie add-on.", action });
     }
     for (const r of cats.cashPending) {
@@ -224,7 +224,7 @@ export function buildMoneyLine({ results, unmatchedPayments, now, windowStart, c
       if (notes.includes("chase")) { bankHref = "https://secure.chase.com/web/auth/dashboard"; bankLabel = "Verify in Chase"; }
       else if (notes.includes("capital one") || notes.includes("capitalone")) { bankHref = "https://verified.capitalone.com/auth/signin"; bankLabel = "Verify in Capital One"; }
       const method = notes.includes("zelle") ? (notes.includes("chase") ? "Zelle · Chase" : notes.includes("capital one") ? "Zelle · Capital One" : "Zelle") : notes.includes("check") ? "Check / cash" : "Cash";
-      const confirmHref = `https://github.com/${GITHUB_OWNER}/${GITHUB_REPO}/new/main/billing/cash-entries?filename=${fmtDateIso(r.appt.date)}-${(r.roster?.vagaro_name || "").toLowerCase().replace(/[^a-z0-9]+/g, "-")}.md&value=${encodeURIComponent(`${fmtDateIso(r.appt.date)} | ${r.roster?.vagaro_name} | $${expected} | per weekly billing email\n`)}`;
+      const confirmHref = `https://github.com/${GITHUB_OWNER}/${GITHUB_REPO}/new/main/billing/cash-entries?filename=${fmtDateIsoPacific(r.appt.date)}-${(r.roster?.vagaro_name || "").toLowerCase().replace(/[^a-z0-9]+/g, "-")}.md&value=${encodeURIComponent(`${fmtDateIsoPacific(r.appt.date)} | ${r.roster?.vagaro_name} | $${expected} | per weekly billing email\n`)}`;
       items.push({ priority: 3, type: "External Payment Verification", accent: T.teal, client: r.roster?.vagaro_name, when: fmtShort(r.appt.date) + " · " + timeOf(r.appt.date), expected, received: null, method, issue: `${method} not yet confirmed.`, fix: "Verify it landed in your bank app, then tap Confirm paid. Or tap Wasn't trained if the session didn't happen.", action: (bankHref ? btnPink({ href: bankHref, label: bankLabel }) : "") + btnTeal({ href: confirmHref, label: "Confirm paid" }) + btnTeal({ href: skipHref(r.appt.date, r.roster?.vagaro_name), label: "Wasn't trained" }) });
     }
     for (const r of cats.unidentified) {
