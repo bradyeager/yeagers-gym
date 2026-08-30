@@ -2414,7 +2414,7 @@ async function runPaymentDriven() {
 
 // ---- Log file ----
 
-async function writeLog({ appointments, payments: paymentsThroughNow, results, unmatchedPayments }) {
+async function writeLog({ appointments, payments, results, unmatchedPayments }) {
   await fs.mkdir(LOGS_DIR, { recursive: true });
   const file = path.join(LOGS_DIR, `${fmtDateIsoPacific(NOW)}.md`);
   let md = `# Weekly billing log — ${fmtDateIso(NOW)}\n\n`;
