@@ -9,7 +9,7 @@ import ical from "node-ical";
 import { google } from "googleapis";
 import {
   PALETTE, FONTS, GITHUB_OWNER, GITHUB_REPO, DEFAULT_BRANCH,
-  requireEnv, resolveRepoRoot, loadClients, loadCashEntries, loadCancellations,
+  requireEnv, resolveRepoRoot, loadClients, loadCashEntries, loadExternalUnpaid, loadCancellations,
   loadMatchedLedger, saveMatchedLedger, loadPaymentDrivenRunDates,
   loadSchedule, loadScheduleOverrides, findScheduleEntriesForSlot, isInactiveSlot,
   findScheduleOverrideEntriesForSlot, hasScheduleOverrideForSlot, isInactiveScheduleOverrideSlot,
@@ -749,7 +749,7 @@ export function assertAllocationInvariant(allocations) {
   }
 }
 
-export function reconcile(appointments, payments, clients, cashLog, cancellations = [], priorMatches = []) {
+export function reconcile(appointments, payments, clients, cashLog, cancellations = [], priorMatches = [], externalUnpaid = []) {
   const byVagaroName = new Map(clients.map((c) => [c.vagaro_name.toLowerCase(), c]));
   const usedPayments = new Set();
   const results = [];
@@ -859,17 +859,13 @@ export function reconcile(appointments, payments, clients, cashLog, cancellation
   });
 
   // ── Cancellations (Brad didn't actually train — vacation, sick, etc.) ──
-  const cancelKey = (date, name) => {
-    // Cancellation file dates arrive as "YYYY-MM-DD" strings (Brad's Pacific-day
-    // convention). Appointment dates are Date objects (UTC instants needing
-    // Pacific conversion). Treat strings as already-Pacific to avoid the
-    // UTC-midnight → Pacific-previous-day silent mismatch that swallowed every
-    // cancellation in the 6/21 run.
-    const dateStr = typeof date === "string" && /^\d{4}-\d{2}-\d{2}$/.test(date)
-      ? date
-      : fmtDateIsoPacific(date);
-    return `${dateStr}__${(name || "").toLowerCase()}`;
-  };
+  // Human-entered ledger dates are already Pacific calendar dates. Date
+  // objects are UTC instants and must be converted to Pacific. Use one rule
+  // for cancellations, cash confirmations, and verified missing bank/Zelle.
+  const serviceDay = (date) => typeof date === "string" && /^\d{4}-\d{2}-\d{2}$/.test(date)
+    ? date
+    : fmtDateIsoPacific(date);
+  const cancelKey = (date, name) => `${serviceDay(date)}__${(name || "").toLowerCase()}`;
   const cancelledSet = new Set(cancellations.map((c) => cancelKey(c.date, c.name)));
 
   // ── Combined-payment reservation pre-pass ──
@@ -1096,8 +1092,19 @@ export function reconcile(appointments, payments, clients, cashLog, cancellation
     }
 
     if (roster.pays_cash) {
+      const dueHit = externalUnpaid.find(
+        (c) => serviceDay(c.date) === serviceDay(appt.date) && fuzzyName(c.name, roster.vagaro_name) >= 0.8,
+      );
+      if (dueHit) {
+        results.push({
+          appt, roster, status: "UNPAID", expectedPrice, checkoutAmount: expectedPrice,
+          note: dueHit.notes || "External payment verified not received",
+          externalPaymentVerifiedUnpaid: true,
+        });
+        continue;
+      }
       const cashHit = cashLog.find(
-        (c) => sameDay(c.date, appt.date) && fuzzyName(c.name, roster.vagaro_name) >= 0.8,
+        (c) => serviceDay(c.date) === serviceDay(appt.date) && fuzzyName(c.name, roster.vagaro_name) >= 0.8,
       );
       if (cashHit) results.push({ appt, roster, status: "PAID_CASH", payment: cashHit, expectedPrice, checkoutAmount: expectedPrice });
       else results.push({ appt, roster, status: "CASH_PENDING", expectedPrice, checkoutAmount: expectedPrice });
@@ -1495,14 +1502,18 @@ export function buildEmail({ results, unmatchedPayments, now = NOW, windowStart 
   const unpaidCard = (r) => {
     const price = r.expectedPrice || r.roster?.default_price || "?";
     const handle = r.roster?.venmo_handle;
-    const noteText = `Training ${fmtDate(r.appt.date)} — Yeager's Gym`;
-    const requestUrl = handle ? venmoRequestLink(handle, price, noteText) : "";
+    const externalDue = Boolean(r.externalPaymentVerifiedUnpaid);
+    const noteText = `Training ${fmtDate(r.appt.date)} ? Yeager's Gym`;
+    const requestUrl = !externalDue && handle ? venmoRequestLink(handle, price, noteText) : "";
     const cashUrl = cashEntryLink({ date: r.appt.date, name: r.roster.vagaro_name, amount: price });
-    let inner = `<div style="font-family:${FONTS.body};font-size:13px;color:${PALETTE.textPrimary};margin-bottom:4px;"><strong>${escapeHtml(r.roster.vagaro_name)}</strong> — ${fmtDate(r.appt.date)} — $${price}</div>`;
+    let inner = `<div style="font-family:${FONTS.body};font-size:13px;color:${PALETTE.textPrimary};margin-bottom:4px;"><strong>${escapeHtml(r.roster.vagaro_name)}</strong> ? ${fmtDate(r.appt.date)} ? $${price}</div>`;
+    if (externalDue) {
+      inner += `<div style="font-family:${FONTS.display};font-size:12px;color:${PALETTE.textMuted};margin:8px 0;">${escapeHtml(r.note || "External payment verified not received.")}</div>`;
+    }
     inner += `<div style="margin-top:10px;">`;
     if (requestUrl) inner += button({ href: requestUrl, label: `Request $${price} on Venmo`, color: "pink" });
-    else inner += `<span style="color:${PALETTE.textMuted};font-family:${FONTS.display};font-size:12px;">Add Venmo handle in clients.csv to enable request</span> `;
-    inner += buttonOutline({ href: cashUrl, label: "Log as cash", color: "teal" });
+    else if (!externalDue) inner += `<span style="color:${PALETTE.textMuted};font-family:${FONTS.display};font-size:12px;">Add Venmo handle in clients.csv to enable request</span> `;
+    inner += buttonOutline({ href: cashUrl, label: externalDue ? "Confirm paid when received" : "Log as cash", color: "teal" });
     inner += `</div>`;
     return card(inner, "pink");
   };
@@ -2481,11 +2492,12 @@ async function main() {
   requireEnv("BREVO_API_KEY", BREVO_API_KEY);
   console.log(`Appointment source: ${APPOINTMENT_SOURCE}`);
   console.log(`Window: ${WINDOW_START.toISOString()} → ${NOW.toISOString()}`);
-  const [clients, schedule, scheduleOverrides, cashLog, cancellations, priorMatches, paymentDrivenRunDates, rawSlots, payments] = await Promise.all([
+  const [clients, schedule, scheduleOverrides, cashLog, externalUnpaid, cancellations, priorMatches, paymentDrivenRunDates, rawSlots, payments] = await Promise.all([
     loadClients(CLIENTS_CSV),
     loadSchedule(SCHEDULE_CSV),
     loadScheduleOverrides(SCHEDULE_OVERRIDES_CSV),
     loadCashEntries(REPO_ROOT),
+    loadExternalUnpaid(REPO_ROOT),
     loadCancellations(REPO_ROOT),
     loadMatchedLedger(REPO_ROOT),
     loadPaymentDrivenRunDates(REPO_ROOT),
@@ -2494,7 +2506,7 @@ async function main() {
   ]);
   const schedulePriorMatches = trustedScheduleLedger(priorMatches, paymentDrivenRunDates);
   const evidenceOnlyCount = priorMatches.length - schedulePriorMatches.length;
-  console.log(`Loaded ${clients.length} clients, ${schedule.length} schedule rows, ${scheduleOverrides.length} date-specific overrides, ${cashLog.length} cash entries, ${cancellations.length} cancellations, ${priorMatches.length} prior matches (${evidenceOnlyCount} payment-driven evidence-only)`);
+  console.log(`Loaded ${clients.length} clients, ${schedule.length} schedule rows, ${scheduleOverrides.length} date-specific overrides, ${cashLog.length} cash entries, ${externalUnpaid.length} verified external unpaid, ${cancellations.length} cancellations, ${priorMatches.length} prior matches (${evidenceOnlyCount} payment-driven evidence-only)`);
   console.log(`Found ${rawSlots.length} slots, ${payments.length} Venmo payments`);
 
   // FIX 1 — in events mode, each Vagaro appointment event is already ONE
@@ -2509,7 +2521,7 @@ async function main() {
   const unidentified = appointments.length - identified;
   console.log(`Appointment resolution: ${identified} identified + ${unidentified} unidentified`);
 
-  const { results, unmatchedPayments, newMatches, allocations } = reconcile(appointments, payments, clients, cashLog, cancellations, schedulePriorMatches);
+  const { results, unmatchedPayments, newMatches, allocations } = reconcile(appointments, payments, clients, cashLog, cancellations, schedulePriorMatches, externalUnpaid);
   console.log(`Reconciled ${newMatches.length} new payment match${newMatches.length === 1 ? "" : "es"} for the ledger.`);
   if (DRY_RUN !== "true") {
     await saveMatchedLedger(REPO_ROOT, [...priorMatches, ...newMatches]);

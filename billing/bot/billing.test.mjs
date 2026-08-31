@@ -650,3 +650,40 @@ test("schedule override CSV loader preserves exact dates and prices", async () =
   }
 });
 
+test("verified missing Zelle converts external-payment pending to confirmed due", () => {
+  const stacy = client({
+    vagaro_name: "Stacy Tesler CPY", venmo_display_names: [], default_price: 70,
+    pays_cash: true, notes: "Pays via Zelle -> Capital One personal checking",
+  });
+  const externalUnpaid = [{
+    date: "2026-08-27", name: "Stacy Tesler CPY", amount: 70,
+    notes: "late cancellation chargeable; Zelle verified not received",
+  }];
+  const { results } = reconcile(
+    [appt("2026-08-27", "Stacy Tesler CPY")], [], [stacy], [], [], [], externalUnpaid,
+  );
+
+  assert.equal(results.length, 1);
+  assert.equal(results[0].status, "UNPAID");
+  assert.equal(results[0].externalPaymentVerifiedUnpaid, true);
+  assert.match(results[0].note, /verified not received/);
+
+  const { html, preheader } = buildMoneyLine({
+    results, unmatchedPayments: [], now: at("2026-08-28", 23),
+    windowStart: at("2026-08-21"), checkoutPrompt: "", theme: "brand",
+  });
+  assert.match(preheader, /\$70 confirmed due/);
+  assert.match(html, /Confirmed Due - External Rail/);
+  assert.match(html, /Zelle was checked/);
+  assert.match(html, /Confirm paid when received/);
+  assert.doesNotMatch(html, /Request \$70 on Venmo/);
+  assert.doesNotMatch(html, /Wasn't trained/);
+});
+
+test("dated cash or Zelle confirmations use the Pacific service date", () => {
+  const stacy = client({ vagaro_name: "Stacy Tesler CPY", default_price: 70, pays_cash: true });
+  const cashLog = [{ date: "2026-08-27", name: "Stacy Tesler CPY", amount: 70, notes: "Zelle" }];
+  const { results } = reconcile([appt("2026-08-27", "Stacy Tesler CPY")], [], [stacy], cashLog, [], [], []);
+  assert.equal(results[0].status, "PAID_CASH");
+});
+
