@@ -16,9 +16,9 @@ import { fileURLToPath } from "node:url";
 import {
   reconcile, buildEmail, summaryCounts, parseSubjectCounts,
   assertProductionConfig, assertSummaryConsistency, assertAllocationInvariant,
-  trustedScheduleLedger, isPaymentDrivenLedgerEntry, isLikelyAutoDateMemo,
+  trustedScheduleLedger, isPaymentDrivenLedgerEntry, isLikelyAutoDateMemo, expandSlots,
 } from "./billing.mjs";
-import { parseNoteDate, parseNoteDates, enumeratesDates, fmtDate, fmtDateIsoPacific } from "./lib.mjs";
+import { parseNoteDate, parseNoteDates, enumeratesDates, fmtDate, fmtDateIsoPacific, loadScheduleOverrides } from "./lib.mjs";
 import { buildMoneyLine } from "./email-moneyline.mjs";
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
@@ -621,5 +621,32 @@ test("default email excludes review exposure from confirmed due and request acti
   assert.match(html, /attendance uncertain/);
   assert.doesNotMatch(html, /Outstanding.*\$170/);
   assert.doesNotMatch(html, /Request \$100 balance/);
+});
+
+test("date-specific schedule overrides replace only the matching recurring slot", () => {
+  const recurring = [
+    { day_of_week: 1, time: "09:00", client_name: "Dina Bates", price_override: 45 },
+    { day_of_week: 1, time: "09:00", client_name: "Anna Cessna", price_override: 45 },
+    { day_of_week: 1, time: "09:00", client_name: "Katelin Lowther", price_override: 45 },
+  ];
+  const overrides = [
+    { date_iso: "2026-08-24", time: "09:00", client_name: "Anna Cessna", price_override: 45 },
+    { date_iso: "2026-08-24", time: "09:00", client_name: "Katelin Lowther", price_override: 45 },
+  ];
+  const slot = { date: new Date("2026-08-24T16:00:00Z"), summary: "60 Min 2:1" };
+  const rows = expandSlots([slot], recurring, overrides);
+  assert.deepEqual(rows.map((r) => r.client_name), ["Anna Cessna", "Katelin Lowther"]);
+  assert.ok(rows.every((r) => r.mapping_ambiguous), "one iCal event cannot prove both seats attended");
+});
+
+test("schedule override CSV loader preserves exact dates and prices", async () => {
+  const tmp = path.join(REPO_ROOT, "billing", "bot", `schedule-override-test-${process.pid}.csv`);
+  await fs.writeFile(tmp, "date,time,client_name,price_override,notes\n2026-08-24,15:00,Dina Bates,70,one-off\n", "utf8");
+  try {
+    const rows = await loadScheduleOverrides(tmp);
+    assert.deepEqual(rows, [{ date_iso: "2026-08-24", time: "15:00", client_name: "Dina Bates", price_override: 70, notes: "one-off" }]);
+  } finally {
+    await fs.rm(tmp, { force: true });
+  }
 });
 

@@ -11,7 +11,8 @@ import {
   PALETTE, FONTS, GITHUB_OWNER, GITHUB_REPO, DEFAULT_BRANCH,
   requireEnv, resolveRepoRoot, loadClients, loadCashEntries, loadCancellations,
   loadMatchedLedger, saveMatchedLedger, loadPaymentDrivenRunDates,
-  loadSchedule, findScheduleEntriesForSlot, isInactiveSlot,
+  loadSchedule, loadScheduleOverrides, findScheduleEntriesForSlot, isInactiveSlot,
+  findScheduleOverrideEntriesForSlot, hasScheduleOverrideForSlot, isInactiveScheduleOverrideSlot,
   fuzzyName, fmtDate, fmtDateTime, fmtDateIso, fmtDateIsoPacific, slugify,
   parseNoteDate, parseNoteDates, enumeratesDates, withRetry,
   venmoRequestLink, githubNewFileUrl, sendBrevoEmail,
@@ -63,6 +64,7 @@ const PD_WINDOW_START = new Date(NOW.getTime() - PD_WINDOW_DAYS * 24 * 60 * 60 *
 const REPO_ROOT = resolveRepoRoot(import.meta.url);
 const CLIENTS_CSV = path.join(REPO_ROOT, "billing", "clients.csv");
 const SCHEDULE_CSV = path.join(REPO_ROOT, "billing", "schedule.csv");
+const SCHEDULE_OVERRIDES_CSV = path.join(REPO_ROOT, "billing", "schedule-overrides.csv");
 const LOGS_DIR = path.join(REPO_ROOT, "billing", "logs");
 const VAGARO_EVENTS_DIR = path.join(REPO_ROOT, "billing", "vagaro-events");
 const VAGARO_CUSTOMERS_JSON = path.join(REPO_ROOT, "billing", "vagaro-customers.json");
@@ -554,7 +556,7 @@ function extractVenmoNote(body) {
 //     → 1 iCal event + 3 schedule entries = 3 records, all billed.
 //   - Separate parallel sessions at the same time (Mon 8am Peggy 2:1 +
 //     michelle 1:1) → 2 iCal events + 2 schedule entries = 2 records.
-export function expandSlots(slots, schedule) {
+export function expandSlots(slots, schedule, scheduleOverrides = []) {
   const groups = new Map();
   for (const slot of slots) {
     const key = slot.date.toISOString();
@@ -563,8 +565,15 @@ export function expandSlots(slots, schedule) {
   }
   const out = [];
   for (const group of groups.values()) {
-    const entries = schedule.length ? findScheduleEntriesForSlot(schedule, group[0].date) : [];
-    const hasInactive = schedule.length ? isInactiveSlot(schedule, group[0].date) : false;
+    const hasOverride = scheduleOverrides.length
+      ? hasScheduleOverrideForSlot(scheduleOverrides, group[0].date)
+      : false;
+    const entries = hasOverride
+      ? findScheduleOverrideEntriesForSlot(scheduleOverrides, group[0].date)
+      : (schedule.length ? findScheduleEntriesForSlot(schedule, group[0].date) : []);
+    const hasInactive = hasOverride
+      ? isInactiveScheduleOverrideSlot(scheduleOverrides, group[0].date)
+      : (schedule.length ? isInactiveSlot(schedule, group[0].date) : false);
     const n = group.length;
     const k = entries.length;
 
@@ -2472,9 +2481,10 @@ async function main() {
   requireEnv("BREVO_API_KEY", BREVO_API_KEY);
   console.log(`Appointment source: ${APPOINTMENT_SOURCE}`);
   console.log(`Window: ${WINDOW_START.toISOString()} → ${NOW.toISOString()}`);
-  const [clients, schedule, cashLog, cancellations, priorMatches, paymentDrivenRunDates, rawSlots, payments] = await Promise.all([
+  const [clients, schedule, scheduleOverrides, cashLog, cancellations, priorMatches, paymentDrivenRunDates, rawSlots, payments] = await Promise.all([
     loadClients(CLIENTS_CSV),
     loadSchedule(SCHEDULE_CSV),
+    loadScheduleOverrides(SCHEDULE_OVERRIDES_CSV),
     loadCashEntries(REPO_ROOT),
     loadCancellations(REPO_ROOT),
     loadMatchedLedger(REPO_ROOT),
@@ -2484,7 +2494,7 @@ async function main() {
   ]);
   const schedulePriorMatches = trustedScheduleLedger(priorMatches, paymentDrivenRunDates);
   const evidenceOnlyCount = priorMatches.length - schedulePriorMatches.length;
-  console.log(`Loaded ${clients.length} clients, ${schedule.length} schedule rows, ${cashLog.length} cash entries, ${cancellations.length} cancellations, ${priorMatches.length} prior matches (${evidenceOnlyCount} payment-driven evidence-only)`);
+  console.log(`Loaded ${clients.length} clients, ${schedule.length} schedule rows, ${scheduleOverrides.length} date-specific overrides, ${cashLog.length} cash entries, ${cancellations.length} cancellations, ${priorMatches.length} prior matches (${evidenceOnlyCount} payment-driven evidence-only)`);
   console.log(`Found ${rawSlots.length} slots, ${payments.length} Venmo payments`);
 
   // FIX 1 — in events mode, each Vagaro appointment event is already ONE
@@ -2493,7 +2503,7 @@ async function main() {
   // re-prices from schedule). Emit the per-appointment records as-is. iCal
   // mode still expands raw slots via schedule.csv, unchanged.
   const appointments = APPOINTMENT_SOURCE === "ical"
-    ? expandSlots(rawSlots, schedule)
+    ? expandSlots(rawSlots, schedule, scheduleOverrides)
     : rawSlots;
   const identified = appointments.filter((a) => !a.unidentified).length;
   const unidentified = appointments.length - identified;

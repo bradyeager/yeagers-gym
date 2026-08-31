@@ -1,0 +1,7 @@
+date,time,client_name,price_override,notes
+# Exact-date corrections override recurring schedule.csv only for that slot.
+# Week of 2026-08-24: reconciled from Brad's cleaned Vagaro calendar.
+2026-08-24,09:00,Anna Cessna,45,actual Monday group seat; Dina trained separately at 15:00
+2026-08-24,09:00,Katelin Lowther,45,actual Monday group seat; Dina trained separately at 15:00
+2026-08-24,15:00,Dina Bates,70,actual 1:1 session; Brad confirmed attendance and $70 payment memo 8/24
+2026-08-25,07:00,Jacob Bain,70,actual current-week slot; missed but chargeable and covered by $190 payment
