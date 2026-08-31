@@ -187,16 +187,22 @@ export function buildMoneyLine({ results, unmatchedPayments, now, windowStart, c
       const handle = r.roster?.venmo_handle;
       const name = r.roster?.vagaro_name;
       const expected = r.checkoutAmount ?? r.expectedPrice ?? r.roster?.default_price;
-      const requestBtn = handle ? btnPink({ href: `https://venmo.com/${handle}?txn=charge&amount=${expected}&note=Training%20${encodeURIComponent(fmtDateIsoPacific(r.appt.date))}`, label: `Request ${money(expected)} on Venmo` }) : "";
-      const logBtn = btnTeal({ href: cashHref(r.appt.date, name, expected), label: "Log as cash" });
-      const skipBtn = btnTeal({ href: skipHref(r.appt.date, name), label: "Wasn't trained" });
-      // Fallback when no handle: explain it + still give Brad a way to clear
-      // the line. Otherwise a "Tap to send a Venmo request" instruction
-      // pointed at nothing (the bug Brad saw on Celestin).
-      const fix = handle
-        ? "Tap pink to request, teal to log as cash, or Wasn't trained to skip."
-        : "No Venmo handle on file. Add one to clients.csv, log as cash if paid offline, or skip if not trained.";
-      items.push({ priority: 1, type: "Unpaid", accent: T.unpaid, client: name, when: fmtShort(r.appt.date) + " · " + timeOf(r.appt.date), expected, received: null, method: r.roster?.notes?.toLowerCase().includes("zelle") ? "Zelle" : "Venmo", issue: "No payment received this week.", fix, action: requestBtn + logBtn + skipBtn });
+      const externalDue = Boolean(r.externalPaymentVerifiedUnpaid);
+      const requestBtn = !externalDue && handle
+        ? btnPink({ href: `https://venmo.com/${handle}?txn=charge&amount=${expected}&note=Training%20${encodeURIComponent(fmtDateIsoPacific(r.appt.date))}`, label: `Request ${money(expected)} on Venmo` })
+        : "";
+      const paidLabel = externalDue ? "Confirm paid when received" : "Log as cash";
+      const logBtn = btnTeal({ href: cashHref(r.appt.date, name, expected), label: paidLabel });
+      const skipBtn = externalDue ? "" : btnTeal({ href: skipHref(r.appt.date, name), label: "Wasn't trained" });
+      const notes = (r.roster?.notes || "").toLowerCase();
+      const method = notes.includes("zelle") ? "Zelle" : notes.includes("check") ? "Check / cash" : "Venmo";
+      const issue = externalDue ? (r.note || "External payment verified not received.") : "No payment received this week.";
+      const fix = externalDue
+        ? `${method} was checked and this amount is confirmed due. Collect manually; confirm paid here when it arrives.`
+        : handle
+          ? "Tap pink to request, teal to log as cash, or Wasn't trained to skip."
+          : "No Venmo handle on file. Add one to clients.csv, log as cash if paid offline, or skip if not trained.";
+      items.push({ priority: 1, type: externalDue ? "Confirmed Due - External Rail" : "Unpaid", accent: T.unpaid, client: name, when: fmtShort(r.appt.date) + " | " + timeOf(r.appt.date), expected, received: null, method, issue, fix, action: requestBtn + logBtn + skipBtn });
     }
     for (const r of cats.lagging) {
       const isUnp = r.status === "UNPAID";

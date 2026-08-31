@@ -493,6 +493,25 @@ export async function loadCashEntries(repoRoot) {
   return entries;
 }
 
+export async function loadExternalUnpaid(repoRoot) {
+  const entries = [];
+  const dirPath = path.join(repoRoot, "billing", "external-unpaid");
+  try {
+    const files = await fs.readdir(dirPath);
+    for (const f of files) {
+      if (!f.endsWith(".md")) continue;
+      const raw = await fs.readFile(path.join(dirPath, f), "utf8");
+      for (const line of raw.split("\n")) {
+        const parsed = parseCashLine(line);
+        if (parsed) entries.push({ ...parsed, source: `external-unpaid/${f}` });
+      }
+    }
+  } catch (e) {
+    if (e.code !== "ENOENT") throw e;
+  }
+  return entries;
+}
+
 function parseCashLine(line) {
   const m = line.match(/^(\d{4}-\d{2}-\d{2})\s*\|\s*([^|]+?)\s*\|\s*\$?([\d.]+)(?:\s*\|\s*(.*))?/);
   if (!m) return null;
