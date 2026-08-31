@@ -2405,7 +2405,7 @@ async function runPaymentDriven() {
 
 // ---- Log file ----
 
-async function writeLog({ appointments, payments: paymentsThroughNow, results, unmatchedPayments }) {
+async function writeLog({ appointments, payments, results, unmatchedPayments }) {
   await fs.mkdir(LOGS_DIR, { recursive: true });
   const file = path.join(LOGS_DIR, `${fmtDateIsoPacific(NOW)}.md`);
   let md = `# Weekly billing log — ${fmtDateIso(NOW)}\n\n`;
@@ -2529,7 +2529,7 @@ async function main() {
   } else {
     ({ subject, html } = buildEmail({ results, unmatchedPayments: unmatchedInWindow }));
   }
-  const { file: logFile, counts: logCounts } = await writeLog({ appointments, payments, results, unmatchedPayments });
+  const { file: logFile, counts: logCounts } = await writeLog({ appointments, payments: paymentsThroughNow, results, unmatchedPayments });
   console.log(`Wrote log: ${logFile}`);
   // Dump log to console for easy review (dry-run never commits the file).
   console.log("\n=== LOG FILE CONTENTS ===");
