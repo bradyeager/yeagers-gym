@@ -19,6 +19,7 @@ import {
   trustedScheduleLedger, isPaymentDrivenLedgerEntry, isLikelyAutoDateMemo,
 } from "./billing.mjs";
 import { parseNoteDate, parseNoteDates, enumeratesDates, fmtDate, fmtDateIsoPacific } from "./lib.mjs";
+import { buildMoneyLine } from "./email-moneyline.mjs";
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = path.resolve(HERE, "..", "..");
@@ -552,3 +553,73 @@ test("parseNoteDates finds every date; parseNoteDate still returns the first", (
   assert.equal(parseNoteDates("", 2026).length, 0);
   assert.equal(parseNoteDates("Jun 01, 2026", 2026)[0].toISOString().slice(0, 10), "2026-06-01");
 });
+
+test("command-center never counts review exposure as confirmed debt", () => {
+  const now = at("2026-08-28", 23);
+  const unpaid = {
+    status: "UNPAID", appt: appt("2026-08-24"), roster: LACEY,
+    expectedPrice: 70, checkoutAmount: 70,
+  };
+  const review = {
+    status: "NEEDS_REVIEW", appt: appt("2026-08-25"), roster: LACEY,
+    expectedPrice: 100, checkoutAmount: 100, note: "attendance uncertain",
+  };
+  const { subject, html, preheader } = buildMoneyLine({
+    results: [unpaid, review], unmatchedPayments: [], now,
+    windowStart: at("2026-08-21"), checkoutPrompt: "", theme: "brand",
+  });
+
+  assert.match(subject, /1 unpaid, 1 review/);
+  assert.match(preheader, /\$70 confirmed due/);
+  assert.match(html, /Confirmed Due/);
+  assert.match(html, /\$70 confirmed due/);
+  assert.match(html, /Review - Do Not Request/);
+  assert.match(html, /attendance uncertain/);
+  assert.doesNotMatch(preheader, /\$170/);
+  assert.doesNotMatch(html, /Request \$100 balance/);
+});
+
+test("manual multi-purpose receipt allocations replay only the session share", () => {
+  const jacob = client({
+    vagaro_name: "Jacob Bain", venmo_display_names: ["Jacob Bain"], default_price: 70,
+  });
+  const livePayment = pay(190, "08/19, 08/25, and SEP", "2026-08-25", {
+    gmail_id: "jacob-190", sender_display_name: "Jacob Bain",
+  });
+  const paymentRecord = { sender: "Jacob Bain", amount: 190, note: "08/19, 08/25, and SEP", date: "2026-08-25" };
+  const prior = [
+    { gmail_id: "jacob-190", source_mode: "manual", corrected_by: "Brad", matched_to: { date: "2026-08-19", client: "Jacob Bain", status: "PAID_VENMO", session_amount: 70 }, payment: paymentRecord },
+    { gmail_id: "jacob-190", source_mode: "manual", corrected_by: "Brad", matched_to: { date: "2026-08-25", client: "Jacob Bain", status: "PAID_VENMO", session_amount: 70 }, payment: paymentRecord },
+    { gmail_id: "jacob-190", source_mode: "manual", corrected_by: "Brad", matched_to: { date: "n/a-programming-2026-09", client: "Jacob Bain", status: "EXTRA_SERVICE", session_amount: 50 }, payment: paymentRecord },
+  ];
+  const { results, unmatchedPayments } = run([appt("2026-08-25", "Jacob Bain")], [livePayment], [jacob], prior);
+
+  assert.equal(results.length, 1);
+  assert.equal(results[0].status, "PAID_VENMO");
+  assert.equal(results[0].payment.amount, 70);
+  assert.equal(results[0].payment.gross_amount, 190);
+  assert.equal(unmatchedPayments.length, 0);
+});
+
+test("default email excludes review exposure from confirmed due and request actions", () => {
+  const now = at("2026-08-28", 23);
+  const unpaid = {
+    status: "UNPAID", appt: appt("2026-08-24"), roster: LACEY,
+    expectedPrice: 70, checkoutAmount: 70,
+  };
+  const review = {
+    status: "NEEDS_REVIEW", appt: appt("2026-08-25"), roster: LACEY,
+    expectedPrice: 100, checkoutAmount: 100, note: "attendance uncertain",
+  };
+  const { subject, html } = buildEmail({ results: [unpaid, review], unmatchedPayments: [], now, windowStart: at("2026-08-21") });
+
+  assert.match(subject, /1 unpaid/);
+  assert.match(subject, /1 review/);
+  assert.match(html, /Confirmed Due/);
+  assert.match(html, /\$70/);
+  assert.match(html, /REVIEW, DO NOT REQUEST/);
+  assert.match(html, /attendance uncertain/);
+  assert.doesNotMatch(html, /Outstanding.*\$170/);
+  assert.doesNotMatch(html, /Request \$100 balance/);
+});
+

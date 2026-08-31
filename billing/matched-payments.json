@@ -2478,17 +2478,56 @@
   {
     "gmail_id": "1a03949ee9f89a7f",
     "matched_at": "2026-08-29T00:47:30.794Z",
+    "source_mode": "manual",
     "matched_to": {
-      "date": "2026-08-25",
+      "date": "2026-08-19",
       "client": "Jacob Bain",
-      "status": "NEEDS_REVIEW"
+      "status": "PAID_VENMO",
+      "session_amount": 70
     },
     "payment": {
       "sender": "Jacob Bain",
       "amount": 190,
       "note": "08/19, 08/25, and SEP 💻",
       "date": "2026-08-25"
-    }
+    },
+    "corrected_by": "Brad 2026-08-30 - $190 = 8/19 session $70 + 8/25 missed/chargeable session $70 + Sep remote programming $50"
+  },
+  {
+    "gmail_id": "1a03949ee9f89a7f",
+    "matched_at": "2026-08-29T00:47:30.794Z",
+    "source_mode": "manual",
+    "matched_to": {
+      "date": "2026-08-25",
+      "client": "Jacob Bain",
+      "status": "PAID_VENMO",
+      "session_amount": 70
+    },
+    "payment": {
+      "sender": "Jacob Bain",
+      "amount": 190,
+      "note": "08/19, 08/25, and SEP 💻",
+      "date": "2026-08-25"
+    },
+    "corrected_by": "Brad 2026-08-30 - $190 = 8/19 session $70 + 8/25 missed/chargeable session $70 + Sep remote programming $50"
+  },
+  {
+    "gmail_id": "1a03949ee9f89a7f",
+    "matched_at": "2026-08-29T00:47:30.794Z",
+    "source_mode": "manual",
+    "matched_to": {
+      "date": "n/a-programming-2026-09",
+      "client": "Jacob Bain",
+      "status": "EXTRA_SERVICE",
+      "session_amount": 50
+    },
+    "payment": {
+      "sender": "Jacob Bain",
+      "amount": 190,
+      "note": "08/19, 08/25, and SEP 💻",
+      "date": "2026-08-25"
+    },
+    "corrected_by": "Brad 2026-08-30 - $190 = 8/19 session $70 + 8/25 missed/chargeable session $70 + Sep remote programming $50"
   },
   {
     "gmail_id": "1a03981e5e441b03",
