@@ -1,0 +1,32 @@
+{
+  "id": "d1cb747d-aa25-47ea-a32c-0e15f3cdd3c6",
+  "createdDate": "2026-08-31T18:20:14.6764118Z",
+  "type": "appointment",
+  "action": "updated",
+  "payload": {
+    "appointmentId": "bhn2eBeBnhZcDN94c2fYEA==",
+    "startTime": "2026-09-02T16:00:00Z",
+    "endTime": "2026-09-02T17:00:00Z",
+    "bookingStatus": "Accepted",
+    "serviceTitle": "60 Min – 2:1 Semi-Private",
+    "serviceId": "xOg7td4oa4uOsuRhCSTvwA==",
+    "calendarEventId": null,
+    "amount": 50,
+    "eventType": "Appointment",
+    "onlineVsInhouse": "Booked Inhouse",
+    "appointmentTypeCode": null,
+    "appointmentTypeName": null,
+    "customerId": "LKGqjH3jCOziI3gi-QGUiQ==",
+    "bookingSource": "Booked Inhouse",
+    "serviceProviderId": "TuzDHqmtraIfkDqnIzmWHw==",
+    "businessId": "KC9blI3VkybEbxHRtAKSgw==",
+    "businessAlias": null,
+    "businessGroupId": null,
+    "serviceCategory": "Personal Training",
+    "createdDate": "2025-09-15T15:31:50.313Z",
+    "createdBy": "TuzDHqmtraIfkDqnIzmWHw==",
+    "modifiedDate": "2026-08-31T18:20:14.37Z",
+    "modifiedBy": "TuzDHqmtraIfkDqnIzmWHw==",
+    "formResponseIds": null
+  }
+}
