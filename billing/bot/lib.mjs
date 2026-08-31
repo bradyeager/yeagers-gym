@@ -258,6 +258,35 @@ const DAY_ALIASES = {
   sat: 6, saturday: 6,
 };
 
+export async function loadScheduleOverrides(csvPath) {
+  let raw;
+  try {
+    raw = await fs.readFile(csvPath, "utf8");
+  } catch (e) {
+    if (e.code === "ENOENT") return [];
+    throw e;
+  }
+  const lines = raw.split("\n").map((l) => l.trim()).filter((l) => l && !l.startsWith("#"));
+  const header = lines.shift();
+  if (!header || !header.toLowerCase().startsWith("date,")) {
+    throw new Error(`Unexpected schedule-overrides.csv header: ${header}`);
+  }
+  const headerCells = parseCsvLine(header);
+  const hasPriceOverride = headerCells[3]?.trim().toLowerCase() === "price_override";
+  const notesIdx = hasPriceOverride ? 4 : 3;
+  return lines.map((line) => {
+    const cells = parseCsvLine(line);
+    const priceRaw = hasPriceOverride ? (cells[3] || "").trim() : "";
+    return {
+      date_iso: (cells[0] || "").trim(),
+      time: (cells[1] || "").trim(),
+      client_name: (cells[2] || "").trim(),
+      price_override: priceRaw ? Number(priceRaw) : null,
+      notes: (cells[notesIdx] || "").trim(),
+    };
+  }).filter((r) => /^\d{4}-\d{2}-\d{2}$/.test(r.date_iso) && r.time && r.client_name);
+}
+
 export async function loadSchedule(csvPath) {
   let raw;
   try {
@@ -296,6 +325,27 @@ export function findScheduleEntriesForSlot(schedule, date, tz = "America/Los_Ang
   return schedule
     .filter((s) => s.day_of_week === local.dayNum && s.time === local.hhmm)
     .filter((s) => s.client_name.toUpperCase() !== "INACTIVE");
+}
+
+export function findScheduleOverrideEntriesForSlot(overrides, date, tz = "America/Los_Angeles") {
+  const local = localParts(date, tz);
+  const iso = fmtDateIsoPacific(date);
+  return overrides
+    .filter((r) => r.date_iso === iso && r.time === local.hhmm)
+    .filter((r) => r.client_name.toUpperCase() !== "INACTIVE");
+}
+
+export function hasScheduleOverrideForSlot(overrides, date, tz = "America/Los_Angeles") {
+  const local = localParts(date, tz);
+  const iso = fmtDateIsoPacific(date);
+  return overrides.some((r) => r.date_iso === iso && r.time === local.hhmm);
+}
+
+export function isInactiveScheduleOverrideSlot(overrides, date, tz = "America/Los_Angeles") {
+  const local = localParts(date, tz);
+  const iso = fmtDateIsoPacific(date);
+  return overrides.some((r) =>
+    r.date_iso === iso && r.time === local.hhmm && r.client_name.toUpperCase() === "INACTIVE");
 }
 
 export function findClientsForSlot(schedule, date, tz = "America/Los_Angeles") {
