@@ -18,7 +18,7 @@ on:
       lookback_days:
         description: "Days of history to reconcile"
         type: string
-        default: "8"
+        default: "5"
       email_style:
         description: "Email template"
         type: choice

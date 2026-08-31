@@ -271,6 +271,8 @@ test("scheduled workflow resolves to schedule + ical on the Friday-evening cron"
   assert.match(billingModeInput.slice(0, 400), /default:\s*schedule\b/);
   const sourceInput = yml.slice(yml.indexOf("appointment_source:"));
   assert.match(sourceInput.slice(0, 400), /default:\s*ical\b/);
+  const lookbackInput = yml.slice(yml.indexOf("lookback_days:"));
+  assert.match(lookbackInput.slice(0, 250), /default:\s*["']?5["']?\b/, "scheduled appointment window starts before Monday but excludes prior Friday");
 
   // Friday 9 PM PDT / 8 PM PST in San Diego.
   assert.match(yml, /- cron:\s*"0 4 \* \* 6"/);

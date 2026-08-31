@@ -2,12 +2,14 @@ date,time,client_name,price_override,notes
 # Exact-date corrections override recurring schedule.csv only for that slot.
 # Week of 2026-08-24: reconciled from Brad's cleaned Vagaro calendar screenshot.
 2026-08-24,07:00,Lacey James,70,actual session
+2026-08-24,07:00,INACTIVE,,suppress stale parallel event
 2026-08-24,08:00,INACTIVE,,no live client in cleaned calendar
 2026-08-24,09:00,Anna Cessna,50,actual 2:1 with Katelin
 2026-08-24,09:00,Katelin Lowther,50,actual 2:1 with Anna
 2026-08-24,09:00,INACTIVE,,suppress stale extra 3:1 calendar event
 2026-08-24,10:30,INACTIVE,,no live client in cleaned calendar
 2026-08-24,14:00,Celestin Mathieu,70,Kerry out; Celestin trained solo
+2026-08-24,14:00,INACTIVE,,suppress stale Kerry/parallel events
 2026-08-24,15:00,Dina Bates,70,actual 1:1; Brad confirmed attendance and $70 memo 8/24
 2026-08-24,16:00,Danny Duty,100,actual session
 2026-08-24,16:00,INACTIVE,,suppress stale parallel event

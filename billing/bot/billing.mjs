@@ -28,7 +28,7 @@ const {
   RECIPIENT_EMAIL = "brad@bradyeager.com",
   SENDER_EMAIL = "brad@yeagersgym.com",
   SENDER_NAME = "Yeager's Gym Billing Bot",
-  LOOKBACK_DAYS = "14",
+  LOOKBACK_DAYS = "5",
   PAYMENT_LOOKBACK_DAYS = "21",
   DRY_RUN = "false",
   // Phase 3: where appointments come from.
