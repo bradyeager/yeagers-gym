@@ -2373,17 +2373,38 @@
   {
     "gmail_id": "1a0344f492e83d5d",
     "matched_at": "2026-08-29T00:47:30.795Z",
+    "source_mode": "manual",
     "matched_to": {
-      "date": "2026-08-24",
+      "date": "2026-08-21",
       "client": "Lacey James",
-      "status": "PAID_VENMO"
+      "status": "PAID_VENMO",
+      "session_amount": 70
     },
     "payment": {
       "sender": "Laci James",
       "amount": 140,
       "note": "8/21 & 8/24",
       "date": "2026-08-24"
-    }
+    },
+    "corrected_by": "Brad/manual evidence 2026-08-30 - $140 memo 8/21 & 8/24 = two $70 Lacey sessions"
+  },
+  {
+    "gmail_id": "1a0344f492e83d5d",
+    "matched_at": "2026-08-29T00:47:30.795Z",
+    "source_mode": "manual",
+    "matched_to": {
+      "date": "2026-08-24",
+      "client": "Lacey James",
+      "status": "PAID_VENMO",
+      "session_amount": 70
+    },
+    "payment": {
+      "sender": "Laci James",
+      "amount": 140,
+      "note": "8/21 & 8/24",
+      "date": "2026-08-24"
+    },
+    "corrected_by": "Brad/manual evidence 2026-08-30 - $140 memo 8/21 & 8/24 = two $70 Lacey sessions"
   },
   {
     "gmail_id": "1a034b78ea8e0226",
