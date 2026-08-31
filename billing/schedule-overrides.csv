@@ -1,7 +1,40 @@
 date,time,client_name,price_override,notes
 # Exact-date corrections override recurring schedule.csv only for that slot.
-# Week of 2026-08-24: reconciled from Brad's cleaned Vagaro calendar.
-2026-08-24,09:00,Anna Cessna,45,actual Monday group seat; Dina trained separately at 15:00
-2026-08-24,09:00,Katelin Lowther,45,actual Monday group seat; Dina trained separately at 15:00
-2026-08-24,15:00,Dina Bates,70,actual 1:1 session; Brad confirmed attendance and $70 payment memo 8/24
+# Week of 2026-08-24: reconciled from Brad's cleaned Vagaro calendar screenshot.
+2026-08-24,07:00,Lacey James,70,actual session
+2026-08-24,08:00,INACTIVE,,no live client in cleaned calendar
+2026-08-24,09:00,Anna Cessna,50,actual 2:1 with Katelin
+2026-08-24,09:00,Katelin Lowther,50,actual 2:1 with Anna
+2026-08-24,09:00,INACTIVE,,suppress stale extra 3:1 calendar event
+2026-08-24,10:30,INACTIVE,,no live client in cleaned calendar
+2026-08-24,14:00,Celestin Mathieu,70,Kerry out; Celestin trained solo
+2026-08-24,15:00,Dina Bates,70,actual 1:1; Brad confirmed attendance and $70 memo 8/24
+2026-08-24,16:00,Danny Duty,100,actual session
+2026-08-24,16:00,INACTIVE,,suppress stale parallel event
+2026-08-24,17:00,Melissa Rios,100,actual session
+2026-08-24,22:00,INACTIVE,,no live client in cleaned calendar
 2026-08-25,07:00,Jacob Bain,70,actual current-week slot; missed but chargeable and covered by $190 payment
+2026-08-25,07:00,INACTIVE,,suppress stale parallel event
+2026-08-25,08:00,Peggy Happ,45,late cancel chargeable; $45 receipt names missed team training 8/25
+2026-08-25,08:00,Tonnie Dahl,45,advance cancel; no fee
+2026-08-25,08:00,Robert Brower,70,prepaid
+2026-08-25,09:00,michelle Delorenza,70,actual 1:1 session
+2026-08-25,09:00,INACTIVE,,suppress stale parallel event
+2026-08-25,16:00,INACTIVE,,no live client in cleaned calendar
+2026-08-26,07:00,Lacey James,70,actual session
+2026-08-26,09:00,Annie Deioma,70,actual 1:1 slot; payment-date memo remains review if date evidence conflicts
+2026-08-26,09:00,INACTIVE,,suppress stale parallel event
+2026-08-26,10:00,Katelin Lowther,50,actual 2:1 with Rachel; attendance/payment requires reconciliation
+2026-08-26,10:00,Rachel Bertholino,50,actual 2:1 with Katelin
+2026-08-26,16:00,Emmanuel Delorenza,70,actual 1:1; bank/Zelle payment posted 8/27
+2026-08-26,17:00,INACTIVE,,no live client in cleaned calendar
+2026-08-27,06:30,INACTIVE,,Stacy actual slot was 7:00 this week
+2026-08-27,07:00,Stacy Tesler CPY,70,late cancel chargeable; Zelle not found after bank refresh
+2026-08-27,07:00,INACTIVE,,suppress stale Danika/parallel event; Danika out this week
+2026-08-27,09:00,Tonnie Dahl,70,actual Thursday 1:1
+2026-08-27,10:00,Robert Brower,70,prepaid
+2026-08-27,11:00,Celestin Mathieu,70,trained solo
+2026-08-28,06:30,INACTIVE,,Lacey session canceled by Brad
+2026-08-28,07:30,Peggy Happ,70,Jeanette absent; Peggy late-cancel solo-rate exposure, already paid $70
+2026-08-28,07:30,INACTIVE,,suppress Jeanette/stale partner event
+2026-08-28,08:30,INACTIVE,,no live client in cleaned calendar
