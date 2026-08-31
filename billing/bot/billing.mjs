@@ -31,6 +31,7 @@ const {
   LOOKBACK_DAYS = "14",
   PAYMENT_LOOKBACK_DAYS = "21",
   DRY_RUN = "false",
+  BILLING_AS_OF = "", // preview/replay only; production schedule leaves blank
   // Phase 3: where appointments come from.
   //   "ical"          (default) — legacy Vagaro iCal feed via schedule.csv.
   //   "vagaro-events"           — read billing/vagaro-events/*.json (live webhook).
@@ -56,7 +57,8 @@ const {
 } = process.env;
 
 const LOOKBACK_MS = Number(LOOKBACK_DAYS) * 24 * 60 * 60 * 1000;
-const NOW = new Date();
+const NOW = BILLING_AS_OF ? new Date(BILLING_AS_OF) : new Date();
+if (Number.isNaN(NOW.getTime())) throw new Error(`Invalid BILLING_AS_OF: ${BILLING_AS_OF}`);
 const WINDOW_START = new Date(NOW.getTime() - LOOKBACK_MS);
 // Payment-driven "this week" money-in window: the 7 days ending at the run.
 const PD_WINDOW_DAYS = 7;
@@ -2507,7 +2509,8 @@ async function main() {
   const schedulePriorMatches = trustedScheduleLedger(priorMatches, paymentDrivenRunDates);
   const evidenceOnlyCount = priorMatches.length - schedulePriorMatches.length;
   console.log(`Loaded ${clients.length} clients, ${schedule.length} schedule rows, ${scheduleOverrides.length} date-specific overrides, ${cashLog.length} cash entries, ${externalUnpaid.length} verified external unpaid, ${cancellations.length} cancellations, ${priorMatches.length} prior matches (${evidenceOnlyCount} payment-driven evidence-only)`);
-  console.log(`Found ${rawSlots.length} slots, ${payments.length} Venmo payments`);
+  const paymentsThroughNow = payments.filter((p) => new Date(p.date) <= NOW);
+  console.log(`Found ${rawSlots.length} slots, ${paymentsThroughNow.length} Venmo payments through ${NOW.toISOString()} (${payments.length - paymentsThroughNow.length} future-to-preview excluded)`);
 
   // FIX 1 — in events mode, each Vagaro appointment event is already ONE
   // attendee with a Vagaro-resolved client_name + price. Do NOT route through
@@ -2521,7 +2524,7 @@ async function main() {
   const unidentified = appointments.length - identified;
   console.log(`Appointment resolution: ${identified} identified + ${unidentified} unidentified`);
 
-  const { results, unmatchedPayments, newMatches, allocations } = reconcile(appointments, payments, clients, cashLog, cancellations, schedulePriorMatches, externalUnpaid);
+  const { results, unmatchedPayments, newMatches, allocations } = reconcile(appointments, paymentsThroughNow, clients, cashLog, cancellations, schedulePriorMatches, externalUnpaid);
   console.log(`Reconciled ${newMatches.length} new payment match${newMatches.length === 1 ? "" : "es"} for the ledger.`);
   if (DRY_RUN !== "true") {
     await saveMatchedLedger(REPO_ROOT, [...priorMatches, ...newMatches]);
@@ -2548,7 +2551,7 @@ async function main() {
   } else {
     ({ subject, html } = buildEmail({ results, unmatchedPayments: unmatchedInWindow }));
   }
-  const { file: logFile, counts: logCounts } = await writeLog({ appointments, payments, results, unmatchedPayments });
+  const { file: logFile, counts: logCounts } = await writeLog({ appointments, payments: paymentsThroughNow, results, unmatchedPayments });
   console.log(`Wrote log: ${logFile}`);
   // Dump log to console for easy review (dry-run never commits the file).
   console.log("\n=== LOG FILE CONTENTS ===");
