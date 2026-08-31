@@ -206,16 +206,15 @@ export function buildMoneyLine({ results, unmatchedPayments, now, windowStart, c
       const received = r.payment?.amount ?? null;
       const requestBtn = handle && isUnp ? btnPink({ href: `https://venmo.com/${handle}?txn=charge&amount=${expected}&note=Training%20${encodeURIComponent(fmtDateIsoPacific(r.appt.date))}`, label: `Request ${money(expected)} on Venmo` }) : "";
       const logBtn = isUnp ? btnTeal({ href: cashHref(r.appt.date, name, expected), label: "Log as cash" }) : "";
-      items.push({ priority: 1, type: isUnp ? "Unpaid (carryover)" : "Review (carryover)", accent: isUnp ? T.unpaid : T.review, client: name, when: fmtShort(r.appt.date) + " · " + timeOf(r.appt.date), expected, received, method: r.payment ? "Venmo" : null, issue: "Carried over from a prior week — clear first.", fix: isUnp ? (handle ? "Send a Venmo request, or accept as cash if collected." : "No Venmo handle on file. Log as cash if collected, or add the handle to clients.csv.") : "Review the amount mismatch; accept or chase the balance.", action: requestBtn + logBtn });
+      items.push({ priority: 1, type: isUnp ? "Unpaid (carryover)" : "Review (carryover)", accent: isUnp ? T.unpaid : T.review, client: name, when: fmtShort(r.appt.date) + " · " + timeOf(r.appt.date), expected, received, method: r.payment ? "Venmo" : null, issue: "Carried over from a prior week — clear first.", fix: isUnp ? (handle ? "Send a Venmo request, or accept as cash if collected." : "No Venmo handle on file. Log as cash if collected, or add the handle to clients.csv.") : "Review only; do not request until the evidence is confirmed.", action: requestBtn + logBtn });
     }
     for (const r of cats.review) {
-      const handle = r.roster?.venmo_handle;
       const expected = r.checkoutAmount ?? r.expectedPrice ?? r.roster?.default_price;
       const received = r.payment?.amount ?? null;
-      const delta = received != null && expected != null ? received - expected : null;
-      const shortBy = delta != null && delta < 0 ? -delta : null;
-      const action = shortBy && handle ? btnPink({ href: `https://venmo.com/${handle}?txn=charge&amount=${shortBy}&note=${encodeURIComponent("Balance for " + fmtDateIsoPacific(r.appt.date))}`, label: `Request ${money(shortBy)} balance` }) : "";
-      items.push({ priority: 2, type: "Payment Mismatch", accent: T.review, client: r.roster?.vagaro_name, when: fmtShort(r.appt.date) + " · " + timeOf(r.appt.date), expected, received, method: "Venmo", issue: `Received ${money(received)} but expected ${money(expected)}.`, fix: shortBy ? `Request the ${money(shortBy)} balance, or accept as paid in full.` : "Eyeball — could be a tip or smoothie add-on.", action });
+      const issue = r.note || (received != null
+        ? `Payment evidence is unresolved: received ${money(received)} against expected ${money(expected)}.`
+        : "Attendance, reschedule, or payment allocation is not yet confirmed.");
+      items.push({ priority: 2, type: "Review - Do Not Request", accent: T.review, client: r.roster?.vagaro_name, when: fmtShort(r.appt.date) + " | " + timeOf(r.appt.date), expected, received, method: received != null ? "Venmo" : null, issue, fix: "Verify the evidence first. A review item is not a receivable and has no request button.", action: "" });
     }
     for (const r of cats.cashPending) {
       const notes = (r.roster?.notes || "").toLowerCase();
@@ -314,37 +313,35 @@ export function buildMoneyLine({ results, unmatchedPayments, now, windowStart, c
   const actionsCount = cats.unpaid.length + cats.review.length + cats.cashPending.length + cats.lagging.length + cats.unidentified.length + cats.unknown.length;
 
   const venmoCollected = cats.paidVenmo.reduce((s, r) => s + (r.payment?.amount || 0), 0);
-  const outstanding =
-    [...cats.unpaid, ...cats.lagging.filter((r) => r.status === "UNPAID")].reduce((s, r) => s + (r.checkoutAmount ?? r.expectedPrice ?? r.roster?.default_price ?? 0), 0)
-    + [...cats.review, ...cats.lagging.filter((r) => r.status === "NEEDS_REVIEW")].reduce((s, r) => {
-      const exp = r.checkoutAmount ?? r.expectedPrice ?? r.roster?.default_price ?? 0;
-      const got = r.payment?.amount ?? 0;
-      return s + Math.max(0, exp - got);
-    }, 0);
+  // Only firm UNPAID rows are receivables. NEEDS_REVIEW means the evidence is
+  // unresolved (attendance, reschedule, allocation, rate, etc.) and must never
+  // inflate the money Brad is told to collect.
+  const confirmedDue = [...cats.unpaid, ...cats.lagging.filter((r) => r.status === "UNPAID")]
+    .reduce((s, r) => s + (r.checkoutAmount ?? r.expectedPrice ?? r.roster?.default_price ?? 0), 0);
 
   let level, verdict, nextMove;
   if (unpaidCount > 0) {
     level = "red";
-    verdict = `${money(outstanding)} is still on the table. Go get it.`;
-    nextMove = `${unpaidCount} unpaid${reviewCount ? `, ${reviewCount} to review` : ""} — fire the pink requests in The Chase List.`;
+    verdict = `${money(confirmedDue)} confirmed due.`;
+    nextMove = `${unpaidCount} confirmed unpaid${reviewCount ? `, ${reviewCount} to review` : ""}. Review items are not debt; do not request them until confirmed.`;
   } else if (reviewCount || cats.cashPending.length || unidCount) {
     level = "yellow";
     const loose = [];
-    if (reviewCount) loose.push(`${reviewCount} mismatch${reviewCount === 1 ? "" : "es"}`);
-    if (cats.cashPending.length) loose.push(`${cats.cashPending.length} payment${cats.cashPending.length === 1 ? "" : "s"} to verify`);
+    if (reviewCount) loose.push(`${reviewCount} review${reviewCount === 1 ? "" : "s"}`);
+    if (cats.cashPending.length) loose.push(`${cats.cashPending.length} external payment${cats.cashPending.length === 1 ? "" : "s"} to verify`);
     if (unidCount) loose.push(`${unidCount} unidentified`);
-    verdict = `Money's all in. ${loose.join(", ")} to clear, then you're done.`;
-    nextMove = "Verify the external payments and eyeball the mismatches below.";
+    verdict = `No confirmed receivable. ${loose.join(", ")} to clear.`;
+    nextMove = "Resolve the evidence below. Do not send a request from a review card.";
   } else {
     level = "green";
-    verdict = `All square. ${money(venmoCollected)} in, nothing out.`;
+    verdict = `All square. ${money(venmoCollected)} in, nothing confirmed due.`;
     nextMove = "Run The Playbook to check this week's sessions out in Vagaro.";
   }
   const statusColor = level === "red" ? T.unpaid : level === "yellow" ? T.review : T.paid;
 
   const weekEnding = fmtDate(now);
   const subject = `Weekly billing — week ending ${weekEnding} — ${unpaidCount} unpaid, ${reviewCount} review`;
-  const preheader = `${money(venmoCollected)} in · ${money(outstanding)} out · ${actionsCount} action item${actionsCount === 1 ? "" : "s"}`;
+  const preheader = `${money(venmoCollected)} in | ${money(confirmedDue)} confirmed due | ${actionsCount} action item${actionsCount === 1 ? "" : "s"}`;
 
   // ── record strip (paid · unpaid · review · unidentified) ──
   const recPart = (n, label, color) =>
@@ -497,7 +494,7 @@ export function buildMoneyLine({ results, unmatchedPayments, now, windowStart, c
             <div style="margin-bottom:14px;">${micro("The Money Line · Week ending " + esc(weekEnding), T.muted, "0.16em")}</div>
             <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr>
               ${moneyStat("Collected", money(venmoCollected), T.numIn, T.inGlow, false)}
-              ${moneyStat("Outstanding", money(outstanding), outstanding > 0 ? T.numOut : T.dim, outstanding > 0 ? T.outGlow : "", true)}
+              ${moneyStat("Confirmed Due", money(confirmedDue), confirmedDue > 0 ? T.numOut : T.dim, confirmedDue > 0 ? T.outGlow : "", true)}
             </tr></table>
             <div style="margin-top:16px;padding-top:14px;border-top:1px dashed ${T.hair};">${recordStrip}</div>
           </td></tr>

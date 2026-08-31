@@ -1500,22 +1500,14 @@ export function buildEmail({ results, unmatchedPayments, now = NOW, windowStart 
 
   const reviewCard = (r) => {
     const expected = r.expectedPrice || r.roster?.default_price || 0;
-    const received = r.payment?.amount || 0;
+    const received = r.payment?.amount ?? null;
     const name = r.roster.vagaro_name;
-    const handle = r.roster?.venmo_handle;
-    const short = shortfall(r);
-    let inner = `<div style="font-family:${FONTS.body};font-size:13px;color:${PALETTE.textPrimary};margin-bottom:4px;"><strong>${escapeHtml(name)}</strong> — ${fmtDate(r.appt.date)}</div>`;
-    inner += `<div style="font-family:${FONTS.display};font-size:12px;color:${PALETTE.textMuted};margin-bottom:10px;">Expected $${expected} · received $${received}${r.payment?.note ? ` · "${escapeHtml(r.payment.note)}"` : ""}${short > 0 ? ` · short $${short}` : received > expected ? ` · over $${received - expected}` : ""}</div>`;
-    // Only actionable button: request the shortfall via Venmo (no GitHub).
-    if (short > 0 && handle) {
-      inner += `<div>` + button({
-        href: venmoRequestLink(handle, short, `Balance from training ${fmtDate(r.appt.date)} — Yeager's Gym`),
-        label: `Request $${short} balance`,
-        color: "pink",
-      }) + `</div>`;
-    } else {
-      inner += `<div style="font-family:${FONTS.display};font-size:11px;color:${PALETTE.textDim};">Eyeball only — no action needed if this looks right.</div>`;
+    let inner = `<div style="font-family:${FONTS.body};font-size:13px;color:${PALETTE.textPrimary};margin-bottom:4px;"><strong>${escapeHtml(name)}</strong> | ${fmtDate(r.appt.date)} | REVIEW, DO NOT REQUEST</div>`;
+    if (received != null) {
+      inner += `<div style="font-family:${FONTS.display};font-size:12px;color:${PALETTE.textMuted};margin-bottom:8px;">Expected $${expected} | payment evidence $${received}${r.payment?.note ? ` | "${escapeHtml(r.payment.note)}"` : ""}</div>`;
     }
+    inner += `<div style="font-family:${FONTS.display};font-size:12px;color:${PALETTE.textMuted};margin-bottom:8px;">${escapeHtml(r.note || "Attendance, reschedule, rate, or allocation is not yet confirmed.")}</div>`;
+    inner += `<div style="font-family:${FONTS.display};font-size:11px;color:${PALETTE.textDim};">Verify the evidence first. Review items are not receivables and intentionally have no request button.</div>`;
     return card(inner, "teal");
   };
 
@@ -1633,7 +1625,7 @@ export function buildEmail({ results, unmatchedPayments, now = NOW, windowStart 
     if (r.status === "PAID_VENMO") return { icon: "&#9989;", red: false, tag: r.inferred ? " (moved)" : "" };
     if (r.status === "PAID_CASH") return { icon: "&#9989;", red: false, tag: " (cash)" };
     if (r.status === "PAID_PREPAID") return { icon: "&#9989;", red: false, tag: " (prepaid)" };
-    if (r.status === "NEEDS_REVIEW") return { icon: "&#9989;", red: false, tag: ` (review &#183; $${r.payment?.amount})` };
+    if (r.status === "NEEDS_REVIEW") return { icon: "&#9203;", red: false, tag: r.payment?.amount != null ? ` (review &#183; payment $${r.payment.amount})` : " (review)" };
     if (r.status === "CASH_PENDING") return { icon: "&#9203;", red: false, tag: ` (${escapeHtml(paymentMethodHint(r.roster))})` };
     if (r.status === "UNPAID") return { icon: "&#10060;", red: true, tag: "" };
     if (r.status === "UNIDENTIFIED_SLOT") return { icon: "&#10067;", red: true, tag: ` &#183; ${escapeHtml(r.appt.summary || "unknown")}` };
@@ -1672,13 +1664,12 @@ export function buildEmail({ results, unmatchedPayments, now = NOW, windowStart 
   // ── WEEK LEDGER — the two numbers Brad cares about most ──
   // Venmo collected = actual $ that hit Venmo for matched sessions this run.
   // Outstanding = money owed but not yet in (unpaid sessions + short balances).
+  // Confirmed due is firm UNPAID only. Review exposure is deliberately not
+  // receivable dollars; uncertainty must never become a collection amount.
   const venmoCollected = paidVenmo.reduce((s, r) => s + (r.payment?.amount || 0), 0);
-  const outstanding =
-    [...unpaid, ...lagging.filter((r) => r.status === "UNPAID")]
-      .reduce((s, r) => s + (r.checkoutAmount ?? r.expectedPrice ?? r.roster?.default_price ?? 0), 0)
-    + [...review, ...lagging.filter((r) => r.status === "NEEDS_REVIEW")]
-      .reduce((s, r) => s + Math.max(0, shortfall(r)), 0);
-  const outColor = outstanding > 0 ? PALETTE.pink : PALETTE.teal;
+  const confirmedDue = [...unpaid, ...lagging.filter((r) => r.status === "UNPAID")]
+    .reduce((s, r) => s + (r.checkoutAmount ?? r.expectedPrice ?? r.roster?.default_price ?? 0), 0);
+  const outColor = confirmedDue > 0 ? PALETTE.pink : PALETTE.teal;
   body += `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="${PALETTE.bgPanel}" style="background-color:${PALETTE.bgPanel};border:1px solid ${PALETTE.border};border-radius:12px;margin-top:26px;">`
     + `<tr><td colspan="2" bgcolor="${PALETTE.teal}" height="4" style="height:4px;line-height:4px;font-size:0;background:${NEON_GRADIENT};">&nbsp;</td></tr>`
     + `<tr>`
@@ -1686,8 +1677,8 @@ export function buildEmail({ results, unmatchedPayments, now = NOW, windowStart 
       + `<div style="font-family:${FONTS.display};font-size:11px;color:${PALETTE.textMuted};">Venmo Collected This Week</div>`
       + `<div style="font-family:${FONTS.display};font-size:30px;font-weight:800;color:${PALETTE.teal};margin-top:8px;">$${venmoCollected.toLocaleString()}</div></td>`
     + `<td width="50%" valign="top" style="padding:18px 20px;">`
-      + `<div style="font-family:${FONTS.display};font-size:11px;color:${PALETTE.textMuted};">Outstanding — Not Yet In</div>`
-      + `<div style="font-family:${FONTS.display};font-size:30px;font-weight:800;color:${outColor};margin-top:8px;">$${outstanding.toLocaleString()}</div></td>`
+      + `<div style="font-family:${FONTS.display};font-size:11px;color:${PALETTE.textMuted};">Confirmed Due</div>`
+      + `<div style="font-family:${FONTS.display};font-size:30px;font-weight:800;color:${outColor};margin-top:8px;">$${confirmedDue.toLocaleString()}</div></td>`
     + `</tr></table>`;
 
   // ── VAGARO CHECKOUT PROMPT — auto-generated for Claude for Chrome ──
