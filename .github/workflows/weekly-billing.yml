@@ -2,13 +2,13 @@ name: Weekly billing reconciliation
 
 on:
   schedule:
-    # Saturdays at 04:00 UTC = Friday 9 PM PDT (summer) / Friday 8 PM PST
+    # Saturdays at 04:17 UTC = Friday 9:17 PM PDT (summer) / Friday 8:17 PM PST
     # (winter) in San Diego. Runs Friday EVENING so payments made during and
     # after Friday's sessions are already in Gmail when the bot reconciles —
     # the old Friday-morning slot missed them and chased clients who had paid.
     # GitHub Actions cron runs in UTC with no DST awareness; the 1-hour
     # winter shift is acceptable.
-    - cron: "0 4 * * 6"
+    - cron: "17 4 * * 6"
   workflow_dispatch:
     inputs:
       dry_run:
