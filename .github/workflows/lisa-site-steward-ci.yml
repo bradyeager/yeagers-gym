@@ -1,0 +1,82 @@
+name: LISA Website Steward Validation
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    if: startsWith(github.head_ref, 'lisa/site/')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Validate bounded website edit
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --name-only "${{ github.event.pull_request.base.sha }}...${{ github.event.pull_request.head.sha }}" > /tmp/changed.txt
+          git diff -U0 "${{ github.event.pull_request.base.sha }}...${{ github.event.pull_request.head.sha }}" > /tmp/patch.diff
+          python3 - <<'PY'
+          from pathlib import Path
+          import re, sys
+
+          changed = [x.strip() for x in Path('/tmp/changed.txt').read_text().splitlines() if x.strip()]
+          if not changed:
+              raise SystemExit('no changed files')
+          if len(changed) > 10:
+              raise SystemExit(f'too many files for standing stewardship authority: {len(changed)} > 10')
+
+          denied_prefixes = (
+              '.github/', '.claude/', '_backend/', 'billing/', 'athletes/', 'lisa/', 'michelle/',
+              'scripts/', 'vagaro-webhook/', 'CLAUDE OUTPUTS/'
+          )
+          denied_exact = {
+              'AGENTS.md','CLAUDE.md','CNAME','_config.yml','.gitignore','brevo.js','robots.txt','sitemap.xml',
+              'peptide-consulting.html','tools-peptide.html'
+          }
+          media_ext = {'.png','.jpg','.jpeg','.webp','.gif','.svg','.pdf'}
+
+          def allowed(path):
+              if path in denied_exact or path.startswith(denied_prefixes):
+                  return False
+              p = Path(path)
+              if '/' not in path and (p.suffix == '.html' or path in {'base.css','style.css'}):
+                  return True
+              if path.startswith(('assets/','assets-ai/','assets-realistic/')) and p.suffix.lower() in media_ext:
+                  return True
+              return False
+
+          bad = [p for p in changed if not allowed(p)]
+          if bad:
+              raise SystemExit('outside LISA website-steward scope: ' + ', '.join(bad))
+
+          for p in changed:
+              f = Path(p)
+              if f.suffix.lower() == '.html' and f.exists():
+                  text = f.read_text(errors='replace')
+                  if '<html' not in text.lower() or '</html>' not in text.lower():
+                      raise SystemExit(f'{p}: malformed page shell')
+                  if '<<<<<<<' in text or '>>>>>>>' in text:
+                      raise SystemExit(f'{p}: merge conflict marker present')
+
+          patch = Path('/tmp/patch.diff').read_text(errors='replace').splitlines()
+          delta = [ln[1:] for ln in patch if (ln.startswith('+') or ln.startswith('-')) and not ln.startswith(('+++','---'))]
+          joined = '\n'.join(delta)
+          if re.search(r'github_pat_|-----BEGIN [A-Z ]*PRIVATE KEY-----|SUPABASE_SERVICE_ROLE', joined, re.I):
+              raise SystemExit('possible credential material in changed lines')
+          if re.search(r'\bPerplexity\b', '\n'.join(ln[1:] for ln in patch if ln.startswith('+') and not ln.startswith('+++')), re.I):
+              raise SystemExit('AI attribution is forbidden on the public site')
+          if re.search(r'#1EC8B0|#F0448A', joined, re.I):
+              raise SystemExit('retired brand color touched')
+          if any(re.search(r'--color-(teal|pink|purple)|--font-display|\.section-label', ln, re.I) for ln in delta):
+              raise SystemExit('protected brand/design token touched; Brad approval required')
+          if any(re.search(r'hero', ln, re.I) and re.search(r'src\s*=|background(?:-image)?\s*:', ln, re.I) for ln in delta):
+              raise SystemExit('hero image selection touched; Brad approval required')
+
+          print('LISA website-steward scope validated:', ', '.join(changed))
+          PY
