@@ -2671,6 +2671,247 @@
     }
   },
   {
+    "gmail_id": "1a058d8e22b8072c",
+    "matched_at": "2026-09-12T08:38:26.127Z",
+    "source_mode": "schedule",
+    "matched_to": {
+      "date": "2026-09-07",
+      "client": "Anna Cessna",
+      "status": "PAID_VENMO"
+    },
+    "payment": {
+      "sender": "Anna Cessna",
+      "amount": 50,
+      "note": "Aug 31, 2026",
+      "date": "2026-08-31"
+    }
+  },
+  {
+    "gmail_id": "1a05db7580abfc37",
+    "matched_at": "2026-09-12T08:38:26.116Z",
+    "source_mode": "schedule",
+    "matched_to": {
+      "date": "2026-09-07",
+      "client": "Jacob Bain",
+      "status": "PAID_VENMO"
+    },
+    "payment": {
+      "sender": "Jacob Bain",
+      "amount": 70,
+      "note": "01Sep",
+      "date": "2026-09-01"
+    }
+  },
+  {
+    "gmail_id": "1a0637ecd2b50e23",
+    "matched_at": "2026-09-12T08:38:26.147Z",
+    "source_mode": "schedule",
+    "matched_to": {
+      "date": "2026-09-08",
+      "client": "Celestin Mathieu",
+      "status": "NEEDS_REVIEW"
+    },
+    "payment": {
+      "sender": "Celestin Mathieu",
+      "amount": 120,
+      "note": "Rachael then mathieu",
+      "date": "2026-09-02"
+    }
+  },
+  {
+    "gmail_id": "1a067d51f250a6e8",
+    "matched_at": "2026-09-12T08:38:26.108Z",
+    "source_mode": "schedule",
+    "matched_to": {
+      "date": "2026-09-04",
+      "client": "Lacey James",
+      "status": "PAID_VENMO"
+    },
+    "payment": {
+      "sender": "Laci James",
+      "amount": 70,
+      "note": "Sep 03, 2026",
+      "date": "2026-09-03"
+    }
+  },
+  {
+    "gmail_id": "1a06866a47beb33a",
+    "matched_at": "2026-09-12T08:38:26.113Z",
+    "source_mode": "schedule",
+    "matched_to": {
+      "date": "2026-09-04",
+      "client": "Peggy Happ",
+      "status": "NEEDS_REVIEW"
+    },
+    "payment": {
+      "sender": "Peggy Barlow Happ",
+      "amount": 90,
+      "note": "Team training-2 hours",
+      "date": "2026-09-03"
+    }
+  },
+  {
+    "gmail_id": "1a079a5d64672cce",
+    "matched_at": "2026-09-12T08:38:26.120Z",
+    "source_mode": "schedule",
+    "matched_to": {
+      "date": "2026-09-07",
+      "client": "michelle Delorenza",
+      "status": "PAID_VENMO"
+    },
+    "payment": {
+      "sender": "Michelle DeLorenzo",
+      "amount": 70,
+      "note": "Thank you",
+      "date": "2026-09-07"
+    }
+  },
+  {
+    "gmail_id": "1a07e8187ac48861",
+    "matched_at": "2026-09-12T08:38:26.137Z",
+    "source_mode": "schedule",
+    "matched_to": {
+      "date": "2026-09-07",
+      "client": "Celestin Mathieu",
+      "status": "PAID_VENMO"
+    },
+    "payment": {
+      "sender": "Celestin Mathieu",
+      "amount": 50,
+      "note": "Mathieu",
+      "date": "2026-09-08"
+    }
+  },
+  {
+    "gmail_id": "1a0814ad293dc17d",
+    "matched_at": "2026-09-12T08:38:26.154Z",
+    "source_mode": "schedule",
+    "matched_to": {
+      "date": "2026-09-08",
+      "client": "Tonnie Dahl",
+      "status": "PAID_VENMO"
+    },
+    "payment": {
+      "sender": "Tonnie Dahl",
+      "amount": 45,
+      "note": "Thank You",
+      "date": "2026-09-08"
+    }
+  },
+  {
+    "gmail_id": "1a08188a9f55db84",
+    "matched_at": "2026-09-12T08:38:26.150Z",
+    "source_mode": "schedule",
+    "matched_to": {
+      "date": "2026-09-08",
+      "client": "Peggy Happ",
+      "status": "PAID_VENMO"
+    },
+    "payment": {
+      "sender": "Peggy Barlow Happ",
+      "amount": 50,
+      "note": "Missed session 9/8/26.",
+      "date": "2026-09-08"
+    }
+  },
+  {
+    "gmail_id": "1a086af3aa8c037c",
+    "matched_at": "2026-09-12T08:38:26.185Z",
+    "source_mode": "schedule",
+    "matched_to": {
+      "date": "2026-09-07",
+      "client": "Lacey James",
+      "status": "PAID_VENMO",
+      "inferred": true
+    },
+    "payment": {
+      "sender": "Laci James",
+      "amount": 140,
+      "note": "9/7 & 9/9",
+      "date": "2026-09-09"
+    }
+  },
+  {
+    "gmail_id": "1a087206c60380d6",
+    "matched_at": "2026-09-12T08:38:26.161Z",
+    "source_mode": "schedule",
+    "matched_to": {
+      "date": "2026-09-09",
+      "client": "Annie Deioma",
+      "status": "PAID_VENMO"
+    },
+    "payment": {
+      "sender": "Annie Deioma",
+      "amount": 75,
+      "note": "Strength",
+      "date": "2026-09-09"
+    }
+  },
+  {
+    "gmail_id": "1a0887f69089e6de",
+    "matched_at": "2026-09-12T08:38:26.158Z",
+    "source_mode": "schedule",
+    "matched_to": {
+      "date": "2026-09-09",
+      "client": "Rachel Bertholino",
+      "status": "PAID_VENMO"
+    },
+    "payment": {
+      "sender": "Celestin Mathieu",
+      "amount": 50,
+      "note": "Rachael",
+      "date": "2026-09-09"
+    }
+  },
+  {
+    "gmail_id": "1a08ca60fcb3dcde",
+    "matched_at": "2026-09-12T08:38:26.165Z",
+    "source_mode": "schedule",
+    "matched_to": {
+      "date": "2026-09-10",
+      "client": "Danny Duty",
+      "status": "PAID_VENMO"
+    },
+    "payment": {
+      "sender": "Adriana Duty",
+      "amount": 100,
+      "note": "Missed session 9/10",
+      "date": "2026-09-10"
+    }
+  },
+  {
+    "gmail_id": "1a090ff26217d8cb",
+    "matched_at": "2026-09-12T08:38:26.178Z",
+    "source_mode": "schedule",
+    "matched_to": {
+      "date": "2026-09-11",
+      "client": "Lacey James",
+      "status": "PAID_VENMO"
+    },
+    "payment": {
+      "sender": "Laci James",
+      "amount": 70,
+      "note": "9/11",
+      "date": "2026-09-11"
+    }
+  },
+  {
+    "gmail_id": "1a09150049789158",
+    "matched_at": "2026-09-12T08:38:26.183Z",
+    "source_mode": "schedule",
+    "matched_to": {
+      "date": "2026-09-11",
+      "client": "Peggy Happ",
+      "status": "PAID_VENMO"
+    },
+    "payment": {
+      "sender": "Peggy Barlow Happ",
+      "amount": 70,
+      "note": "Solo training 9/11/26",
+      "date": "2026-09-11"
+    }
+  },
+  {
     "gmail_id": "backfill-0369ec01a3294782",
     "matched_at": "2026-05-27T00:00:00Z",
     "matched_to": {
