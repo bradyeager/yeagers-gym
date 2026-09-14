@@ -1,0 +1,32 @@
+{
+  "id": "f1fe4eff-7e99-4b0d-9e0b-3924ffd191f2",
+  "createdDate": "2026-09-14T01:46:59.4058116Z",
+  "type": "appointment",
+  "action": "updated",
+  "payload": {
+    "appointmentId": "1nzy6-k1IiOcsZeHh0zSEg==",
+    "startTime": "2026-09-19T00:30:00Z",
+    "endTime": "2026-09-19T01:00:00Z",
+    "bookingStatus": "Accepted",
+    "serviceTitle": "Monthly Remote Programming",
+    "serviceId": "aWx-8~1m-5BcJ2Eh7Z73Hg==",
+    "calendarEventId": null,
+    "amount": 60,
+    "eventType": "Appointment",
+    "onlineVsInhouse": "Booked Inhouse",
+    "appointmentTypeCode": null,
+    "appointmentTypeName": null,
+    "customerId": "nWIwNPscDRrYtEPClDIpzQ==",
+    "bookingSource": "Booked Inhouse",
+    "serviceProviderId": "TuzDHqmtraIfkDqnIzmWHw==",
+    "businessId": "KC9blI3VkybEbxHRtAKSgw==",
+    "businessAlias": null,
+    "businessGroupId": null,
+    "serviceCategory": "Online Programming",
+    "createdDate": "2026-08-31T01:22:59.51Z",
+    "createdBy": "TuzDHqmtraIfkDqnIzmWHw==",
+    "modifiedDate": "2026-09-14T01:46:59.107Z",
+    "modifiedBy": "TuzDHqmtraIfkDqnIzmWHw==",
+    "formResponseIds": null
+  }
+}
