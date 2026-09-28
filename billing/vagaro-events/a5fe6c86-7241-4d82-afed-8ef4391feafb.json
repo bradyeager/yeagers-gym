@@ -1,0 +1,32 @@
+{
+  "id": "a5fe6c86-7241-4d82-afed-8ef4391feafb",
+  "createdDate": "2026-09-28T03:29:14.8580958Z",
+  "type": "appointment",
+  "action": "created",
+  "payload": {
+    "appointmentId": "Gt772py-ERysSA8cSfvNrg==",
+    "startTime": "2026-09-30T00:15:00Z",
+    "endTime": "2026-09-30T00:45:00Z",
+    "bookingStatus": "Accepted",
+    "serviceTitle": "FREE TRIAL SESSION!",
+    "serviceId": "CeEXlVE1JSMkdYKAYRwUBQ==",
+    "calendarEventId": null,
+    "amount": 0,
+    "eventType": "Appointment",
+    "onlineVsInhouse": "Booked Inhouse",
+    "appointmentTypeCode": null,
+    "appointmentTypeName": null,
+    "customerId": "IuSzK3rVFbf4rlZ1TysPTg==",
+    "bookingSource": "Booked Inhouse",
+    "serviceProviderId": "TuzDHqmtraIfkDqnIzmWHw==",
+    "businessId": "KC9blI3VkybEbxHRtAKSgw==",
+    "businessAlias": null,
+    "businessGroupId": null,
+    "serviceCategory": "Personal Training",
+    "createdDate": "2026-09-28T03:29:14.56Z",
+    "createdBy": "TuzDHqmtraIfkDqnIzmWHw==",
+    "modifiedDate": null,
+    "modifiedBy": null,
+    "formResponseIds": null
+  }
+}
