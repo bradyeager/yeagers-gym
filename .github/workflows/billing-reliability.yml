@@ -1,0 +1,33 @@
+name: Billing and webhook reliability
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'billing/bot/**'
+      - 'vagaro-webhook/**'
+      - '.github/workflows/weekly-billing.yml'
+      - '.github/workflows/billing-reliability.yml'
+  pull_request:
+    paths:
+      - 'billing/bot/**'
+      - 'vagaro-webhook/**'
+      - '.github/workflows/weekly-billing.yml'
+      - '.github/workflows/billing-reliability.yml'
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '20'
+      - name: Install locked dependencies
+        working-directory: billing/bot
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Test billing without sending
+        working-directory: billing/bot
+        run: npm test
+      - name: Test webhook with mock storage
+        run: node --test vagaro-webhook/webhook.test.mjs
