@@ -1,0 +1,41 @@
+{
+  "id": "00cd08a9-9cb8-4ebf-aabb-94ecd2701c7e",
+  "createdDate": "2026-10-01T03:58:12.7475443Z",
+  "type": "appointment",
+  "action": "updated",
+  "payload": {
+    "appointmentId": "cqF2bsoVwEgc55rLqGEFkQ==",
+    "startTime": "2025-08-21T20:00:00Z",
+    "endTime": "2025-08-21T21:00:00Z",
+    "bookingStatus": null,
+    "serviceTitle": null,
+    "serviceId": null,
+    "calendarEventId": null,
+    "amount": null,
+    "eventType": "PersonalOff",
+    "onlineVsInhouse": null,
+    "appointmentTypeCode": null,
+    "appointmentTypeName": null,
+    "customerId": null,
+    "bookingSource": null,
+    "serviceProviderId": "TuzDHqmtraIfkDqnIzmWHw==",
+    "businessId": "KC9blI3VkybEbxHRtAKSgw==",
+    "businessAlias": null,
+    "businessGroupId": null,
+    "serviceCategory": null,
+    "createdDate": "2025-08-14T12:42:42.19Z",
+    "createdBy": "TuzDHqmtraIfkDqnIzmWHw==",
+    "modifiedDate": "2026-10-01T03:58:12.56Z",
+    "modifiedBy": "TuzDHqmtraIfkDqnIzmWHw==",
+    "recurrence": {
+      "recurringRuleId": "cqF2bsoVwEgc55rLqGEFkQ==",
+      "type": "weekly",
+      "interval": "1",
+      "dayofweek": [
+        "Thursday"
+      ],
+      "endDate": null
+    },
+    "formResponseIds": null
+  }
+}
