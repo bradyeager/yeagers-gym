@@ -20,3 +20,23 @@ test('wrong signature gives 401 with zero GitHub calls',async()=>{process.env.VA
 test('exhausted persistence gives non-2xx and fixed error only',async()=>{process.env.VAGARO_VERIFICATION_TOKEN='fixture';process.env.GITHUB_TOKEN='fixture';const original=global.fetch;global.fetch=async()=>({status:503});try{const r=res();await handler(req(raw('a')),r);assert.equal(r.code,503);assert.equal(r.payload.persisted,false);}finally{global.fetch=original;}});
 test('timeouts are bounded even when fetch ignores abort',async()=>{const start=Date.now();await assert.rejects(persistEvent('a',raw('a'),{token:'fixture',fetchFn:()=>new Promise(()=>{}),budgetMs:60,requestMs:20}));assert.ok(Date.now()-start<300);});
 test('invalid IDs and excessive body reject without GitHub calls',async()=>{process.env.VAGARO_VERIFICATION_TOKEN='fixture';const original=global.fetch;let calls=0;global.fetch=async()=>{calls++;throw new Error();};try{for(const id of ['a/b','a.b',1,'', 'a'.repeat(129)]){const r=res();await handler(req(JSON.stringify({id})),r);assert.equal(r.code,400);}const r=res();await handler(req('a'.repeat(1024*1024+1)),r);assert.equal(r.code,413);assert.equal(calls,0);}finally{global.fetch=original;}});
+
+test('deterministic exponential jitter separates transient requests',async()=>{
+ let clock=0;const delays=[];let calls=0;const s=store();
+ const fetchFn=async(u,o)=>{calls++;return calls<=2?{status:503}:s.fetchFn(u,o);};
+ await persistEvent('a',raw('a'),{token:'fixture',fetchFn,now:()=>clock,random:()=>0,sleep:async ms=>{delays.push(ms);clock+=ms;}});
+ assert.deepEqual(delays,[75,150]);assert.equal(s.files.size,1);
+});
+test('Retry-After seconds and HTTP-date respected within deadline',async()=>{
+ for(const value of ['1',new Date(2000).toUTCString()]){
+  let clock=0;let calls=0;const delays=[];const s=store();
+  const fetchFn=async(u,o)=>++calls===1?{status:429,headers:{get:()=>value}}:s.fetchFn(u,o);
+  await persistEvent('a',raw('a'),{token:'fixture',fetchFn,now:()=>clock,random:()=>1,sleep:async ms=>{delays.push(ms);clock+=ms;}});
+  assert.equal(delays[0],value==='1'?1000:2000);
+ }
+});
+test('Retry-After beyond overall budget fails without retrying early',async()=>{
+ let calls=0;let sleeps=0;
+ await assert.rejects(persistEvent('a',raw('a'),{token:'fixture',budgetMs:7500,now:()=>0,fetchFn:async()=>{calls++;return{status:503,headers:{get:()=> '10'}};},sleep:async()=>{sleeps++;}}),/unconfirmed/);
+ assert.equal(calls,1);assert.equal(sleeps,0);
+});

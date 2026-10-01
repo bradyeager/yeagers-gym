@@ -24,13 +24,13 @@ async function readRawBody(req) {
  }
  return Buffer.concat(chunks).toString('utf8');
 }
-export async function persistEvent(id, raw, {fetchFn=fetch, token=process.env.GITHUB_TOKEN, budgetMs=BUDGET_MS, requestMs=REQUEST_MS}={}) {
+export async function persistEvent(id, raw, {fetchFn=fetch, token=process.env.GITHUB_TOKEN, budgetMs=BUDGET_MS, requestMs=REQUEST_MS, now=Date.now, random=Math.random, sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms))}={}) {
  if(!token) throw new Error('configuration');
- const deadline=Date.now()+budgetMs;
+ const deadline=now()+budgetMs;
  const url=`https://api.github.com/repos/bradyeager/yeagers-gym/contents/billing/vagaro-events/${id}.json`;
  const headers={Authorization:`Bearer ${token}`,Accept:'application/vnd.github+json','User-Agent':'yg-vagaro-webhook'};
  const request=async(method)=> {
-  const remaining=deadline-Date.now();
+  const remaining=deadline-now();
   if(remaining<=0) throw new Error('budget');
   return bounded(async signal=>{
    const response=await fetchFn(method==='GET'?`${url}?ref=main`:url,{
@@ -39,11 +39,24 @@ export async function persistEvent(id, raw, {fetchFn=fetch, token=process.env.GI
    });
    // Include body consumption in timeout; errors never log response content.
    const data=response.status===200 && method==='GET'?await response.json():null;
-   return {status:response.status,data};
+   return {status:response.status,data,retryAfter:response.headers?.get?.("retry-after")};
   },Math.min(requestMs,remaining));
  };
  let attempted=false;
- for(let attempt=0;attempt<4 && Date.now()<deadline;attempt++) {
+ let retry=false;
+ let retryAfter=null;
+ for(let attempt=0;attempt<4 && now()<deadline;attempt++) {
+  if(retry) {
+   const base=Math.min(1200,150*2**(attempt-1));
+   const jitter=base/2+Math.max(0,Math.min(1,random()))*base/2;
+   const numeric=retryAfter!=null && /^\d+(?:\.\d+)?$/.test(retryAfter)?Number(retryAfter)*1000:null;
+   const serverDelay=numeric ?? (retryAfter?Math.max(0,Date.parse(retryAfter)-now()):0);
+   const delay=Math.max(jitter,Number.isFinite(serverDelay)?serverDelay:0);
+   // Never shorten Retry-After to squeeze another request into our budget.
+   if(delay>=deadline-now()) throw new Error("unconfirmed");
+   await sleep(delay);
+  }
+  retry=false; retryAfter=null;
   try {
    const head=await request('GET');
    if(head.status===200) {
@@ -51,12 +64,14 @@ export async function persistEvent(id, raw, {fetchFn=fetch, token=process.env.GI
     if(Buffer.from(head.data.content,'base64').toString('utf8')!==raw) throw new Conflict('immutable_conflict');
     return {status:attempted?'confirmed':'exists'};
    }
-   if(head.status!==404) {if(transient(head.status)) continue;throw new Error('read_failed');}
+   if(head.status!==404) {if(transient(head.status)) {retry=true;retryAfter=head.retryAfter;continue;}throw new Error('read_failed');}
    attempted=true;
    const put=await request('PUT');
    // Every success, race or ambiguous response is confirmed by GET next.
+   retry=![200,201].includes(put.status); retryAfter=put.retryAfter;
    if(![200,201,409,422].includes(put.status) && !transient(put.status)) throw new Error('write_failed');
   } catch(error) {
+   retry=true;
    if(error instanceof Conflict) throw error;
    if(['configuration','read_failed','write_failed'].includes(error.message)) throw error;
   }
