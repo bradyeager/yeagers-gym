@@ -70,7 +70,7 @@ jobs:
         working-directory: billing/bot
         run: npm ci --omit=dev --no-audit --no-fund
 
-      - name: Run billing reconciliation
+      - name: Prepare billing reconciliation without sending
         working-directory: billing/bot
         env:
           # ROLLOUT SAFETY: committed defaults are the proven paths.
@@ -84,6 +84,8 @@ jobs:
           GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
           GOOGLE_REFRESH_TOKEN: ${{ secrets.GOOGLE_REFRESH_TOKEN }}
           GOOGLE_TOKEN_EXPIRES: ${{ secrets.GOOGLE_TOKEN_EXPIRES }}
+          BILLING_DELIVERY_PHASE: prepare
+          GITHUB_TOKEN: ${{ github.token }}
           BREVO_API_KEY: ${{ secrets.BREVO_API_KEY }}
           DRY_RUN: ${{ github.event.inputs.dry_run || 'false' }}
           BILLING_PACIFIC_WEEK: "true"
@@ -93,15 +95,34 @@ jobs:
           EMAIL_STYLE: ${{ github.event.inputs.email_style || 'command-center' }}
         run: npm start
 
-      - name: Commit weekly log + matched-payments ledger
+      - name: Persist weekly log and ledger before delivery
         if: ${{ github.event.inputs.dry_run != 'true' }}
         run: |
           git config user.name "yeagers-gym-bot"
           git config user.email "bot@yeagersgym.com"
+          base=$(git rev-parse HEAD)
           git add billing/logs/ billing/matched-payments.json
           if ! git diff --cached --quiet; then
             git commit -m "Weekly billing log + ledger $(date -u +%Y-%m-%d)"
-            git push
           else
             echo "No log/ledger changes to commit"
           fi
+          # Remote billing changes invalidate prepared evidence; raw events
+          # and delivery markers can advance main without changing it.
+          for attempt in 1 2 3; do
+            git fetch origin main
+            changed=$(git diff --name-only "$base" origin/main -- billing/ ':!billing/vagaro-events/' ':!billing/outbox/')
+            if [ -n "$changed" ]; then echo "Billing evidence changed remotely; delivery blocked"; exit 1; fi
+            git rebase origin/main
+            if git push origin HEAD:main; then break; fi
+            if [ "$attempt" = 3 ]; then exit 1; fi
+          done
+          echo "BILLING_SNAPSHOT_SHA=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+
+      - name: Claim weekly delivery and record provider acceptance
+        if: ${{ github.event.inputs.dry_run != 'true' }}
+        working-directory: billing/bot
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          BREVO_API_KEY: ${{ secrets.BREVO_API_KEY }}
+        run: node delivery.mjs

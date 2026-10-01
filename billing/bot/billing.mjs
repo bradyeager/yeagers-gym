@@ -7,6 +7,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import ical from "node-ical";
 import { appointmentWindow, assertPeriodRerunConfig } from "./period.mjs";
+import { assertNoPriorDelivery, githubDeliveryStore } from "./delivery.mjs";
 import { google } from "googleapis";
 import {
   PALETTE, FONTS, GITHUB_OWNER, GITHUB_REPO, DEFAULT_BRANCH,
@@ -57,7 +58,7 @@ const {
 } = process.env;
 
 const NOW = new Date();
-const {start: WINDOW_START, end: WINDOW_END} = appointmentWindow({
+const {start: WINDOW_START, end: WINDOW_END, periodEnd: PERIOD_END} = appointmentWindow({
   now: NOW, days: Number(LOOKBACK_DAYS), periodEnd: process.env.BILLING_PERIOD_END || "",
   pacificWeek: process.env.BILLING_PACIFIC_WEEK === "true",
 });
@@ -2426,9 +2427,10 @@ async function runPaymentDriven() {
 
 // ---- Log file ----
 
-async function writeLog({ appointments, payments, results, unmatchedPayments }) {
-  await fs.mkdir(LOGS_DIR, { recursive: true });
-  const file = path.join(LOGS_DIR, `${fmtDateIsoPacific(NOW)}.md`);
+export async function writeLog({ appointments, payments, results, unmatchedPayments, logsDir = LOGS_DIR, dryRun = DRY_RUN === "true" }) {
+  const destination = dryRun ? path.join(REPO_ROOT, "billing", "bot", ".delivery") : logsDir;
+  await fs.mkdir(destination, { recursive: true });
+  const file = path.join(destination, dryRun ? "preview.md" : `${fmtDateIsoPacific(NOW)}.md`);
   let md = `# Weekly billing log — ${fmtDateIso(NOW)}\n\n`;
   md += `Window: ${WINDOW_START.toISOString()} → ${WINDOW_END.toISOString()}\n\n`;
   md += `## Appointments (${appointments.length})\n`;
@@ -2462,7 +2464,8 @@ async function writeLog({ appointments, payments, results, unmatchedPayments }) 
   const counts = summaryCounts(results);
   md += `\n## Summary\n`;
   for (const [k, v] of Object.entries(counts)) md += `- ${k}: ${v}\n`;
-  await fs.writeFile(file, md, "utf8");
+  // Never replace an existing production log or a human annotation.
+  await fs.writeFile(file, md, {encoding: "utf8", flag: dryRun ? "w" : "wx"});
   return { file, counts };
 }
 
@@ -2479,6 +2482,10 @@ async function main() {
     appointmentSource: APPOINTMENT_SOURCE,
     dryRun: DRY_RUN === "true",
   });
+  if (DRY_RUN !== "true") {
+    if (process.env.BILLING_DELIVERY_PHASE !== "prepare") throw new Error("Weekly production requires durable prepare/commit/delivery workflow");
+    await assertNoPriorDelivery(PERIOD_END, githubDeliveryStore());
+  }
   // Phase 4: payment-driven mode is a fully separate code path. It skips iCal
   // and schedule.csv entirely and drives billing from Venmo + payment history.
   // The committed default is "schedule" so the live Friday cron is unaffected.
@@ -2568,38 +2575,19 @@ async function main() {
   const finalCounts = assertSummaryConsistency({ results, logCounts, subject });
   console.log(`Summary verified — ${JSON.stringify(finalCounts)}`);
 
-  await sendBrevoEmail({
-    apiKey: BREVO_API_KEY,
-    to: RECIPIENT_EMAIL,
-    from: SENDER_EMAIL,
-    fromName: SENDER_NAME,
-    subject,
-    html,
-    dryRun: DRY_RUN === "true",
-  });
-  console.log(DRY_RUN === "true" ? `Dry run — no email sent. Subject: ${subject}` : `Sent email: ${subject}`);
+  const payload = {periodEnd: PERIOD_END, to: RECIPIENT_EMAIL, from: SENDER_EMAIL, fromName: SENDER_NAME, subject, html};
+  if (DRY_RUN === "true") {
+    await sendBrevoEmail({...payload, apiKey: BREVO_API_KEY, dryRun: true});
+  } else {
+    const dir = path.join(REPO_ROOT, "billing", "bot", ".delivery");
+    await fs.mkdir(dir, {recursive: true});
+    await fs.writeFile(path.join(dir, "weekly.json"), JSON.stringify(payload), "utf8");
+    console.log("Prepared weekly email; no provider request made");
+  }
 }
 
 const isDirectRun = process.argv[1] && import.meta.url === `file://${process.argv[1]}`;
-if (isDirectRun) {
-  main().catch(async (err) => {
-    console.error("Fatal error:", err);
-    if (DRY_RUN !== "true" && BREVO_API_KEY && !process.env.BILLING_PERIOD_END) {
-      try {
-        await sendBrevoEmail({
-          apiKey: BREVO_API_KEY,
-          to: RECIPIENT_EMAIL,
-          from: SENDER_EMAIL,
-          fromName: SENDER_NAME,
-          subject: "Weekly billing — FAILED",
-          html: emailShell({
-            title: "Weekly billing run failed",
-            bodyHtml: `<div style="color:${PALETTE.danger};font-family:${FONTS.body};margin-bottom:16px;">Run failed at ${NOW.toISOString()}.</div><pre style="background:${PALETTE.bgPanel};border:1px solid ${PALETTE.border};border-radius:6px;padding:12px;color:${PALETTE.textPrimary};font-family:${FONTS.display};font-size:12px;overflow-x:auto;">${escapeHtml(String(err.stack || err).slice(0, 2000))}</pre><div style="color:${PALETTE.textMuted};margin-top:16px;font-size:13px;">Check GitHub Actions logs: https://github.com/${GITHUB_OWNER}/${GITHUB_REPO}/actions</div>`,
-          }),
-        });
-      } catch (_) { /* ignore */ }
-    }
-    process.exit(1);
-  });
-}
-
+if (isDirectRun) main().catch(() => {
+  console.error("Weekly preparation failed; no email dispatched. Inspect Actions and outbox before retrying.");
+  process.exitCode = 1;
+});

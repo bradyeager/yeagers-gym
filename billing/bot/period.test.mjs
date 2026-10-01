@@ -30,5 +30,5 @@ test("explicit historical period is dry-run-only before any billing mutation or 
  const source=await fs.readFile(new URL("./billing.mjs",import.meta.url),"utf8");
  const main=source.slice(source.indexOf("async function main() {"));
  assert.ok(main.indexOf("assertPeriodRerunConfig")<main.indexOf("assertProductionConfig"));
- assert.match(source,/BREVO_API_KEY && !process.env.BILLING_PERIOD_END/);
+ assert.doesNotMatch(source.slice(source.indexOf("const isDirectRun =")),/sendBrevoEmail/);
 });

@@ -637,7 +637,7 @@ export function githubNewFileUrl({ filename, value, message = "" }) {
 
 // ---- Brevo email ----
 
-export async function sendBrevoEmail({ apiKey, to, from, fromName, subject, html, dryRun = false }) {
+export async function sendBrevoEmail({ apiKey, to, from, fromName, subject, html, dryRun = false, signal }) {
   if (dryRun) {
     console.log("DRY_RUN — would have sent email:");
     console.log("Subject:", subject);
@@ -645,6 +645,7 @@ export async function sendBrevoEmail({ apiKey, to, from, fromName, subject, html
     return;
   }
   const resp = await fetch("https://api.brevo.com/v3/smtp/email", {
+    signal,
     method: "POST",
     headers: { "api-key": apiKey, "content-type": "application/json", accept: "application/json" },
     body: JSON.stringify({
