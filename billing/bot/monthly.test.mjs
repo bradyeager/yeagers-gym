@@ -31,3 +31,14 @@ test("monthly normal summary fails closed on dropped rows, missing counts and st
  assert.throws(()=>assertWeeklyLogCounts({...valid,summary:{paid_venmo:0}}),/status count/);
  assert.throws(()=>assertWeeklyLogCounts({...valid,appointments:[{status:"FUTURE_FORMAT"}]}),/unsupported/);
 });
+
+test("September headline reconciles all status categories without reclassifying money",async()=>{
+ const logs=await readWeeklyLogs(fileURLToPath(new URL("../logs/",import.meta.url)),{start:new Date("2026-09-01"),end:new Date("2026-10-01")});
+ const totals=totalsFromLogs(logs);
+ assert.deepEqual(totals.row_status_counts,{PAID_VENMO:34,UNIDENTIFIED_SLOT:28,CASH_PENDING:10,NEEDS_REVIEW:18,PAID_PREPAID:9,UNPAID:11});
+ assert.equal(Object.values(totals.row_status_counts).reduce((n,c)=>n+c,0),110);
+ assert.equal(totals.total_revenue,2715);assert.equal(totals.unpaid_outstanding,735);
+ const {html}=buildEmail({totals,monthLabel:"September",weekCount:3,start:new Date("2026-09-01"),end:new Date("2026-09-30")});
+ for(const label of ["Unique log rows","Prepaid","Cash pending","Unidentified slots","Unknown","Cancelled"])assert.ok(html.includes(label),label);
+ assert.match(html,/not all confirmed attended sessions/);assert.match(html,/later receipts are not reconciled here/);assert.doesNotMatch(html,/>Sessions</);
+});

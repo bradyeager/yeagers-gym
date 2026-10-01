@@ -50,6 +50,7 @@ export function totalsFromLogs(logs) {
   // write wins — a session that was UNPAID one week and PAID the next counts
   // once, as PAID. Without this, revenue would be multiplied.
   const unique = new Map();
+  const row_status_counts = {};
   for (const { parsed } of logs) {
     for (const a of parsed.appointments) {
       unique.set(`${a.date}||${a.name}`, a);
@@ -59,6 +60,7 @@ export function totalsFromLogs(logs) {
   for (const a of unique.values()) {
     {
       sessions += 1;
+      row_status_counts[a.status] = (row_status_counts[a.status] || 0) + 1;
       switch (a.status) {
         case "PAID_VENMO":
           paid_venmo_count += 1;
@@ -86,7 +88,7 @@ export function totalsFromLogs(logs) {
   const cash_pct = total_revenue ? (cash_revenue / total_revenue) * 100 : 0;
 
   return {
-    sessions,
+    sessions, row_status_counts,
     venmo_revenue, cash_revenue, total_revenue,
     unpaid_outstanding,
     unpaid_count, needs_review_count, paid_venmo_count, paid_cash_count,
@@ -120,7 +122,7 @@ export function buildEmail({ monthLabel, totals, weekCount, start, end }) {
   // Headline: total revenue
   body += `<div style="display:flex;flex-wrap:wrap;gap:14px;margin-bottom:20px;">`;
   body += stat(money(totals.total_revenue), "Logged receipts", "teal", true);
-  body += stat(String(totals.sessions), "Sessions", "teal");
+  body += stat(String(totals.sessions), "Unique log rows", "teal");
   body += `</div>`;
 
   // Venmo vs. cash split
@@ -148,24 +150,31 @@ export function buildEmail({ monthLabel, totals, weekCount, start, end }) {
       `<div style="display:flex;justify-content:space-between;align-items:baseline;">
         <div>
           <div style="font-family:${FONTS.display};font-size:28px;color:${PALETTE.pink};font-weight:700;">${money(totals.unpaid_outstanding)}</div>
-          <div style="color:${PALETTE.textMuted};font-family:${FONTS.display};font-size:12px;text-transform:uppercase;letter-spacing:0.1em;margin-top:4px;">Confirmed unpaid</div>
+          <div style="color:${PALETTE.textMuted};font-family:${FONTS.display};font-size:12px;text-transform:uppercase;letter-spacing:0.1em;margin-top:4px;">Logged unpaid</div>
         </div>
         <div style="text-align:right;color:${PALETTE.textMuted};font-family:${FONTS.display};font-size:12px;">
           ${totals.unpaid_count} unpaid · ${totals.needs_review_count} review
         </div>
       </div>
-      <div style="color:${PALETTE.textMuted};font-size:13px;margin-top:12px;">Review-only discrepancies are excluded from confirmed unpaid.</div>`,
+      <div style="color:${PALETTE.textMuted};font-size:13px;margin-top:12px;">Review-only discrepancies are excluded. Unpaid reflects the latest selected weekly log; later receipts are not reconciled here.</div>`,
       "pink",
     );
   }
 
   // Activity breakdown
-  body += sectionLabel("Session breakdown", "teal");
+  body += sectionLabel("Log row breakdown", "teal");
+  body += `<div style="color:${PALETTE.textMuted};font-size:13px;margin-bottom:12px;">Includes prepaid, cash pending, and unidentified slots. These log rows are not all confirmed attended sessions.</div>`;
   body += `<div style="display:flex;flex-wrap:wrap;gap:14px;margin-bottom:20px;">`;
   body += stat(String(totals.paid_venmo_count), "Paid (Venmo)", "teal");
   body += stat(String(totals.paid_cash_count), "Paid (cash)", "purple");
   body += stat(String(totals.unpaid_count), "Unpaid", totals.unpaid_count ? "pink" : "textMuted");
   body += stat(String(totals.needs_review_count), "Needs review", totals.needs_review_count ? "purple" : "textMuted");
+  const extraRows = totals.row_status_counts || {};
+  body += stat(String(extraRows.PAID_PREPAID || 0), "Prepaid", "teal");
+  body += stat(String(extraRows.CASH_PENDING || 0), "Cash pending", "purple");
+  body += stat(String(extraRows.UNIDENTIFIED_SLOT || 0), "Unidentified slots", "textMuted");
+  body += stat(String(extraRows.UNKNOWN || 0), "Unknown", "textMuted");
+  body += stat(String(extraRows.CANCELLED || 0), "Cancelled", "textMuted");
   body += `</div>`;
 
   const footer = `Window: ${fmtDateIso(start)} → ${fmtDateIso(end)} · ${weekCount} weekly log${weekCount === 1 ? "" : "s"} aggregated · Data source: billing/logs/`;
