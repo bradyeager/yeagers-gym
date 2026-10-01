@@ -38,3 +38,29 @@ a 30-second timeout. The GitHub state requests have 10-second timeouts.
 
 Tests: `npm test` in this directory. Fixtures use mocked providers/stores and
 isolated local Git remotes; they send no email and touch no production ledger.
+
+## Monthly reports (proposed patch awaiting review)
+
+Monthly preparation reads already committed weekly logs, records their checkout
+SHA in an ignored `.delivery/monthly.json` payload, and makes no provider call.
+A separate command claims `monthly-YYYY-MM` using the same atomic claim/attempt
+routine as weekly delivery. Weekly identities, cutoff and concurrency stay intact.
+
+September 2026 was already sent by scheduled run 36929860159 at code SHA
+ed5326dcc620594742545f21c06079cb36be6ccf. The staged monthly-2026-09 marker records
+that historical evidence and the hash of the provider receipt matching Gmail
+1a0f966ae002a007. It is not a new send/acceptance and does not invent an original
+payload hash. Pre-outbox months are also independently blocked from replay.
+
+Non-dry monthly delivery is limited to the immediately prior month after the
+existing first-of-month 17:00 UTC cutoff. Other month offsets remain dry-run-only;
+preview runs neither create a claim nor persist a payload. No-data runs do not
+invoke delivery. Monthly error notifications no longer bypass delivery safety.
+
+The monthly workflow patch proposes `contents: write` for its existing workflow
+token so it can create outbox records. This permission change requires review and
+authorization before deployment under the field mission's no-security-changes
+boundary. No new token or secret is proposed. The deployed workflow is unchanged
+while this patch is local. Runtime acceptance/delivery is not tested live; all
+provider attempts in tests are fixtures. Uncertain records intentionally block
+resending and may suppress a report that was never accepted.
