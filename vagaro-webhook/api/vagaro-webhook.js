@@ -86,7 +86,7 @@ export default async function handler(req,res) {
  const deadline=Date.now()+BUDGET_MS;
  let raw;
  try {raw=await bounded(()=>readRawBody(req),Math.min(1000,BUDGET_MS));}
- catch(error){return res.status(error.message==='body_too_large'?413:400).json({error:'bad body'});}
+ catch(error){return res.status(error.message==='body_too_large'?413:error.message==='timeout'?408:400).json({error:'bad body'});}
  let envelope;
  try {envelope=JSON.parse(raw);} catch {return res.status(400).json({error:'bad JSON'});}
  if(typeof envelope?.id!=='string' || !/^[A-Za-z0-9_-]{1,128}$/.test(envelope.id)) return res.status(400).json({error:'invalid envelope id'});
