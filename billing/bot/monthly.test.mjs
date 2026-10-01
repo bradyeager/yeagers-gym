@@ -1,7 +1,7 @@
 import { fileURLToPath } from 'node:url';
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { parseWeeklyLog, readWeeklyLogs } from './lib.mjs';
+import { parseWeeklyLog, readWeeklyLogs, assertWeeklyLogCounts } from './lib.mjs';
 import { totalsFromLogs, buildEmail } from './monthly.mjs';
 const log = rows => parseWeeklyLog(`## Appointments (${rows.length})\n${rows.join('\n')}\n## Summary\n- paid_venmo: 2\n## Venmo payments received (1)\n- 2026-09-01 | Example | $500 | PAID_VENMO`);
 test('current checkout and legacy rows retain allocated receipts separately', () => {
@@ -21,4 +21,13 @@ test('September appointment counts match declared rows',async()=>{
  const logs=await readWeeklyLogs(fileURLToPath(new URL('../logs/',import.meta.url)),{start:new Date('2026-09-01'),end:new Date('2026-10-01')});
  for(const {parsed} of logs) assert.equal(parsed.appointments.length,parsed.declaredCount);
  console.log(JSON.stringify({logs:logs.length,rows:logs.reduce((n,l)=>n+l.parsed.appointments.length,0),totals:totalsFromLogs(logs)}));
+});
+
+test("monthly normal summary fails closed on dropped rows, missing counts and status drift",()=>{
+ const valid=parseWeeklyLog("## Appointments (1)\n- Mon, 9/21, 9:00 AM | A | $45 | checkout $45 | PAID_VENMO (matched A, $50)\n## Summary\n- paid_venmo: 1");
+ assert.doesNotThrow(()=>assertWeeklyLogCounts(valid));
+ assert.throws(()=>assertWeeklyLogCounts({...valid,declaredCount:2}),/count mismatch/);
+ assert.throws(()=>assertWeeklyLogCounts({...valid,declaredCount:null}),/count mismatch/);
+ assert.throws(()=>assertWeeklyLogCounts({...valid,summary:{paid_venmo:0}}),/status count/);
+ assert.throws(()=>assertWeeklyLogCounts({...valid,appointments:[{status:"FUTURE_FORMAT"}]}),/unsupported/);
 });

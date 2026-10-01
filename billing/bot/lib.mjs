@@ -763,7 +763,9 @@ export async function readWeeklyLogs(logsDir, { start, end }) {
     const logDate = new Date(m[1] + "T12:00:00Z");
     if (logDate < start || logDate > end) continue;
     const raw = await fs.readFile(path.join(logsDir, f), "utf8");
-    out.push({ date: m[1], parsed: parseWeeklyLog(raw) });
+    const parsed = parseWeeklyLog(raw);
+    assertWeeklyLogCounts(parsed);
+    out.push({ date: m[1], parsed });
   }
   return out.sort((a, b) => a.date.localeCompare(b.date));
 }
@@ -774,7 +776,8 @@ export function parseWeeklyLog(md) {
   //   - Tue, 5/26, 8:00 AM | Annie Deioma | $80 | PAID_VENMO (matched "Mudroom", $80, note: "...")
   // We split on "|" rather than one mega-regex so the format can drift a bit
   // without silently parsing zero rows (which would zero out the monthly total).
-  const out = { appointments: [], declaredCount: Number(md.match(/## Appointments \((\d+)\)/)?.[1] ?? 0) };
+  const out = { appointments: [], declaredCount: md.match(/## Appointments \((\d+)\)/) ? Number(md.match(/## Appointments \((\d+)\)/)[1]) : null };
+  out.summary = Object.fromEntries([...(md.split("## Summary")[1] || "").matchAll(/^- ([a-z_]+): (\d+)\s*$/gm)].map(m => [m[1], Number(m[2])]));
   let inAppointments = false;
   for (const raw of md.split("\n")) {
     if (raw.startsWith("## ")) { inAppointments = raw.startsWith("## Appointments ("); continue; }
@@ -800,4 +803,13 @@ export function parseWeeklyLog(md) {
     });
   }
   return out;
+}
+
+export function assertWeeklyLogCounts(parsed) {
+ const statuses={paid_venmo:"PAID_VENMO",paid_cash:"PAID_CASH",paid_prepaid:"PAID_PREPAID",unpaid:"UNPAID",needs_review:"NEEDS_REVIEW",cash_pending:"CASH_PENDING",unknown:"UNKNOWN",unidentified:"UNIDENTIFIED_SLOT",cancelled:"CANCELLED"};
+ if(parsed.declaredCount == null || parsed.declaredCount !== parsed.appointments.length) throw new Error("Monthly log appointment count mismatch; normal summary blocked");
+ if(parsed.appointments.some(a => !Object.values(statuses).includes(a.status))) throw new Error("Monthly log contains unsupported appointment status; normal summary blocked");
+ for(const [key,status] of Object.entries(statuses)) {
+  if(Object.hasOwn(parsed.summary,key) && parsed.summary[key] !== parsed.appointments.filter(a=>a.status===status).length) throw new Error("Monthly log status count mismatch; normal summary blocked");
+ }
 }
