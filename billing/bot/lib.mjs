@@ -768,21 +768,24 @@ export async function readWeeklyLogs(logsDir, { start, end }) {
   return out.sort((a, b) => a.date.localeCompare(b.date));
 }
 
-function parseWeeklyLog(md) {
+export function parseWeeklyLog(md) {
   // Appointment lines look like (pipe-delimited):
   //   - Mon, 5/25, 6:00 AM | Jacob Bain | $70 | PAID_VENMO (matched "Jacob Bain", $70, note: "5/21")
   //   - Tue, 5/26, 8:00 AM | Annie Deioma | $80 | PAID_VENMO (matched "Mudroom", $80, note: "...")
   // We split on "|" rather than one mega-regex so the format can drift a bit
   // without silently parsing zero rows (which would zero out the monthly total).
-  const out = { appointments: [] };
+  const out = { appointments: [], declaredCount: Number(md.match(/## Appointments \((\d+)\)/)?.[1] ?? 0) };
+  let inAppointments = false;
   for (const raw of md.split("\n")) {
-    if (!raw.startsWith("- ")) continue;
+    if (raw.startsWith("## ")) { inAppointments = raw.startsWith("## Appointments ("); continue; }
+    if (!inAppointments || !raw.startsWith("- ")) continue;
     const parts = raw.slice(2).split("|");
     if (parts.length < 4) continue;
     const dateStr = parts[0].trim();
     const name = parts[1].trim();
     const priceTok = (parts[2].match(/[\d.]+/) || [])[0];
-    const rest = parts.slice(3).join("|").trim();
+    const checkout = parts[3].trim().match(/^checkout \$(\d+(?:\.\d+)?)$/);
+    const rest = parts.slice(checkout ? 4 : 3).join("|").trim();
     const status = (rest.match(/^([A-Z_]+)/) || [])[1] || "";
     if (!status) continue;
     // Amount actually received = first "$N" after the word "matched".
@@ -792,6 +795,7 @@ function parseWeeklyLog(md) {
       name,
       price: priceTok ? Number(priceTok) : null,
       status,
+      checkoutAmount: checkout ? Number(checkout[1]) : null,
       paidAmount: paidM ? Number(paidM[1]) : null,
     });
   }

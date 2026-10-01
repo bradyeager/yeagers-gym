@@ -75,9 +75,7 @@ export function totalsFromLogs(logs) {
         case "NEEDS_REVIEW":
           needs_review_count += 1;
           if (a.paidAmount) venmo_revenue += a.paidAmount;
-          if (a.price && a.paidAmount && a.price > a.paidAmount) {
-            unpaid_outstanding += a.price - a.paidAmount;
-          }
+          // Review-only discrepancies are not confirmed receivables.
           break;
       }
     }
@@ -117,9 +115,11 @@ export function buildEmail({ monthLabel, totals, weekCount, start, end }) {
 
   body += `<div style="color:${PALETTE.textMuted};font-family:${FONTS.display};font-size:12px;text-transform:uppercase;letter-spacing:0.15em;margin-bottom:12px;">${monthLabel} · ${weekCount} weekly log${weekCount === 1 ? "" : "s"}</div>`;
 
+  body += card("Partial coverage: only weekly logs whose filenames fall in this month are included. Month-end sessions may appear in the next weekly run. Logged session allocations are not a full-month receipt or 1099-K total.");
+
   // Headline: total revenue
   body += `<div style="display:flex;flex-wrap:wrap;gap:14px;margin-bottom:20px;">`;
-  body += stat(money(totals.total_revenue), "Total revenue", "teal", true);
+  body += stat(money(totals.total_revenue), "Logged receipts", "teal", true);
   body += stat(String(totals.sessions), "Sessions", "teal");
   body += `</div>`;
 
@@ -134,7 +134,7 @@ export function buildEmail({ monthLabel, totals, weekCount, start, end }) {
   if (totals.venmo_revenue > 0) {
     body += card(
       `<div style="color:${PALETTE.textPrimary};font-family:${FONTS.body};font-size:14px;line-height:1.6;">
-        <strong style="color:${PALETTE.teal};">Venmo total (reported to IRS on 1099-K):</strong> ${money(totals.venmo_revenue)}<br>
+        <strong style="color:${PALETTE.teal};">Venmo receipts in selected logs:</strong> ${money(totals.venmo_revenue)}<br>
         <span style="color:${PALETTE.textMuted};">Keep cash receipts organized separately — not on Venmo's 1099-K but still taxable income.</span>
       </div>`,
       "teal",
@@ -148,13 +148,13 @@ export function buildEmail({ monthLabel, totals, weekCount, start, end }) {
       `<div style="display:flex;justify-content:space-between;align-items:baseline;">
         <div>
           <div style="font-family:${FONTS.display};font-size:28px;color:${PALETTE.pink};font-weight:700;">${money(totals.unpaid_outstanding)}</div>
-          <div style="color:${PALETTE.textMuted};font-family:${FONTS.display};font-size:12px;text-transform:uppercase;letter-spacing:0.1em;margin-top:4px;">Unpaid + short</div>
+          <div style="color:${PALETTE.textMuted};font-family:${FONTS.display};font-size:12px;text-transform:uppercase;letter-spacing:0.1em;margin-top:4px;">Confirmed unpaid</div>
         </div>
         <div style="text-align:right;color:${PALETTE.textMuted};font-family:${FONTS.display};font-size:12px;">
           ${totals.unpaid_count} unpaid · ${totals.needs_review_count} review
         </div>
       </div>
-      <div style="color:${PALETTE.textMuted};font-size:13px;margin-top:12px;">Chase via Friday emails or write off.</div>`,
+      <div style="color:${PALETTE.textMuted};font-size:13px;margin-top:12px;">Review-only discrepancies are excluded from confirmed unpaid.</div>`,
       "pink",
     );
   }
