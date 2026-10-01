@@ -10,6 +10,10 @@ Pacific Friday. The key does not change with run number, lookback, or template.
 The first supported outbox period is 2026-10-02; earlier periods may already
 have been sent without a marker. Explicit historical periods remain dry-run-only.
 
+Non-dry preparation and claims are blocked before the existing Saturday 04:17
+UTC cutoff for their Pacific Friday (21:17 PDT / 20:17 PST). An early Friday
+manual run cannot consume the evening report identity. Late runs remain eligible.
+
 A newly created and read-confirmed `pending` record permits one provider attempt.
 Any existing record blocks another automatic attempt. An `accepted` record means
 Brevo returned a successful acceptance response, not that the email was delivered.

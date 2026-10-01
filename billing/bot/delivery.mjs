@@ -27,13 +27,22 @@ export function githubDeliveryStore({token=process.env.GITHUB_TOKEN,fetchFn=fetc
  const put=async(id,record,sha)=>request(id,'PUT',{message:`billing delivery state: ${id}`,branch:'main',content:Buffer.from(JSON.stringify(record,null,2)+'\n').toString('base64'),...(sha?{sha}:{})});
  return {read,create:(id,record)=>put(id,record),update:(id,record,sha)=>put(id,record,sha)};
 }
-export async function assertNoPriorDelivery(periodEnd,store) {
+export function assertDeliveryCutoff(periodEnd, now = new Date()) {
+ deliveryIdentity(periodEnd);
+ // Existing cron: Saturday 04:17 UTC. This is Friday 21:17 PDT /
+ // 20:17 PST; keep that policy rather than assuming a fixed local hour.
+ const cutoff = new Date(Date.parse(`${periodEnd}T04:17:00Z`) + 86400000);
+ if(!Number.isFinite(new Date(now).getTime()) || new Date(now) < cutoff) throw new Error("Weekly delivery cannot be claimed before the scheduled Friday cutoff");
+ return cutoff;
+}
+export async function assertNoPriorDelivery(periodEnd,store,{now=new Date()}={}) {
  const id=deliveryIdentity(periodEnd);
+ assertDeliveryCutoff(periodEnd,now);
  if(await store.read(id))throw new Error('Weekly delivery already claimed; no automatic resend');
  return id;
 }
 export async function deliverWeekly(payload,{store,send,nonce=randomUUID(),now=()=>new Date().toISOString()}={}) {
- const id=await assertNoPriorDelivery(payload.periodEnd,store);
+ const id=await assertNoPriorDelivery(payload.periodEnd,store,{now:now()});
  const pending={version:1,id,state:'pending',nonce,createdAt:now(),payloadHash:hash(JSON.stringify(payload)),runId:process.env.GITHUB_RUN_ID || null};
  // A crash before/after create leaves either no provider attempt or a blocking
  // pending record. An ambiguous create response never permits sending.

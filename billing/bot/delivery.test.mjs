@@ -1,44 +1,46 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
-import {deliverWeekly,deliveryIdentity,assertNoPriorDelivery} from './delivery.mjs';
+import {deliverWeekly,deliveryIdentity,assertNoPriorDelivery,assertDeliveryCutoff} from './delivery.mjs';
+const fixtureNow=()=>"2026-10-03T04:17:00.000Z";
+const deliver=(payload,options)=>deliverWeekly(payload,{now:fixtureNow,...options});
 const payload={periodEnd:'2026-10-02',subject:'fixture',html:'fixture'};
 function memory(){let current=null;let version=0;return {async read(){return current?{sha:String(version),record:structuredClone(current)}:null;},async create(id,r){if(current)throw new Error('race');current=structuredClone(r);version++;},async update(id,r,sha){if(String(version)!==sha)throw new Error('correction conflict');current=structuredClone(r);version++;},get record(){return current;},correct(){current={...current,state:'human-review'};version++;}};}
 test('durable claim before single provider attempt; accepted state blocks rerun',async()=>{
  const store=memory();let sends=0;
- await deliverWeekly(payload,{store,send:async()=>{sends++;assert.equal(store.record.state,'pending');return{status:201,messageId:'fixture'};}});
- assert.equal(store.record.state,'accepted');await assert.rejects(deliverWeekly(payload,{store,send:async()=>{sends++;}}),/already claimed/);assert.equal(sends,1);
+ await deliver(payload,{store,send:async()=>{sends++;assert.equal(store.record.state,'pending');return{status:201,messageId:'fixture'};}});
+ assert.equal(store.record.state,'accepted');await assert.rejects(deliver(payload,{store,send:async()=>{sends++;}}),/already claimed/);assert.equal(sends,1);
 });
 test('crash after intent, before send, blocks automatic rerun',async()=>{
  const store=memory();let reads=0;const original=store.read;
  store.read=async()=>{if(++reads===2)throw new Error('crash');return original();};
- await assert.rejects(deliverWeekly(payload,{store,send:async()=>assert.fail('must not send')}),/crash/);
- store.read=original;await assert.rejects(assertNoPriorDelivery(payload.periodEnd,store),/claimed/);assert.equal(store.record.state,'pending');
+ await assert.rejects(deliver(payload,{store,send:async()=>assert.fail('must not send')}),/crash/);
+ store.read=original;await assert.rejects(assertNoPriorDelivery(payload.periodEnd,store,{now:fixtureNow()}),/claimed/);assert.equal(store.record.state,'pending');
 });
 test('provider accepted but receipt commit failed cannot send twice',async()=>{
  const store=memory();let sends=0;store.update=async()=>{throw new Error('commit failed');};
- await assert.rejects(deliverWeekly(payload,{store,send:async()=>{sends++;return{status:201,messageId:'fixture'};}}),/commit failed/);
- await assert.rejects(deliverWeekly(payload,{store,send:async()=>{sends++;}}),/claimed/);assert.equal(sends,1);assert.equal(store.record.state,'pending');
+ await assert.rejects(deliver(payload,{store,send:async()=>{sends++;return{status:201,messageId:'fixture'};}}),/commit failed/);
+ await assert.rejects(deliver(payload,{store,send:async()=>{sends++;}}),/claimed/);assert.equal(sends,1);assert.equal(store.record.state,'pending');
 });
 test('provider timeout/response loss remains uncertain and blocks resend',async()=>{
  const store=memory();let sends=0;
- await assert.rejects(deliverWeekly(payload,{store,send:async()=>{sends++;throw new Error('response lost');}}));
- await assert.rejects(deliverWeekly(payload,{store,send:async()=>{sends++;}}),/claimed/);assert.equal(sends,1);
+ await assert.rejects(deliver(payload,{store,send:async()=>{sends++;throw new Error('response lost');}}));
+ await assert.rejects(deliver(payload,{store,send:async()=>{sends++;}}),/claimed/);assert.equal(sends,1);
 });
 test('concurrent claimants attempt provider once; human correction is preserved',async()=>{
  const store=memory();let sends=0;
- const results=await Promise.allSettled([deliverWeekly(payload,{store,nonce:'a',send:async()=>{sends++;return{status:201};}}),deliverWeekly(payload,{store,nonce:'b',send:async()=>{sends++;return{status:201};}})]);
+ const results=await Promise.allSettled([deliver(payload,{store,nonce:'a',send:async()=>{sends++;return{status:201};}}),deliver(payload,{store,nonce:'b',send:async()=>{sends++;return{status:201};}})]);
  assert.equal(sends,1);assert.equal(results.filter(x=>x.status==='fulfilled').length,1);
- const corrected=memory();await assert.rejects(deliverWeekly(payload,{store:corrected,send:async()=>{corrected.correct();return{status:201};}}),/correction conflict/);assert.equal(corrected.record.state,'human-review');
+ const corrected=memory();await assert.rejects(deliver(payload,{store:corrected,send:async()=>{corrected.correct();return{status:201};}}),/correction conflict/);assert.equal(corrected.record.state,'human-review');
 });
 test('ambiguous claim creation never permits a provider attempt',async()=>{
  const store=memory();const create=store.create;store.create=async(id,r)=>{await create(id,r);throw new Error('lost create response');};let sends=0;
- await assert.rejects(deliverWeekly(payload,{store,send:async()=>{sends++;}}));assert.equal(sends,0);assert.equal(store.record.state,'pending');
+ await assert.rejects(deliver(payload,{store,send:async()=>{sends++;}}));assert.equal(sends,0);assert.equal(store.record.state,'pending');
 });
 test('lost acceptance write response remains blocking even if write persisted',async()=>{
  const store=memory();const update=store.update;store.update=async(...args)=>{await update(...args);throw new Error('lost response');};let sends=0;
- await assert.rejects(deliverWeekly(payload,{store,send:async()=>{sends++;return{status:201};}}));
- await assert.rejects(deliverWeekly(payload,{store,send:async()=>{sends++;}}));assert.equal(sends,1);assert.equal(store.record.state,'accepted');
+ await assert.rejects(deliver(payload,{store,send:async()=>{sends++;return{status:201};}}));
+ await assert.rejects(deliver(payload,{store,send:async()=>{sends++;}}));assert.equal(sends,1);assert.equal(store.record.state,'accepted');
 });
 test('pre-outbox historical periods are never automatically emailed',()=>{assert.throws(()=>deliveryIdentity('2026-09-25'),/Pre-outbox/);assert.equal(deliveryIdentity('2026-10-02'),'weekly-schedule-ical-2026-10-02');});
 test('workflow persists data before guarded dispatch and blocks remote evidence changes',async()=>{
@@ -78,5 +80,28 @@ test('real snapshot script preserves raw events and blocks concurrent human ledg
   }else{
    assert.notEqual(result.status,0);assert.match(result.stdout,/delivery blocked/);assert.equal(git(remote,'show','main:billing/matched-payments.json'),'["human correction"]');await assert.rejects(readFile(environment),{code:'ENOENT'});
   }
+ }
+});
+
+test('early Friday cannot read/create a claim or attempt provider delivery',async()=>{
+ for(const now of ['2026-10-02T17:00:00Z','2026-10-03T04:16:59Z']) {
+  let reads=0,creates=0,sends=0;
+  const store={read:async()=>{reads++;return null;},create:async()=>{creates++;}};
+  await assert.rejects(deliverWeekly(payload,{store,now:()=>now,send:async()=>{sends++;}}),/before the scheduled Friday cutoff/);
+  assert.equal(reads,0);assert.equal(creates,0);assert.equal(sends,0);
+ }
+});
+test('scheduled cutoff follows existing UTC cron across Pacific DST',()=>{
+ assert.equal(assertDeliveryCutoff('2026-10-02','2026-10-02T21:17:00-07:00').toISOString(),'2026-10-03T04:17:00.000Z');
+ assert.throws(()=>assertDeliveryCutoff('2026-10-02','2026-10-02T21:16:59-07:00'),/cutoff/);
+ assert.equal(assertDeliveryCutoff('2026-11-06','2026-11-06T20:17:00-08:00').toISOString(),'2026-11-07T04:17:00.000Z');
+ assert.throws(()=>assertDeliveryCutoff('2026-11-06','2026-11-06T20:16:59-08:00'),/cutoff/);
+});
+test('late Saturday and a prior completed period remain eligible but existing claims block',async()=>{
+ for(const now of ['2026-10-03T19:00:00Z','2026-10-09T17:00:00Z']) {
+  const store=memory();let sends=0;
+  await deliverWeekly(payload,{store,now:()=>now,send:async()=>{sends++;return{status:201};}});
+  await assert.rejects(deliverWeekly(payload,{store,now:()=>now,send:async()=>{sends++;}}),/claimed/);
+  assert.equal(sends,1);
  }
 });
