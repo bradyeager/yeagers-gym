@@ -19,6 +19,10 @@ on:
         description: "Days of history to reconcile"
         type: string
         default: "5"
+      period_end:
+        description: "Pacific Friday YYYY-MM-DD for deterministic historical period (blank = latest Friday). Does not make sending idempotent."
+        type: string
+        default: ""
       email_style:
         description: "Email template"
         type: choice
@@ -82,7 +86,10 @@ jobs:
           GOOGLE_TOKEN_EXPIRES: ${{ secrets.GOOGLE_TOKEN_EXPIRES }}
           BREVO_API_KEY: ${{ secrets.BREVO_API_KEY }}
           DRY_RUN: ${{ github.event.inputs.dry_run || 'false' }}
-          LOOKBACK_DAYS: ${{ github.event.inputs.lookback_days || '8' }}
+          BILLING_PACIFIC_WEEK: "true"
+          BILLING_PERIOD_END: ${{ github.event.inputs.period_end || '' }}
+          # Payment email search remains independently 21 days.
+          LOOKBACK_DAYS: ${{ github.event.inputs.lookback_days || '5' }}
           EMAIL_STYLE: ${{ github.event.inputs.email_style || 'command-center' }}
         run: npm start
 

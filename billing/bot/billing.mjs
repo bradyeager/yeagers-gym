@@ -6,6 +6,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import ical from "node-ical";
+import { appointmentWindow } from "./period.mjs";
 import { google } from "googleapis";
 import {
   PALETTE, FONTS, GITHUB_OWNER, GITHUB_REPO, DEFAULT_BRANCH,
@@ -55,9 +56,11 @@ const {
   BILLING_MODE = "schedule",
 } = process.env;
 
-const LOOKBACK_MS = Number(LOOKBACK_DAYS) * 24 * 60 * 60 * 1000;
 const NOW = new Date();
-const WINDOW_START = new Date(NOW.getTime() - LOOKBACK_MS);
+const {start: WINDOW_START, end: WINDOW_END} = appointmentWindow({
+  now: NOW, days: Number(LOOKBACK_DAYS), periodEnd: process.env.BILLING_PERIOD_END || "",
+  pacificWeek: process.env.BILLING_PACIFIC_WEEK === "true",
+});
 // Payment-driven "this week" money-in window: the 7 days ending at the run.
 const PD_WINDOW_DAYS = 7;
 const PD_WINDOW_START = new Date(NOW.getTime() - PD_WINDOW_DAYS * 24 * 60 * 60 * 1000);
@@ -107,7 +110,7 @@ async function fetchVagaroAppointmentsFromIcal() {
     if (!isBillableSession(summary)) { skippedNonBillable++; continue; }
 
     if (ev.rrule) {
-      const occurrences = ev.rrule.between(WINDOW_START, NOW, true);
+      const occurrences = ev.rrule.between(WINDOW_START, WINDOW_END, true);
       for (const occ of occurrences) {
         appts.push({
           date: occ,
@@ -122,7 +125,7 @@ async function fetchVagaroAppointmentsFromIcal() {
 
     const start = ev.start instanceof Date ? ev.start : new Date(ev.start);
     if (start < WINDOW_START) { skippedOld++; continue; }
-    if (start > NOW) { skippedFuture++; continue; }
+    if (start > WINDOW_END) { skippedFuture++; continue; }
 
     appts.push({
       date: start,
@@ -300,7 +303,7 @@ export async function fetchVagaroAppointmentsFromEvents() {
     const start = new Date(p.startTime);
     if (Number.isNaN(start.getTime())) { skippedNoStart++; continue; }
     if (start < WINDOW_START) { skippedOld++; continue; }
-    if (start > NOW)         { skippedFuture++; continue; }
+    if (start > WINDOW_END)         { skippedFuture++; continue; }
 
     // FIX 2 — the Vagaro-resolved price for this appointment. Numeric (e.g.
     // 40, 45, 50, 70, 100). reconcile() uses this as the FIRST-choice expected
@@ -2427,7 +2430,7 @@ async function writeLog({ appointments, payments, results, unmatchedPayments }) 
   await fs.mkdir(LOGS_DIR, { recursive: true });
   const file = path.join(LOGS_DIR, `${fmtDateIsoPacific(NOW)}.md`);
   let md = `# Weekly billing log — ${fmtDateIso(NOW)}\n\n`;
-  md += `Window: ${WINDOW_START.toISOString()} → ${NOW.toISOString()}\n\n`;
+  md += `Window: ${WINDOW_START.toISOString()} → ${WINDOW_END.toISOString()}\n\n`;
   md += `## Appointments (${appointments.length})\n`;
   for (const r of results) {
     const name = r.roster?.vagaro_name || r.appt.client_name || `[unidentified: ${r.appt.summary || "?"}]`;
@@ -2491,7 +2494,7 @@ async function main() {
   requireEnv("GOOGLE_REFRESH_TOKEN", GOOGLE_REFRESH_TOKEN);
   requireEnv("BREVO_API_KEY", BREVO_API_KEY);
   console.log(`Appointment source: ${APPOINTMENT_SOURCE}`);
-  console.log(`Window: ${WINDOW_START.toISOString()} → ${NOW.toISOString()}`);
+  console.log(`Window: ${WINDOW_START.toISOString()} → ${WINDOW_END.toISOString()}`);
   const [clients, schedule, scheduleOverrides, cashLog, externalUnpaid, cancellations, priorMatches, paymentDrivenRunDates, rawSlots, payments] = await Promise.all([
     loadClients(CLIENTS_CSV),
     loadSchedule(SCHEDULE_CSV),

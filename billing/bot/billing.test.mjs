@@ -275,7 +275,7 @@ test("scheduled workflow resolves to schedule + ical on the Friday-evening cron"
   assert.match(lookbackInput.slice(0, 250), /default:\s*["']?5["']?\b/, "scheduled appointment window starts before Monday but excludes prior Friday");
 
   // Friday 9 PM PDT / 8 PM PST in San Diego.
-  assert.match(yml, /- cron:\s*"0 4 \* \* 6"/);
+  assert.match(yml, /- cron:\s*"17 4 \* \* 6"/);
   assert.doesNotMatch(yml, /- cron:\s*"0 17 \* \* 5"/, "old Friday-morning cron is gone");
 });
 
