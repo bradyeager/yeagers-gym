@@ -20,7 +20,7 @@ on:
         type: string
         default: "5"
       period_end:
-        description: "Pacific Friday YYYY-MM-DD for deterministic historical period (blank = latest Friday). Does not make sending idempotent."
+        description: "Dry-run-only Pacific Friday YYYY-MM-DD (blank = latest Friday). Historical receipt search remains execution-relative."
         type: string
         default: ""
       email_style:

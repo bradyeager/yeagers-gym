@@ -6,7 +6,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import ical from "node-ical";
-import { appointmentWindow } from "./period.mjs";
+import { appointmentWindow, assertPeriodRerunConfig } from "./period.mjs";
 import { google } from "googleapis";
 import {
   PALETTE, FONTS, GITHUB_OWNER, GITHUB_REPO, DEFAULT_BRANCH,
@@ -2469,6 +2469,8 @@ async function writeLog({ appointments, payments, results, unmatchedPayments }) 
 // ---- Main ----
 
 async function main() {
+  // Before data reads, ledger/log writes, or any email dispatch.
+  assertPeriodRerunConfig({periodEnd: process.env.BILLING_PERIOD_END || "", dryRun: DRY_RUN === "true"});
   // Gate FIRST — before any mode branches. A non-dry run that isn't on the
   // approved schedule+ical path must fail loudly here rather than produce a
   // normal-looking billing email from a degraded path.
@@ -2582,7 +2584,7 @@ const isDirectRun = process.argv[1] && import.meta.url === `file://${process.arg
 if (isDirectRun) {
   main().catch(async (err) => {
     console.error("Fatal error:", err);
-    if (DRY_RUN !== "true" && BREVO_API_KEY) {
+    if (DRY_RUN !== "true" && BREVO_API_KEY && !process.env.BILLING_PERIOD_END) {
       try {
         await sendBrevoEmail({
           apiKey: BREVO_API_KEY,

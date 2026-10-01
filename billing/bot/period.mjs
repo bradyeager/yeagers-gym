@@ -27,3 +27,9 @@ export function appointmentWindow({now=new Date(),days=5,periodEnd='',pacificWee
  if(start>end)throw new Error('Billing period is in the future');
  return {start,end,periodEnd:friday};
 }
+
+// Receipt search and log naming remain execution-relative. Historical periods
+// must not send or update a ledger until all evidence windows are anchored.
+export function assertPeriodRerunConfig({periodEnd="",dryRun=false}={}) {
+ if(periodEnd && !dryRun) throw new Error("Explicit BILLING_PERIOD_END is dry-run-only; historical receipt search and log identity are not anchored");
+}

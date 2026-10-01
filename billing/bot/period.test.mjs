@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
-import {appointmentWindow} from './period.mjs';
+import {appointmentWindow, assertPeriodRerunConfig} from './period.mjs';
 test('Friday evening and delayed Saturday anchor the same Pacific Monday-Friday',()=>{
  const timely=appointmentWindow({now:new Date('2026-09-26T04:17:00Z'),pacificWeek:true});
  const late=appointmentWindow({now:new Date('2026-09-26T19:00:00Z'),pacificWeek:true});
@@ -20,4 +20,15 @@ test('workflow defaults use five appointment days and independent payment search
  const yml=await fs.readFile(new URL('../../.github/workflows/weekly-billing.yml',import.meta.url),'utf8');
  assert.match(yml,/lookback_days \|\| '5'/);assert.doesNotMatch(yml,/lookback_days \|\| '8'/);assert.match(yml,/BILLING_PACIFIC_WEEK: "true"/);assert.match(yml,/cron: "17 4 \* \* 6"/);
  const source=await fs.readFile(new URL('./billing.mjs',import.meta.url),'utf8');assert.match(source,/PAYMENT_LOOKBACK_DAYS = "21"/);
+});
+
+test("explicit historical period is dry-run-only before any billing mutation or dispatch",async()=>{
+ assert.throws(()=>assertPeriodRerunConfig({periodEnd:"2026-09-25",dryRun:false}),/dry-run-only/);
+ assert.throws(()=>assertPeriodRerunConfig({periodEnd:"2026-10-02",dryRun:false}),/dry-run-only/);
+ assert.doesNotThrow(()=>assertPeriodRerunConfig({periodEnd:"2026-09-25",dryRun:true}));
+ assert.doesNotThrow(()=>assertPeriodRerunConfig({dryRun:false}));
+ const source=await fs.readFile(new URL("./billing.mjs",import.meta.url),"utf8");
+ const main=source.slice(source.indexOf("async function main() {"));
+ assert.ok(main.indexOf("assertPeriodRerunConfig")<main.indexOf("assertProductionConfig"));
+ assert.match(source,/BREVO_API_KEY && !process.env.BILLING_PERIOD_END/);
 });
