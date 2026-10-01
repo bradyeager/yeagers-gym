@@ -6,12 +6,14 @@ on:
       - 'billing/bot/**'
       - 'vagaro-webhook/**'
       - '.github/workflows/weekly-billing.yml'
+      - '.github/workflows/monthly-summary.yml'
       - '.github/workflows/billing-reliability.yml'
   pull_request:
     paths:
       - 'billing/bot/**'
       - 'vagaro-webhook/**'
       - '.github/workflows/weekly-billing.yml'
+      - '.github/workflows/monthly-summary.yml'
       - '.github/workflows/billing-reliability.yml'
 permissions:
   contents: read
