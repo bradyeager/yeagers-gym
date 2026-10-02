@@ -11,12 +11,13 @@ on:
         type: boolean
         default: false
       month_offset:
-        description: "Month offset (-1 = prior month, 0 = current)"
+        description: "Month offset (-1 = prior month; other offsets are dry-run-only)"
         type: string
         default: "-1"
 
 permissions:
-  contents: read
+  # Proposed for review: the existing workflow token must create durable claims.
+  contents: write
 
 concurrency:
   group: monthly-summary
@@ -38,10 +39,20 @@ jobs:
         working-directory: billing/bot
         run: npm ci --omit=dev --no-audit --no-fund
 
-      - name: Run monthly summary
+      - name: Prepare monthly summary without sending
+        id: prepare_monthly
         working-directory: billing/bot
         env:
-          BREVO_API_KEY: ${{ secrets.BREVO_API_KEY }}
+          MONTHLY_DELIVERY_PHASE: prepare
+          GITHUB_TOKEN: ${{ github.token }}
           DRY_RUN: ${{ github.event.inputs.dry_run || 'false' }}
           MONTH_OFFSET: ${{ github.event.inputs.month_offset || '-1' }}
         run: npm run monthly
+
+      - name: Claim monthly delivery and record provider acceptance
+        if: ${{ github.event.inputs.dry_run != 'true' && steps.prepare_monthly.outputs.prepared == 'true' }}
+        working-directory: billing/bot
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          BREVO_API_KEY: ${{ secrets.BREVO_API_KEY }}
+        run: node monthly-delivery.mjs

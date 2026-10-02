@@ -6,15 +6,18 @@
 // via Brevo — useful context for the 1099-K / tax conversation.
 
 import path from "node:path";
+import fs from "node:fs/promises";
+import {pathToFileURL} from "node:url";
+import {githubDeliveryStore} from "./delivery.mjs";
+import {assertMonthlyDeliveryConfig,assertNoPriorMonthlyDelivery} from "./monthly-delivery.mjs";
 import {
-  PALETTE, FONTS, GITHUB_OWNER, GITHUB_REPO,
-  requireEnv, resolveRepoRoot, fmtMonth, fmtDateIso,
+  PALETTE, FONTS,
+  resolveRepoRoot, fmtDateIso,
   readWeeklyLogs, sendBrevoEmail,
   emailShell, sectionLabel, card,
 } from "./lib.mjs";
 
 const {
-  BREVO_API_KEY,
   RECIPIENT_EMAIL = "brad@bradyeager.com",
   SENDER_EMAIL = "brad@yeagersgym.com",
   SENDER_NAME = "Yeager's Gym Billing Bot",
@@ -25,8 +28,8 @@ const {
 const REPO_ROOT = resolveRepoRoot(import.meta.url);
 const LOGS_DIR = path.join(REPO_ROOT, "billing", "logs");
 
-function monthWindow(offset) {
-  const now = new Date();
+export function monthWindow(offset, now = new Date()) {
+  if(!Number.isInteger(Number(offset))) throw new Error("Monthly offset must be an integer");
   const year = now.getUTCFullYear();
   const month = now.getUTCMonth() + Number(offset);
   const start = new Date(Date.UTC(year, month, 1, 0, 0, 0));
@@ -182,49 +185,37 @@ export function buildEmail({ monthLabel, totals, weekCount, start, end }) {
   return { subject, html };
 }
 
-async function main() {
-  requireEnv("BREVO_API_KEY", BREVO_API_KEY);
-  const { start, end } = monthWindow(Number(MONTH_OFFSET));
-  const monthLabel = fmtMonth(start);
+export async function prepareMonthlySummary({offset=Number(MONTH_OFFSET),now=new Date(),dryRun=DRY_RUN === "true",store,sourceSha=process.env.GITHUB_SHA,logsDir=LOGS_DIR,outputDir=path.join(REPO_ROOT,"billing","bot",".delivery"),preview=sendBrevoEmail}={}) {
+  const {start,end}=monthWindow(offset,now);
+  const period=start.toISOString().slice(0,7);
+  assertMonthlyDeliveryConfig({period,offset,dryRun,now});
+  if(!dryRun) {
+    if(!/^[a-f0-9]{40}$/.test(sourceSha || ""))throw new Error("Committed monthly evidence SHA unavailable");
+    await assertNoPriorMonthlyDelivery(period,store || githubDeliveryStore(),{offset,now});
+  }
+  const monthLabel=start.toLocaleDateString("en-US",{timeZone:"UTC",month:"long",year:"numeric"});
   console.log(`Month window: ${start.toISOString()} → ${end.toISOString()} (${monthLabel})`);
-
-  const logs = await readWeeklyLogs(LOGS_DIR, { start, end });
+  const logs=await readWeeklyLogs(logsDir,{start,end});
   console.log(`Loaded ${logs.length} weekly logs for ${monthLabel}`);
-
-  if (logs.length === 0) {
-    console.log("No logs found in window; skipping email.");
-    return;
+  if(!logs.length)return {prepared:false,period};
+  const totals=totalsFromLogs(logs);
+  const {subject,html}=buildEmail({monthLabel,totals,weekCount:logs.length,start,end});
+  const payload={period,monthOffset:Number(offset),snapshotSha:sourceSha || null,to:RECIPIENT_EMAIL,from:SENDER_EMAIL,fromName:SENDER_NAME,subject,html};
+  if(dryRun) {
+    await preview({...payload,dryRun:true});
+    return {prepared:false,dryRun:true,period,totals};
   }
-
-  const totals = totalsFromLogs(logs);
-  const { subject, html } = buildEmail({ monthLabel, totals, weekCount: logs.length, start, end });
-
-  await sendBrevoEmail({
-    apiKey: BREVO_API_KEY,
-    to: RECIPIENT_EMAIL,
-    from: SENDER_EMAIL,
-    fromName: SENDER_NAME,
-    subject,
-    html,
-    dryRun: DRY_RUN === "true",
-  });
-  console.log(`Sent email: ${subject}`);
+  await fs.mkdir(outputDir,{recursive:true});
+  await fs.writeFile(path.join(outputDir,"monthly.json"),JSON.stringify(payload),"utf8");
+  console.log("Prepared monthly email from committed logs; no provider request made");
+  return {prepared:true,period,totals};
 }
-
-const isDirectRun = process.argv[1] && import.meta.url === `file://${process.argv[1]}`;
-if (isDirectRun) main().catch(async (err) => {
-  console.error("Monthly summary failed:", err);
-  if (DRY_RUN !== "true" && BREVO_API_KEY) {
-    try {
-      await sendBrevoEmail({
-        apiKey: BREVO_API_KEY, to: RECIPIENT_EMAIL, from: SENDER_EMAIL, fromName: SENDER_NAME,
-        subject: "Monthly summary — FAILED",
-        html: emailShell({
-          title: "Monthly summary run failed",
-          bodyHtml: `<pre style="background:${PALETTE.bgPanel};border:1px solid ${PALETTE.border};padding:12px;border-radius:6px;color:${PALETTE.textPrimary};font-family:${FONTS.display};font-size:12px;">${String(err.stack || err).slice(0, 2000)}</pre><div style="color:${PALETTE.textMuted};margin-top:16px;">Check Actions logs: https://github.com/${GITHUB_OWNER}/${GITHUB_REPO}/actions</div>`,
-        }),
-      });
-    } catch (_) { /* ignore */ }
-  }
-  process.exit(1);
+async function main() {
+  if(DRY_RUN !== "true" && process.env.MONTHLY_DELIVERY_PHASE !== "prepare")throw new Error("Monthly production requires durable prepare/delivery workflow");
+  const result=await prepareMonthlySummary();
+  if(process.env.GITHUB_OUTPUT)await fs.appendFile(process.env.GITHUB_OUTPUT,`prepared=${result.prepared ? "true" : "false"}\n`);
+}
+if(process.argv[1] && import.meta.url===pathToFileURL(process.argv[1]).href)main().catch(()=>{
+  console.error("Monthly preparation blocked or failed; no email dispatched. Inspect Actions and outbox.");
+  process.exitCode=1;
 });

@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "id": "monthly-2026-09",
+  "state": "accepted",
+  "acceptedAt": "2026-10-01T21:37:23.3507401Z",
+  "providerStatus": 201,
+  "providerMessageIdHash": "f8151e968ab2cd73c54cab80021e6155e25cf8bd7d3b3fc01c7192ece45a45a0",
+  "payloadHash": null,
+  "evidence": {
+    "kind": "historical-confirmed-send",
+    "githubRunId": "36929860159",
+    "githubHeadSha": "ed5326dcc620594742545f21c06079cb36be6ccf",
+    "gmailMessageId": "1a0f966ae002a007",
+    "providerReceiptMatchedGmailHeader": true
+  }
+}

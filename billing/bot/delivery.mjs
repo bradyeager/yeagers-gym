@@ -41,14 +41,15 @@ export async function assertNoPriorDelivery(periodEnd,store,{now=new Date()}={})
  if(await store.read(id))throw new Error('Weekly delivery already claimed; no automatic resend');
  return id;
 }
-export async function deliverWeekly(payload,{store,send,nonce=randomUUID(),now=()=>new Date().toISOString()}={}) {
- const id=await assertNoPriorDelivery(payload.periodEnd,store,{now:now()});
- const pending={version:1,id,state:'pending',nonce,createdAt:now(),payloadHash:hash(JSON.stringify(payload)),runId:process.env.GITHUB_RUN_ID || null};
+// Shared atomic claim/attempt logic; cadence-specific eligibility stays in wrappers.
+export async function claimAndSendReport(id,payload,{store,send,nonce=randomUUID(),now=()=>new Date().toISOString()}={}) {
+ if(await store.read(id))throw new Error("Report delivery already claimed; no automatic resend");
+ const pending={version:1,id,state:'pending',nonce,createdAt:now(),payloadHash:hash(JSON.stringify(payload)),snapshotSha:payload.snapshotSha || null,runId:process.env.GITHUB_RUN_ID || null};
  // A crash before/after create leaves either no provider attempt or a blocking
  // pending record. An ambiguous create response never permits sending.
  await store.create(id,pending);
  const confirmed=await store.read(id);
- if(!confirmed || confirmed.record.nonce!==nonce || confirmed.record.state!=='pending' || confirmed.record.payloadHash!==pending.payloadHash)throw new Error('Weekly claim unconfirmed; no send');
+ if(!confirmed || confirmed.record.nonce!==nonce || confirmed.record.state!=='pending' || confirmed.record.payloadHash!==pending.payloadHash)throw new Error('Report claim unconfirmed; no send');
  // Exactly one attempt in this invocation. Errors/timeouts leave pending.
  const receipt=await send(payload);
  if(!receipt || receipt.status<200 || receipt.status>=300)throw new Error('Provider acceptance unconfirmed; pending claim retained');
@@ -59,6 +60,11 @@ export async function deliverWeekly(payload,{store,send,nonce=randomUUID(),now=(
  const saved=await store.read(id);
  if(!saved || saved.record.nonce!==nonce || saved.record.state!=='accepted')throw new Error('Provider may have accepted; durable acceptance unconfirmed; no resend');
  return accepted;
+}
+export async function deliverWeekly(payload,options={}) {
+ const now=options.now || (()=>new Date().toISOString());
+ assertDeliveryCutoff(payload.periodEnd,now());
+ return claimAndSendReport(deliveryIdentity(payload.periodEnd),payload,{...options,now});
 }
 async function main(){
  if(!/^[a-f0-9]{40}$/.test(process.env.BILLING_SNAPSHOT_SHA || ""))throw new Error("Durable billing snapshot unconfirmed");
