@@ -44,6 +44,17 @@ test('multiple same-UTC-day EXDATE instants survive comma lists and separate lin
 test('unsupported EXRULE refuses before emitting excluded bookings',()=>{
  assert.throws(()=>parse(cal(base('EXRULE:FREQ=WEEKLY;COUNT=3'))),/Unsupported/);
 });
+test('escaped UID uses decoded exclusion keys and preserves every excluded instant',()=>{
+ for(const [rawUid,decodedUid] of [['series\\,one','series,one'],['series\\;one','series;one'],['series\\\\one','series\\one']]){
+  const raw=cal(event('UID:'+rawUid,'DTSTART:20261002T160000Z','RRULE:FREQ=HOURLY;COUNT=3','SUMMARY:60 Mins - 1:1 Personal Training','EXDATE:20261002T160000Z,20261002T170000Z'));
+  const p=parse(raw);assert.deepEqual(p.appointments.map(r=>r.date.toISOString()),['2026-10-02T18:00:00.000Z']);
+  assert.equal(p.appointments[0].calendar_source.uid,decodedUid);assert.equal(p.snapshot.records[0].uid,decodedUid);assert.equal(p.snapshot.records[0].exclusions.length,2);
+ }
+});
+test('different escaped spellings of same decoded master UID fail closed',()=>{
+ const master=uid=>event('UID:'+uid,'DTSTART:20261002T160000Z','SUMMARY:60 Mins - 1:1 Personal Training');
+ assert.throws(()=>parse(cal(master('series\\,one'),master('series,one'))),/Duplicate calendar masters/);
+});
 test('cancelled recurrence removes old booking without resurrecting it',()=>assert.equal(parse(cal(base(),move('20261002T143000Z','STATUS:CANCELLED'))).appointments.length,0));
 test('moved recurrence emits only corrected time with original occurrence identity',()=>{
  const [row]=parse(cal(base(),move('20261002T163000Z'))).appointments;

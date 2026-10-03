@@ -28,13 +28,19 @@ export function calendarIdentity(ev) {
 // Reject unsupported/ambiguous input before parsing instead of silently billing it.
 function validateRaw(raw) {
   const unfolded = raw.replace(/\r?\n[ \t]/g, '');
-  const blocks = unfolded.match(/BEGIN:VEVENT[\s\S]*?END:VEVENT/g) || [];
-  const billableUids = new Set(blocks.filter(b=>/personal training|semi[-\s]?private/i.test(b)).map(b=>b.match(/^UID:(.*)$/m)?.[1]?.trim()));
+  // All UID-keyed guards and exclusions use the same decoded representation
+  // as the full parser, including escaped commas/semicolons/backslashes.
+  const blocks = (unfolded.match(/BEGIN:VEVENT[\s\S]*?END:VEVENT/g) || []).map(block => {
+    const uidLine = block.match(/^UID:[^\r\n]*/m)?.[0];
+    const parsed = uidLine && Object.values(ical.sync.parseICS('BEGIN:VCALENDAR\r\nVERSION:2.0\r\nBEGIN:VEVENT\r\n'+uidLine+'\r\nEND:VEVENT\r\nEND:VCALENDAR')).find(e=>e.type==='VEVENT');
+    return {block, uid: parsed?.uid};
+  });
+  const billableUids = new Set(blocks.filter(({block})=>/personal training|semi[-\s]?private/i.test(block)).map(({uid})=>uid));
   const exceptionDays = new Set();
   const masters = new Set();
   const exclusions = new Map();
-  for (const block of blocks) {
-    if (!billableUids.has(block.match(/^UID:(.*)$/m)?.[1]?.trim())) continue;
+  for (const {block, uid} of blocks) {
+    if (!billableUids.has(uid)) continue;
     if (/^(?:RDATE|EXRULE)[;:]/m.test(block) || /RANGE=THISANDFUTURE/i.test(block)) throw new Error('Unsupported calendar recurrence range/additional dates/exclusion rule; review source');
     for (const field of block.match(/^(?:DTSTART|RECURRENCE-ID|EXDATE)[^\r\n]*/gm) || []) {
       const tz = field.match(/TZID=([^;:]+)/)?.[1]?.replaceAll('"', '');
@@ -45,7 +51,6 @@ function validateRaw(raw) {
         catch {throw new Error('Calendar timezone is not supported; review source');}
       }
     }
-    const uid = block.match(/^UID:(.*)$/m)?.[1]?.trim();
     if (!uid || /https?:\/\//i.test(uid)) throw new Error('Calendar UID missing or unsafe for provenance');
     const rid = block.match(/^RECURRENCE-ID[^:]*:(.*)$/m)?.[1]?.trim();
     // node-ical keys EXDATE by UTC day too, dropping earlier same-day times.
