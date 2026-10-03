@@ -32,12 +32,14 @@ function validateRaw(raw) {
   const billableUids = new Set(blocks.filter(b=>/personal training|semi[-\s]?private/i.test(b)).map(b=>b.match(/^UID:(.*)$/m)?.[1]?.trim()));
   const exceptionDays = new Set();
   const masters = new Set();
+  const exclusions = new Map();
   for (const block of blocks) {
     if (!billableUids.has(block.match(/^UID:(.*)$/m)?.[1]?.trim())) continue;
-    if (/^RDATE[;:]/m.test(block) || /RANGE=THISANDFUTURE/i.test(block)) throw new Error('Unsupported calendar recurrence range/additional dates; review source');
+    if (/^(?:RDATE|EXRULE)[;:]/m.test(block) || /RANGE=THISANDFUTURE/i.test(block)) throw new Error('Unsupported calendar recurrence range/additional dates/exclusion rule; review source');
     for (const field of block.match(/^(?:DTSTART|RECURRENCE-ID|EXDATE)[^\r\n]*/gm) || []) {
-      if (!/TZID=/.test(field) && !/\d{8}T\d{6}Z(?:,|$)/.test(field)) throw new Error('Calendar requires explicit timezone on timed appointments');
       const tz = field.match(/TZID=([^;:]+)/)?.[1]?.replaceAll('"', '');
+      const values = field.slice(field.indexOf(':') + 1).trim().split(',');
+      if (!values.every(value => (tz ? /^\d{8}T\d{6}$/ : /^\d{8}T\d{6}Z$/).test(value))) throw new Error('Calendar requires explicit timezone on timed appointments');
       if (tz) {
         try {new Intl.DateTimeFormat('en', {timeZone: tz});}
         catch {throw new Error('Calendar timezone is not supported; review source');}
@@ -46,6 +48,20 @@ function validateRaw(raw) {
     const uid = block.match(/^UID:(.*)$/m)?.[1]?.trim();
     if (!uid || /https?:\/\//i.test(uid)) throw new Error('Calendar UID missing or unsafe for provenance');
     const rid = block.match(/^RECURRENCE-ID[^:]*:(.*)$/m)?.[1]?.trim();
+    // node-ical keys EXDATE by UTC day too, dropping earlier same-day times.
+    // Parse each raw instant independently and retain a full-precision set.
+    for (const field of block.match(/^EXDATE[^\r\n]*/gm) || []) {
+      if (rid) throw new Error('Unsupported exclusion on calendar exception; review source');
+      const colon = field.indexOf(':');
+      const prefix = field.slice(0, colon + 1);
+      for (const value of field.slice(colon + 1).trim().split(',')) {
+        const parsed = Object.values(ical.sync.parseICS('BEGIN:VCALENDAR\r\nVERSION:2.0\r\nBEGIN:VEVENT\r\nUID:exclusion-fixture\r\n'+prefix+value+'\r\nEND:VEVENT\r\nEND:VCALENDAR')).find(e=>e.type==='VEVENT');
+        const instant = iso(Object.values(parsed?.exdate || {})[0]);
+        if (!instant) throw new Error('Invalid calendar exclusion instant; review source');
+        if (!exclusions.has(uid)) exclusions.set(uid, new Set());
+        exclusions.get(uid).add(instant);
+      }
+    }
     if (!rid) {
       if (masters.has(uid)) throw new Error('Duplicate calendar masters require source review');
       masters.add(uid);
@@ -57,11 +73,12 @@ function validateRaw(raw) {
       exceptionDays.add(key);
     }
   }
+  return exclusions;
 }
 
 export function parseCalendarSource(raw, {start, end, capturedAt = new Date(), runId = null, repositorySha = null} = {}) {
   if (!(start instanceof Date) || !(end instanceof Date) || !(start <= end)) throw new Error('Invalid calendar window');
-  validateRaw(raw);
+  const rawExclusions = validateRaw(raw);
   // rrule 2.8/node-ical 0.20 TZID expansion depends on the host timezone.
   // The workflow pins UTC. Other hosts fail closed rather than shift appointments.
   if (Intl.DateTimeFormat().resolvedOptions().timeZone !== 'UTC') throw new Error('Calendar expansion requires TZ=UTC');
@@ -88,22 +105,21 @@ export function parseCalendarSource(raw, {start, end, capturedAt = new Date(), r
     if (!billableCalendarService(ev.summary) && !exceptions.some(e=>billableCalendarService(e.summary))) continue;
     if (!ev.uid) throw new Error('Calendar appointment missing UID');
     const inWindow = date => date instanceof Date && date >= start && date <= end;
-    const dates = ev.rrule ? ev.rrule.between(start, end, true) : [];
+    const dates = ev.rrule ? ev.rrule.between(start, end, true) : inWindow(ev.start) ? [ev.start] : [];
     if (!inWindow(ev.start) && !dates.length && !exceptions.some(e=>inWindow(e.start)||inWindow(e.recurrenceid))) continue;
     records.push({uid: ev.uid, start: iso(ev.start), end: iso(ev.end), timezone: ev.start?.tz || 'UTC',
       status: ev.status || null, sequence: ev.sequence ?? null, last_modified: iso(ev.lastmodified), summary: clean(ev.summary), identities: calendarIdentity(ev).map(clean),
-      recurrence_rule: ev.rrule?.toString() || null, exclusions: Object.values(ev.exdate || {}).map(iso),
+      recurrence_rule: ev.rrule?.toString() || null, exclusions: [...(rawExclusions.get(ev.uid) || [])],
       exceptions: exceptions.map(e=>({recurrence_id: iso(e.recurrenceid), start: iso(e.start), end: iso(e.end), status: e.status || null,
         timezone: e.start?.tz || 'UTC', sequence: e.sequence ?? null, last_modified: iso(e.lastmodified),
         summary: clean(e.summary), identities: calendarIdentity(e).map(clean)}))});
     if (cancelled(ev)) continue;
-    if (!ev.rrule) {emit(ev, ev, ev.recurrenceid || null);continue;}
     const overridden = new Set(exceptions.map(e=>iso(e.recurrenceid)));
-    const excluded = new Set(Object.values(ev.exdate || {}).map(iso));
+    const excluded = rawExclusions.get(ev.uid) || new Set();
     for (const date of dates) {
       if (overridden.has(iso(date)) || excluded.has(iso(date))) continue;
       const duration = ev.end instanceof Date ? +ev.end - +ev.start : 0;
-      emit(ev, {...ev, start: date, end: new Date(+date+duration), calendar_timezone: ev.start?.tz || 'UTC'}, date);
+      emit(ev, {...ev, start: date, end: new Date(+date+duration), calendar_timezone: ev.start?.tz || 'UTC'}, ev.rrule ? date : ev.recurrenceid || null);
     }
     // Explicit overrides are inspected independently: moved INTO or OUT OF the
     // window must not depend on the old recurrence falling inside the window.

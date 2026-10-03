@@ -21,6 +21,29 @@ const move=(start,...extra)=>event('UID:peggy-series','RECURRENCE-ID;TZID=Americ
 const expanded=raw=>expandSlots(parse(raw).appointments,schedule,overrides);
 const receipt={gmail_id:'fixture-payment',sender_display_name:'Peggy Barlow Happ',amount:70,note:'10/2',noteDate:new Date('2026-10-02T19:00:00Z'),date:new Date('2026-10-02T19:00:00Z')};
 test('EXDATE removes the excluded occurrence',()=>assert.equal(parse(cal(base('EXDATE;TZID=America/Los_Angeles:20261002T073000'))).appointments.length,0));
+test('EXDATE excludes DTSTART even without RRULE',()=>{
+ const raw=cal(event('UID:single-excluded','DTSTART:20261002T160000Z','EXDATE:20261002T160000Z','SUMMARY:60 Mins - 1:1 Personal Training'));
+ assert.equal(parse(raw).appointments.length,0);
+});
+test('cancellation and move overrides apply without RRULE',()=>{
+ const master=event('UID:single-override','DTSTART:20261002T160000Z','SUMMARY:60 Mins - 1:1 Personal Training');
+ const cancelled=event('UID:single-override','RECURRENCE-ID:20261002T160000Z','DTSTART:20261002T160000Z','STATUS:CANCELLED');
+ assert.equal(parse(cal(master,cancelled)).appointments.length,0);
+ const moved=event('UID:single-override','RECURRENCE-ID:20261002T160000Z','DTSTART:20261002T180000Z');
+ const rows=parse(cal(master,moved)).appointments;assert.equal(rows.length,1);
+ assert.equal(rows[0].date.toISOString(),'2026-10-02T18:00:00.000Z');assert.equal(rows[0].calendar_source.recurrence_id,'2026-10-02T16:00:00.000Z');
+});
+test('multiple same-UTC-day EXDATE instants survive comma lists and separate lines',()=>{
+ for(const fields of [['EXDATE:20261002T160000Z,20261002T170000Z'],['EXDATE:20261002T160000Z','EXDATE:20261002T170000Z'],['EXDATE;TZID=America/Los_Angeles:20261002T090000,20261002T100000']]){
+  const raw=cal(event('UID:hourly','DTSTART:20261002T160000Z','RRULE:FREQ=HOURLY;COUNT=3','SUMMARY:60 Mins - 1:1 Personal Training',...fields));
+  const result=parse(raw);assert.deepEqual(result.appointments.map(r=>r.date.toISOString()),['2026-10-02T18:00:00.000Z']);
+  assert.deepEqual(result.snapshot.records[0].exclusions,['2026-10-02T16:00:00.000Z','2026-10-02T17:00:00.000Z']);
+ }
+ assert.throws(()=>parse(cal(base('EXDATE:20261002T143000,20261002T153000Z'))),/explicit timezone/);
+});
+test('unsupported EXRULE refuses before emitting excluded bookings',()=>{
+ assert.throws(()=>parse(cal(base('EXRULE:FREQ=WEEKLY;COUNT=3'))),/Unsupported/);
+});
 test('cancelled recurrence removes old booking without resurrecting it',()=>assert.equal(parse(cal(base(),move('20261002T143000Z','STATUS:CANCELLED'))).appointments.length,0));
 test('moved recurrence emits only corrected time with original occurrence identity',()=>{
  const [row]=parse(cal(base(),move('20261002T163000Z'))).appointments;

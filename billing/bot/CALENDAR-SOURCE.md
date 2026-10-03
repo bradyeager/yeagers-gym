@@ -14,8 +14,10 @@ Attendance/chargeable cancellation entitlement requires separate evidence.
 
 The workflow pins TZ=UTC because the installed node-ical/rrule versions depend on
 host timezone for recurrence expansion. Floating appointment times, unsupported
-RDATE/THISANDFUTURE ranges, duplicate masters and same-UTC-day exception collisions
+RDATE/EXRULE/THISANDFUTURE ranges, duplicate masters and same-UTC-day exception collisions
 fail closed for review. No dependency or GitHub permission change is required.
+Raw EXDATE instants retain full precision, including several exclusions on one
+UTC day. Exclusions and overrides also apply when no RRULE is present.
 
 Future weekly logs save an immutable `YYYY-MM-DD-calendar-source.json` beside the
 log, before delivery through the existing snapshot/commit workflow. It contains
