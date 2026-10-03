@@ -518,8 +518,7 @@ function stripHtml(s) {
 //     "00"       (cents)
 //     "<note>"   ← what we want
 //     "See transaction"
-// We strip HTML, then walk past the amount fragments and return the first
-// non-fragment line that isn't transaction boilerplate.
+// Strip HTML, skip the amount prefix, then retain memo lines up to metadata.
 function extractVenmoNote(body) {
   if (!body) return "";
   const text = stripHtml(body);
@@ -528,22 +527,26 @@ function extractVenmoNote(body) {
   if (paidIdx < 0) return "";
 
   // Matches Venmo's split-amount fragments: "$", "50", "100", "00", ".00", ".25"
-  const AMOUNT_FRAGMENT = /^(\$|\$?\d{1,4}|\.?\d{1,2})$/;
+  const AMOUNT_FRAGMENT = /^(\$|\$?\d{1,4}|\.|\.?\d{1,2})$/;
   const BOILERPLATE = /^(see (transaction|details|payment)|view|sent to|transaction|venmo|click|powered by|©|all rights|the venmo|paypal|money credited|estimated arrival|destination|date$|transaction id|@yeagersgym)/i;
 
-  for (let i = paidIdx + 1; i < Math.min(paidIdx + 15, lines.length); i++) {
+  const memo = [];
+  for (let i = paidIdx + 1; i < lines.length; i++) {
     const raw = lines[i];
     if (!raw) continue;
     // The memo ends before receipt metadata. Never borrow a transaction date
     // when the memo is empty or contains only emoji.
-    if (/^(?:see (?:transaction|details|payment)\b|transaction (?:details|id)\b|money credited\b|date$)/i.test(raw)) break;
-    if (raw.length > 140) continue;
-    if (AMOUNT_FRAGMENT.test(raw)) continue;
-    if (BOILERPLATE.test(raw)) continue;
-    if (/paid your?\b/i.test(raw)) continue;  // Skip duplicate "X paid you" lines in HTML
-    return raw.replace(/^["']|["']$/g, "").trim();
+    if (/^(?:(?:see|view) (?:transaction|details|payment)\b|transaction (?:details|id)\b|money credited\b|date$|sent to\b)/i.test(raw)) break;
+    // Only the amount/header prefix is disposable. Once the memo starts,
+    // retain every line, including numeric lines and explicit session dates.
+    if (!memo.length) {
+      if (AMOUNT_FRAGMENT.test(raw)) continue;
+      if (BOILERPLATE.test(raw)) continue;
+      if (/paid your?\b/i.test(raw)) continue;
+    }
+    memo.push(raw);
   }
-  return "";
+  return memo.join("\n").replace(/^["']|["']$/g, "").trim();
 }
 
 // ---- Reconciliation ----
