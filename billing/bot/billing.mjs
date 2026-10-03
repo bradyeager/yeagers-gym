@@ -417,7 +417,7 @@ export function isLikelyAutoDateMemo(note) {
   return /^(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s+\d{1,2}(?:,\s*\d{4})?$/i.test(String(note || "").trim());
 }
 
-function parseVenmoEmail(msg) {
+export function parseVenmoEmail(msg) {
   const headers = Object.fromEntries((msg.payload?.headers || []).map((h) => [h.name.toLowerCase(), h.value]));
   const subject = headers["subject"] || "";
   const dateHdr = headers["date"] || "";
@@ -534,11 +534,13 @@ function extractVenmoNote(body) {
   for (let i = paidIdx + 1; i < Math.min(paidIdx + 15, lines.length); i++) {
     const raw = lines[i];
     if (!raw) continue;
+    // The memo ends before receipt metadata. Never borrow a transaction date
+    // when the memo is empty or contains only emoji.
+    if (/^(?:see (?:transaction|details|payment)\b|transaction (?:details|id)\b|money credited\b|date$)/i.test(raw)) break;
     if (raw.length > 140) continue;
     if (AMOUNT_FRAGMENT.test(raw)) continue;
     if (BOILERPLATE.test(raw)) continue;
     if (/paid your?\b/i.test(raw)) continue;  // Skip duplicate "X paid you" lines in HTML
-    if (!/[A-Za-z0-9]/.test(raw)) continue;
     return raw.replace(/^["']|["']$/g, "").trim();
   }
   return "";
