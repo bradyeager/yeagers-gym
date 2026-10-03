@@ -73,6 +73,7 @@ jobs:
       - name: Prepare billing reconciliation without sending
         working-directory: billing/bot
         env:
+          TZ: UTC
           # ROLLOUT SAFETY: committed defaults are the proven paths.
           # Scheduled Friday runs have no inputs, so they fall back to
           # BILLING_MODE=schedule + APPOINTMENT_SOURCE=ical. Brad flips to

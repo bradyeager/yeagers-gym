@@ -5,7 +5,7 @@
 
 import fs from "node:fs/promises";
 import path from "node:path";
-import ical from "node-ical";
+import {parseCalendarSource} from "./calendar-source.mjs";
 import { appointmentWindow, assertPeriodRerunConfig } from "./period.mjs";
 import { assertNoPriorDelivery, githubDeliveryStore } from "./delivery.mjs";
 import { google } from "googleapis";
@@ -88,76 +88,18 @@ async function fetchVagaroAppointments() {
 
 // ---- Vagaro iCal (legacy fallback) ----
 
+let calendarSnapshot = null;
 async function fetchVagaroAppointmentsFromIcal() {
-  const events = await withRetry(() => ical.async.fromURL(VAGARO_ICAL_URL), { label: "Vagaro iCal fetch" });
-  const all = Object.values(events);
-  const typeCounts = {};
-  for (const ev of all) typeCounts[ev.type] = (typeCounts[ev.type] || 0) + 1;
-  console.log(`iCal: ${all.length} total entries; types:`, typeCounts);
-
-  const appts = [];
-  let skippedCancelled = 0, skippedOld = 0, skippedFuture = 0, skippedNonBillable = 0;
-  let addedSingle = 0, addedRecurring = 0;
-
-  for (const ev of all) {
-    if (ev.type !== "VEVENT") continue;
-    if ((ev.status || "").toUpperCase() === "CANCELLED") { skippedCancelled++; continue; }
-
-    const summary = (ev.summary || "").trim();
-    const description = (ev.description || "").trim();
-
-    // Skip non-billable events (personal tasks, lunch, errands, training blocks).
-    // Billable Vagaro services always include a ratio like "1:1", "2:1", "3:1".
-    if (!isBillableSession(summary)) { skippedNonBillable++; continue; }
-
-    if (ev.rrule) {
-      const occurrences = ev.rrule.between(WINDOW_START, WINDOW_END, true);
-      for (const occ of occurrences) {
-        appts.push({
-          date: occ,
-          summary,
-          description,
-          client_name: extractClientName(summary, description),
-        });
-        addedRecurring++;
-      }
-      continue;
-    }
-
-    const start = ev.start instanceof Date ? ev.start : new Date(ev.start);
-    if (start < WINDOW_START) { skippedOld++; continue; }
-    if (start > WINDOW_END) { skippedFuture++; continue; }
-
-    appts.push({
-      date: start,
-      summary,
-      description,
-      client_name: extractClientName(summary, description),
-    });
-    addedSingle++;
-  }
-
-  console.log(`iCal filter: added ${addedSingle} single + ${addedRecurring} recurring; skipped ${skippedOld} old, ${skippedFuture} future, ${skippedCancelled} cancelled, ${skippedNonBillable} non-billable`);
-
-  // Show first 3 events for diagnostics so we can tune extractClientName
-  if (appts.length > 0) {
-    console.log(`First ${Math.min(3, appts.length)} events:`);
-    appts.slice(0, 3).forEach((a) =>
-      console.log(`  ${a.date.toISOString()} | summary="${a.summary}" | desc="${a.description.slice(0, 80)}" | extracted_name="${a.client_name}"`),
-    );
-  } else {
-    // Show first 3 RAW VEVENTs so we can see what they look like
-    const rawVevents = all.filter((e) => e.type === "VEVENT").slice(0, 3);
-    console.log(`No appointments in window. Sample of ${rawVevents.length} raw VEVENTs:`);
-    rawVevents.forEach((e, i) => {
-      console.log(`  [${i}] start=${e.start} status=${e.status || ""} rrule=${!!e.rrule} summary="${(e.summary || "").slice(0, 80)}"`);
-    });
-  }
-
-  appts.sort((a, b) => a.date - b.date);
-  return appts;
+  const raw = await withRetry(async () => {
+    const response = await fetch(VAGARO_ICAL_URL, {signal: AbortSignal.timeout(30000)});
+    if (!response.ok) throw new Error(`Calendar fetch failed (${response.status})`);
+    return response.text();
+  }, {label: "Vagaro iCal fetch"});
+  const parsed = parseCalendarSource(raw, {start: WINDOW_START, end: WINDOW_END, runId: process.env.GITHUB_RUN_ID || null, repositorySha: process.env.GITHUB_SHA || null});
+  calendarSnapshot = parsed.snapshot;
+  console.log(`iCal: ${parsed.appointments.length} window occurrences; source sha256=${calendarSnapshot.source_sha256}`);
+  return parsed.appointments;
 }
-
 // ---- Vagaro events (Phase 3 — live webhook feed) ----
 //
 // Each file in billing/vagaro-events/ is one Vagaro webhook envelope:
@@ -551,20 +493,11 @@ function extractVenmoNote(body) {
 
 // ---- Reconciliation ----
 
-// Expand raw iCal slots into per-client appointments via the schedule.
-// Each slot can produce N entries (one per client in that day+time).
-// Slots not in the schedule produce one UNIDENTIFIED entry.
-// Group iCal events by date+time. Schedule.csv is the source of truth
-// for WHO attends a given slot — every active entry there gets billed.
-// iCal events just confirm the session happened. If iCal has more events
-// than schedule entries (a stranger booked into that slot), excess events
-// → UNIDENTIFIED unless an INACTIVE marker covers the slot.
-//
-// This handles both:
-//   - Single Vagaro booking covering multiple attendees (Senior Games 3:1)
-//     → 1 iCal event + 3 schedule entries = 3 records, all billed.
-//   - Separate parallel sessions at the same time (Mon 8am Peggy 2:1 +
-//     michelle 1:1) → 2 iCal events + 2 schedule entries = 2 records.
+// Calendar-source records keep one record per UID/occurrence. Explicit
+// customers survive time-based roster lookup; candidates/conflicts stay review.
+// Legacy records without source provenance retain their historical expansion
+// behavior for historical fixtures. Production iCal parsing always supplies
+// calendar_source, so a service slot cannot invent attendees from schedule.csv.
 export function expandSlots(slots, schedule, scheduleOverrides = []) {
   const groups = new Map();
   for (const slot of slots) {
@@ -585,6 +518,23 @@ export function expandSlots(slots, schedule, scheduleOverrides = []) {
       : (schedule.length ? isInactiveSlot(schedule, group[0].date) : false);
     const n = group.length;
     const k = entries.length;
+
+    // New calendar records retain explicit source identity. Time-based roster
+    // rows are candidates only; neither receipts nor INACTIVE markers can
+    // replace an explicitly named appointment or erase a distinct UID.
+    if (group.some(slot => slot.calendar_source)) {
+      for (const slot of group) {
+        const matched = entries.find(e => e.client_name.toLowerCase() === (slot.client_name || '').toLowerCase());
+        const candidates = entries.map(e => e.client_name);
+        const reason = slot.calendar_review || (!slot.client_name
+          ? 'Calendar customer unidentified; roster candidates are not attendance or settlement evidence'
+          : !matched ? 'Explicit calendar customer conflicts with the recurring roster or has no verified slot mapping' : null);
+        out.push({...slot, roster_candidates: candidates, calendar_review: reason,
+          price_override: matched?.price_override, unidentified: !slot.client_name,
+          mapping_ambiguous: Boolean(reason)});
+      }
+      continue;
+    }
 
     // Bill every active schedule entry. If iCal has fewer events than
     // entries (e.g. Senior Games 1 booking → 3 attendees), entries share
@@ -608,6 +558,20 @@ export function expandSlots(slots, schedule, scheduleOverrides = []) {
       for (let i = k; i < n; i++) {
         out.push({ ...group[i], client_name: null, unidentified: true });
       }
+    }
+  }
+  const namedDays = new Map();
+  for (const appt of out) {
+    if (!appt.calendar_source || !appt.client_name) continue;
+    const key = `${fmtDateIsoPacific(appt.date)}|${appt.client_name.toLowerCase()}`;
+    if (!namedDays.has(key)) namedDays.set(key, []);
+    namedDays.get(key).push(appt);
+  }
+  for (const sameDay of namedDays.values()) {
+    if (sameDay.length < 2) continue;
+    for (const appt of sameDay) {
+      appt.calendar_review = 'Multiple distinct calendar occurrences name this customer on the same day; verify appointment identities before settlement';
+      appt.mapping_ambiguous = true;
     }
   }
   return out;
@@ -936,7 +900,7 @@ export function reconcile(appointments, payments, clients, cashLog, cancellation
   // Per-appointment view of the same gates the loop applies, so the pre-pass
   // only ever reserves sessions the loop would actually try to settle.
   const apptMeta = appointments.map((appt) => {
-    if (appt.unidentified) return null;
+    if (appt.unidentified || appt.calendar_review) return null;
     const roster = byVagaroName.get((appt.client_name || "").toLowerCase());
     if (!roster) return null;
     if (cancelledSet.has(cancelKey(appt.date, roster.vagaro_name))) return null;
@@ -1026,6 +990,11 @@ export function reconcile(appointments, payments, clients, cashLog, cancellation
 
   for (let apptIndex = 0; apptIndex < appointments.length; apptIndex++) {
     const appt = appointments[apptIndex];
+    if (appt.calendar_review) {
+      const roster = byVagaroName.get((appt.client_name || "").toLowerCase());
+      results.push({appt, roster, status: "NEEDS_REVIEW", note: appt.calendar_review});
+      continue;
+    }
     if (appt.unidentified) {
       results.push({ appt, status: "UNIDENTIFIED_SLOT" });
       continue;
@@ -1292,7 +1261,7 @@ export function reconcile(appointments, payments, clients, cashLog, cancellation
     // false "Lacey Thu noon" — never again.)
     const cand = results
       .map((r, ri) => ({ r, ri }))
-      .filter(({ r, ri }) => r.status === "UNIDENTIFIED_SLOT" && !pairedSlots.has(ri))
+      .filter(({ r, ri }) => r.status === "UNIDENTIFIED_SLOT" && !r.appt.calendar_source && !pairedSlots.has(ri))
       .filter(({ r }) => sameDay(p.noteDate, r.appt.date))
       .filter(({ }) => amountScore(p.amount, accept) >= 0.8)
       .sort((a, b) =>
@@ -1327,6 +1296,9 @@ export function reconcile(appointments, payments, clients, cashLog, cancellation
     if (r.status !== "UNPAID" || !r.roster) continue;
     const name = r.roster.vagaro_name;
     const reasons = [];
+    if (r.appt.calendar_source) {
+      reasons.push("Calendar booking does not prove attendance or a chargeable debt");
+    }
     if (r.appt.mapping_ambiguous) {
       reasons.push("iCal slot does not uniquely prove this scheduled client attended");
     }
@@ -1530,7 +1502,7 @@ export function buildEmail({ results, unmatchedPayments, now = NOW, windowStart 
   const reviewCard = (r) => {
     const expected = r.expectedPrice || r.roster?.default_price || 0;
     const received = r.payment?.amount ?? null;
-    const name = r.roster.vagaro_name;
+    const name = r.roster?.vagaro_name || r.appt.client_name || '(unidentified calendar customer)';
     let inner = `<div style="font-family:${FONTS.body};font-size:13px;color:${PALETTE.textPrimary};margin-bottom:4px;"><strong>${escapeHtml(name)}</strong> | ${fmtDate(r.appt.date)} | REVIEW, DO NOT REQUEST</div>`;
     if (received != null) {
       inner += `<div style="font-family:${FONTS.display};font-size:12px;color:${PALETTE.textMuted};margin-bottom:8px;">Expected $${expected} | payment evidence $${received}${r.payment?.note ? ` | "${escapeHtml(r.payment.note)}"` : ""}</div>`;
@@ -2432,13 +2404,18 @@ async function runPaymentDriven() {
 
 // ---- Log file ----
 
-export async function writeLog({ appointments, payments, results, unmatchedPayments, logsDir = LOGS_DIR, dryRun = DRY_RUN === "true" }) {
+export async function writeLog({ appointments, payments, results, unmatchedPayments, logsDir = LOGS_DIR, dryRun = DRY_RUN === "true", calendarSource = calendarSnapshot }) {
   const destination = dryRun ? path.join(REPO_ROOT, "billing", "bot", ".delivery") : logsDir;
   await fs.mkdir(destination, { recursive: true });
   const file = path.join(destination, dryRun ? "preview.md" : `${fmtDateIsoPacific(NOW)}.md`);
   let md = `# Weekly billing log — ${fmtDateIso(NOW)}\n\n`;
   md += `Window: ${WINDOW_START.toISOString()} → ${WINDOW_END.toISOString()}\n\n`;
   md += `## Appointments (${appointments.length})\n`;
+  if (calendarSource) {
+    const snapshotFile = path.join(destination, dryRun ? 'preview-calendar-source.json' : `${fmtDateIsoPacific(NOW)}-calendar-source.json`);
+    await fs.writeFile(snapshotFile, JSON.stringify(calendarSource, null, 2), {encoding: 'utf8', flag: dryRun ? 'w' : 'wx'});
+    md += `Calendar source: sha256=${calendarSource.source_sha256}; run=${calendarSource.run_id || 'local'}; snapshot=${path.basename(snapshotFile)}\n\n`;
+  }
   for (const r of results) {
     const name = r.roster?.vagaro_name || r.appt.client_name || `[unidentified: ${r.appt.summary || "?"}]`;
     const price = r.expectedPrice ?? r.roster?.default_price ?? "?";
@@ -2453,6 +2430,7 @@ export async function writeLog({ appointments, payments, results, unmatchedPayme
     }
     if (r.inferred) md += ` [INFERRED reschedule]`;
     if (r.note) md += ` — ${r.note}`;
+    if (r.appt.calendar_source) md += ` [calendar ${JSON.stringify(r.appt.calendar_source)}; roster candidates ${JSON.stringify(r.appt.roster_candidates || [])}]`;
     md += `\n`;
   }
   md += `\n## Venmo payments received (${payments.length})\n`;
@@ -2530,7 +2508,7 @@ async function main() {
   // attendee with a Vagaro-resolved client_name + price. Do NOT route through
   // expandSlots (that clobbers the resolved name with schedule.csv rows and
   // re-prices from schedule). Emit the per-appointment records as-is. iCal
-  // mode still expands raw slots via schedule.csv, unchanged.
+  // mode now retains source identity and treats roster rows as review candidates.
   const appointments = APPOINTMENT_SOURCE === "ical"
     ? expandSlots(rawSlots, schedule, scheduleOverrides)
     : rawSlots;
