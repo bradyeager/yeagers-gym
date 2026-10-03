@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {assertNoPriorDelivery, preparationFailureDiagnostic} from './delivery.mjs';
+import {assertNoPriorDelivery, preparationFailureDiagnostic, PriorWeeklyClaimError} from './delivery.mjs';
 
 const period = '2026-10-02';
 const now = new Date('2026-10-03T09:52:03Z');
@@ -35,4 +35,18 @@ test('invalid cutoff fails before store read and stays unclassified', async () =
   return true;
  });
  assert.equal(reads,0);
+});
+test('mutable exception properties cannot change diagnostic classification', () => {
+ const error = new PriorWeeklyClaimError('accepted');
+ error.claimState = 'PRIVATE_CUSTOMER_SECRET';
+ error.message = 'PRIVATE_TOKEN';
+ assert.equal(preparationFailureDiagnostic(error),'Weekly preparation blocked: prior claim (accepted); no automatic resend');
+});
+test('exception accessors and subclasses cannot leak or throw during formatting', () => {
+ class HostileClaim extends PriorWeeklyClaimError {
+  get claimState() { throw new Error('PRIVATE_ACCESSOR_SECRET'); }
+ }
+ const error = new HostileClaim('PRIVATE_INPUT_SECRET');
+ Object.defineProperty(error,'message',{get(){throw new Error('PRIVATE_MESSAGE_SECRET');}});
+ assert.equal(preparationFailureDiagnostic(error),'Weekly preparation blocked: prior claim (unknown); no automatic resend');
 });
