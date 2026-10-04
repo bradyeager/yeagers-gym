@@ -8,6 +8,34 @@ const iso = value => value instanceof Date && !Number.isNaN(+value) ? value.toIS
 const clean = value => String(value || '').replace(/https?:\/\/\S+|mailto:\S+|[\w.+-]+@[\w.-]+\.[a-z]+/gi, '[redacted]').replace(/[\r\n]+/g, ' ').slice(0, 300);
 const provenanceUid = uid => 'sha256:'+createHash('sha256').update(String(uid)).digest('hex');
 
+// iCalendar names are case-insensitive; node-ical's special handlers are not.
+// Share one normalization boundary with validation, retaining every text value.
+function splitQuoted(text, separator) {
+  const parts = []; let quoted = false, start = 0;
+  for (let i=0; i<text.length; i++) {
+    if (text[i] === '"') quoted = !quoted;
+    if (!quoted && text[i] === separator) {parts.push(text.slice(start,i)); start=i+1;}
+  }
+  parts.push(text.slice(start)); return parts;
+}
+function contentLine(line) {
+  const pieces = splitQuoted(line, ':');
+  const header = splitQuoted(pieces.shift(), ';');
+  return {name: header[0], parameters: header.slice(1), value: pieces.join(':'), header: header.join(';')};
+}
+function canonicalCalendar(raw) {
+  return raw.replace(/\r?\n[ \t]/g, '').split(/\r?\n/).map(line => {
+    if (!line.includes(':')) return line;
+    const field = contentLine(line);
+    const name = field.name.toUpperCase();
+    const parameters = field.parameters.map(p=>{
+      const equals=p.indexOf('='); return equals<0 ? p.toUpperCase() : p.slice(0,equals).toUpperCase()+p.slice(equals);
+    });
+    const value = name==='BEGIN' || name==='END' ? field.value.toUpperCase() : field.value;
+    return [name,...parameters].join(';')+':'+value;
+  }).join('\r\n');
+}
+
 // Only explicit name fields count. A service title or receipt is not identity.
 export function calendarIdentity(ev) {
   const names = new Set();
@@ -33,36 +61,36 @@ function validateRaw(raw) {
   // All UID-keyed guards and exclusions use the same decoded representation
   // as the full parser, including escaped commas/semicolons/backslashes.
   const blocks = (unfolded.match(/BEGIN:VEVENT[\s\S]*?END:VEVENT/g) || []).map(block => {
-    const uidLine = block.match(/^UID:[^\r\n]*/m)?.[0];
-    const summaries = (block.match(/^SUMMARY(?:;[^:]*)?:[^\r\n]*/gm) || []).join('\r\n');
+    const fields=block.split(/\r?\n/).map(line=>({line,...contentLine(line)}));
+    const uidLine = fields.find(f=>f.name==='UID')?.line;
+    const summaries = fields.filter(f=>f.name==='SUMMARY').map(f=>f.line).join('\r\n');
     const parsed = Object.values(ical.sync.parseICS('BEGIN:VCALENDAR\r\nVERSION:2.0\r\nBEGIN:VEVENT\r\n'+(uidLine || '')+'\r\n'+summaries+'\r\nEND:VEVENT\r\nEND:VCALENDAR')).find(e=>e.type==='VEVENT');
-    return {block, uid: parsed?.uid, summary: parsed?.summary};
+    return {block, fields, uid: parsed?.uid, summary: parsed?.summary};
   });
   const billableUids = new Set(blocks.filter(({summary})=>billableCalendarService(summary)).map(({uid})=>uid));
   const exceptionDays = new Set();
   const masters = new Set();
   const exclusions = new Map();
-  for (const {block, uid} of blocks) {
+  for (const {block, fields, uid} of blocks) {
     if (!billableUids.has(uid)) continue;
     if (/^(?:RDATE|EXRULE)[;:]/m.test(block) || /RANGE=THISANDFUTURE/i.test(block)) throw new Error('Unsupported calendar recurrence range/additional dates/exclusion rule; review source');
-    for (const field of block.match(/^(?:DTSTART|RECURRENCE-ID|EXDATE)[^\r\n]*/gm) || []) {
-      const tz = field.match(/TZID=([^;:]+)/)?.[1]?.replaceAll('"', '');
-      const values = field.slice(field.indexOf(':') + 1).trim().split(',');
+    for (const field of fields.filter(f=>['DTSTART','RECURRENCE-ID','EXDATE'].includes(f.name))) {
+      const tz = field.parameters.find(p=>p.startsWith('TZID='))?.slice(5).replaceAll('"', '');
+      const values = field.value.trim().split(',');
       if (!values.every(value => (tz ? /^\d{8}T\d{6}$/ : /^\d{8}T\d{6}Z$/).test(value))) throw new Error('Calendar requires explicit timezone on timed appointments');
       if (tz) {
         try {new Intl.DateTimeFormat('en', {timeZone: tz});}
         catch {throw new Error('Calendar timezone is not supported; review source');}
       }
     }
-    if (!uid || /https?:\/\//i.test(uid)) throw new Error('Calendar UID missing or unsafe for provenance');
-    const rid = block.match(/^RECURRENCE-ID[^:]*:(.*)$/m)?.[1]?.trim();
+    if (typeof uid !== 'string' || !uid || /https?:\/\//i.test(uid)) throw new Error('Calendar UID missing or unsafe for provenance');
+    const rid = fields.find(f=>f.name==='RECURRENCE-ID')?.value.trim();
     // node-ical keys EXDATE by UTC day too, dropping earlier same-day times.
     // Parse each raw instant independently and retain a full-precision set.
-    for (const field of block.match(/^EXDATE[^\r\n]*/gm) || []) {
+    for (const field of fields.filter(f=>f.name==='EXDATE')) {
       if (rid) throw new Error('Unsupported exclusion on calendar exception; review source');
-      const colon = field.indexOf(':');
-      const prefix = field.slice(0, colon + 1);
-      for (const value of field.slice(colon + 1).trim().split(',')) {
+      const prefix = field.header+':';
+      for (const value of field.value.trim().split(',')) {
         const parsed = Object.values(ical.sync.parseICS('BEGIN:VCALENDAR\r\nVERSION:2.0\r\nBEGIN:VEVENT\r\nUID:exclusion-fixture\r\n'+prefix+value+'\r\nEND:VEVENT\r\nEND:VCALENDAR')).find(e=>e.type==='VEVENT');
         const instant = iso(Object.values(parsed?.exdate || {})[0]);
         if (!instant) throw new Error('Invalid calendar exclusion instant; review source');
@@ -86,11 +114,12 @@ function validateRaw(raw) {
 
 export function parseCalendarSource(raw, {start, end, capturedAt = new Date(), runId = null, repositorySha = null} = {}) {
   if (!(start instanceof Date) || !(end instanceof Date) || !(start <= end)) throw new Error('Invalid calendar window');
-  const rawExclusions = validateRaw(raw);
+  const canonical = canonicalCalendar(raw);
+  const rawExclusions = validateRaw(canonical);
   // rrule 2.8/node-ical 0.20 TZID expansion depends on the host timezone.
   // The workflow pins UTC. Other hosts fail closed rather than shift appointments.
   if (Intl.DateTimeFormat().resolvedOptions().timeZone !== 'UTC') throw new Error('Calendar expansion requires TZ=UTC');
-  const events = ical.sync.parseICS(raw);
+  const events = ical.sync.parseICS(canonical);
   const appointments = [], records = [];
   const internalAppointmentUids = new WeakMap();
   const emit = (master, occurrence, original) => {

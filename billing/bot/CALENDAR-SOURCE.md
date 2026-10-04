@@ -29,6 +29,12 @@ is a stable hash, including email-shaped and opaque values. Raw decoded UIDs sta
 internal for recurrence/exclusion grouping and original same-time ordering.
 Billable validation uses parsed SUMMARY only, grouping related exceptions by UID;
 unrelated description text cannot make a reminder a billing appointment.
+Validation and the full parser share one content-line normalization boundary:
+property/parameter names and BEGIN/END component names are canonicalized without
+changing UID, summary, timezone or other text values. Quoted parameter delimiters
+and folded lines retain their meaning. This closes mixed-case bypasses for service
+validation, exclusions, dates, UID guards and unsupported recurrence properties.
+The source digest still hashes the original input bytes.
 This reproduces the normalized source decisions; it is not a raw private ICS
 archive. Original source bytes can only be compared if separately available.
 
