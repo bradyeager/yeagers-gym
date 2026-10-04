@@ -220,7 +220,7 @@ export function buildMoneyLine({ results, unmatchedPayments, now, windowStart, c
       const issue = r.note || (received != null
         ? `Payment evidence is unresolved: received ${money(received)} against expected ${money(expected)}.`
         : "Attendance, reschedule, or payment allocation is not yet confirmed.");
-      items.push({ priority: 2, type: "Review - Do Not Request", accent: T.review, client: r.roster?.vagaro_name, when: fmtShort(r.appt.date) + " | " + timeOf(r.appt.date), expected, received, method: received != null ? "Venmo" : null, issue, fix: "Verify the evidence first. A review item is not a receivable and has no request button.", action: "" });
+      items.push({ priority: 2, type: "Review - Do Not Request", accent: T.review, client: r.roster?.vagaro_name || r.appt.client_name || "(unidentified calendar customer)", when: fmtShort(r.appt.date) + " | " + timeOf(r.appt.date), expected, received, method: received != null ? "Venmo" : null, issue, fix: "Verify the evidence first. A review item is not a receivable and has no request button.", action: "" });
     }
     for (const r of cats.cashPending) {
       const notes = (r.roster?.notes || "").toLowerCase();
