@@ -1,4 +1,5 @@
 import test from 'node:test';
+import {createHash} from 'node:crypto';
 import assert from 'node:assert/strict';
 import {parseCalendarSource} from './calendar-source.mjs';
 import {expandSlots, reconcile, buildEmail, writeLog} from './billing.mjs';
@@ -10,6 +11,7 @@ import {execFileSync} from 'node:child_process';
 import {loadSchedule, loadScheduleOverrides, loadClients} from './lib.mjs';
 import {fileURLToPath} from 'node:url';
 const root = new URL('../../', import.meta.url);
+const uidHash = uid => 'sha256:'+createHash('sha256').update(uid).digest('hex');
 const schedule=await loadSchedule(fileURLToPath(new URL('billing/schedule.csv',root)));
 const overrides=await loadScheduleOverrides(fileURLToPath(new URL('billing/schedule-overrides.csv',root)));
 const clients=await loadClients(fileURLToPath(new URL('billing/clients.csv',root)));
@@ -48,7 +50,7 @@ test('escaped UID uses decoded exclusion keys and preserves every excluded insta
  for(const [rawUid,decodedUid] of [['series\\,one','series,one'],['series\\;one','series;one'],['series\\\\one','series\\one']]){
   const raw=cal(event('UID:'+rawUid,'DTSTART:20261002T160000Z','RRULE:FREQ=HOURLY;COUNT=3','SUMMARY:60 Mins - 1:1 Personal Training','EXDATE:20261002T160000Z,20261002T170000Z'));
   const p=parse(raw);assert.deepEqual(p.appointments.map(r=>r.date.toISOString()),['2026-10-02T18:00:00.000Z']);
-  assert.equal(p.appointments[0].calendar_source.uid,decodedUid);assert.equal(p.snapshot.records[0].uid,decodedUid);assert.equal(p.snapshot.records[0].exclusions.length,2);
+  assert.equal(p.appointments[0].calendar_source.uid,uidHash(decodedUid));assert.equal(p.snapshot.records[0].uid,uidHash(decodedUid));assert.equal(p.snapshot.records[0].exclusions.length,2);
  }
 });
 test('different escaped spellings of same decoded master UID fail closed',()=>{
@@ -59,7 +61,7 @@ test('cancelled recurrence removes old booking without resurrecting it',()=>asse
 test('moved recurrence emits only corrected time with original occurrence identity',()=>{
  const [row]=parse(cal(base(),move('20261002T163000Z'))).appointments;
  assert.equal(row.date.toISOString(),'2026-10-02T16:30:00.000Z');
- assert.equal(row.calendar_source.uid,'peggy-series');assert.equal(row.calendar_source.recurrence_id,'2026-10-02T14:30:00.000Z');
+ assert.equal(row.calendar_source.uid,uidHash('peggy-series'));assert.equal(row.calendar_source.recurrence_id,'2026-10-02T14:30:00.000Z');
 });
 test('override moved out of window is omitted',()=>assert.equal(parse(cal(base(),move('20261003T163000Z'))).appointments.length,0));
 test('override moved into window is included even with original outside window',()=>{
@@ -100,7 +102,7 @@ test('Peggy09:30 identity survives Celestin roster conflict without payment allo
 test('paired stale07:30 and current09:30 Peggy occurrences both stay review and retain UIDs',()=>{
  const rows=expanded(cal(base(),event('UID:peggy-current','DTSTART:20261002T163000Z','SUMMARY:60 Min - 2:1 Semi-Private','DESCRIPTION:Client: Peggy Happ')));
  assert.equal(rows.length,2);assert.ok(rows.every(r=>r.client_name==='Peggy Happ'&&r.calendar_review));
- assert.deepEqual(new Set(rows.map(r=>r.calendar_source.uid)),new Set(['peggy-series','peggy-current']));
+ assert.deepEqual(new Set(rows.map(r=>r.calendar_source.uid)),new Set(['peggy-series','peggy-current'].map(uidHash)));
  const r=reconcile(rows,[receipt],clients,[]);assert.ok(r.results.every(r=>r.status==='NEEDS_REVIEW'));assert.equal(r.newMatches.length,0);
 });
 test('distinct Friday08:30 UIDs are preserved; only one explicitly identifies Jacob',()=>{
@@ -170,10 +172,11 @@ test('future log persists sanitized source snapshot with occurrence IDs and refu
   const p=parse(cal(base()));const rows=expandSlots(p.appointments,schedule,overrides);const r=reconcile(rows,[],clients,[]);
   const args={appointments:rows,payments:[],results:r.results,unmatchedPayments:[],logsDir:dir,dryRun:false,calendarSource:p.snapshot};
   const {file}=await writeLog(args);
-  assert.match(await fs.readFile(file,'utf8'),/peggy-series/);
+  const log=await fs.readFile(file,'utf8');
+  assert.ok(log.includes(uidHash('peggy-series')));assert.ok(!log.includes('peggy-series'));
   const snapshotFile=(await fs.readdir(dir)).find(f=>f.endsWith('-calendar-source.json'));
   const saved=JSON.parse(await fs.readFile(path.join(dir,snapshotFile),'utf8'));
-  assert.equal(saved.source_sha256,p.snapshot.source_sha256);assert.equal(saved.records[0].uid,'peggy-series');
+ assert.equal(saved.source_sha256,p.snapshot.source_sha256);assert.equal(saved.records[0].uid,uidHash('peggy-series'));
   await assert.rejects(()=>writeLog(args),e=>e.code==='EEXIST');
  }finally{await fs.rm(dir,{recursive:true,force:true});}
 });
