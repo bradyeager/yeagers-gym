@@ -7,7 +7,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import {parseCalendarSource} from "./calendar-source.mjs";
 import { appointmentWindow, assertPeriodRerunConfig } from "./period.mjs";
-import { assertNoPriorDelivery, githubDeliveryStore } from "./delivery.mjs";
+import { assertNoPriorDelivery, githubDeliveryStore, preparationFailureDiagnostic } from "./delivery.mjs";
 import { google } from "googleapis";
 import {
   PALETTE, FONTS, GITHUB_OWNER, GITHUB_REPO, DEFAULT_BRANCH,
@@ -2467,6 +2467,7 @@ async function main() {
   });
   if (DRY_RUN !== "true") {
     if (process.env.BILLING_DELIVERY_PHASE !== "prepare") throw new Error("Weekly production requires durable prepare/commit/delivery workflow");
+    console.log("Weekly preparation: checking prior delivery claim before data reads");
     await assertNoPriorDelivery(PERIOD_END, githubDeliveryStore());
   }
   // Phase 4: payment-driven mode is a fully separate code path. It skips iCal
@@ -2570,7 +2571,7 @@ async function main() {
 }
 
 const isDirectRun = process.argv[1] && import.meta.url === `file://${process.argv[1]}`;
-if (isDirectRun) main().catch(() => {
-  console.error("Weekly preparation failed; no email dispatched. Inspect Actions and outbox before retrying.");
+if (isDirectRun) main().catch((error) => {
+  console.error(preparationFailureDiagnostic(error));
   process.exitCode = 1;
 });

@@ -35,10 +35,25 @@ export function assertDeliveryCutoff(periodEnd, now = new Date()) {
  if(!Number.isFinite(new Date(now).getTime()) || new Date(now) < cutoff) throw new Error("Weekly delivery cannot be claimed before the scheduled Friday cutoff");
  return cutoff;
 }
+const priorClaimStates = new WeakMap();
+export class PriorWeeklyClaimError extends Error {
+ constructor(state) {
+  super('Weekly delivery already claimed; no automatic resend');
+  priorClaimStates.set(this, ['accepted', 'pending'].includes(state) ? state : 'unknown');
+ }
+}
+export function preparationFailureDiagnostic(error) {
+ // Never print arbitrary provider/store errors, URLs, tokens or record fields.
+ const state = priorClaimStates.get(error);
+ return state
+  ? `Weekly preparation blocked: prior claim (${state}); no automatic resend`
+  : 'Weekly preparation failed: cause unclassified; no email dispatched. Inspect Actions and outbox before retrying.';
+}
 export async function assertNoPriorDelivery(periodEnd,store,{now=new Date()}={}) {
  const id=deliveryIdentity(periodEnd);
  assertDeliveryCutoff(periodEnd,now);
- if(await store.read(id))throw new Error('Weekly delivery already claimed; no automatic resend');
+ const prior = await store.read(id);
+ if(prior)throw new PriorWeeklyClaimError(prior.record?.state);
  return id;
 }
 // Shared atomic claim/attempt logic; cadence-specific eligibility stays in wrappers.
