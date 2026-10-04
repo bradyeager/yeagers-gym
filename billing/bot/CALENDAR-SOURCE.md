@@ -1,6 +1,6 @@
 # Calendar identity and recurrence reliability
 
-Production iCal records retain a UID and original recurrence ID, actual start/end,
+Production iCal records retain a SHA-256 key of the decoded UID and original recurrence ID, actual start/end,
 source timezone/status and explicit customer identity. A recurring roster supplies
 candidate names and prices; it cannot replace a source customer or invent attendees.
 Unidentified, conflicting, tentative and multiple same-customer/day occurrences
@@ -24,6 +24,11 @@ log, before delivery through the existing snapshot/commit workflow. It contains
 the input digest, capture time, run/repository SHA, parser versions, relevant
 normalized event/exception facts and emitted occurrences. Private calendar URLs,
 raw descriptions, attendee emails, secrets and unrelated events are omitted.
+Snapshot version2 declares `uid_encoding=sha256-decoded-uid`; every persisted UID
+is a stable hash, including email-shaped and opaque values. Raw decoded UIDs stay
+internal for recurrence/exclusion grouping and original same-time ordering.
+Billable validation uses parsed SUMMARY only, grouping related exceptions by UID;
+unrelated description text cannot make a reminder a billing appointment.
 This reproduces the normalized source decisions; it is not a raw private ICS
 archive. Original source bytes can only be compared if separately available.
 
