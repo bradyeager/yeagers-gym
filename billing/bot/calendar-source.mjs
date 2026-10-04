@@ -74,7 +74,7 @@ function validateRaw(raw) {
   for (const {block, fields, uid} of blocks) {
     if (!billableUids.has(uid)) continue;
     if (/^(?:RDATE|EXRULE)[;:]/m.test(block) || /RANGE=THISANDFUTURE/i.test(block)) throw new Error('Unsupported calendar recurrence range/additional dates/exclusion rule; review source');
-    for (const field of fields.filter(f=>['DTSTART','RECURRENCE-ID','EXDATE'].includes(f.name))) {
+    for (const field of fields.filter(f=>['DTSTART','DTEND','RECURRENCE-ID','EXDATE'].includes(f.name))) {
       const tz = field.parameters.find(p=>p.startsWith('TZID='))?.slice(5).replaceAll('"', '');
       const values = field.value.trim().split(',');
       if (!values.every(value => (tz ? /^\d{8}T\d{6}$/ : /^\d{8}T\d{6}Z$/).test(value))) throw new Error('Calendar requires explicit timezone on timed appointments');
