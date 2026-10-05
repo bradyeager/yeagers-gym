@@ -1,0 +1,32 @@
+{
+  "id": "c2230669-02ef-4efc-ac53-739f2842432b",
+  "createdDate": "2026-10-05T03:03:09.8940031Z",
+  "type": "appointment",
+  "action": "created",
+  "payload": {
+    "appointmentId": "yYXxQ5pgrV4PviZYDZ9soQ==",
+    "startTime": "2026-10-01T16:00:00Z",
+    "endTime": "2026-10-01T17:00:00Z",
+    "bookingStatus": "Service Completed",
+    "serviceTitle": "60 Mins – 1:1 Personal Training",
+    "serviceId": "D8XP1kZ87RncRP2ZsvT4bw==",
+    "calendarEventId": null,
+    "amount": 70,
+    "eventType": "Appointment",
+    "onlineVsInhouse": "Booked Inhouse",
+    "appointmentTypeCode": "",
+    "appointmentTypeName": "",
+    "customerId": "wAyO4ihiyq7wemkiRJx1Ow==",
+    "bookingSource": "Booked Inhouse",
+    "serviceProviderId": "TuzDHqmtraIfkDqnIzmWHw==",
+    "businessId": "KC9blI3VkybEbxHRtAKSgw==",
+    "businessAlias": null,
+    "businessGroupId": null,
+    "serviceCategory": null,
+    "createdDate": "2026-10-05T03:03:09.755Z",
+    "createdBy": "TuzDHqmtraIfkDqnIzmWHw==",
+    "modifiedDate": null,
+    "modifiedBy": null,
+    "formResponseIds": null
+  }
+}
