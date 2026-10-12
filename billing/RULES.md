@@ -100,6 +100,7 @@ Tonnie/Peggy keep both 40 and 45 in valid_prices so historical $45 payments
 - David doesn't have his own Vagaro booking
 
 ### Katelin Lowther + Anna Cessna (Mon 9am, sometimes 3:1 with Dina)
+- Brad's October 5 standing rule overrides **Katelin Lowther's** Monday rate: **$25**, regardless of the older group label. Wednesday 2:1 remains **$50**. Existing Katie/James Lowther payer aliases are retained; similarly named customers are not interchangeable. Monday receipt evidence never settles Wednesday.
 - 2:1 (just Katelin + Anna): **$50 each**
 - 3:1 (Dina joins): **$45 each**
 - Katelin's Venmo display: **"katie lowther"** (or sometimes husband "James Lowther")
@@ -146,8 +147,8 @@ Tonnie/Peggy keep both 40 and 45 in valid_prices so historical $45 payments
 - Venmo display: "Peggy Barlow Happ"
 
 ### Michelle DeLorenzo
-- **1 of 2 weekly sessions is FREE** through ~Aug 2026 (10-week promo from May 2026)
-- Expect 1 PAID + 1 UNPAID per week → tap "Accept as paid" on the free one
+- **Second weekly session is FREE**, per Brad October 5, 2026; this is an ongoing rule, not an expired August promotion.
+- `standing-rules.json` is read by the scheduled reconciliation. An unambiguous second session is classified as zero-collection free (legacy PAID_PREPAID status with an explicit FREE note), not debt. Existing conflicting allocations and ambiguous mirror identities remain review holds.
 - Venmo display: "Michelle DeLorenzo" (Vagaro shows as "michelle Delorenza")
 
 ### Lacey James

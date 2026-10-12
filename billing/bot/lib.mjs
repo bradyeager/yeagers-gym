@@ -437,6 +437,13 @@ export async function saveMatchedLedger(repoRoot, ledger) {
 // `YYYY-MM-DD | Client Name | reason`. The bot drops matching iCal slots
 // from the run so the client doesn't get billed for sessions they missed.
 
+export function cancellationMatches(entry, date, name) {
+  const day = typeof date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(date) ? date : fmtDateIsoPacific(date);
+  if (entry.date !== day || String(entry.name || '').toLowerCase() !== String(name || '').toLowerCase()) return false;
+  if (!entry.time_pacific) return true; // Existing explicitly day-scoped records.
+  return new Intl.DateTimeFormat('en-GB', {timeZone:'America/Los_Angeles',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).format(new Date(date)) === entry.time_pacific;
+}
+
 export async function loadCancellations(repoRoot) {
   const entries = [];
   const dirPath = path.join(repoRoot, "billing", "cancellations");
@@ -452,7 +459,13 @@ export async function loadCancellations(repoRoot) {
       const raw = await fs.readFile(path.join(dirPath, f), "utf8");
       for (const line of raw.split("\n")) {
         const m = line.trim().match(lineRe);
-        if (m) entries.push({ date: m[1], name: m[2].trim(), reason: (m[3] || "").trim(), source: `cancellations/${f}` });
+        if (m) {
+          const text = (m[3] || '').trim();
+          const scoped = text.match(/^@([01]\d|2[0-3]):([0-5]\d)\s*\|\s*(.*)$/);
+          if (text.startsWith('@') && !scoped) throw new Error('Invalid scoped cancellation time');
+          entries.push({date:m[1],name:m[2].trim(),reason:scoped ? scoped[3] : text,
+            ...(scoped ? {time_pacific:`${scoped[1]}:${scoped[2]}`} : {}),source:`cancellations/${f}`});
+        }
       }
     }
   } catch (e) {
