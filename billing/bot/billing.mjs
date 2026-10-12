@@ -1668,6 +1668,10 @@ export function buildEmail({ results, unmatchedPayments, now = NOW, windowStart 
   // Confirmed due is firm UNPAID only. Review exposure is deliberately not
   // receivable dollars; uncertainty must never become a collection amount.
   const venmoCollected = paidVenmo.reduce((s, r) => s + (r.payment?.amount || 0), 0);
+  const missingIdentity = results.some(r => r.appt?.unidentified
+    || (r.appt?.calendar_source && !r.appt.client_name)
+    || r.status === "UNIDENTIFIED_SLOT" || r.status === "UNKNOWN");
+  const collectedDisplay = missingIdentity ? "UNKNOWN" : `$${venmoCollected.toLocaleString()}`;
   const confirmedDue = [...unpaid, ...lagging.filter((r) => r.status === "UNPAID")]
     .reduce((s, r) => s + (r.checkoutAmount ?? r.expectedPrice ?? r.roster?.default_price ?? 0), 0);
   const outColor = confirmedDue > 0 ? PALETTE.pink : PALETTE.teal;
@@ -1675,187 +1679,31 @@ export function buildEmail({ results, unmatchedPayments, now = NOW, windowStart 
     + `<tr><td colspan="2" bgcolor="${PALETTE.teal}" height="4" style="height:4px;line-height:4px;font-size:0;background:${NEON_GRADIENT};">&nbsp;</td></tr>`
     + `<tr>`
     + `<td width="50%" valign="top" style="padding:18px 20px;border-right:1px solid ${PALETTE.border};">`
-      + `<div style="font-family:${FONTS.display};font-size:11px;color:${PALETTE.textMuted};">Venmo Collected This Week</div>`
-      + `<div style="font-family:${FONTS.display};font-size:30px;font-weight:800;color:${PALETTE.teal};margin-top:8px;">$${venmoCollected.toLocaleString()}</div></td>`
+      + `<div style="font-family:${FONTS.display};font-size:11px;color:${PALETTE.textMuted};">Matched Venmo Payments${missingIdentity ? " (incomplete identity coverage)" : ""}</div>`
+      + `<div style="font-family:${FONTS.display};font-size:30px;font-weight:800;color:${PALETTE.teal};margin-top:8px;">${collectedDisplay}</div></td>`
     + `<td width="50%" valign="top" style="padding:18px 20px;">`
       + `<div style="font-family:${FONTS.display};font-size:11px;color:${PALETTE.textMuted};">Confirmed Due</div>`
       + `<div style="font-family:${FONTS.display};font-size:30px;font-weight:800;color:${outColor};margin-top:8px;">$${confirmedDue.toLocaleString()}</div></td>`
     + `</tr></table>`;
 
-  // ── VAGARO CHECKOUT PROMPT — auto-generated for Claude for Chrome ──
-  // Brad uses Vagaro's calendar "checkout" UI as a visual paid-checkmark.
-  // The bot already knows who paid this week, so we render the full
-  // copy-paste prompt with the client list pre-filled at the bottom of the
-  // email. Canonical rules live at billing/CHECKOUT-PROMPT.md.
-  const checkoutPrompt = buildCheckoutPrompt(results, now);
-  body += sectionLabel(`Vagaro Checkout — copy block below into Claude for Chrome`, "teal");
-  body += `<div style="font-family:${FONTS.body};font-size:13px;color:${PALETTE.textMuted};margin-bottom:8px;">Triple-click inside the box, ⌘A, ⌘C, then paste into a new Claude for Chrome session. Full rules + this week's paid clients are baked in.</div>`;
-  body += `<pre style="background:${PALETTE.bgPanel};border:1px solid ${PALETTE.border};border-radius:6px;padding:12px;font-family:${FONTS.display};font-size:8px;line-height:1.4;color:${PALETTE.textPrimary};white-space:pre-wrap;overflow-x:auto;">${escapeHtml(checkoutPrompt)}</pre>`;
+  // Native verification context; report output does not direct a browser writer.
+  const reconciliationNote = buildCheckoutPrompt(results, now);
+  body += sectionLabel("Native bookkeeping verification", "teal");
+  body += `<div style="font-family:${FONTS.body};font-size:13px;color:${PALETTE.textMuted};white-space:pre-wrap;">${escapeHtml(reconciliationNote)}</div>`;
 
   const footer = `Week ${weekLabel} · log: billing/logs/${fmtDateIso(now)}.md · ${GITHUB_OWNER}/${GITHUB_REPO}`;
   const html = emailShell({ title: `Week ending ${fmtDate(now)}`, bodyHtml: body, footerNote: footer });
   return { subject, html };
 }
 
-// ── Vagaro checkout prompt for Claude for Chrome ──
-// Returns the full prompt (rules + this week's paid client list) as plain
-// text so Brad can copy-paste a single block into a fresh chat each week.
+// Compatibility export: report context only; never an executable checkout prompt.
 export function buildCheckoutPrompt(results, now) {
-  const paid = results.filter((r) =>
-    r.status === "PAID_VENMO" || r.status === "PAID_CASH" || r.status === "PAID_PREPAID",
-  );
-  // Group by local date (Pacific). Most recent day first so checkout walks
-  // backwards Fri → Mon as Brad prefers.
-  const byDate = new Map();
-  for (const r of paid) {
-    const key = new Intl.DateTimeFormat("en-CA", {
-      timeZone: "America/Los_Angeles", year: "numeric", month: "2-digit", day: "2-digit",
-    }).format(new Date(r.appt.date));
-    if (!byDate.has(key)) byDate.set(key, []);
-    byDate.get(key).push(r);
-  }
-  const dayKeys = [...byDate.keys()].sort().reverse();
-
-  const lines = [];
-  for (const key of dayKeys) {
-    const label = new Date(key + "T20:00:00Z").toLocaleDateString("en-US", {
-      timeZone: "America/Los_Angeles", weekday: "long", month: "numeric", day: "numeric",
-    });
-    lines.push("");
-    lines.push(`${label}:`);
-    // Sort earliest session first within the day
-    byDate.get(key).sort((a, b) => new Date(a.appt.date) - new Date(b.appt.date));
-    for (const r of byDate.get(key)) {
-      const name = r.roster.vagaro_name;
-      // Amount Brad must ENTER in Vagaro = the real session price the client
-      // paid (solo vs together), smoothie stripped. Falls back to expected.
-      const amt = r.checkoutAmount ?? r.expectedPrice ?? r.roster.default_price ?? "?";
-      const time = new Date(r.appt.date).toLocaleTimeString("en-US", {
-        timeZone: "America/Los_Angeles", hour: "numeric", minute: "2-digit",
-      });
-      const notes = [];
-      // Vagaro likely shows the slot's configured price; if the amount-to-enter
-      // differs (2:1 client trained solo, couple where one came), Claude must
-      // EDIT Vagaro's total first or Vagaro blocks the checkout.
-      const configured = r.expectedPrice ?? r.roster.default_price;
-      if (typeof amt === "number" && typeof configured === "number" && amt !== configured) {
-        notes.push(`⚠ ADJUST TOTAL: Vagaro likely shows $${configured}; change the total to $${amt} before entering cash`);
-      }
-      if (r.status === "PAID_PREPAID") notes.push("prepaid — still check off; use Vagaro's shown amount or $0");
-      else if (r.inferred) notes.push("rescheduled — verify the calendar name matches before checkout");
-      else if (r.payment?.sender_display_name) {
-        const sender = r.payment.sender_display_name;
-        const senderFirst = sender.split(" ")[0].toLowerCase();
-        const clientFirst = name.split(" ")[0].toLowerCase();
-        if (senderFirst !== clientFirst && !sender.toLowerCase().includes(clientFirst)) {
-          notes.push(`paid by ${sender}`);
-        }
-      }
-      const ctx = notes.length ? "\n      ↳ " + notes.join("\n      ↳ ") : "";
-      lines.push(`  • ${time}  ${name} — enter $${amt}${ctx}`);
-    }
-  }
-
-  return CHECKOUT_RULES + "\n\n==== PAID CLIENTS THIS WEEK (work backwards) ====" +
-    (lines.length ? "\n" + lines.join("\n") : "\n  (none — nothing to check off)");
+  return "Analysis only. Report matches do not establish native settlement or attendance. "
+    + "The billing owner verifies original receipt, exact appointment, service date, allocation and existing settlement before routine bookkeeping under standing authority. "
+    + "Record the actual external payment method once, suppress receipts and verify saved settlement and original receipt preference. "
+    + "Already-settled transactions are skipped. Missing customer identity or conflicting allocation remains UNKNOWN; it is not zero revenue or a collection instruction. "
+    + "No new charge, request, unsupported price change or customer notification is authorized by this report.";
 }
-
-const CHECKOUT_RULES = `WEEKLY VAGARO CHECKOUT — YEAGER'S GYM
-
-ROLE: You are Claude in Brad's Chrome browser. Brad is logged into Vagaro.
-TASK: Mark each paid client below as "checked out" in Vagaro's calendar so
-they show as paid. Brad uses cash as a universal paid-marker (intentional —
-the real money already came via Venmo / check / Zelle; Vagaro's payment-method
-field is just a visual checkmark for him).
-
-URL: https://us05.vagaro.com/merchants/calendar/v3
-
-WORK ORDER: most-recent day → oldest day (the list below is already in that
-order). Use the calendar's < arrow to step back one day at a time.
-
-═══ HARD RULES ═══
-1. Payment method is ALWAYS "Cash". Never ask, never use any other method.
-2. The "enter $X" amount in the list is the SOURCE OF TRUTH. Vagaro's
-   checkout screen often shows a DIFFERENT default total — most commonly when
-   a 2:1 / couple client trained SOLO that day (Vagaro shows the $50 pair
-   rate, but they owe $70 alone). When the list amount differs from Vagaro's
-   shown total you MUST CHANGE VAGARO'S TOTAL FIRST, then pay:
-     a. On the checkout screen, edit the line-item/price (or the Total) so the
-        total equals the list amount. Do NOT change the service TYPE — Brad
-        doesn't care that it still says "2:1"; only the dollar total matters.
-     b. Then enter that same amount in the Cash field.
-     c. Confirm Total = Cash = Amount Paid = list amount, Change Due = $0.00.
-   If you skip step (a), Vagaro records an over/under-payment and WON'T let
-   you finish. Lines needing this are flagged "⚠ ADJUST TOTAL" below.
-3. Do NOT delete any appointments. Brad handles deletions.
-4. Do NOT touch sessions that aren't on the list. If a calendar slot exists
-   but isn't on the list, leave it alone — it's either unpaid (Brad will
-   chase) or someone else's category.
-5. If a session already shows a green check / "Checked out" status, skip
-   and note it in the summary as "already done".
-6. If a client's name doesn't match anything on the calendar that day, skip
-   and log it as MISSING — never guess.
-
-═══ NICKNAME / NAMING MAP ═══
-Many clients' Vagaro calendar name differs from their Venmo / nickname:
-• Lisa, Leesha               → Lisa Knievel
-• Tawny, Tani                → Tonnie Dahl
-• Carrie                     → Kerry Kreczmer
-• Michelle                   → michelle Delorenza  (yes, lowercase m in Vagaro)
-• Mathieu, Celestin          → Celestin Mathieu
-• Laci                       → Lacey James
-• Katie, Kate                → Katelin Lowther
-• Adriana Duty               → "Danny Duty" on the calendar  (Adriana is his wife and pays)
-• Julio                      → "Melissa Rios" on the calendar (Julio is her husband)
-• David, Mudroom, Mudroom Backpacks → "Annie Deioma" on the calendar
-                                       (David is her husband; pays via business Venmo)
-• James Lowther              → "Katelin Lowther" on the calendar (Katelin's husband)
-
-═══ SESSION-LEVEL CONTEXT (so you don't get confused) ═══
-• Tue 8 AM is a 5-PERSON TEAM session: Peggy, Tonnie, Robert, Annie, David.
-  Each is $40. David shares Annie's calendar block (they're a couple).
-  Mudroom pays $80 covering both Annie + David in one transaction.
-• Wed 9 AM is Rachel Bertholino. Her husband Mathieu pays (Venmo shows
-  "Celestin Mathieu").
-• Wed 10 AM is Annie Deioma (couple 2:1 with David). Mudroom pays.
-• Mon 9 AM is a 3:1 group: Dina + Anna + Katelin — each $45.
-• Mon 8 AM has TWO sessions at the same time: Peggy (2:1, $50) and
-  Michelle (1:1, $70). They're different calendar blocks.
-• Couples (Danny+Adriana, Melissa+Julio, Annie+David): one payment covers
-  the calendar block; don't look for a second.
-• Robert Brower is prepaid for all of 2026. Still check him off — use
-  whatever Vagaro shows as the amount, or $0 if it's blank.
-
-═══ CHECKOUT STEPS (per appointment) ═══
-1. Navigate to the target day on the calendar (use the < arrow at top).
-2. Click the appointment block for the named client.
-3. When the popup opens, click the green "Checkout" button at the bottom
-   right of the popup. Fallback if you can't see it:
-   document.querySelector('BUTTON.vg-tk-btn.vg-btn-primary').click()
-4. On the checkout screen, verify the client name matches.
-5. Find the Cash field, triple-click to select, type the amount from the
-   list (no $ sign, no decimal — e.g., 70 not $70.00), press Tab.
-6. Verify: Cash = list amount, Amount Paid = list amount, Change Due = $0.00.
-7. Click the green Checkout button.
-8. Click Done → Go to Calendar.
-
-═══ FAILURE / EDGE CASES ═══
-• If Vagaro's UI looks different than described (update, new screen): STOP
-  and tell Brad what you see. Do not improvise.
-• If two clients with the same first name appear at similar times: confirm
-  with Brad before processing either.
-• If a "Senior Games" / "Team" 5-person Tue 8am session shows on the
-  calendar, check off each listed attendee individually (Vagaro will have
-  separate blocks for each, or one block with attendees — confirm).
-
-═══ OUTPUT WHEN DONE ═══
-Summarize:
-  ✅ Checked out: N / total
-  ⏭ Skipped (already done): list of names
-  ❌ MISSING (on list but no calendar match): list of names + dates
-  ⚠ Failed / errored: list with reason
-
-Brad will review and handle exceptions manually.`;
 
 // Summary stat cards as a single table row (Outlook-safe; no flexbox).
 function statStrip(items) {
