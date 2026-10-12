@@ -1,0 +1,10 @@
+{
+  "source": "Brad, October 5 2026; Sentinel_1a8030675060819199523b141a81a175",
+  "michelle_second_weekly_session_free": "michelle Delorenza",
+  "katelin_monday": {"client": "Katelin Lowther", "price": 25},
+  "prepaid_periods": {"Robert Brower": {"start": "2026-01-01", "end": "2026-12-31"}},
+  "attendance_confirmation": {"start": "2026-09-27", "end": "2026-10-03", "future_bookings_confirmed": false},
+  "reference_only_receipts": [{"client": "Katelin Lowther", "receipt_date": "2026-09-28", "amount": 25, "transaction_id": "4696373878066704718", "memo": "9.28", "unapplied_to": "2026-09-30", "treatment": "Unapplied Monday reference evidence beside Wednesday unpaid appointment; never Wednesday coverage"}],
+  "unclassified_excess": [{"client": "Dina Bates", "date": "2026-09-29", "received": 80, "documented_service": 70, "amount": 10, "treatment": "Unclassified; no invented tip, credit, allocation or rate change"}],
+  "authority": "Approved report/reconciliation rules. Routine unambiguous already-received external-payment bookkeeping is covered by Brad's October 10 standing authority; no new charges, requests, refunds, unsupported price changes or customer notifications. This module performs no native checkout. Actual conflicts remain review-only."
+}

@@ -7,6 +7,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import {parseCalendarSource} from "./calendar-source.mjs";
 import {loadCalendarEmailIdentities} from "./calendar-email-identities.mjs";
+import {applyStandingRules, prepaidForAppointment, sessionPrice} from "./standing-rules.mjs";
 import { appointmentWindow, assertPeriodRerunConfig } from "./period.mjs";
 import { assertNoPriorDelivery, githubDeliveryStore, preparationFailureDiagnostic } from "./delivery.mjs";
 import { google } from "googleapis";
@@ -17,7 +18,7 @@ import {
   loadSchedule, loadScheduleOverrides, findScheduleEntriesForSlot, isInactiveSlot,
   findScheduleOverrideEntriesForSlot, hasScheduleOverrideForSlot, isInactiveScheduleOverrideSlot,
   fuzzyName, fmtDate, fmtDateTime, fmtDateIso, fmtDateIsoPacific, slugify,
-  parseNoteDate, parseNoteDates, enumeratesDates, withRetry,
+  parseNoteDate, parseNoteDates, enumeratesDates, withRetry, cancellationMatches,
   venmoRequestLink, githubNewFileUrl, sendBrevoEmail,
   emailShell, sectionLabel, button, buttonOutline, card, NEON_GRADIENT,
 } from "./lib.mjs";
@@ -725,6 +726,7 @@ export function assertAllocationInvariant(allocations) {
 }
 
 export function reconcile(appointments, payments, clients, cashLog, cancellations = [], priorMatches = [], externalUnpaid = []) {
+  appointments = applyStandingRules(appointments, cancellations);
   const byVagaroName = new Map(clients.map((c) => [c.vagaro_name.toLowerCase(), c]));
   const usedPayments = new Set();
   const results = [];
@@ -841,7 +843,7 @@ export function reconcile(appointments, payments, clients, cashLog, cancellation
     ? date
     : fmtDateIsoPacific(date);
   const cancelKey = (date, name) => `${serviceDay(date)}__${(name || "").toLowerCase()}`;
-  const cancelledSet = new Set(cancellations.map((c) => cancelKey(c.date, c.name)));
+  const cancelledFor = (appt, name) => cancellations.find(c => cancellationMatches(c, appt.date, name));
 
   // ── Combined-payment reservation pre-pass ──
   //
@@ -905,11 +907,11 @@ export function reconcile(appointments, payments, clients, cashLog, cancellation
     if (appt.unidentified || appt.calendar_review) return null;
     const roster = byVagaroName.get((appt.client_name || "").toLowerCase());
     if (!roster) return null;
-    if (cancelledSet.has(cancelKey(appt.date, roster.vagaro_name))) return null;
-    if (roster.prepaid || roster.pays_cash) return null;
+    if (cancelledFor(appt, roster.vagaro_name)) return null;
+    if (prepaidForAppointment(roster, appt.date) || appt.standing_free || roster.pays_cash) return null;
     // Already settled by a prior run — ledger continuity will reproduce it.
     if (neighborKeys(appt.date, roster.vagaro_name).some((k) => (priorBySession.get(k) || []).length > 0)) return null;
-    const expectedPrice = appt.vagaroAmount ?? appt.price_override ?? roster.default_price;
+    const expectedPrice = sessionPrice(appt, roster);
     return { roster, expectedPrice };
   });
   const reservedFor = new Map(); // appointment index → payment index
@@ -1011,13 +1013,23 @@ export function reconcile(appointments, payments, clients, cashLog, cancellation
 
     // Honor cancellations BEFORE prepaid/pays_cash gates so a vacation week
     // for any client type drops cleanly.
-    if (cancelledSet.has(cancelKey(appt.date, roster.vagaro_name))) {
-      const cxl = cancellations.find((c) => cancelKey(c.date, c.name) === cancelKey(appt.date, roster.vagaro_name));
+    if (cancelledFor(appt, roster.vagaro_name)) {
+      const cxl = cancelledFor(appt, roster.vagaro_name);
       results.push({ appt, roster, status: "CANCELLED", note: cxl?.reason || "" });
       continue;
     }
 
-    if (roster.prepaid) {
+    if (appt.standing_free) {
+      const freeKey = `${fmtDateIsoPacific(appt.date)}__${roster.vagaro_name.toLowerCase()}`;
+      if ((priorBySession.get(freeKey) || []).length) {
+        results.push({appt, roster, status: "NEEDS_REVIEW", note: "Free-session rule conflicts with an existing derived allocation; preserve allocation pending review"});
+        continue;
+      }
+      results.push({appt, roster, status: "PAID_PREPAID", expectedPrice: 0, checkoutAmount: 0,
+        note: "FREE: Michelle's second weekly session; no payment or package deduction", standingFree: true});
+      continue;
+    }
+    if (prepaidForAppointment(roster, appt.date)) {
       const ppPrice = appt.price_override ?? roster.default_price;
       results.push({ appt, roster, status: "PAID_PREPAID", expectedPrice: ppPrice, checkoutAmount: ppPrice });
       continue;
@@ -1031,12 +1043,12 @@ export function reconcile(appointments, payments, clients, cashLog, cancellation
     // This is what frees the bot from schedule.csv pricing. clients.csv
     // valid_prices remain ADDITIONAL tolerance via acceptablePrices, not the
     // primary source.
-    const expectedPrice = appt.vagaroAmount ?? appt.price_override ?? roster.default_price;
+    const expectedPrice = sessionPrice(appt, roster);
     // Every amount the bot should treat as paid-in-full for this client:
     // the slot's expected price (incl. the Vagaro amount) + any client-level
     // valid_prices (couple solo vs together, group vs alone). A $5 smoothie on
     // top of any of these is also accepted (handled in amountScore).
-    const acceptablePrices = [...new Set([
+    const acceptablePrices = appt.standing_price != null ? [expectedPrice] : [...new Set([
       expectedPrice,
       appt.vagaroAmount,
       ...(roster.acceptable_prices || []),
@@ -1065,8 +1077,13 @@ export function reconcile(appointments, payments, clients, cashLog, cancellation
           note: `Received $${pay.amount}, expected $${expectedPrice}`, fromLedger: true,
         });
       } else {
-        const checkoutAmount = matchedSessionPrice(pay.amount, acceptablePrices);
-        results.push({ appt, roster, status: "PAID_VENMO", payment: pay, expectedPrice, checkoutAmount, fromLedger: true });
+        // A new standing price cannot silently rewrite an old derived allocation.
+        const legacyPrices = appt.standing_price != null
+          ? [appt.vagaroAmount ?? appt.price_override ?? roster.default_price, ...(roster.acceptable_prices || [])]
+          : acceptablePrices;
+        const checkoutAmount = matchedSessionPrice(pay.amount, legacyPrices);
+        results.push({ appt, roster, status: "PAID_VENMO", payment: pay, expectedPrice, checkoutAmount, fromLedger: true,
+          ...(appt.standing_price != null && checkoutAmount !== expectedPrice ? {note: "Historical allocation retained; standing Monday rate differs. No allocation correction authorized or posted"} : {}) });
       }
       continue;
     }
@@ -1325,6 +1342,9 @@ export function reconcile(appointments, payments, clients, cashLog, cancellation
     }
   }
 
+  for (const row of results) if (row.appt.standing_reference) {
+    row.note = [row.note, row.appt.standing_reference].filter(Boolean).join('; ');
+  }
   const unmatchedPayments = payments.filter((p, idx) => !usedPayments.has(idx) && !isPriorMatch(p));
   // Per-receipt allocation ledger: what each payment settled, and what is left
   // over. sessions[] + remainder must always reconstruct the gross amount —
