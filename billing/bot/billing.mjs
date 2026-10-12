@@ -6,6 +6,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import {parseCalendarSource} from "./calendar-source.mjs";
+import {loadCalendarEmailIdentities} from "./calendar-email-identities.mjs";
 import { appointmentWindow, assertPeriodRerunConfig } from "./period.mjs";
 import { assertNoPriorDelivery, githubDeliveryStore, preparationFailureDiagnostic } from "./delivery.mjs";
 import { google } from "googleapis";
@@ -95,7 +96,8 @@ async function fetchVagaroAppointmentsFromIcal() {
     if (!response.ok) throw new Error(`Calendar fetch failed (${response.status})`);
     return response.text();
   }, {label: "Vagaro iCal fetch"});
-  const parsed = parseCalendarSource(raw, {start: WINDOW_START, end: WINDOW_END, runId: process.env.GITHUB_RUN_ID || null, repositorySha: process.env.GITHUB_SHA || null});
+  const emailIdentities = await loadCalendarEmailIdentities(path.join(REPO_ROOT, 'billing', 'calendar-email-identities.json'), await loadClients(CLIENTS_CSV));
+  const parsed = parseCalendarSource(raw, {start: WINDOW_START, end: WINDOW_END, runId: process.env.GITHUB_RUN_ID || null, repositorySha: process.env.GITHUB_SHA || null, emailIdentities});
   calendarSnapshot = parsed.snapshot;
   console.log(`iCal: ${parsed.appointments.length} window occurrences; source sha256=${calendarSnapshot.source_sha256}`);
   return parsed.appointments;
