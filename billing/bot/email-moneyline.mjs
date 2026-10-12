@@ -319,6 +319,10 @@ export function buildMoneyLine({ results, unmatchedPayments, now, windowStart, c
   const actionsCount = cats.unpaid.length + cats.review.length + cats.cashPending.length + cats.lagging.length + cats.unidentified.length + cats.unknown.length;
 
   const venmoCollected = cats.paidVenmo.reduce((s, r) => s + (r.payment?.amount || 0), 0);
+  const missingIdentity = results.some(r => r.appt?.unidentified
+    || (r.appt?.calendar_source && !r.appt.client_name)
+    || r.status === "UNIDENTIFIED_SLOT" || r.status === "UNKNOWN");
+  const collectedDisplay = missingIdentity ? "UNKNOWN" : money(venmoCollected);
   // Only firm UNPAID rows are receivables. NEEDS_REVIEW means the evidence is
   // unresolved (attendance, reschedule, allocation, rate, etc.) and must never
   // inflate the money Brad is told to collect.
@@ -341,13 +345,13 @@ export function buildMoneyLine({ results, unmatchedPayments, now, windowStart, c
   } else {
     level = "green";
     verdict = `All square. ${money(venmoCollected)} in, nothing confirmed due.`;
-    nextMove = "Run The Playbook to check this week's sessions out in Vagaro.";
+    nextMove = "Report matches require native settlement verification; already-settled transactions are skipped.";
   }
   const statusColor = level === "red" ? T.unpaid : level === "yellow" ? T.review : T.paid;
 
   const weekEnding = fmtDate(now);
   const subject = `Weekly billing — week ending ${weekEnding} — ${unpaidCount} unpaid, ${reviewCount} review`;
-  const preheader = `${money(venmoCollected)} in | ${money(confirmedDue)} confirmed due | ${actionsCount} action item${actionsCount === 1 ? "" : "s"}`;
+  const preheader = `${collectedDisplay} matched Venmo${missingIdentity ? " (incomplete identity coverage)" : ""} | ${money(confirmedDue)} confirmed due | ${actionsCount} action item${actionsCount === 1 ? "" : "s"}`;
 
   // ── record strip (paid · unpaid · review · unidentified) ──
   const recPart = (n, label, color) =>
@@ -400,12 +404,12 @@ export function buildMoneyLine({ results, unmatchedPayments, now, windowStart, c
     body += `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="${T.card}" style="background-color:${T.card};border:1px solid ${T.border};border-radius:8px;">${list}</table>`;
   }
 
-  // THE PLAYBOOK (Vagaro checkout — VERBATIM)
+  // Analysis context only; no executable browser handoff.
   if (checkoutPrompt) {
-    body += sectionLabel("The Playbook — Vagaro Checkout", T.teal);
-    body += `<div class="yg-body" style="font-family:${FONT_BODY};font-size:13px;color:${T.muted};margin-bottom:8px;line-height:1.5;">Use this block exactly when checking out sessions in Vagaro. Triple-click inside, &#8984;A, &#8984;C, paste into a new Claude for Chrome session.</div>`;
+    body += sectionLabel("Native bookkeeping verification", T.teal);
+    body += `<div class="yg-body" style="font-family:${FONT_BODY};font-size:13px;color:${T.muted};margin-bottom:8px;line-height:1.5;">Analysis context for the billing owner. Report matches do not establish native settlement.</div>`;
     body += `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="${T.panel}" style="background-color:${T.panel};border:1px solid ${T.border};border-radius:8px;">`;
-    body += `<tr><td style="padding:9px 12px;border-bottom:1px dashed ${T.hair};">${micro("Copy-Paste Payload", T.teal)}</td></tr>`;
+    body += `<tr><td style="padding:9px 12px;border-bottom:1px dashed ${T.hair};">${micro("Verification context", T.teal)}</td></tr>`;
     body += `<tr><td style="padding:12px;">`;
     body += `<pre style="margin:0;font-family:${FONT_MONO};font-size:9px;line-height:1.45;color:${T.body};white-space:pre-wrap;overflow-x:auto;">${esc(checkoutPrompt)}</pre>`;
     body += `</td></tr></table>`;
@@ -453,7 +457,7 @@ export function buildMoneyLine({ results, unmatchedPayments, now, windowStart, c
   [data-ogsc] .yg-card { background-color:${T.card} !important; }
   [data-ogsc] .yg-hero { background-color:${T.heroBg} !important; }
   [data-ogsc] .yg-text { color:${T.body} !important; }
-  /* Mobile: bump readability without touching The Playbook (<pre>) */
+  /* Mobile: bump readability without touching verification context (<pre>) */
   @media only screen and (max-width:520px) {
     .yg-body  { font-size:15px !important; line-height:1.5 !important; }
     .yg-mono  { font-size:13px !important; }
@@ -499,7 +503,7 @@ export function buildMoneyLine({ results, unmatchedPayments, now, windowStart, c
           <tr><td style="padding:14px 26px 4px;">
             <div style="margin-bottom:14px;">${micro("The Money Line · Week ending " + esc(weekEnding), T.muted, "0.16em")}</div>
             <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr>
-              ${moneyStat("Collected", money(venmoCollected), T.numIn, T.inGlow, false)}
+              ${moneyStat("Matched Venmo", collectedDisplay, T.numIn, T.inGlow, false)}
               ${moneyStat("Confirmed Due", money(confirmedDue), confirmedDue > 0 ? T.numOut : T.dim, confirmedDue > 0 ? T.outGlow : "", true)}
             </tr></table>
             <div style="margin-top:16px;padding-top:14px;border-top:1px dashed ${T.hair};">${recordStrip}</div>
