@@ -37,7 +37,7 @@ function canonicalCalendar(raw) {
 }
 
 // Only explicit name fields count. A service title or receipt is not identity.
-export function calendarIdentity(ev) {
+function identityEvidence(ev, emailIdentities = {}) {
   const names = new Set();
   const summary = summaryText(ev.summary).trim();
   const description = String(ev.description || '');
@@ -51,7 +51,28 @@ export function calendarIdentity(ev) {
     const cn = attendee.params?.CN;
     if (cn && new RegExp('^'+name+'$').test(cn)) names.add(cn.trim());
   }
-  return [...names];
+  let review = null, basis = null;
+  const emails = description.match(/[\w.+-]+@[\w.-]+\.[a-z]+/gi) || [];
+  if (emails.length) {
+    const lines = description.trim().split(/\r?\n/).map(s=>s.trim()).filter(Boolean);
+    let bridge = false;
+    try {
+      const link = new URL(lines[0]);
+      bridge = lines.length === 2 && link.protocol === 'https:' && !link.username && !link.password
+        && link.hostname === 'www.vagaro.com' && link.pathname === '/merchants/googlecalendar'
+        && /^[\w.+-]+@[\w.-]+\.[a-z]+$/i.test(lines[1]) && emails.length === 1;
+    } catch {}
+    const fingerprint = bridge ? createHash('sha256').update(lines[1].toLowerCase()).digest('hex') : null;
+    const matches = fingerprint ? emailIdentities[fingerprint] : null;
+    if (bridge && Array.isArray(matches) && matches.length === 1 && typeof matches[0] === 'string') {
+      names.add(matches[0]); basis = 'approved-description-email';
+    } else review = 'Description email identity is unsupported, unapproved or ambiguous';
+  }
+  return {identities: [...names], review, basis};
+}
+
+export function calendarIdentity(ev, emailIdentities = {}) {
+  return identityEvidence(ev, emailIdentities).identities;
 }
 
 // node-ical 0.20 keys exceptions by UTC day, losing multiple same-day exceptions.
@@ -112,7 +133,7 @@ function validateRaw(raw) {
   return exclusions;
 }
 
-export function parseCalendarSource(raw, {start, end, capturedAt = new Date(), runId = null, repositorySha = null} = {}) {
+export function parseCalendarSource(raw, {start, end, capturedAt = new Date(), runId = null, repositorySha = null, emailIdentities = {}} = {}) {
   if (!(start instanceof Date) || !(end instanceof Date) || !(start <= end)) throw new Error('Invalid calendar window');
   const canonical = canonicalCalendar(raw);
   const rawExclusions = validateRaw(canonical);
@@ -127,15 +148,16 @@ export function parseCalendarSource(raw, {start, end, capturedAt = new Date(), r
     const date = occurrence.start;
     if (!iso(date)) throw new Error('Calendar appointment has invalid start');
     if (date < start || date > end) return;
-    const identities = calendarIdentity(occurrence);
+    const evidence = identityEvidence(occurrence, emailIdentities);
+    const identities = evidence.identities;
     const source = {uid: provenanceUid(master.uid), recurrence_id: iso(original), start: iso(date), end: iso(occurrence.end),
       timezone: occurrence.start?.tz || occurrence.calendar_timezone || 'UTC', status: occurrence.status || null,
       sequence: occurrence.sequence ?? null, last_modified: iso(occurrence.lastmodified),
-      summary: clean(summaryText(occurrence.summary)), identities: identities.map(clean)};
+      summary: clean(summaryText(occurrence.summary)), identities: identities.map(clean), identity_basis: evidence.basis};
     const appointment = {date, summary: source.summary, description: '', client_name: identities.length === 1 ? identities[0] : null,
       attendance_proven: false, checkout_proven: false,
-      calendar_source: source, calendar_review: identities.length > 1 ? 'Conflicting explicit calendar identities'
-        : occurrence.status && String(occurrence.status).toUpperCase() !== 'CONFIRMED' ? 'Calendar appointment status requires review' : null};
+      calendar_source: source, calendar_review: evidence.review || (identities.length > 1 ? 'Conflicting explicit calendar identities'
+        : occurrence.status && String(occurrence.status).toUpperCase() !== 'CONFIRMED' ? 'Calendar appointment status requires review' : null)};
     internalAppointmentUids.set(appointment, master.uid);
     appointments.push(appointment);
   };
@@ -148,11 +170,11 @@ export function parseCalendarSource(raw, {start, end, capturedAt = new Date(), r
     const dates = ev.rrule ? ev.rrule.between(start, end, true) : inWindow(ev.start) ? [ev.start] : [];
     if (!inWindow(ev.start) && !dates.length && !exceptions.some(e=>inWindow(e.start)||inWindow(e.recurrenceid))) continue;
     records.push({uid: provenanceUid(ev.uid), start: iso(ev.start), end: iso(ev.end), timezone: ev.start?.tz || 'UTC',
-      status: ev.status || null, sequence: ev.sequence ?? null, last_modified: iso(ev.lastmodified), summary: clean(summaryText(ev.summary)), identities: calendarIdentity(ev).map(clean),
+      status: ev.status || null, sequence: ev.sequence ?? null, last_modified: iso(ev.lastmodified), summary: clean(summaryText(ev.summary)), identities: calendarIdentity(ev, emailIdentities).map(clean),
       recurrence_rule: ev.rrule?.toString() || null, exclusions: [...(rawExclusions.get(ev.uid) || [])],
       exceptions: exceptions.map(e=>({recurrence_id: iso(e.recurrenceid), start: iso(e.start), end: iso(e.end), status: e.status || null,
         timezone: e.start?.tz || 'UTC', sequence: e.sequence ?? null, last_modified: iso(e.lastmodified),
-        summary: clean(summaryText(e.summary)), identities: calendarIdentity(e).map(clean)}))});
+        summary: clean(summaryText(e.summary)), identities: calendarIdentity(e, emailIdentities).map(clean)}))});
     if (cancelled(ev)) continue;
     const overridden = new Set(exceptions.map(e=>iso(e.recurrenceid)));
     const excluded = rawExclusions.get(ev.uid) || new Set();
