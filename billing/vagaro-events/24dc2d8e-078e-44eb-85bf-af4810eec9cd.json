@@ -1,0 +1,32 @@
+{
+  "id": "24dc2d8e-078e-44eb-85bf-af4810eec9cd",
+  "createdDate": "2026-10-13T05:11:33.3341002Z",
+  "type": "appointment",
+  "action": "created",
+  "payload": {
+    "appointmentId": "kiSGJ9OvQ6wrdgyYgVPdHw==",
+    "startTime": "2026-10-13T00:00:00Z",
+    "endTime": "2026-10-13T01:00:00Z",
+    "bookingStatus": "Service Completed",
+    "serviceTitle": "60 Min – 2:1 Semi-Private",
+    "serviceId": "xOg7td4oa4uOsuRhCSTvwA==",
+    "calendarEventId": null,
+    "amount": 100,
+    "eventType": "Appointment",
+    "onlineVsInhouse": "Booked Inhouse",
+    "appointmentTypeCode": "",
+    "appointmentTypeName": "",
+    "customerId": "MNabyxjxL-6VzP9~w6IAuA==",
+    "bookingSource": "Booked Inhouse",
+    "serviceProviderId": "TuzDHqmtraIfkDqnIzmWHw==",
+    "businessId": "KC9blI3VkybEbxHRtAKSgw==",
+    "businessAlias": null,
+    "businessGroupId": null,
+    "serviceCategory": null,
+    "createdDate": "2026-10-13T05:11:33.181Z",
+    "createdBy": "TuzDHqmtraIfkDqnIzmWHw==",
+    "modifiedDate": null,
+    "modifiedBy": null,
+    "formResponseIds": null
+  }
+}
