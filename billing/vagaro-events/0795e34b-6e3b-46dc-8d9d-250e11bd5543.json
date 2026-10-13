@@ -1,0 +1,32 @@
+{
+  "id": "0795e34b-6e3b-46dc-8d9d-250e11bd5543",
+  "createdDate": "2026-10-13T14:16:28.4947127Z",
+  "type": "appointment",
+  "action": "updated",
+  "payload": {
+    "appointmentId": "Gte9ickcRpIq25j2i7qNmw==",
+    "startTime": "2026-10-13T18:00:00Z",
+    "endTime": "2026-10-13T19:00:00Z",
+    "bookingStatus": null,
+    "serviceTitle": null,
+    "serviceId": null,
+    "calendarEventId": null,
+    "amount": null,
+    "eventType": "PersonalOff",
+    "onlineVsInhouse": null,
+    "appointmentTypeCode": null,
+    "appointmentTypeName": null,
+    "customerId": null,
+    "bookingSource": null,
+    "serviceProviderId": "TuzDHqmtraIfkDqnIzmWHw==",
+    "businessId": "KC9blI3VkybEbxHRtAKSgw==",
+    "businessAlias": null,
+    "businessGroupId": null,
+    "serviceCategory": null,
+    "createdDate": "2026-10-13T00:58:34.253Z",
+    "createdBy": "TuzDHqmtraIfkDqnIzmWHw==",
+    "modifiedDate": "2026-10-13T14:16:28.217Z",
+    "modifiedBy": "TuzDHqmtraIfkDqnIzmWHw==",
+    "formResponseIds": null
+  }
+}
