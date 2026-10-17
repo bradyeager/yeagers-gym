@@ -79,7 +79,7 @@ export async function persistEvent(id, raw, {fetchFn=fetch, token=process.env.GI
  throw new Error('unconfirmed');
 }
 export default async function handler(req,res) {
- if(req.method==='GET') return res.status(200).json({ok:true,service:'yg-vagaro-webhook',phase:2,time:new Date().toISOString()});
+ if(req.method==='GET') return res.status(200).json({ok:true,service:'yg-vagaro-webhook',phase:3,archive:'private-billing',time:new Date().toISOString()});
  if(req.method!=='POST') return res.status(405).json({error:'method not allowed'});
  const expected=process.env.VAGARO_VERIFICATION_TOKEN;
  if(!expected || req.headers['x-vagaro-signature']!==expected) return res.status(401).json({error:'invalid or missing signature'});
