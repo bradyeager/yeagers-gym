@@ -70,3 +70,9 @@ test('exact size boundary accepts body, larger body rejects; slow body is transi
   const slow={method:'POST',headers:{'x-vagaro-signature':'fixture'},[Symbol.asyncIterator](){return{next:()=>new Promise(()=>{})};}};r=res();await handler(slow,r);assert.equal(r.code,408);
  }finally{global.fetch=original;}
 });
+
+test('archive persistence targets private billing repository only',async()=>{
+ const s=store();const urls=[];await persistEvent('private-route',raw('private-route'),{token:'fixture-only',fetchFn:async(url,options)=>{urls.push(url);return s.fetchFn(url,options);}});
+ for(const url of urls)assert.equal(new URL(url).pathname,'/repos/bradyeager/yeagers-gym-billing/contents/billing/vagaro-events/private-route.json');
+ assert.equal(s.files.size,1);
+});
