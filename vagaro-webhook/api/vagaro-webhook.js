@@ -27,7 +27,7 @@ async function readRawBody(req) {
 export async function persistEvent(id, raw, {fetchFn=fetch, token=process.env.GITHUB_TOKEN, budgetMs=BUDGET_MS, requestMs=REQUEST_MS, now=Date.now, random=Math.random, sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms))}={}) {
  if(!token) throw new Error('configuration');
  const deadline=now()+budgetMs;
- const url=`https://api.github.com/repos/bradyeager/yeagers-gym/contents/billing/vagaro-events/${id}.json`;
+ const url=`https://api.github.com/repos/bradyeager/yeagers-gym-billing/contents/billing/vagaro-events/${id}.json`;
  const headers={Authorization:`Bearer ${token}`,Accept:'application/vnd.github+json','User-Agent':'yg-vagaro-webhook'};
  const request=async(method)=> {
   const remaining=deadline-now();
