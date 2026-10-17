@@ -27,7 +27,7 @@ async function readRawBody(req) {
 export async function persistEvent(id, raw, {fetchFn=fetch, token=process.env.GITHUB_TOKEN, budgetMs=BUDGET_MS, requestMs=REQUEST_MS, now=Date.now, random=Math.random, sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms))}={}) {
  if(!token) throw new Error('configuration');
  const deadline=now()+budgetMs;
- const url=`https://api.github.com/repos/bradyeager/yeagers-gym/contents/billing/vagaro-events/${id}.json`;
+ const url=`https://api.github.com/repos/bradyeager/yeagers-gym-billing/contents/billing/vagaro-events/${id}.json`;
  const headers={Authorization:`Bearer ${token}`,Accept:'application/vnd.github+json','User-Agent':'yg-vagaro-webhook'};
  const request=async(method)=> {
   const remaining=deadline-now();
@@ -79,7 +79,7 @@ export async function persistEvent(id, raw, {fetchFn=fetch, token=process.env.GI
  throw new Error('unconfirmed');
 }
 export default async function handler(req,res) {
- if(req.method==='GET') return res.status(200).json({ok:true,service:'yg-vagaro-webhook',phase:2,time:new Date().toISOString()});
+ if(req.method==='GET') return res.status(200).json({ok:true,service:'yg-vagaro-webhook',phase:3,archive:'private-billing',time:new Date().toISOString()});
  if(req.method!=='POST') return res.status(405).json({error:'method not allowed'});
  const expected=process.env.VAGARO_VERIFICATION_TOKEN;
  if(!expected || req.headers['x-vagaro-signature']!==expected) return res.status(401).json({error:'invalid or missing signature'});
