@@ -1,1 +1,0 @@
-2026-10-12 | Katelin Lowther | @09:00 | Customer cancelled the exact 09:00-10:00 Pacific 60-minute 3:1 appointment. Suppress this client/time only; other participants and other appointments remain. No attendance, fee or booking-write inference.
