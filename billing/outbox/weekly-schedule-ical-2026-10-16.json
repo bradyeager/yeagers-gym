@@ -1,10 +1,13 @@
 {
   "version": 1,
   "id": "weekly-schedule-ical-2026-10-16",
-  "state": "pending",
+  "state": "accepted",
   "nonce": "5db0642a-6cb4-440e-808f-06c9851ff1e1",
   "createdAt": "2026-10-17T08:33:49.353Z",
   "payloadHash": "04d6a794198c77cd69cacba9536ded41d837c98fb7d77134cb809bbd18cbc93b",
   "snapshotSha": "8877eef47fa57055f7ce3a8f37553ef9b2e2e3aa",
-  "runId": "39017804859"
+  "runId": "39017804859",
+  "acceptedAt": "2026-10-17T08:33:50.879Z",
+  "providerStatus": 201,
+  "providerMessageIdHash": "046fabf714b46bfb01cf62a796fcb7d79183191ab16c8bcaa7b79a66dc50b9ea"
 }
