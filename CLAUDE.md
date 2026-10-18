@@ -1,18 +1,18 @@
-# CLAUDE.md â€” Yeager's Gym Website
+# CLAUDE.md — Yeager's Gym Website
 
-## ðŸ›‘ BRAD'S #1 RULE â€” AUTOMATE EVERYTHING
+## 🛑 BRAD'S #1 RULE — AUTOMATE EVERYTHING
 Assume Brad will take ZERO manual action. He is the laziest person you've
 ever met. He has said so explicitly, on the record, in writing.
 Before asking Brad to click anything, run anything, or open any tab:
 1. Can you do it yourself? Use every tool you have. File edits, commits,
    GitHub MCP writes, Actions triggers, the GitHub API, the issue intake, any
-   API key already stored in repo secrets â€” exhaust the options.
+   API key already stored in repo secrets — exhaust the options.
 2. Can you generate code/config that does it on his behalf? A
    Vercel CLI deploy script, a GitHub Actions step, a webhook that completes
-   the action when fired â€” write the automation, don't punt the action.
+   the action when fired — write the automation, don't punt the action.
 3. Is there a credential gap? If the only blocker is a missing API key
    (e.g. Vercel API token, Stripe key), tell him EXACTLY ONE thing: "paste
-   <key name> into repo secret <NAME> and I'll handle the rest" â€” then
+   <key name> into repo secret <NAME> and I'll handle the rest" — then
    build the rest so it self-executes the moment the secret lands.
 4. **Only ask for manual action when it is physically impossible to do
    otherwise.** Vendor UIs with no API (some Vagaro flows), bank/MFA prompts,
@@ -26,7 +26,7 @@ have Claude for Chrome do X.
 Never stack multiple manual steps in one ask. If you need three things
 from him, do the other two yourself first, then ask for the irreducible one.
 Never apologize for a failed automation and then push another manual
-ask. Find the next automation. Brad's frustration is the failure mode â€”
+ask. Find the next automation. Brad's frustration is the failure mode —
 each manual step is a tax he has explicitly said he won't pay.
 When you genuinely cannot automate something and must hand off to Claude
 for Chrome, the prompt must:
@@ -34,14 +34,14 @@ for Chrome, the prompt must:
 - Use only browser UIs (GitHub web UI, Vercel dashboard, vendor settings)
 - Be a single paste, end-to-end, no terminal expected
 If you find yourself writing "open PowerShell" or "run git ..." or "from
-your terminal" â€” stop. Rewrite as a browser-only flow.
+your terminal" — stop. Rewrite as a browser-only flow.
 This rule overrides every default. It is not negotiable. Brad has had this
 conversation with prior sessions and does not want to have it again.
 
 ---
 
 ## Project
-Static website for Yeager's Gym â€” a data-driven strength coaching brand in San Diego specializing in velocity-based training (VBT). Serves competitive powerlifters, CrossFit/Hyrox athletes, and longevity-focused clients.
+Static website for Yeager's Gym — a data-driven strength coaching brand in San Diego specializing in velocity-based training (VBT). Serves competitive powerlifters, CrossFit/Hyrox athletes, and longevity-focused clients.
 
 Brand tagline: "Coached by Data. Built on Strength."
 Contact: brad@yeagersgym.com
@@ -50,10 +50,10 @@ Contact: brad@yeagersgym.com
 Durable project state lives at `C:\Jarvis-Local\Obsidian\01_PROJECTS\yeagersgym-website\`.
 - Read `STATE.md` and `DECISIONS.md` there before substantive work.
 - After meaningful work, update `STATE.md`, append new decisions, show the diff, commit the vault.
-- For project FACTS, vault STATE.md outranks this file â€” flag conflicts when you see them.
+- For project FACTS, vault STATE.md outranks this file — flag conflicts when you see them.
 
 ## Tech Stack
-- Static HTML/CSS/JS â€” no frameworks, no build tools, no bundlers
+- Static HTML/CSS/JS — no frameworks, no build tools, no bundlers
 - `base.css` + `style.css` for all styles
 - Vanilla JS inline in each HTML file
 - Local dev server: `npx serve . -l 3003 --no-clipboard` (no --single flag)
@@ -61,21 +61,21 @@ Durable project state lives at `C:\Jarvis-Local\Obsidian\01_PROJECTS\yeagersgym-
 - LIVE at https://yeagersgym.com (custom domain on GitHub Pages)
 
 ## File Structure
-- `index.html` â€” SPA homepage with hash-routed pages (home, about, services, remote, vbt, results, contact)
+- `index.html` — SPA homepage with hash-routed pages (home, about, services, remote, vbt, results, contact)
 - Standalone pages: `in-person.html`, `remote.html`, `nutrition.html`, `peptide-consulting.html`, `recovery.html`, `velocity-trackers.html`, `quiz.html`
 - Tool pages: `tools-vbt.html`, `tools-crossfit.html`, `tools-macro.html`, `tools-peptide.html`, `tools-1rm.html`, `tools-warmup.html`, `tools-lv-profile.html`, `tools-rpe.html`, `tools-rpe-velocity.html`
-- Assets in `assets/` â€” images, logos, PDFs
+- Assets in `assets/` — images, logos, PDFs
 
 ## Critical Rules
 
 ### 1. Section Label Centering
-Every `<p class="section-label">` MUST render centered. The CSS uses `display: block; width: 100%; text-align: center !important;` on `.section-label`. IMPORTANT: `base.css` sets `max-width: 72ch` on `p, li, figcaption` â€” this breaks centering. Always add `max-width: none` when overriding. Do NOT put section-labels inside flex containers without ensuring the label spans full width. If you add a new section-label, visually verify it renders centered.
+Every `<p class="section-label">` MUST render centered. The CSS uses `display: block; width: 100%; text-align: center !important;` on `.section-label`. IMPORTANT: `base.css` sets `max-width: 72ch` on `p, li, figcaption` — this breaks centering. Always add `max-width: none` when overriding. Do NOT put section-labels inside flex containers without ensuring the label spans full width. If you add a new section-label, visually verify it renders centered.
 
 ### 2. Nav CTA Is Always Teal
 The nav bar button is `class="btn btn-nav-cta"` on every page. NEVER use `btn-pink` or `btn-primary` for the nav CTA. Text: "Book Your FREE Session!"
 
 ### 3. CTAs Are Standalone Sections
-Bottom-of-page CTAs are full-width `<section>` elements â€” NOT inside bordered boxes. Pattern:
+Bottom-of-page CTAs are full-width `<section>` elements — NOT inside bordered boxes. Pattern:
 ```html
 <section style="padding: var(--space-8) 0 var(--space-6); text-align: center;">
   <div class="container">
@@ -102,7 +102,7 @@ Before declaring any visual change complete, render the page and check it. Font 
 --font-body: Inter              (body copy, hero headlines)
 ```
 
-Retired â€” never reintroduce (flag if seen): `#1EC8B0` (old teal), `#F0448A` (old pink) â€” replaced April 2026.
+Retired — never reintroduce (flag if seen): `#1EC8B0` (old teal), `#F0448A` (old pink) — replaced April 2026.
 
 ### Color Usage
 - Pink for "Get Started" labels and primary action CTAs
@@ -110,7 +110,7 @@ Retired â€” never reintroduce (flag if seen): `#1EC8B0` (old teal), `#F0448
 - Purple for tertiary accents (peptide content, quiz links)
 - Hero headlines use colored spans: `<span style="color: var(--color-teal);">word</span>`
 - Glow-line dividers (`<hr class="glow-line">`) between major sections
-- Dark theme only â€” no light mode, no light backgrounds
+- Dark theme only — no light mode, no light backgrounds
 
 ## Booking & Contact
 - All booking links: https://www.vagaro.com/tmoxgj
@@ -120,7 +120,7 @@ Retired â€” never reintroduce (flag if seen): `#1EC8B0` (old teal), `#F0448
 - No phone number on the site
 
 ## Pricing
-- In-person: $70â€“$170 (varies by group size and duration)
+- In-person: $70–$170 (varies by group size and duration)
 - Remote coaching: $149/month
 - Nutrition: $199 (90-min consultation + 3-month follow-up)
 - Peptide initial: $199/90 min
@@ -135,15 +135,15 @@ Retired â€” never reintroduce (flag if seen): `#1EC8B0` (old teal), `#F0448
 ## Do NOT Do
 - NEVER add Perplexity attribution tags, data attributes, or HTML comments crediting any AI tool. These are an E-E-A-T risk. Strip them if found.
 - Do not use generic gym copy ("transform your body", "unlock your potential"). The brand voice is technical, direct, and data-driven.
-- Do not introduce CSS frameworks (Bootstrap, Tailwind) â€” this is a hand-built site.
+- Do not introduce CSS frameworks (Bootstrap, Tailwind) — this is a hand-built site.
 - Do not create multi-file structures for tools that should be single-file HTML.
-- Do not guess at testimonial attribution â€” ask if unsure.
+- Do not guess at testimonial attribution — ask if unsure.
 - Do not add light backgrounds or break the dark aesthetic.
 
 ## Do Not Change Without Asking
 1. Color scheme (teal/pink/purple on dark)
 2. JetBrains Mono for display type
-3. Dark theme â€” no light mode
+3. Dark theme — no light mode
 4. Hero image choice
 5. Section label centering approach (display: block + width: 100%)
 
@@ -152,19 +152,19 @@ Retired â€” never reintroduce (flag if seen): `#1EC8B0` (old teal), `#F0448
 - Prefer simple, working solutions over clever abstractions.
 - For standalone tools (leaderboards, gym TV displays): single-file HTML with inline CSS and JS.
 - Use `addEventListener` instead of inline `onclick` when JS involves dynamic content or complex quoting.
-- For Python scripts: avoid f-strings with nested quotes (known bug source â€” use string concatenation).
+- For Python scripts: avoid f-strings with nested quotes (known bug source — use string concatenation).
 - Always test changes before declaring done.
 
 ## Git
 - Repo: `bradyeager/yeagers-gym`
-- Branch: `main` â€” always push to main
+- Branch: `main` — always push to main
 - Commit messages should describe what changed, not how
 
 ## Communication
 - Be direct, no fluff. Execution > explanation.
 - If something is broken, say so and fix it.
 - Outputs should be clean and machine-readable for downstream use in multi-LLM workflows.
-- When in doubt, ask â€” don't assume.
+- When in doubt, ask — don't assume.
 
 
 ## Billing privacy and clean-history boundary
