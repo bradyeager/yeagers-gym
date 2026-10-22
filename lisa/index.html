@@ -2690,8 +2690,8 @@ function renderAesthetic() {
   const latest = [...STATE.photos].filter(p => p.angle === angle && p.week_number > 0).sort((a,b) => b.week_number - a.week_number)[0];
   const baseEl = document.getElementById('compare-baseline');
   const latestEl = document.getElementById('compare-latest');
-  baseEl.innerHTML = `<span class="compare-cell-label">Week 0</span>` + (w0?.url ? `<img src="${w0.url}" class="compare-cell-img">` : `<div class="compare-cell-empty">Day 1 photos<br>May 4</div>`);
-  latestEl.innerHTML = `<span class="compare-cell-label">${latest ? `Week ${latest.week_number}` : 'Latest'}</span>` + (latest?.url ? `<img src="${latest.url}" class="compare-cell-img">` : `<div class="compare-cell-empty">Show up. Show off.</div>`);
+  baseEl.innerHTML = `<span class="compare-cell-label">Week 0</span>` + (w0?.url ? `<img loading="lazy" src="${w0.url}" class="compare-cell-img">` : `<div class="compare-cell-empty">Day 1 photos<br>May 4</div>`);
+  latestEl.innerHTML = `<span class="compare-cell-label">${latest ? `Week ${latest.week_number}` : 'Latest'}</span>` + (latest?.url ? `<img loading="lazy" src="${latest.url}" class="compare-cell-img">` : `<div class="compare-cell-empty">Show up. Show off.</div>`);
 
   // Photos only — measurements live in Body Comp tab
   renderPhotoGrid();
@@ -2772,7 +2772,7 @@ function renderPhotoGrid() {
       CHECKIN_ANGLES.map(a => {
         const photo = STATE.photos.find(p => p.week_number === w && p.angle === a.key);
         const inner = photo?.url
-          ? `<img src="${photo.url}"><div class="bookend-cell-label">${a.label}</div>`
+          ? `<img loading="lazy" src="${photo.url}"><div class="bookend-cell-label">${a.label}</div>`
           : `<div class="photo-grid-empty"><div style="font-size:18px;color:var(--text-muted);margin-bottom:2px">+</div><div style="font-size:9px;color:var(--text-muted);text-align:center;padding:0 4px;line-height:1.2;letter-spacing:0.02em">${a.label}</div></div>`;
         return `<div class="photo-grid-cell" data-week="${w}" data-angle="${a.key}">${inner}</div>`;
       }).join('')
@@ -4424,7 +4424,7 @@ function renderBookendGrid(week) {
     const photo = STATE.photos.find(p => p.week_number === week && p.angle === a.key);
     if (photo?.url) filled++;
     const inner = photo?.url
-      ? `<img src="${photo.url}"><div class="bookend-cell-label">${a.label}</div>`
+      ? `<img loading="lazy" src="${photo.url}"><div class="bookend-cell-label">${a.label}</div>`
       : `<div class="bookend-cell-empty"><div class="bookend-cell-empty-icon">${a.icon}</div><div style="font-size:10.5px;color:var(--text-muted);font-weight:500">${a.label}</div></div>`;
     return `<div class="bookend-cell" data-week="${week}" data-angle="${a.key}">${inner}</div>`;
   }).join('');

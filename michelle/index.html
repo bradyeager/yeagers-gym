@@ -3721,8 +3721,8 @@ function renderAesthetic() {
   const latest = [...STATE.photos].filter(p => p.angle === angle && p.week_number > 0).sort((a,b) => b.week_number - a.week_number)[0];
   const baseEl = document.getElementById('compare-baseline');
   const latestEl = document.getElementById('compare-latest');
-  baseEl.innerHTML = `<span class="compare-cell-label">Week 0</span>` + (w0?.url ? `<img src="${w0.url}" class="compare-cell-img">` : `<div class="compare-cell-empty">First photos<br>May 4</div>`);
-  latestEl.innerHTML = `<span class="compare-cell-label">${latest ? `Week ${latest.week_number}` : 'Latest'}</span>` + (latest?.url ? `<img src="${latest.url}" class="compare-cell-img">` : `<div class="compare-cell-empty">No photos yet</div>`);
+  baseEl.innerHTML = `<span class="compare-cell-label">Week 0</span>` + (w0?.url ? `<img loading="lazy" src="${w0.url}" class="compare-cell-img">` : `<div class="compare-cell-empty">First photos<br>May 4</div>`);
+  latestEl.innerHTML = `<span class="compare-cell-label">${latest ? `Week ${latest.week_number}` : 'Latest'}</span>` + (latest?.url ? `<img loading="lazy" src="${latest.url}" class="compare-cell-img">` : `<div class="compare-cell-empty">No photos yet</div>`);
 
   // Sync angle dropdown to STATE
   const angleSelect = document.getElementById('angle-select');
@@ -3815,7 +3815,7 @@ function renderPhotoGrid() {
       angles.map(a => {
         const photo = STATE.photos.find(p => p.week_number === w && p.angle === a.key);
         return `<div class="photo-grid-cell" data-week="${w}" data-angle="${a.key}" data-label="${a.label}" style="aspect-ratio:3/4;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:6px">
-          ${photo?.url ? `<img src="${photo.url}" style="width:100%;height:100%;object-fit:cover">` : `<div style="font-size:18px;opacity:0.5;margin-bottom:4px">📸</div><div style="font-size:10px;color:var(--text-muted);text-align:center;line-height:1.3">${a.label}</div>`}
+          ${photo?.url ? `<img loading="lazy" src="${photo.url}" style="width:100%;height:100%;object-fit:cover">` : `<div style="font-size:18px;opacity:0.5;margin-bottom:4px">📸</div><div style="font-size:10px;color:var(--text-muted);text-align:center;line-height:1.3">${a.label}</div>`}
         </div>`;
       }).join('')
     }</div>`;
@@ -3837,7 +3837,7 @@ function renderBookendInventory() {
       const photo = STATE.photos.find(p => p.week_number === week && p.angle === a.key);
       const has = photo?.url;
       return `<div class="bookend-cell ${has?'has-photo':''}" data-week="${week}" data-angle="${a.key}" data-label="${a.label}">
-        ${has ? `<img src="${photo.url}"><div class="bookend-cell-label">${a.label}</div>` : `<div class="bookend-cell-empty-icon">📸</div><div class="bookend-cell-label">${a.label}</div>`}
+        ${has ? `<img loading="lazy" src="${photo.url}"><div class="bookend-cell-label">${a.label}</div>` : `<div class="bookend-cell-empty-icon">📸</div><div class="bookend-cell-label">${a.label}</div>`}
       </div>`;
     }).join('');
     grid.querySelectorAll('.bookend-cell').forEach(cell => {
@@ -4781,7 +4781,7 @@ const PROGRESS_LOG_ENTRIES = [
 function plPhotoCell(weekNum, tag, angle) {
   const photo = STATE.photos.find(p => p.week_number === weekNum && p.angle === angle);
   const inner = photo?.url
-    ? `<img class="pl-photo-img" src="${photo.url}" alt="Week ${weekNum} ${angle}">`
+    ? `<img loading="lazy" class="pl-photo-img" src="${photo.url}" alt="Week ${weekNum} ${angle}">`
     : `<div class="pl-photo-empty">No photo<br>uploaded</div>`;
   return `<div class="pl-photo-cell"><div class="pl-photo-tag">${tag}</div>${inner}</div>`;
 }
