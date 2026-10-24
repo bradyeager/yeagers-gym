@@ -121,7 +121,10 @@ Retired — never reintroduce (flag if seen): `#1EC8B0` (old teal), `#F0448A` (o
 
 ## Pricing
 - In-person: $70–$170 (varies by group size and duration)
-- Remote coaching: $149/month
+- Monthly Remote Programming: $79/month — one individualized monthly training block, one monthly review, and limited clarification of the assigned program. Delivered in each client’s own Strength Lab app.
+- Monthly Remote Coaching: $129/month — everything in Monthly Remote Programming, plus one structured weekly check-in and up to two technique-video reviews per month. Do not promise unlimited access, priority/same-day responses, weekly calls, daily coaching, or nutrition services in either remote tier.
+- Private group sessions: clients bring their own friends; one booking reserves the entire group. Website prices are reservation totals, and participants may pay separately. Preserve the 3-on-1 90-minute total of $155.
+- Cold plunge: $5/session. Cupping: $20/20 minutes or $30/30 minutes.
 - Nutrition: $199 (90-min consultation + 3-month follow-up)
 - Peptide initial: $199/90 min
 - Peptide follow-up: $99/45 min
