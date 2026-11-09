@@ -82,7 +82,7 @@ Bottom-of-page CTAs are full-width `<section>` elements — NOT inside bordered 
     <p class="section-label" style="color: var(--color-pink); text-align: center;">Get Started</p>
     <h2>Headline here</h2>
     <p>Subtext here</p>
-    <a href="https://www.vagaro.com/tmoxgj" class="btn btn-primary">Button Text</a>
+    <a href="https://www.vagaro.com/cl/zXodFvM0CAlgWeqs30BM43nhn7Xrjgaugy0AERMh5Fs=" class="btn btn-primary">Book Your FREE Session!</a>
   </div>
 </section>
 ```
@@ -113,7 +113,8 @@ Retired — never reintroduce (flag if seen): `#1EC8B0` (old teal), `#F0448A` (o
 - Dark theme only — no light mode, no light backgrounds
 
 ## Booking & Contact
-- All booking links: https://www.vagaro.com/tmoxgj
+- Free introductory training session CTAs: https://www.vagaro.com/cl/zXodFvM0CAlgWeqs30BM43nhn7Xrjgaugy0AERMh5Fs= (Vagaro FREE TRIAL SESSION! service ID 33083301, listed $0.00; new visitors must sign up or log in before final confirmation)
+- Generic service directory and paid/recovery booking links: https://www.vagaro.com/tmoxgj
 - Email: brad@yeagersgym.com
 - Address: 3090 Monarch St., San Diego, CA 92123
 - Instagram: @YeagersGym
